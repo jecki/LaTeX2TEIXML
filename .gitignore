@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# LaTeX2TEIXML-specific
+**/LOGS/*
+**/REPORT/*
+**/node_modules/*
+testdata/*.xml
