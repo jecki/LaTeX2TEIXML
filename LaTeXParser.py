@@ -50,7 +50,8 @@ from DHParser import start_logging, suspend_logging, resume_logging, is_filename
     has_attr, has_parent, ThreadLocalSingletonFactory, Error, canonical_error_strings, \
     has_errors, apply_unless, WARNING, ERROR, FATAL, EMPTY_NODE, TreeReduction, CombinedParser, \
     PreprocessorResult, preprocess_includes, gen_find_include_func, flatten_sxpr, \
-    gen_neutral_srcmap_func, make_preprocessor, chain_preprocessors, apply_ifelse
+    gen_neutral_srcmap_func, make_preprocessor, chain_preprocessors, apply_ifelse, \
+    abbreviate_middle
 
 
 #######################################################################
@@ -60,7 +61,7 @@ from DHParser import start_logging, suspend_logging, resume_logging, is_filename
 #######################################################################
 
 
-RE_INCLUDE = r'\\input{(?P<name>.*)}'
+RE_INCLUDE = r'\\(?:input|include)\{(?P<name>.*)\}'
 
 
 def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
@@ -68,7 +69,8 @@ def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
 
 
 def preprocessor_factory() -> PreprocessorFunc:
-    find_next_include = gen_find_include_func(RE_INCLUDE, LaTeXGrammar.comment_rx__)
+    find_next_include = gen_find_include_func(
+        RE_INCLUDE, LaTeXGrammar.comment_rx__, lambda s: s + '.tex')
     include_prep = partial(preprocess_includes, find_next_include=find_next_include)
     LaTeXPreprocessor = make_preprocessor(LaTeXTokenizer)
     return chain_preprocessors(include_prep, LaTeXPreprocessor)
@@ -92,7 +94,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "e7f9979dd243430578b4f2ddafc33a5a"
+    source_hash__ = "c684b1dd5165775d57837c356155ef7e"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -136,7 +138,7 @@ class LaTeXGrammar(Grammar):
     BRACKETS = RegExp('[\\[\\]]')
     SPECIAL = RegExp('[$&_/\\\\\\\\]')
     QUOTEMARK = RegExp('"[`\']?|``?|\'\'?')
-    UMLAUT = RegExp('\\\\(?:(?:"[AOUaou])|(?:\'[aeiou])|(?:`[aeiou])|(?:[\\^][aeiou]))')
+    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AOUaou])|(?:\'[AEIOUaeioun])|(?:\'\\{[AEIOUaeiou]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUaeioug])|(?:[\\^]\\{[AEIOUaeioug]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
     ESCAPED = RegExp('\\\\(?:(?:[#%$&_/{} \\n])|(?:~\\{\\s*\\}))')
     TXTCOMMAND = RegExp('\\\\text\\w+')
     CMDNAME = Series(RegExp('\\\\@?(?:(?![\\d_])\\w)+'), dwsp__)
@@ -187,7 +189,8 @@ class LaTeXGrammar(Grammar):
     footnote = Series(Series(Drop(Text("\\footnote")), dwsp__), block_of_paragraphs)
     citep = Series(Alternative(Series(Drop(Text("\\citep")), dwsp__), Series(Drop(Text("\\cite")), dwsp__)), Option(config), block)
     citet = Series(Series(Drop(Text("\\citet")), dwsp__), Option(config), block)
-    generic_command = Alternative(Series(NegativeLookahead(no_command), CMDNAME, ZeroOrMore(Series(dwsp__, Alternative(config, block)))), Series(Drop(Text("{")), CMDNAME, _block_content, Drop(Text("}")), mandatory=3))
+    starred = Series(Text("*"), dwsp__)
+    generic_command = Alternative(Series(NegativeLookahead(no_command), CMDNAME, Option(starred), ZeroOrMore(Series(dwsp__, Alternative(config, block)))), Series(Drop(Text("{")), CMDNAME, _block_content, Drop(Text("}")), mandatory=3))
     assignment = Series(NegativeLookahead(no_command), CMDNAME, Series(Drop(Text("=")), dwsp__), Alternative(Series(number, Option(UNIT)), block, CHARS))
     text_command = Alternative(TXTCOMMAND, ESCAPED, BRACKETS)
     _known_command = Alternative(citet, citep, footnote, includegraphics, caption, multicolumn, hline, cline, documentclass, pdfinfo, hypersetup, label, ref, href, url, item)
@@ -241,7 +244,7 @@ class LaTeXGrammar(Grammar):
     math_block = Alternative(equation, eqnarray, displaymath)
     _known_environment = Alternative(itemize, enumerate, description, figure, tabular, quotation, verbatim, math_block)
     _has_block_start = Drop(Alternative(Drop(Text("\\begin{")), Drop(Text("\\["))))
-    preamble = OneOrMore(Series(Option(_WSPC), _command))
+    preamble = OneOrMore(Series(Option(_WSPC), Alternative(_command, Series(NegativeLookahead(Series(Drop(Text("\\begin{document}")), dwsp__)), _block_environment))))
     SubSubSection = Series(Drop(Text("\\subsubsection")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Paragraphs)))
     Index = Series(Option(_WSPC), Series(Drop(Text("\\printindex")), dwsp__))
     Bibliography = Series(Option(_WSPC), Series(Drop(Text("\\bibliography")), dwsp__), heading)
@@ -258,7 +261,7 @@ class LaTeXGrammar(Grammar):
     _text_element.set(Alternative(_line_element, LINEFEED))
     paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), _text_element, Option(S))))
     tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(cfg_celltype, Option(cfg_unit)), cfg_separator, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
-    _block_environment.set(Alternative(Series(Lookahead(_has_block_start), _known_environment), generic_block))
+    _block_environment.set(Series(Lookahead(_has_block_start), Alternative(_known_environment, generic_block)))
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = TreeReduction(latexdoc, CombinedParser.MERGE_TREETOPS)
     
@@ -324,7 +327,8 @@ def transform_generic_command(context: List[Node]):
 def transform_generic_block(context: List[Node]):
     node = context[-1]
     if not node.children or not node.children[0].children:
-        context[0].new_error(node, 'unknown kind of block: ' + flatten_sxpr(node.as_sxpr()))
+        context[0].new_error(node, 'unknown kind of block: '
+            + abbreviate_middle(flatten_sxpr(node.as_sxpr()), 60))
     else:
         # assert node.children[0].name == "begin_generic_block"
         # assert node.children[0].children[0].name == "begin_environment"

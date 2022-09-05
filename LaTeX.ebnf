@@ -24,7 +24,7 @@
 ########################################################################
 
 latexdoc       = preamble §document
-preamble       = { [_WSPC] _command }+
+preamble       = { [_WSPC] (_command | !"\begin{document}" _block_environment) }+
 
 document       = [_WSPC] "\begin{document}"
                  §frontpages
@@ -75,9 +75,9 @@ heading        = block
 
 #### block environments ####
 
-_block_environment  = &_has_block_start _known_environment | generic_block
+_block_environment  = &_has_block_start (_known_environment | generic_block)
   _has_block_start  = `\begin{` | `\[`
-_known_environment   = itemize | enumerate | description | figure | tabular | quotation
+_known_environment  = itemize | enumerate | description | figure | tabular | quotation
                     | verbatim | math_block
 math_block          = equation | eqnarray | displaymath
 generic_block       = begin_generic_block { sequence | item } §end_generic_block
@@ -153,8 +153,9 @@ _known_command      = citet | citep | footnote | includegraphics | caption
                     | hypersetup | label | ref | href | url | item
 text_command        = TXTCOMMAND | ESCAPED | BRACKETS
 assignment          = !no_command CMDNAME "=" (number [UNIT] | block | CHARS)
-generic_command     = !no_command CMDNAME { ~ (config | block) }
+generic_command     = !no_command CMDNAME [starred] { ~ (config | block) }
                     | `{` CMDNAME _block_content §`}`
+    starred         = "*"
 
 citet               = "\citet" [config] block
 citep               = ("\citep" | "\cite") [config] block
@@ -247,7 +248,10 @@ WARN_Komma = ","
 CMDNAME    = /\\@?(?:(?![\d_])\w)+/~
 TXTCOMMAND = /\\text\w+/
 ESCAPED    = /\\(?:(?:[#%$&_\/{} \n])|(?:~\{\s*\}))/
-UMLAUT     = /\\(?:(?:"[AOUaou])|(?:'[aeiou])|(?:`[aeiou])|(?:[\^][aeiou]))/
+UMLAUT     = /\\(?:(?:"[AOUaou])|(?:'[AEIOUaeioun])|(?:'\{[AEIOUaeiou]\})
+                  |(?:`[AEIOUaeiou])|(?:`\{[AEIOUaeiou]\})
+                  |(?:[\^][AEIOUaeioug])|(?:[\^]\{[AEIOUaeioug]\})
+                  |(?:~[n])|(?:~\{[n]\}))/
 QUOTEMARK  = /"[`']?|``?|''?/
 SPECIAL    = /[$&_\/\\\\]/
 BRACKETS   = /[\[\]]/                       # left or right square bracket: [ ]
