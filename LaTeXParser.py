@@ -94,7 +94,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "c684b1dd5165775d57837c356155ef7e"
+    source_hash__ = "9401ba61d1d3d08a3080bdfc19aadeec"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -138,7 +138,7 @@ class LaTeXGrammar(Grammar):
     BRACKETS = RegExp('[\\[\\]]')
     SPECIAL = RegExp('[$&_/\\\\\\\\]')
     QUOTEMARK = RegExp('"[`\']?|``?|\'\'?')
-    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AOUaou])|(?:\'[AEIOUaeioun])|(?:\'\\{[AEIOUaeiou]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUaeioug])|(?:[\\^]\\{[AEIOUaeioug]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
+    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{[AEIOUaeiou]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUaeioucg])|(?:[\\^]\\{\\\\?[AEIOUaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
     ESCAPED = RegExp('\\\\(?:(?:[#%$&_/{} \\n])|(?:~\\{\\s*\\}))')
     TXTCOMMAND = RegExp('\\\\text\\w+')
     CMDNAME = Series(RegExp('\\\\@?(?:(?![\\d_])\\w)+'), dwsp__)
@@ -157,7 +157,7 @@ class LaTeXGrammar(Grammar):
     parameters = Series(Alternative(association, flag), ZeroOrMore(Series(NegativeLookbehind(_BACKSLASH), Series(Drop(Text(",")), dwsp__), Alternative(association, flag))), Option(WARN_Komma))
     sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(paragraph, _block_environment), Option(Alternative(_PARSEP, S)))))
     block_of_paragraphs = Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2)
-    special = Alternative(Drop(Text("\\-")), Series(Drop(RegExp('\\\\')), esc_char), UMLAUT, QUOTEMARK)
+    special = Alternative(Drop(Text("\\-")), Drop(Text("\\ ")), Series(Drop(RegExp('\\\\')), esc_char), UMLAUT, QUOTEMARK)
     _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph")), Drop(Text("item"))))
     _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Text("tabular")), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*"))))))))
     blockcmd = Series(_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]"))))
@@ -211,6 +211,8 @@ class LaTeXGrammar(Grammar):
     hide_from_toc = Series(Text("*"), dwsp__)
     SubParagraphs = OneOrMore(Series(Option(_WSPC), SubParagraph))
     Paragraph = Series(Series(Drop(Text("\\paragraph")), dwsp__), heading, ZeroOrMore(Alternative(sequence, SubParagraphs)))
+    cfg_right_seq = Series(Drop(Text("<")), block)
+    cfg_left_seq = Series(Drop(Text(">")), block)
     cfg_separator = Alternative(Drop(Text("|")), Series(Drop(Text("!")), block))
     cfg_unit = Series(Drop(Text("{")), number, UNIT, Drop(Text("}")))
     cfg_celltype = RegExp('[lcrp]')
@@ -260,7 +262,7 @@ class LaTeXGrammar(Grammar):
     block.set(Series(Series(Drop(Text("{")), dwsp__), _block_content, Drop(Text("}")), mandatory=2))
     _text_element.set(Alternative(_line_element, LINEFEED))
     paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), _text_element, Option(S))))
-    tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(cfg_celltype, Option(cfg_unit)), cfg_separator, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
+    tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(Option(cfg_left_seq), cfg_celltype, Option(cfg_unit), Option(cfg_right_seq)), cfg_separator, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
     _block_environment.set(Series(Lookahead(_has_block_start), Alternative(_known_environment, generic_block)))
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = TreeReduction(latexdoc, CombinedParser.MERGE_TREETOPS)
