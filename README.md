@@ -7,6 +7,13 @@ This software is open source software under the Apache 2.0-License (see section 
 
 Copyright 2022  Eckhart Arnold, Bavarian Academy of Sciences and Humanities
 
+Status
+------
+
+Currently, this software is in early alpha-stage. There is a working LaTeX-Parser
+for a common subset of LaTeX. The XML-output presently represents only an Abstract-Syntax-Tree
+of the LaTeX-document. Conversion to TEI-XMl and/or HTML is pending. Use at your own risk...
+
 Usage
 -----
 
