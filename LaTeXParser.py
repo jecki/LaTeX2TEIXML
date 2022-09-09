@@ -341,13 +341,13 @@ def transform_generic_block(context: List[Node]):
 
 
 def replace_Umlaut(context: List[Node]):
-    umlaute = { '\\"a': 'ä', '\\"o': 'ö', '\\"u': 'ü',
+    umlaute = { '\\"a': 'ä', '\\"o': 'ö', '\\"u': 'ü', '\\"e': 'ë',
                 '\\"A': 'Ä', '\\"Ö': 'Ö', '\\"U': 'Ü',
                 "\\'a": 'á', "\\'e": 'é', "\\'i": 'í', "\\'o": 'ó', "\\'u": 'ú',
                 "\\`a": 'à', "\\`e": 'è', "\\`i": 'ì', "\\`o": 'ò', "\\`u": 'ù',
                 "\\^a": 'â', "\\^e": 'ê', "\\^i": 'î', "\\^o": 'ô', "\\^u": 'û'}
     node = context[-1]
-    node.result = umlaute[node.content]
+    node.result = umlaute[node.content.replace('{', '').rstrip('}')]
 
 def replace_quotationmark(context: List[Node]):
     quotationmarks = { '``': '“', "''": '”', '"`': '„', '"' + "'": '”' }
