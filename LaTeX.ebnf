@@ -106,6 +106,8 @@ eqnarray            = `\begin{eqnarray` [no_numbering] "}" §_block_math `\end{e
   _block_math       = /(?:[^\\]*[\\]?(?!end\{(?:eqnarray|equation|displaymath)\*?\}|\])\s*)*/
 no_numbering        = `*`
 
+#### tables ####
+
 tabular             = "\begin{tabular}" tabular_config { tabular_row | _WSPC } §"\end{tabular}"
 tabular_row         = (multicolumn | tabular_cell) { "&" (multicolumn | tabular_cell) }
                       ("\\" ( hline | { cline } ) [_PARSEP] | &`\end{tabular}`)
