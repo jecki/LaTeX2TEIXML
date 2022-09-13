@@ -94,7 +94,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "9c0c8cf7420441111327a12c4661e143"
+    source_hash__ = "45c74fdd78426a14a02aac99741d0c34"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -211,6 +211,11 @@ class LaTeXGrammar(Grammar):
     hide_from_toc = Series(Text("*"), dwsp__)
     SubParagraphs = OneOrMore(Series(Option(_WSPC), SubParagraph))
     Paragraph = Series(Series(Drop(Text("\\paragraph")), dwsp__), heading, ZeroOrMore(Alternative(sequence, SubParagraphs)))
+    tabcmd = Series(RegExp("\\\\[><'`'+-]"), dwsp__)
+    tabrow = Series(Option(tabcmd), ZeroOrMore(Alternative(Series(_line_element, Option(Alternative(S, _PARSEP))), tabcmd)), Alternative(Series(Series(Drop(Text("\\\\")), dwsp__), Option(config), Option(_PARSEP)), Lookahead(Drop(Text("\\end{tabbing}")))))
+    settab = Series(Series(Drop(Text("\\=")), dwsp__), Option(config))
+    tabdefs = Series(Option(settab), ZeroOrMore(Alternative(Series(NegativeLookahead(Drop(Text("\\kill"))), _line_element, Option(Alternative(S, _PARSEP))), settab)), Alternative(Series(Drop(Text("\\\\")), dwsp__), Series(Drop(Text("\\kill")), dwsp__)), Option(config), Option(_PARSEP))
+    tabbing = Series(Series(Drop(Text("\\begin{tabbing}")), dwsp__), tabdefs, ZeroOrMore(Alternative(tabrow, _WSPC)), Series(Drop(Text("\\end{tabbing}")), dwsp__), mandatory=3)
     cfg_right_seq = Series(Drop(Text("<")), block)
     cfg_left_seq = Series(Drop(Text(">")), block)
     cfg_separator = Alternative(Drop(Text("|")), Series(Drop(Text("!")), block))
@@ -245,7 +250,7 @@ class LaTeXGrammar(Grammar):
     begin_generic_block = Series(Lookbehind(_LB), begin_environment)
     generic_block = Series(begin_generic_block, ZeroOrMore(Alternative(sequence, item)), end_generic_block, mandatory=2)
     math_block = Alternative(equation, eqnarray, displaymath)
-    _known_environment = Alternative(itemize, enumerate, description, figure, tabular, quotation, verbatim, math_block)
+    _known_environment = Alternative(itemize, enumerate, description, figure, tabular, tabbing, quotation, verbatim, math_block)
     _has_block_start = Drop(Alternative(Drop(Text("\\begin{")), Drop(Text("\\["))))
     preamble = OneOrMore(Series(Option(_WSPC), Alternative(_command, Series(NegativeLookahead(Series(Drop(Text("\\begin{document}")), dwsp__)), _block_environment))))
     SubSubSection = Series(Drop(Text("\\subsubsection")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Paragraphs)))

@@ -125,9 +125,11 @@ tabular_config      = "{" { [cfg_left_seq] cfg_celltype [cfg_unit] [cfg_right_se
   cfg_left_seq      = `>` block
   cfg_right_seq     = `<` block
 
-tabbing             = "begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbing}"
-  tabdefs           = ...
-  tabrow            = ...
+tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbing}"
+  tabdefs           = [settab] { !`\kill` _line_element [S|_PARSEP] | settab } ("\\" | "\kill") [config] [_PARSEP]
+  settab            = "\=" [config]
+  tabrow            = [tabcmd] { _line_element [S|_PARSEP] | tabcmd } ("\\" [config] [_PARSEP] | &`\end{tabbing}`)
+  tabcmd            = /\\[><'`'+-]/~
 
 #### paragraphs and sequences of paragraphs ####
 
