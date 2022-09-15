@@ -202,7 +202,7 @@ _block_content = [_PARSEP|S] { (_block_environment | _text_element | paragraph) 
 # text           = {CHARS|special}+ { S {CHARS|special}+ }
 # text           = {LINE|special}+ { S {LINE|special}+ }
 text           = {_TEXT|special}+ { S  {_TEXT|special}+ }
-  special      = `\-` | `\ ` | /\\/ esc_char   # reserved for characters that may appear in
+  special      = `\-` | LEERZEICHEN | /\\/ esc_char   # reserved for characters that may appear in
                | UMLAUT | QUOTEMARK
   esc_char     = `,`                    # in the middle of a word but do not delimit words
 
@@ -239,7 +239,7 @@ info_value   = _TEXT_NOPAR { S _TEXT_NOPAR }  # text without parentheses
 
 magnitude    = number [UNIT]
 number       = _INTEGER [_FRAC]
-cfg_text     = { (~ text) | CMDNAME | SPECIAL | block }
+cfg_text     = { (text | CMDNAME | SPECIAL | block) } ~
 
 
 #######################################################################
@@ -263,8 +263,9 @@ ESCAPED    = /\\(?:(?:[#%$&_\/{} \n])|(?:~\{\s*\}))/
 UMLAUT     = /\\(?:(?:"[AEIOUaeiou])|(?:"\{[AEIOUaeiou]\})
                   |(?:'[AEIOUaeioun])|(?:'\{[AEIOUaeiou]\})
                   |(?:`[AEIOUaeiou])|(?:`\{[AEIOUaeiou]\})
-                  |(?:[\^][AEIOUaeioucg])|(?:[\^]\{\\?[AEIOUaeioucgj]\})
+                  |(?:[\^][AEIOUCaeioucg])|(?:[\^]\{\\?[AEIOUCaeioucgj]\})
                   |(?:~[n])|(?:~\{[n]\}))/
+LEERZEICHEN = /\\\s+/
 QUOTEMARK  = /"[`']?|``?|''?/
 SPECIAL    = /[$&_\/\\\\]/
 BRACKETS   = /[\[\]]/                       # left or right square bracket: [ ]

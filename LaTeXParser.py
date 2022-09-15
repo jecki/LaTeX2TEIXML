@@ -94,7 +94,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "45c74fdd78426a14a02aac99741d0c34"
+    source_hash__ = "90d2b9d5347363732c5c47d1a26da179"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -138,7 +138,8 @@ class LaTeXGrammar(Grammar):
     BRACKETS = RegExp('[\\[\\]]')
     SPECIAL = RegExp('[$&_/\\\\\\\\]')
     QUOTEMARK = RegExp('"[`\']?|``?|\'\'?')
-    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{[AEIOUaeiou]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUaeioucg])|(?:[\\^]\\{\\\\?[AEIOUaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
+    LEERZEICHEN = RegExp('\\\\\\s+')
+    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{[AEIOUaeiou]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
     ESCAPED = RegExp('\\\\(?:(?:[#%$&_/{} \\n])|(?:~\\{\\s*\\}))')
     TXTCOMMAND = RegExp('\\\\text\\w+')
     CMDNAME = Series(RegExp('\\\\@?(?:(?![\\d_])\\w)+'), dwsp__)
@@ -157,13 +158,13 @@ class LaTeXGrammar(Grammar):
     parameters = Series(Alternative(association, flag), ZeroOrMore(Series(NegativeLookbehind(_BACKSLASH), Series(Drop(Text(",")), dwsp__), Alternative(association, flag))), Option(WARN_Komma))
     sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(paragraph, _block_environment), Option(Alternative(_PARSEP, S)))))
     block_of_paragraphs = Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2)
-    special = Alternative(Drop(Text("\\-")), Drop(Text("\\ ")), Series(Drop(RegExp('\\\\')), esc_char), UMLAUT, QUOTEMARK)
+    special = Alternative(Drop(Text("\\-")), LEERZEICHEN, Series(Drop(RegExp('\\\\')), esc_char), UMLAUT, QUOTEMARK)
     _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph")), Drop(Text("item"))))
     _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Text("tabular")), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*"))))))))
     blockcmd = Series(_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]"))))
     no_command = Alternative(Series(Drop(Text("\\begin{")), dwsp__), Series(Drop(Text("\\end{")), dwsp__), Series(_BACKSLASH, _structure_name, Lookahead(Drop(Text("{")))))
     text = Series(OneOrMore(Alternative(_TEXT, special)), ZeroOrMore(Series(S, OneOrMore(Alternative(_TEXT, special)))))
-    cfg_text = ZeroOrMore(Alternative(Series(dwsp__, text), CMDNAME, SPECIAL, block))
+    cfg_text = Series(ZeroOrMore(Alternative(text, CMDNAME, SPECIAL, block)), dwsp__)
     config = Series(Series(Drop(Text("[")), dwsp__), Alternative(Series(parameters, Lookahead(Series(Drop(Text("]")), dwsp__))), cfg_text), Series(Drop(Text("]")), dwsp__), mandatory=1)
     item = Series(Series(Drop(Text("\\item")), dwsp__), Option(config), sequence, mandatory=2)
     _block_content = Series(Option(Alternative(_PARSEP, S)), ZeroOrMore(Series(Alternative(_block_environment, _text_element, paragraph), Option(Alternative(_PARSEP, S)))))
@@ -347,13 +348,20 @@ def transform_generic_block(context: List[Node]):
 
 
 def replace_Umlaut(context: List[Node]):
-    umlaute = { '\\"a': 'ä', '\\"o': 'ö', '\\"u': 'ü', '\\"e': 'ë',
-                '\\"A': 'Ä', '\\"Ö': 'Ö', '\\"U': 'Ü',
-                "\\'a": 'á', "\\'e": 'é', "\\'i": 'í', "\\'o": 'ó', "\\'u": 'ú',
-                "\\`a": 'à', "\\`e": 'è', "\\`i": 'ì', "\\`o": 'ò', "\\`u": 'ù',
-                "\\^a": 'â', "\\^e": 'ê', "\\^i": 'î', "\\^o": 'ô', "\\^u": 'û'}
+    umlaute = {'\\"a': 'ä', '\\"o': 'ö', '\\"u': 'ü', '\\"e': 'ë',
+               '\\"A': 'Ä', '\\"Ö': 'Ö', '\\"U': 'Ü', "\\'A": 'Á', "\\'E": 'É',
+               "\\'a": 'á', "\\'e": 'é', "\\'i": 'í', "\\'o": 'ó', "\\'u": 'ú',
+               "\\`a": 'à', "\\`e": 'è', "\\`i": 'ì', "\\`o": 'ò', "\\`u": 'ù',
+               "\\^a": 'â', "\\^e": 'ê', "\\^i": 'î', "\\^o": 'ô', "\\^u": 'û',
+               '\\^C': 'Ĉ',
+               '\\^c': 'ĉ', '\\^g': 'ĝ', "\\'n": 'ń', '\\~n': 'ñ',
+               '\\^\\j': 'ĵ'}
     node = context[-1]
-    node.result = umlaute[node.content.replace('{', '').rstrip('}')]
+    try:
+        node.result = umlaute[node.content.replace('{', '').rstrip('}')]
+    except KeyError as e:
+        print("UMLAUT NICHT GEFUNDEN:", e)
+
 
 def replace_quotationmark(context: List[Node]):
     quotationmarks = { '``': '“', "''": '”', '"`': '„', '"' + "'": '”' }
@@ -440,6 +448,7 @@ LaTeX_AST_transformation_table = {
                              replace_content_with('~'),
                              lambda ctx: '~' not in ctx[-1].content)],
     "UMLAUT": replace_Umlaut,
+    "LEERZEICHEN": replace_content_with(' '),
     "QUOTEMARK": replace_quotationmark,
     "BRACKETS": [],
     # "LF": [],
@@ -1035,5 +1044,5 @@ if __name__ == "__main__":
             if has_errors(errors, ERROR):
                 sys.exit(1)
 
-        print(result.serialize(how='default' if args.xml is None else 'xml')
-              if isinstance(result, Node) else result)
+        # print(result.serialize(how='default' if args.xml is None else 'xml')
+        #       if isinstance(result, Node) else result)
