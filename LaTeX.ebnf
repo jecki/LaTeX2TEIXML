@@ -202,9 +202,9 @@ _block_content = [_PARSEP|S] { (_block_environment | _text_element | paragraph) 
 # text           = {CHARS|special}+ { S {CHARS|special}+ }
 # text           = {LINE|special}+ { S {LINE|special}+ }
 text           = {_TEXT|special}+ { S  {_TEXT|special}+ }
-  special      = `\-` | LEERZEICHEN | /\\/ esc_char   # reserved for characters that may appear in
-               | UMLAUT | QUOTEMARK
-  esc_char     = `,`                    # in the middle of a word but do not delimit words
+  special      = `\-` | LEERZEICHEN | UMLAUT | QUOTEMARK
+               | /\\/ esc_char   # reserved for characters that may appear in
+  esc_char     = /[,~$_^{}]/     # in the middle of a word but do not delimit words
 
 no_command     = "\begin{" | "\end{" | _BACKSLASH _structure_name &`{`
 blockcmd       = _BACKSLASH ( ( "begin{" | "end{" ) _env_name "}"
@@ -261,7 +261,7 @@ CMDNAME    = /\\@?(?:(?![\d_])\w)+/~
 TXTCOMMAND = /\\text\w+/
 ESCAPED    = /\\(?:(?:[#%$&_\/{} \n])|(?:~\{\s*\}))/
 UMLAUT     = /\\(?:(?:"[AEIOUaeiou])|(?:"\{[AEIOUaeiou]\})
-                  |(?:'[AEIOUaeioun])|(?:'\{[AEIOUaeiou]\})
+                  |(?:'[AEIOUaeioun])|(?:'\{\\?[AEIOUaeioun]\})
                   |(?:`[AEIOUaeiou])|(?:`\{[AEIOUaeiou]\})
                   |(?:[\^][AEIOUCaeioucg])|(?:[\^]\{\\?[AEIOUCaeioucgj]\})
                   |(?:~[n])|(?:~\{[n]\}))/

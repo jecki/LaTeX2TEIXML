@@ -94,7 +94,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "90d2b9d5347363732c5c47d1a26da179"
+    source_hash__ = "babaa0d6f8269a9dcb51ef8346af783f"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -139,12 +139,12 @@ class LaTeXGrammar(Grammar):
     SPECIAL = RegExp('[$&_/\\\\\\\\]')
     QUOTEMARK = RegExp('"[`\']?|``?|\'\'?')
     LEERZEICHEN = RegExp('\\\\\\s+')
-    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{[AEIOUaeiou]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
+    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{\\\\?[AEIOUaeioun]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
     ESCAPED = RegExp('\\\\(?:(?:[#%$&_/{} \\n])|(?:~\\{\\s*\\}))')
     TXTCOMMAND = RegExp('\\\\text\\w+')
     CMDNAME = Series(RegExp('\\\\@?(?:(?![\\d_])\\w)+'), dwsp__)
     WARN_Komma = Series(Text(","), dwsp__)
-    esc_char = Text(",")
+    esc_char = RegExp('[,~$_^{}]')
     number = Series(_INTEGER, Option(_FRAC))
     magnitude = Series(number, Option(UNIT))
     info_value = Series(_TEXT_NOPAR, ZeroOrMore(Series(S, _TEXT_NOPAR)))
@@ -158,7 +158,7 @@ class LaTeXGrammar(Grammar):
     parameters = Series(Alternative(association, flag), ZeroOrMore(Series(NegativeLookbehind(_BACKSLASH), Series(Drop(Text(",")), dwsp__), Alternative(association, flag))), Option(WARN_Komma))
     sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(paragraph, _block_environment), Option(Alternative(_PARSEP, S)))))
     block_of_paragraphs = Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2)
-    special = Alternative(Drop(Text("\\-")), LEERZEICHEN, Series(Drop(RegExp('\\\\')), esc_char), UMLAUT, QUOTEMARK)
+    special = Alternative(Drop(Text("\\-")), LEERZEICHEN, UMLAUT, QUOTEMARK, Series(Drop(RegExp('\\\\')), esc_char))
     _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph")), Drop(Text("item"))))
     _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Text("tabular")), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*"))))))))
     blockcmd = Series(_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]"))))
@@ -348,17 +348,17 @@ def transform_generic_block(context: List[Node]):
 
 
 def replace_Umlaut(context: List[Node]):
-    umlaute = {'\\"a': 'ä', '\\"o': 'ö', '\\"u': 'ü', '\\"e': 'ë',
-               '\\"A': 'Ä', '\\"Ö': 'Ö', '\\"U': 'Ü', "\\'A": 'Á', "\\'E": 'É',
-               "\\'a": 'á', "\\'e": 'é', "\\'i": 'í', "\\'o": 'ó', "\\'u": 'ú',
-               "\\`a": 'à', "\\`e": 'è', "\\`i": 'ì', "\\`o": 'ò', "\\`u": 'ù',
-               "\\^a": 'â', "\\^e": 'ê', "\\^i": 'î', "\\^o": 'ô', "\\^u": 'û',
-               '\\^C': 'Ĉ',
-               '\\^c': 'ĉ', '\\^g': 'ĝ', "\\'n": 'ń', '\\~n': 'ñ',
-               '\\^\\j': 'ĵ'}
+    umlaute = {'"a': 'ä', '"o': 'ö', '"u': 'ü', '"e': 'ë',
+               '"A': 'Ä', '"Ö': 'Ö', '"U': 'Ü', "'A": 'Á', "'E": 'É',
+               "'a": 'á', "'e": 'é', "'i": 'í', "'o": 'ó', "'u": 'ú',
+               "`a": 'à', "`e": 'è', "`i": 'ì', "`o": 'ò', "`u": 'ù',
+               "^a": 'â', "^e": 'ê', "^i": 'î', "^o": 'ô', "^u": 'û',
+               '^C': 'Ĉ',
+               '^c': 'ĉ', '^g': 'ĝ', "'n": 'ń', '~n': 'ñ',
+               '^j': 'ĵ'}
     node = context[-1]
     try:
-        node.result = umlaute[node.content.replace('{', '').rstrip('}')]
+        node.result = umlaute[node.content.replace('\\','').replace('{', '').rstrip('}')]
     except KeyError as e:
         print("UMLAUT NICHT GEFUNDEN:", e)
 
@@ -900,7 +900,7 @@ def process_file(source: str, result_filename: str = '') -> str:
         err_ext = '_ERRORS.txt' if has_errors(errors, ERROR) else '_WARNINGS.txt'
         err_filename = os.path.splitext(result_filename)[0] + err_ext
         with open(err_filename, 'w') as f:
-            f.write('\n'.join(canonical_error_strings(errors, source_filename)))
+            f.write('\n'.join(canonical_error_strings(errors)))
         return err_filename
     return ''
 
@@ -939,7 +939,7 @@ def batch_process(file_names: List[str], out_dir: str,
         else:
             run_batch(submit_func)
     else:
-        for name in filenames:
+        for name in file_names:
             if log_func:  log_func(name, gen_dest_name(name))
             error_filename = process_file(name, gen_dest_name(name), log_func)
             if error_filename:
@@ -1044,5 +1044,5 @@ if __name__ == "__main__":
             if has_errors(errors, ERROR):
                 sys.exit(1)
 
-        # print(result.serialize(how='default' if args.xml is None else 'xml')
-        #       if isinstance(result, Node) else result)
+        print(result.serialize(how='default' if args.xml is None else 'xml')
+              if isinstance(result, Node) else result)
