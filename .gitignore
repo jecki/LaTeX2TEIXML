@@ -136,3 +136,5 @@ dmypy.json
 **/REPORT/*
 **/node_modules/*
 testdata/*.xml
+
+external_data/
