@@ -76,7 +76,7 @@ def preprocessor_factory() -> PreprocessorFunc:
     return chain_preprocessors(include_prep, LaTeXPreprocessor)
 
 
-get_preprocessor = ThreadLocalSingletonFactory(preprocessor_factory, ident=1)
+get_preprocessor = ThreadLocalSingletonFactory(preprocessor_factory)
 
 
 #######################################################################
@@ -94,7 +94,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "babaa0d6f8269a9dcb51ef8346af783f"
+    source_hash__ = "a3b9f087c46150f873854eb3dd3f9e8e"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -159,9 +159,10 @@ class LaTeXGrammar(Grammar):
     sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(paragraph, _block_environment), Option(Alternative(_PARSEP, S)))))
     block_of_paragraphs = Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2)
     special = Alternative(Drop(Text("\\-")), LEERZEICHEN, UMLAUT, QUOTEMARK, Series(Drop(RegExp('\\\\')), esc_char))
-    _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph")), Drop(Text("item"))))
+    _item_name = Text("item")
+    _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph"))))
     _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Text("tabular")), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*"))))))))
-    blockcmd = Series(_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]"))))
+    blockcmd = Series(_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]")), _item_name))
     no_command = Alternative(Series(Drop(Text("\\begin{")), dwsp__), Series(Drop(Text("\\end{")), dwsp__), Series(_BACKSLASH, _structure_name, Lookahead(Drop(Text("{")))))
     text = Series(OneOrMore(Alternative(_TEXT, special)), ZeroOrMore(Series(S, OneOrMore(Alternative(_TEXT, special)))))
     cfg_text = Series(ZeroOrMore(Alternative(text, CMDNAME, SPECIAL, block)), dwsp__)
@@ -275,7 +276,7 @@ class LaTeXGrammar(Grammar):
     root__ = TreeReduction(latexdoc, CombinedParser.MERGE_TREETOPS)
     
 
-_raw_grammar = ThreadLocalSingletonFactory(LaTeXGrammar, ident=1)
+_raw_grammar = ThreadLocalSingletonFactory(LaTeXGrammar)
 
 def get_grammar() -> LaTeXGrammar:
     grammar = _raw_grammar()
@@ -469,7 +470,7 @@ def LaTeXTransformer() -> TransformerCallable:
     threads or processes."""
     return partial(traverse, transformation_table=LaTeX_AST_transformation_table.copy())
 
-get_transformer = ThreadLocalSingletonFactory(LaTeXTransformer, ident=1)
+get_transformer = ThreadLocalSingletonFactory(LaTeXTransformer)
 
 def transform_LaTeX(cst):
     get_transformer()(cst)
@@ -847,7 +848,7 @@ class LaTeXCompiler(Compiler):
     #     return node
 
 
-get_compiler = ThreadLocalSingletonFactory(LaTeXCompiler, ident=1)
+get_compiler = ThreadLocalSingletonFactory(LaTeXCompiler)
 
 def compile_LaTeX(ast):
     return get_compiler()(ast)
