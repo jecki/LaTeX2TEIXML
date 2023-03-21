@@ -53,6 +53,8 @@ from DHParser import start_logging, suspend_logging, resume_logging, is_filename
     gen_neutral_srcmap_func, make_preprocessor, chain_preprocessors, apply_ifelse, \
     abbreviate_middle
 
+from DHParser.dsl import PseudoJunction, create_parser_transition
+
 
 #######################################################################
 #
@@ -94,7 +96,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "a3b9f087c46150f873854eb3dd3f9e8e"
+    source_hash__ = "3ee984b2f71af86d07af8cadd8e68211"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -275,24 +277,10 @@ class LaTeXGrammar(Grammar):
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = TreeReduction(latexdoc, CombinedParser.MERGE_TREETOPS)
     
-
-_raw_grammar = ThreadLocalSingletonFactory(LaTeXGrammar)
-
-def get_grammar() -> LaTeXGrammar:
-    grammar = _raw_grammar()
-    if get_config_value('resume_notices'):
-        resume_notices_on(grammar)
-    elif get_config_value('history_tracking'):
-        set_tracer(grammar, trace_history)
-    try:
-        if not grammar.__class__.python_src__:
-            grammar.__class__.python_src__ = get_grammar.python_src__
-    except AttributeError:
-        pass
-    return grammar
     
-def parse_LaTeX(document, start_parser = "root_parser__", *, complete_match=True):
-    return get_grammar()(document, start_parser, complete_match=complete_match)
+parsing: PseudoJunction = create_parser_transition(
+    LaTeXGrammar)
+get_grammar = parsing.factory # for backwards compatibility, only    
 
 
 #######################################################################
