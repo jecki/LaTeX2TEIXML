@@ -96,8 +96,8 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "3ee984b2f71af86d07af8cadd8e68211"
-    disposable__ = re.compile('_\\w+')
+    source_hash__ = "96df9d2a1fe48b34b1eef5dd4abafa9f"
+    disposable__ = re.compile('(?:_\\w+)|(?:_\\w+)')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
     error_messages__ = {'end_generic_block': [(re.compile(r'(?=)'), "A block environment must be followed by a linefeed, not by: {1}")],
