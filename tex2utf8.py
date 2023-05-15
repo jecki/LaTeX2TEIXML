@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""tex2utf8 - converst all .tex files in a directory to utf-8."""
+"""tex2utf8 - converts all .tex files in a directory to utf-8."""
 
 
 import sys, os
