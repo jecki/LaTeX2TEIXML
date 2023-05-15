@@ -413,7 +413,7 @@ LaTeX_AST_transformation_table = {
     "_known_inline_env": replace_by_single_child,
     "generic_inline_env": [],
     "_begin_inline_env, _end_inline_env": [replace_by_single_child],
-    "begin_environment, end_environment": [show],  # [remove_brackets, reduce_single_child],
+    "begin_environment, end_environment": [],  # [remove_brackets, reduce_single_child],
     "inline_math": [reduce_single_child],
     "_command": replace_by_single_child,
     "_known_command": replace_by_single_child,
