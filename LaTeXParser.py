@@ -96,8 +96,8 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "96df9d2a1fe48b34b1eef5dd4abafa9f"
-    disposable__ = re.compile('(?:_\\w+)|(?:_\\w+)')
+    source_hash__ = "c367d170aed94c1dd08ed7c8ee851a3d"
+    disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
     error_messages__ = {'end_generic_block': [(re.compile(r'(?=)'), "A block environment must be followed by a linefeed, not by: {1}")],
@@ -413,7 +413,7 @@ LaTeX_AST_transformation_table = {
     "_known_inline_env": replace_by_single_child,
     "generic_inline_env": [],
     "_begin_inline_env, _end_inline_env": [replace_by_single_child],
-    "begin_environment, end_environment": [],  # [remove_brackets, reduce_single_child],
+    "begin_environment, end_environment": [show],  # [remove_brackets, reduce_single_child],
     "inline_math": [reduce_single_child],
     "_command": replace_by_single_child,
     "_known_command": replace_by_single_child,
@@ -500,7 +500,7 @@ class LaTeXCompiler(Compiler):
 
     def fallback_generic_environment(self, node) -> Node:
         node = super().fallback_compiler(node)
-        node.name = 'VOID'
+        # node.name = 'VOID'
         return node
 
     def fallback_compiler(self, node: Node) -> Any:
@@ -524,159 +524,6 @@ class LaTeXCompiler(Compiler):
 
     def on_latexdoc(self, node):
         return self.fallback_compiler(node)
-
-    # def on_preamble(self, node):
-    #     return node
-
-    # def on_document(self, node):
-    #     return node
-
-    # def on_frontpages(self, node):
-    #     return node
-
-    # def on_Chapters(self, node):
-    #     return node
-
-    # def on_Chapter(self, node):
-    #     return node
-
-    # def on_Sections(self, node):
-    #     return node
-
-    # def on_Section(self, node):
-    #     return node
-
-    # def on_SubSections(self, node):
-    #     return node
-
-    # def on_SubSection(self, node):
-    #     return node
-
-    # def on_SubSubSections(self, node):
-    #     return node
-
-    # def on_SubSubSection(self, node):
-    #     return node
-
-    # def on_Paragraphs(self, node):
-    #     return node
-
-    # def on_Paragraph(self, node):
-    #     return node
-
-    # def on_SubParagraphs(self, node):
-    #     return node
-
-    # def on_SubParagraph(self, node):
-    #     return node
-
-    # def on_Bibliography(self, node):
-    #     return node
-
-    # def on_Index(self, node):
-    #     return node
-
-    # def on_heading(self, node):
-    #     return node
-
-    # def on_block_environment(self, node):
-    #     return node
-
-    # def on_known_environment(self, node):
-    #     return node
-
-    # def on_generic_block(self, node):
-    #     return node
-
-    # def on_begin_generic_block(self, node):
-    #     return node
-
-    # def on_end_generic_block(self, node):
-    #     return node
-
-    # def on_itemize(self, node):
-    #     return node
-
-    # def on_enumerate(self, node):
-    #     return node
-
-    # def on_item(self, node):
-    #     return node
-
-    # def on_figure(self, node):
-    #     return node
-
-    # def on_quotation(self, node):
-    #     return node
-
-    # def on_verbatim(self, node):
-    #     return node
-
-    # def on_tabular(self, node):
-    #     return node
-
-    # def on_tabular_row(self, node):
-    #     return node
-
-    # def on_tabular_cell(self, node):
-    #     return node
-
-    # def on_tabular_config(self, node):
-    #     return node
-
-    # def on_TBCFG_VALUE(self, node):
-    #     return node
-
-    # def on_block_of_paragraphs(self, node):
-    #     return node
-
-    # def on_sequence(self, node):
-    #     return node
-
-    # def on_paragraph(self, node):
-    #     return node
-
-    # def on_text_element(self, node):
-    #     return node
-
-    # def on_line_element(self, node):
-    #     return node
-
-    # def on_inline_environment(self, node):
-    #     return node
-
-    # def on_known_inline_env(self, node):
-    #     return node
-
-    # def on_generic_inline_env(self, node):
-    #     return node
-
-    # def on_begin_inline_env(self, node):
-    #     return node
-
-    # def on_end_inline_env(self, node):
-    #     return node
-
-    # def on_begin_environment(self, node):
-    #     return node
-
-    # def on_end_environment(self, node):
-    #     return node
-
-    # def on_inline_math(self, node):
-    #     return node
-
-    # def on_command(self, node):
-    #     return node
-
-    # def on_known_command(self, node):
-    #     return node
-
-    # def on_text_command(self, node):
-    #     return node
-
-    # def on_generic_command(self, node):
-    #     return node
 
     def get_author_year(self, bibkey: str) -> str:
         return bibkey  # for now...
@@ -709,24 +556,6 @@ class LaTeXCompiler(Compiler):
             node.result = '(' + node.content + ')'
         return node
 
-    # def on_footnote(self, node):
-    #     return node
-
-    # def on_includegraphics(self, node):
-    #     return node
-
-    # def on_caption(self, node):
-    #     return node
-
-    # def on_multicolumn(self, node):
-    #     return node
-
-    # def on_hline(self, node):
-    #     return node
-
-    # def on_cline(self, node):
-    #     return node
-
     def on_documentclass(self, node):
         """
         Saves the documentclass (if known) and the language (if given)
@@ -745,95 +574,6 @@ class LaTeXCompiler(Compiler):
             self.metadata['documentclass'] = node['block'].content
         return node
 
-    # def on_pdfinfo(self, node):
-    #     return node
-
-    # def on_config(self, node):
-    #     return node
-
-    # def on_cfg_text(self, node):
-    #     return node
-
-    # def on_block(self, node):
-    #     return node
-
-    # def on_text(self, node):
-    #     return node
-
-    # def on_no_command(self, node):
-    #     return node
-
-    # def on_blockcmd(self, node):
-    #     return node
-
-    # def on_structural(self, node):
-    #     return node
-
-    # def on_CMDNAME(self, node):
-    #     return node
-
-    # def on_TXTCOMMAND(self, node):
-    #     return node
-
-    # def on_ESCAPED(self, node):
-    #     return node
-
-    # def on_SPECIAL(self, node):
-    #     return node
-
-    # def on_BRACKETS(self, node):
-    #     return node
-
-    # def on_LINEFEED(self, node):
-    #     return node
-
-    # def on_NAME(self, node):
-    #     return node
-
-    # def on_INTEGER(self, node):
-    #     return node
-
-    # def on_TEXT(self, node):
-    #     return node
-
-    # def on_LINE(self, node):
-    #     return node
-
-    # def on_CHARS(self, node):
-    #     return node
-
-    # def on_LETTERS(self, node):
-    #     return node
-
-    # def on_LF(self, node):
-    #     return node
-
-    # def on_LFF(self, node):
-    #     return node
-
-    # def on_S(self, node):
-    #     return node
-
-    # def on__PARSEP(self, node):
-    #     return node
-
-    # def on__WSPC(self, node):
-    #     return node
-
-    # def on__GAP(self, node):
-    #     return node
-
-    # def on_NEW_LINE(self, node):
-    #     return node
-
-    # def on__LB(self, node):
-    #     return node
-
-    # def on_BACKSLASH(self, node):
-    #     return node
-
-    # def on_EOF(self, node):
-    #     return node
 
 
 get_compiler = ThreadLocalSingletonFactory(LaTeXCompiler)
