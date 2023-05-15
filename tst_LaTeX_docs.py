@@ -48,12 +48,12 @@ if not DHParser.dsl.recompile_grammar(grammar_path, force=False):
     sys.exit(1)
 
 
-from LaTeXParser import get_preprocessor, get_grammar, get_transformer, get_compiler
+from LaTeXParser import preprocessing, parsing, ASTTransformation, compiling
 
-preprocessor = get_preprocessor()
-parser = get_grammar()
-transformer = get_transformer()
-compiler = get_compiler()
+preprocessor = preprocessing.factory()
+parser = parsing.factory()
+transformer = ASTTransformation.factory()
+compiler = compiling.factory()
 
 
 def fail_on_error(src, result):
