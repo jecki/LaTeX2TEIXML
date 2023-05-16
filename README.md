@@ -19,8 +19,10 @@ Usage
 
 This is an early experimental version of the software!
 
-To convert a LaTeX-file to XML, either call the file `LaTeXApp.py` and select
-the file to convert by clicking on the "Pick sources..:" button, or
+To convert a LaTeX-file to XML, either call the file `LaTeXApp.py`, 
+or - if you have not installed Python on your system - one of the 
+executables in the "dist"-subdirectory and select
+the file to convert by clicking on the "Pick sources...:" button, or
 type on the command line:
 
     $ python LaTeXParser.py --xml FILENAME.tex
@@ -41,6 +43,11 @@ with Python's package-manager pip:
 
 LaTeX2TEIXML assumes LaTeX-files to be stored in the unicode utf-8-format. Older manuscripts
 can be converted with the `tex2utf8.py`-script. 
+
+Executables
+-----------
+
+In the "dist"-subdirectories there may be executables of t
 
 License
 -------
