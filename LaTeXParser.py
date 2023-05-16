@@ -51,7 +51,8 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
     last_value, matching_bracket, optional_last_value
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
-    gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors
+    gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
+    Tokenizer
 from DHParser.toolkit import is_filename, load_if_file, cpu_count, RX_NEVER_MATCH, \
     ThreadLocalSingletonFactory, expand_table, abbreviate_middle
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
@@ -86,14 +87,22 @@ if DHParser.versionnumber.__version_info__ < (1, 5, 0):
 
 
 RE_INCLUDE = r'\\(?:input|include)\{(?P<name>.*)\}'
-RE_COMMENT = r'%.*'
+RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
 
 
 def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
     return original_text, []
 
-preprocessing: PseudoJunction = create_preprocess_transition(
-    LaTeXTokenizer, RE_INCLUDE, RE_COMMENT)
+
+def preprocessor_factory() -> PreprocessorFunc:
+    # below, the second parameter
+    find_next_include = gen_find_include_func(RE_INCLUDE, RE_COMMENT, lambda s: s + '.tex')
+    include_prep = partial(preprocess_includes, find_next_include=find_next_include)
+    tokenizing_prep = make_preprocessor(LaTeXTokenizer)
+    return chain_preprocessors(include_prep, tokenizing_prep)
+
+
+preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory))
 
 
 #######################################################################
