@@ -26,7 +26,7 @@ class LaTeXApp(tkinter.Tk):
         self.withdraw()
         self.title('LaTeX App')
         self.minsize(480, 320)
-        self.geometry("800x600")
+        self.geometry("640x400")
         self.option_add('*tearOff', False)
 
         self.protocol("WM_DELETE_WINDOW", self.on_close)

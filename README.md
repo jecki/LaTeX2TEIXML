@@ -19,7 +19,9 @@ Usage
 
 This is an early experimental version of the software!
 
-To convert a LaTeX-file to XML, simply type:
+To convert a LaTeX-file to XML, either call the file `LaTeXApp.py` and select
+the file to convert by clicking on the "Pick sources..:" button, or
+type on the command line:
 
     $ python LaTeXParser.py --xml FILENAME.tex
 
@@ -27,8 +29,13 @@ Presently, the generated XML more or
 less represents the abstract-syntax-tree of the LaTeX-document. 
 Support for TEI-XML and HTML will be added in the future.
 
-LaTeX2TEIXMl requires the [DHParser](https://gitlab.lrz.de/badw-it/DHParser)-framework. 
-To install the DHParser, type:
+LaTeX2TEIXML requires the [DHParser](https://gitlab.lrz.de/badw-it/DHParser)-framework. 
+For convenience, LaTeX2TEIXML comes with its own copy of DHParser in a subdirectory.
+This also helps to avoid Version-incompatibilities between DHParser and LaTeX2TEIXML,
+because the bundled DHParser-version is always sure to work.
+
+Alternatively, it is of course also possible to install DHParser in the usual way
+with Python's package-manager pip:
 
     $ pip install DHParser
 
