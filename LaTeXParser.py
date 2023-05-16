@@ -515,7 +515,7 @@ class LaTeXCompiler(Compiler):
 
     def finalize(self, result: Any) -> Any:
         if isinstance(self.tree, RootNode):
-            self.tree.stage = "LaTeX"
+            self.tree.stage = "LaTeXML".lower()
         return result
 
     def fallback_generic_command(self, node: Node) -> Node:
@@ -601,7 +601,7 @@ class LaTeXCompiler(Compiler):
 
 
 compiling: Junction = create_transition(
-    LaTeXCompiler, "ast", "LaTeX".lower())
+    LaTeXCompiler, "ast", "LaTeXML".lower())
 
 
 #######################################################################
@@ -637,11 +637,11 @@ junctions = set([ASTTransformation, compiling])
 # calling process_file() or batch_process().
 targets = set([compiling.dst])
 # add one or more serializations for those targets that are node-trees
-serializations = expand_table(dict([('*', ['sxpr'])]))
+serializations = expand_table(dict([('*', ['xml'])]))
 
 #######################################################################
 
-def compile_src(source: str, target: str = "LaTeX".lower()) -> Tuple[Any, List[Error]]:
+def compile_src(source: str, target: str = "LaTeXML".lower()) -> Tuple[Any, List[Error]]:
     """Compiles the source to a single targte and returns the result of the compilation
     as well as a (possibly empty) list or errors or warnings that have occurred in the
     process.
@@ -736,13 +736,6 @@ def main(called_from_app=False) -> bool:
     args = parser.parse_args()
     file_names, out, log_dir = args.files, args.out[0], ''
 
-    # if not os.path.exists(file_name):
-    #     print('File "%s" not found!' % file_name)
-    #     sys.exit(1)
-    # if not os.path.isfile(file_name):
-    #     print('"%s" is not a file!' % file_name)
-    #     sys.exit(1)
-
     if args.debug is not None:
         log_dir = 'LOGS'
         access_presets()
@@ -754,9 +747,6 @@ def main(called_from_app=False) -> bool:
 
     if args.singlethread:
         set_config_value('batch_processing_parallelization', False)
-
-    if args.xml:
-        RESULT_FILE_EXTENSION = '.xml'
 
     def echo(message: str):
         if args.verbose:

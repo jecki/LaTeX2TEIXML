@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     config_test_parallelization = get_config_value('test_parallelization')
     access_presets()
-    if args.singlethread:
+    if args.singlethread and config_test_parallelization:
         set_preset_value('test_parallelization', False)
     elif not config_test_parallelization:
         print('Tests will be run in a single-thread, because test-multiprocessing '
