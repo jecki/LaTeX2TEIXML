@@ -44,7 +44,8 @@ from DHParser.ebnf import grammar_changed
 from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors, NOTICE, \
     WARNING, ERROR, FATAL
 from DHParser.log import start_logging, suspend_logging, resume_logging
-from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, Path, flatten_sxpr
+from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, Path, flatten_sxpr, \
+    add_class
 from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar, Parser, \
     Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, INFINITE, ERR, \
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
@@ -120,7 +121,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "eb953ddbfaa75d75c8a9e022ce728fb9"
+    source_hash__ = "8781e89c441cf8beb53c6040d0360d7a"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -165,7 +166,7 @@ class LaTeXGrammar(Grammar):
     SPECIAL = RegExp('[$&_/\\\\\\\\]')
     QUOTEMARK = RegExp('"[`\']?|``?|\'\'?')
     LEERZEICHEN = RegExp('\\\\\\s+')
-    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{\\\\?[AEIOUaeioun]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
+    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{\\\\?[AEIOUaeioun]\\})\n                  |(?:\'\'[AEIOUaeioun])|(?:\'\'\\{\\\\?[AEIOUaeioun]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
     ESCAPED = RegExp('\\\\(?:(?:[#%$&_/{} \\n])|(?:~\\{\\s*\\}))')
     TXTCOMMAND = RegExp('\\\\text\\w+')
     CMDNAME = Series(RegExp('\\\\@?(?:(?![\\d_])\\w)+'), dwsp__)
@@ -220,7 +221,7 @@ class LaTeXGrammar(Grammar):
     starred = Series(Text("*"), dwsp__)
     generic_command = Alternative(Series(NegativeLookahead(no_command), CMDNAME, Option(starred), ZeroOrMore(Series(dwsp__, Alternative(config, block)))), Series(Drop(Text("{")), CMDNAME, _block_content, Drop(Text("}")), mandatory=3))
     assignment = Series(NegativeLookahead(no_command), CMDNAME, Series(Drop(Text("=")), dwsp__), Alternative(Series(number, Option(UNIT)), block, CHARS))
-    text_command = Alternative(TXTCOMMAND, ESCAPED, BRACKETS)
+    text_command = Alternative(Series(TXTCOMMAND, ZeroOrMore(block)), ESCAPED, BRACKETS)
     _known_command = Alternative(citet, citep, footnote, includegraphics, caption, multicolumn, hline, cline, documentclass, pdfinfo, hypersetup, label, ref, href, url, item)
     _command = Alternative(_known_command, text_command, assignment, generic_command)
     _inline_math_text = RegExp('[^$]*')
@@ -273,7 +274,8 @@ class LaTeXGrammar(Grammar):
     _itemsequence = Series(Option(_WSPC), ZeroOrMore(Series(Alternative(item, _command), Option(_WSPC))))
     description = Series(Series(Drop(Text("\\begin{description}")), dwsp__), _itemsequence, Series(Drop(Text("\\end{description}")), dwsp__), mandatory=2)
     enumerate = Series(Series(Drop(Text("\\begin{enumerate}")), dwsp__), _itemsequence, Series(Drop(Text("\\end{enumerate}")), dwsp__), mandatory=2)
-    itemize = Series(Series(Drop(Text("\\begin{itemize}")), dwsp__), _itemsequence, Series(Drop(Text("\\end{itemize}")), dwsp__), mandatory=2)
+    itemize_kind = RegExp('item\\w+')
+    itemize = Series(Drop(Text("\\begin{")), itemize_kind, Series(Drop(Text("}")), dwsp__), _itemsequence, Drop(Text("\\end{")), itemize_kind, Series(Drop(Text("}")), dwsp__), mandatory=4)
     end_generic_block = Series(end_environment, Alternative(LFF, Series(dwsp__, Lookahead(Drop(Text("}"))))), mandatory=1)
     begin_generic_block = Series(Lookbehind(_LB), begin_environment)
     generic_block = Series(begin_generic_block, ZeroOrMore(Alternative(sequence, item)), end_generic_block, mandatory=2)
@@ -341,7 +343,7 @@ def watch(node):
 
 def transform_generic_command(context: List[Node]):
     node = context[-1]
-    if node.children[0].name == 'CMDNAME':
+    if node.children[0].name in ('CMDNAME', 'TXTCOMMAND'):
         node.name = 'cmd_' + node.children[0].content.lstrip('\\')
         node.result = node.children[1:]
 
@@ -360,9 +362,26 @@ def transform_generic_block(context: List[Node]):
         node.result = node.children[1:-1]
 
 
+def transform_generic_itemization(path: List[Node]):
+    node = path[-1]
+    if not node.children or node[0].name != "itemize_kind" or node[-1].name != "itemize_kind":
+        cast(RootNode, path[0]).new_error(node, 'bad tree-structure for itemize: '
+            + abbreviate_middle(flatten_sxpr(node.as_sxpr()), 60))
+        return
+    kind = node[0].content
+    if node[-1].content != kind:
+        cast(RootNode, path[0]).new_error(
+            node, f'\\end{{{node[-1].content}}} does not match \\begin{{{kind}}}!')
+        return
+    add_class(node, kind)
+    node.result = node.children[1:-1]
+
+
 def replace_Umlaut(context: List[Node]):
     umlaute = {'"a': 'ä', '"o': 'ö', '"u': 'ü', '"e': 'ë',
                '"A': 'Ä', '"Ö': 'Ö', '"U': 'Ü', "'A": 'Á', "'E": 'É',
+               "''a": 'ä', "''o": 'ö', "''u": 'ü', "''e": 'ë',
+               "''A": 'Ä', "''Ö": 'Ö', "''U": 'Ü', "'A": 'Á', "'E": 'É',
                "'a": 'á', "'e": 'é', "'i": 'í', "'o": 'ó', "'u": 'ú',
                "`a": 'à', "`e": 'è', "`i": 'ì', "`o": 'ò', "`u": 'ù',
                "^a": 'â', "^e": 'ê', "^i": 'î', "^o": 'ô', "^u": 'û',
@@ -415,9 +434,10 @@ LaTeX_AST_transformation_table = {
     "_block_environment": replace_by_single_child,
     "_known_environment": replace_by_single_child,
     "generic_block": [transform_generic_block],
-    "generic_command": [transform_generic_command, reduce_single_child],
+    "generic_command, text_command": [transform_generic_command, reduce_single_child],
     "begin_generic_block, end_generic_block": [],
-    "itemize, enumerate": [],
+    "itemize": [transform_generic_itemization],
+    "enumerate": [],
     "item": [],
     "figure": [],
     "quotation": [reduce_single_child, remove_brackets],
@@ -441,7 +461,6 @@ LaTeX_AST_transformation_table = {
     "inline_math": [reduce_single_child],
     "_command": replace_by_single_child,
     "_known_command": replace_by_single_child,
-    "text_command": [],
     "citet, citep": [reduce_single_child],
     "footnote": [],
     "includegraphics": [],

@@ -85,7 +85,8 @@ begin_generic_block = <-&_LB begin_environment
 @ end_generic_block_error = '', "A block environment must be followed by a linefeed, not by: {1}"
 end_generic_block   = end_environment § (LFF | ~ &`}`)
 
-itemize             = "\begin{itemize}" _itemsequence §"\end{itemize}"
+itemize             = `\begin{` itemize_kind "}" _itemsequence §`\end{` itemize_kind "}"
+  itemize_kind      = /item\w+/
 enumerate           = "\begin{enumerate}" _itemsequence §"\end{enumerate}"
 description         = "\begin{description}" _itemsequence §"\end{description}"
   _itemsequence     = [_WSPC] { (item | _command) [_WSPC] }
@@ -163,7 +164,7 @@ _command             = _known_command | text_command | assignment | generic_comm
 _known_command      = citet | citep | footnote | includegraphics | caption
                     | multicolumn | hline | cline | documentclass | pdfinfo
                     | hypersetup | label | ref | href | url | item
-text_command        = TXTCOMMAND | ESCAPED | BRACKETS
+text_command        = TXTCOMMAND { block } | ESCAPED | BRACKETS
 assignment          = !no_command CMDNAME "=" (number [UNIT] | block | CHARS)
 generic_command     = !no_command CMDNAME [starred] { ~ (config | block) }
                     | `{` CMDNAME _block_content §`}`
@@ -264,6 +265,7 @@ TXTCOMMAND = /\\text\w+/
 ESCAPED    = /\\(?:(?:[#%$&_\/{} \n])|(?:~\{\s*\}))/
 UMLAUT     = /\\(?:(?:"[AEIOUaeiou])|(?:"\{[AEIOUaeiou]\})
                   |(?:'[AEIOUaeioun])|(?:'\{\\?[AEIOUaeioun]\})
+                  |(?:''[AEIOUaeioun])|(?:''\{\\?[AEIOUaeioun]\})
                   |(?:`[AEIOUaeiou])|(?:`\{[AEIOUaeiou]\})
                   |(?:[\^][AEIOUCaeioucg])|(?:[\^]\{\\?[AEIOUCaeioucgj]\})
                   |(?:~[n])|(?:~\{[n]\}))/
