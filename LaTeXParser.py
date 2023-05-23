@@ -121,7 +121,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "8781e89c441cf8beb53c6040d0360d7a"
+    source_hash__ = "680b89d079fe347056904a642fc4d84f"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -245,6 +245,7 @@ class LaTeXGrammar(Grammar):
     settab = Series(Series(Drop(Text("\\=")), dwsp__), Option(config))
     tabdefs = Series(Option(settab), ZeroOrMore(Alternative(Series(NegativeLookahead(Drop(Text("\\kill"))), _line_element, Option(Alternative(S, _PARSEP))), settab)), Alternative(Series(Drop(Text("\\\\")), dwsp__), Series(Drop(Text("\\kill")), dwsp__)), Option(config), Option(_PARSEP))
     tabbing = Series(Series(Drop(Text("\\begin{tabbing}")), dwsp__), tabdefs, ZeroOrMore(Alternative(tabrow, _WSPC)), Series(Drop(Text("\\end{tabbing}")), dwsp__), mandatory=3)
+    math_mode = Text("{$}")
     cfg_right_seq = Series(Drop(Text("<")), block)
     cfg_left_seq = Series(Drop(Text(">")), block)
     cfg_separator = Alternative(Drop(Text("|")), Series(Drop(Text("!")), block))
@@ -298,7 +299,7 @@ class LaTeXGrammar(Grammar):
     block.set(Series(Series(Drop(Text("{")), dwsp__), _block_content, Drop(Text("}")), mandatory=2))
     _text_element.set(Alternative(_line_element, LINEFEED))
     paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), _text_element, Option(S))))
-    tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(Option(cfg_left_seq), cfg_celltype, Option(cfg_unit), Option(cfg_right_seq)), cfg_separator, cfg_colsep, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
+    tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(Interleave(cfg_left_seq, math_mode, repetitions=[(0, 1), (0, 1)]), cfg_celltype, Option(cfg_unit), Interleave(cfg_right_seq, math_mode, repetitions=[(0, 1), (0, 1)])), cfg_separator, cfg_colsep, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
     _block_environment.set(Series(Lookahead(_has_block_start), Alternative(_known_environment, generic_block)))
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = TreeReduction(latexdoc, CombinedParser.MERGE_TREETOPS)
@@ -373,7 +374,7 @@ def transform_generic_itemization(path: List[Node]):
         cast(RootNode, path[0]).new_error(
             node, f'\\end{{{node[-1].content}}} does not match \\begin{{{kind}}}!')
         return
-    add_class(node, kind)
+    if kind != 'itemize':   add_class(node, kind)
     node.result = node.children[1:-1]
 
 
