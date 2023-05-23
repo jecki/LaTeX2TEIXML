@@ -117,15 +117,14 @@ raisebox            = "\raisebox" rb_offset [rb_up] [rb_down] block
   rb_offset         = "{" number UNIT ~ "}"
   rb_up             = "[" number UNIT ~ "]"
   rb_down           = "[" number UNIT ~ "]"
-tabular_config      = "{" { ([cfg_left_seq] ° [math_mode]) cfg_celltype [cfg_unit] ([cfg_right_seq] ° [math_mode])
+tabular_config      = "{" { [cfg_left_seq] cfg_celltype [cfg_unit] [cfg_right_seq]
                           | cfg_separator | cfg_colsep | / +/ }+ §"}"
   cfg_colsep        = `@` block
   cfg_celltype      = /[lcrp]/
   cfg_unit          = `{` number UNIT `}`
   cfg_separator     = `|` | `!` block
-  cfg_left_seq      = `>` block
-  cfg_right_seq     = `<` block
-  math_mode         = `{$}`
+  cfg_left_seq      = `>` block)
+  cfg_right_seq     = `<` block)
 
 tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbing}"
   tabdefs           = [settab] { !`\kill` _line_element [S|_PARSEP] | settab } ("\\" | "\kill") [config] [_PARSEP]

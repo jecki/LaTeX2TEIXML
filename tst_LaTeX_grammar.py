@@ -29,7 +29,7 @@ try:
     from DHParser.configuration import access_presets, set_preset_value, \
         finalize_presets, get_config_value
     from DHParser import dsl
-    import DHParser.log
+    from DHParser import log
     from DHParser import testing
 except ModuleNotFoundError:
     print('Could not import DHParser. Please adjust sys.path in file '
@@ -61,7 +61,7 @@ def run_grammar_tests(fn_pattern, parser_factory, transformer_factory,
             testdir = os.path.abspath(testdir)
     else:
         testdir = os.path.join(scriptdir, TEST_DIRNAME)
-    DHParser.log.start_logging(os.path.join(testdir, LOGGING))
+    log.start_logging(os.path.join(testdir, LOGGING))
     error_report = testing.grammar_suite(
         testdir, parser_factory, transformer_factory,
         fn_patterns=[fn_pattern], report='REPORT', verbose=True,

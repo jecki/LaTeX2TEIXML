@@ -1332,7 +1332,7 @@ class EBNFCompiler(Compiler):
 
     :ivar drop_flag: This flag is set temporarily when compiling the definition
             of a parser that shall drop its content. If this flag is set all
-            contained parser will also drop their content as an optimization.
+            contained parsers will also drop their content as an optimization.
 
     :ivar directives:  A record of all directives and their default values.
 
@@ -2442,15 +2442,17 @@ class EBNFCompiler(Compiler):
         """
         arguments = [self.compile(r) for r in node.children] + custom_args
         assert all(isinstance(arg, str) for arg in arguments), str(arguments)
-        # remove drop clause for non dropping definitions of forms like "/\w+/~"
+        # remove drop clause for non-dropping definitions of forms like "/\w+/~"
         parser_class = self.P.get(parser_class, parser_class)
         drop_clause = f'{self.P["Drop"]}('
         drop_regexp = drop_clause + f'{self.P["RegExp"]}('
         drop_text = drop_clause + f'{self.P["Text"]}('
         if (parser_class == self.P["Series"] and node.name not in self.directives.drop
+            and len(arguments) <= 2
             and DROP_REGEXP in self.directives.drop and self.path[-2].name == "definition"
             and all((arg.startswith(drop_regexp) or arg.startswith(drop_text)
-                     or arg in EBNFCompiler.COMMENT_OR_WHITESPACE) for arg in arguments)):
+                     or arg in EBNFCompiler.COMMENT_OR_WHITESPACE) for arg in arguments)
+            and any(arg in EBNFCompiler.COMMENT_OR_WHITESPACE for arg in arguments)):
             arguments = [arg.replace(drop_clause, '').replace('))', ')') for arg in arguments]
         if self.drop_flag:
             return drop_clause + parser_class + '(' + ', '.join(arguments) + '))'
