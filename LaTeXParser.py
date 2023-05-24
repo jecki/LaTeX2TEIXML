@@ -124,7 +124,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "bcf0bcaa5b5d7554443575013a8feb3a"
+    source_hash__ = "2c13ea970f742d95992dd6f5b1dda35f"
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -194,7 +194,7 @@ class LaTeXGrammar(Grammar):
     special = Alternative(Drop(Text("\\-")), LEERZEICHEN, UMLAUT, QUOTEMARK, Series(Drop(RegExp('\\\\')), esc_char))
     _item_name = Text("item")
     _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph"))))
-    _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Series(Drop(Text("tabular")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("tabbing")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*"))))))))
+    _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Series(Drop(Text("tabular")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("tabbing")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("align")), Drop(Option(Drop(Text("ed")))), Drop(Option(Drop(Text("*"))))))))
     blockcmd = Series(_DROP_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]")), _item_name))
     no_command = Alternative(Series(Drop(Text("\\begin{")), dwsp__), Series(Drop(Text("\\end{")), dwsp__), Series(_DROP_BACKSLASH, _structure_name, Lookahead(Drop(Text("{")))))
     text = Series(OneOrMore(Alternative(_TEXT, special)), ZeroOrMore(Series(S, OneOrMore(Alternative(_TEXT, special)))))
@@ -265,9 +265,11 @@ class LaTeXGrammar(Grammar):
     raisebox = Series(Series(Drop(Text("\\raisebox")), dwsp__), rb_offset, Option(rb_up), Option(rb_down), block)
     tabular_cell = Alternative(Series(raisebox, Option(Alternative(S, _PARSEP))), ZeroOrMore(Series(Alternative(_line_element, _block_environment), Option(Alternative(S, _PARSEP)))))
     tabular_row = Series(Alternative(multicolumn, tabular_cell), ZeroOrMore(Series(Series(Drop(Text("&")), dwsp__), Alternative(multicolumn, tabular_cell))), Alternative(Series(Series(Drop(Text("\\\\")), dwsp__), Alternative(hline, ZeroOrMore(cline)), Option(_PARSEP)), Lookahead(Drop(Text("\\end{tabular}")))))
-    tabular = Series(Drop(Text("\\begin{tabular")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), Option(cfg_unit), tabular_config, ZeroOrMore(Alternative(tabular_row, _WSPC)), Drop(Text("\\end{tabular")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=6)
+    full_width = Text("*")
+    tabular = Series(Drop(Text("\\begin{tabular")), Option(full_width), Series(Drop(Text("}")), dwsp__), Option(cfg_unit), tabular_config, ZeroOrMore(Alternative(tabular_row, _WSPC)), Drop(Text("\\end{tabular")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=6)
     no_numbering = Text("*")
-    _block_math = RegExp('(?:[^\\\\]*[\\\\]?(?!end\\{(?:eqnarray|equation|displaymath)\\*?\\}|\\])\\s*)*')
+    _block_math = RegExp('(?:[^\\\\]*[\\\\]?(?!end\\{(?:eqnarray|equation|displaymath|aligned|align)\\*?\\}|\\])\\s*)*')
+    align = Series(Drop(Text("\\begin{align")), Option(Drop(Text("ed"))), Option(no_numbering), Series(Drop(Text("}")), dwsp__), _block_math, Drop(Text("\\end{align")), Option(Drop(Text("ed"))), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=4)
     eqnarray = Series(Drop(Text("\\begin{eqnarray")), Option(no_numbering), Series(Drop(Text("}")), dwsp__), _block_math, Drop(Text("\\end{eqnarray")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=3)
     equation = Series(Drop(Text("\\begin{equation")), Option(no_numbering), Series(Drop(Text("}")), dwsp__), _block_math, Drop(Text("\\end{equation")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=3)
     _dmath_short_form = Series(Series(Drop(Text("\\[")), dwsp__), _block_math, Series(Drop(Text("\\]")), dwsp__), mandatory=1)
@@ -286,7 +288,7 @@ class LaTeXGrammar(Grammar):
     end_generic_block = Series(end_environment, Alternative(Series(Option(Series(dwsp__, Drop(Text("&")))), LFF), Series(dwsp__, Lookahead(Drop(Text("}"))))), mandatory=1)
     begin_generic_block = Series(Lookbehind(_LB), begin_environment)
     generic_block = Series(begin_generic_block, ZeroOrMore(Alternative(sequence, item)), end_generic_block, mandatory=2)
-    math_block = Alternative(equation, eqnarray, displaymath)
+    math_block = Alternative(equation, eqnarray, displaymath, align)
     _known_environment = Alternative(itemize, enumerate, description, figure, tabular, tabbing, quotation, verbatim, math_block)
     _has_block_start = Drop(Alternative(Drop(Text("\\begin{")), Drop(Text("\\["))))
     preamble = OneOrMore(Series(Option(_WSPC), Alternative(_command, Series(NegativeLookahead(Series(Drop(Text("\\begin{document}")), dwsp__)), _block_environment))))
