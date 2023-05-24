@@ -75,7 +75,7 @@ math_block          = equation | eqnarray | displaymath
 generic_block       = begin_generic_block { sequence | item } §end_generic_block
 begin_generic_block = <-&_LB begin_environment
 @ end_generic_block_error = '', "A block environment must be followed by a linefeed, not by: {1}"
-end_generic_block   = end_environment § (LFF | ~ &`}`)
+end_generic_block   = end_environment § ([~`&`] LFF | ~ &`}`)
 
 itemize             = `\begin{` itemize_kind "}" _itemsequence §`\end{` itemize_kind "}"
   itemize_kind      = /item\w+/
@@ -101,10 +101,10 @@ no_numbering        = `*`
 
 #### tables ####
 
-tabular             = "\begin{tabular}" tabular_config { tabular_row | _WSPC } §"\end{tabular}"
+tabular             = `\begin{tabular` [`*`] "}" [cfg_unit] tabular_config { tabular_row | _WSPC } §`\end{tabular` [`*`] "}"
 tabular_row         = (multicolumn | tabular_cell) { "&" (multicolumn | tabular_cell) }
                       ("\\" ( hline | { cline } ) [_PARSEP] | &`\end{tabular}`)
-tabular_cell        = raisebox [S|_PARSEP] | { _line_element [S|_PARSEP] }
+tabular_cell        = raisebox [S|_PARSEP] | { (_line_element | _block_environment) [S|_PARSEP] }
 raisebox            = "\raisebox" rb_offset [rb_up] [rb_down] block
   rb_offset         = "{" number UNIT ~ "}"
   rb_up             = "[" number UNIT ~ "]"
@@ -141,13 +141,13 @@ generic_inline_env  = _begin_inline_env ~ paragraph !_PARSEP §_end_inline_env
 _begin_inline_env   = (<-!_LB begin_environment) | (begin_environment !LFF)
 _end_inline_env     = end_environment
                       ## (<-!_LB end_environment)   | (end_environment !LFF)  # ambiguity with generic_block when EOF
-begin_environment   = /\\begin{/ §NAME /}/
+begin_environment   = /\\begin{/ !_env_name §NAME /}/
 end_environment     = /\\end{/ §::NAME /}/
 
 inline_math         = _im_dollar | _im_bracket
   _im_dollar        = `$` §_inline_math_text (`$`| &`}`)
   _im_bracket       = `\(` § _inline_math_text_bracket `\)`
-_inline_math_text   = { _inline_math_core | _BACKSLASH [_LBRACE|_RBRACE] | _LBRACE _inline_math_text _RBRACE }
+_inline_math_text   = { _inline_math_core | _BACKSLASH [_LBRACE|_RBRACE|_DOLLAR] | _LBRACE _inline_math_text _RBRACE }
   _inline_math_core = /[^$\\{}]+/
 _inline_math_text_bracket = /(?:[^\\]*(?:(?![\\][)])[\\])?)*/
 
@@ -207,8 +207,8 @@ blockcmd       = _DROP_BACKSLASH ( ( "begin{" | "end{" ) _env_name "}"
                             | _item_name )
 
 _env_name      = `enumerate` | `itemize` | `description` | `figure` | `quote`
-               | `quotation` | `tabular` | `displaymath` [`*`]
-               | `equation` [`*`] | `eqnarray` [`*`]
+               | `quotation` | `tabular` [`*`] | `tabbing` [`*`]
+               | `displaymath` [`*`] | `equation` [`*`] | `eqnarray` [`*`]
 _structure_name = `subsection` | `section` | `chapter` | `subsubsection`
                | `paragraph` | `subparagraph` 
 _item_name     = `item`
@@ -281,6 +281,7 @@ _PATH      = /[\w=~?.,%&\[\]-]+/
 _PATHSEP   = /\/(?!\*)/
 _HASH      = `#`
 _COLON     = `:`
+_DOLLAR    = `$`
 _LBRACE    = `{`
 _RBRACE    = `}`
 _TAG       = /[\w=?.:\-%&\[\] \/]+/
