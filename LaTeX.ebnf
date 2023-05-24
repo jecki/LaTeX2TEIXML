@@ -6,16 +6,8 @@
 @ comment    = /%.*/                                # note: trailing linefeed is not part of the comment proper
 @ reduction  = merge_treetops
 @ disposable = /_\w+/
-# @ disposable = _WSPC, _GAP, _LB, _PARSEP, _LETTERS, _NAME, _INTEGER, _FRAC,
-#                _QUALIFIED, _TEXT_NOPAR, _TEXT, _block_content, _PATH, _PATHSEP,
-#                _HASH, _COLON, _TAG, _inline_math_text, _has_block_start,
-#                _block_environment, _known_environment, _text_element, _block_math,
-#                _line_element, _inline_environment, _known_inline_env, _info_block,
-#                _begin_inline_env, _end_inline_env, _command, _known_command,
-#                _dmath_long_form, _dmath_short_form, _BACKSLASH, _structure_name,
-#                _env_name
 @ drop       = strings, backticked, whitespace, regexps, _WSPC, _GAP, _PARSEP, _LB,
-               _has_block_start, _BACKSLASH, _structure_name, _env_name
+               _has_block_start, _DROP_BACKSLASH, _structure_name, _env_name
 
 ########################################################################
 #
@@ -123,8 +115,8 @@ tabular_config      = "{" { [cfg_left_seq] cfg_celltype [cfg_unit] [cfg_right_se
   cfg_celltype      = /[lcrp]/
   cfg_unit          = `{` number UNIT `}`
   cfg_separator     = `|` | `!` block
-  cfg_left_seq      = `>` block)
-  cfg_right_seq     = `<` block)
+  cfg_left_seq      = `>` block
+  cfg_right_seq     = `<` block
 
 tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbing}"
   tabdefs           = [settab] { !`\kill` _line_element [S|_PARSEP] | settab } ("\\" | "\kill") [config] [_PARSEP]
@@ -153,9 +145,11 @@ begin_environment   = /\\begin{/ §NAME /}/
 end_environment     = /\\end{/ §::NAME /}/
 
 inline_math         = _im_dollar | _im_bracket
-  _im_dollar        = `$` § _inline_math_text `$`
-  _im_bracket       = `\(` § _inline_math_text `\)`
-_inline_math_text   = /[^$]*/
+  _im_dollar        = `$` §_inline_math_text (`$`| &`}`)
+  _im_bracket       = `\(` § _inline_math_text_bracket `\)`
+_inline_math_text   = { _inline_math_core | _BACKSLASH [_LBRACE|_RBRACE] | _LBRACE _inline_math_text _RBRACE }
+  _inline_math_core = /[^$\\{}]+/
+_inline_math_text_bracket = /(?:[^\\]*(?:(?![\\][)])[\\])?)*/
 
 #### commands ####
 
@@ -189,7 +183,7 @@ href                = "\href{" urlstring "}" block
   urlstring         = [protocol] { path } [target]
   protocol          = /\w+:\/\/(?!\*)/
   path              = _pth _PATHSEP
-  target            = _pth { <-!/s?ptth/ _COLON _pth } [ ([_BACKSLASH] _HASH| <-!/s?ptth/ _COLON) _TAG ]
+  target            = _pth { <-!/s?ptth/ _COLON _pth } [ ([_DROP_BACKSLASH] _HASH| <-!/s?ptth/ _COLON) _TAG ]
   _pth              = { _PATH | ESCAPED }+
 
 #######################################################################
@@ -207,8 +201,8 @@ text           = {_TEXT|special}+ { S  {_TEXT|special}+ }
                | /\\/ esc_char   # reserved for characters that may appear in
   esc_char     = /[,~$_^{}]/     # in the middle of a word but do not delimit words
 
-no_command     = "\begin{" | "\end{" | _BACKSLASH _structure_name &`{`
-blockcmd       = _BACKSLASH ( ( "begin{" | "end{" ) _env_name "}"
+no_command     = "\begin{" | "\end{" | _DROP_BACKSLASH _structure_name &`{`
+blockcmd       = _DROP_BACKSLASH ( ( "begin{" | "end{" ) _env_name "}"
                             | _structure_name & `{` | `[` | `]`
                             | _item_name )
 
@@ -287,6 +281,8 @@ _PATH      = /[\w=~?.,%&\[\]-]+/
 _PATHSEP   = /\/(?!\*)/
 _HASH      = `#`
 _COLON     = `:`
+_LBRACE    = `{`
+_RBRACE    = `}`
 _TAG       = /[\w=?.:\-%&\[\] \/]+/
 
 _TEXT      = /(?:[^\\%$&\{\}\[\]\n'`"]+(?:\n(?![ \t]*\n))?)+/
@@ -305,6 +301,7 @@ _GAP       = /[ \t]*(?:\n[ \t]*)+\n/~       # at least one empty line, i.e.
 NEW_LINE   = /[ \t]*/ [COMMENT__] /\n/
 _LB        = /\s*?\n|$/                     # backwards line break for Lookbehind-Operator
                                             # beginning of text marker '$' added for test code
+_DROP_BACKSLASH = _BACKSLASH
 _BACKSLASH  = /[\\]/
 
 EOF        = /(?!.)/                        # End-Of-File
