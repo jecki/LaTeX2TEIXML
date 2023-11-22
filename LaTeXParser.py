@@ -38,8 +38,7 @@ from DHParser.compile import Compiler, compile_source, Junction, full_compile
 from DHParser.configuration import set_config_value, get_config_value, access_thread_locals, \
     access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN
 from DHParser import dsl
-from DHParser.dsl import recompile_grammar, create_parser_transition, \
-    create_preprocess_transition, create_transition, PseudoJunction, never_cancel
+from DHParser.dsl import recompile_grammar, never_cancel
 from DHParser.ebnf import grammar_changed
 from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors, NOTICE, \
     WARNING, ERROR, FATAL
@@ -51,6 +50,7 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
     last_value, matching_bracket, optional_last_value
+from DHParser.pipeline import PseudoJunction, create_parser_junction, create_junction
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer
@@ -72,10 +72,11 @@ from DHParser.transform import is_empty, remove_if, TransformationDict, Transfor
 from DHParser import parse as parse_namespace__
 
 import DHParser.versionnumber
-if DHParser.versionnumber.__version_info__ < (1, 5, 0):
+if DHParser.versionnumber.__version_info__ < (1, 7, 0):
     print(f'DHParser version {DHParser.versionnumber.__version__} is lower than the DHParser '
           f'version 1.5.0, {os.path.basename(__file__)} has first been generated with. '
           f'Please install a more recent version of DHParser to avoid unexpected errors!')
+
 
 
 #######################################################################
@@ -124,7 +125,8 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "2c13ea970f742d95992dd6f5b1dda35f"
+    source_hash__ = "39b6f88ab34ec7687d1fa38d3a2b5d4c"
+    early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
@@ -144,8 +146,8 @@ class LaTeXGrammar(Grammar):
     _LB = Drop(RegExp('\\s*?\\n|$'))
     NEW_LINE = Series(Drop(RegExp('[ \\t]*')), Option(comment__), Drop(RegExp('\\n')))
     _GAP = Drop(Series(RegExp('[ \\t]*(?:\\n[ \\t]*)+\\n'), dwsp__))
-    _WSPC = Drop(OneOrMore(Drop(Alternative(comment__, Drop(RegExp('\\s+'))))))
-    _PARSEP = Drop(Series(Drop(ZeroOrMore(Drop(Series(whitespace__, comment__)))), _GAP, Drop(Option(_WSPC))))
+    _WSPC = Drop(OneOrMore(Alternative(comment__, Drop(RegExp('\\s+')))))
+    _PARSEP = Drop(Series(ZeroOrMore(Series(whitespace__, comment__)), _GAP, Option(_WSPC)))
     S = Series(Lookahead(Drop(RegExp('[% \\t\\n]'))), NegativeLookahead(_GAP), wsp__)
     LFF = Alternative(Series(NEW_LINE, Option(_WSPC)), EOF)
     _LETTERS = RegExp('\\w+')
@@ -194,7 +196,7 @@ class LaTeXGrammar(Grammar):
     special = Alternative(Drop(Text("\\-")), LEERZEICHEN, UMLAUT, QUOTEMARK, Series(Drop(RegExp('\\\\')), esc_char))
     _item_name = Text("item")
     _structure_name = Drop(Alternative(Drop(Text("subsection")), Drop(Text("section")), Drop(Text("chapter")), Drop(Text("subsubsection")), Drop(Text("paragraph")), Drop(Text("subparagraph"))))
-    _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Drop(Series(Drop(Text("tabular")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("tabbing")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("displaymath")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("equation")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("eqnarray")), Drop(Option(Drop(Text("*")))))), Drop(Series(Drop(Text("align")), Drop(Option(Drop(Text("ed")))), Drop(Option(Drop(Text("*"))))))))
+    _env_name = Drop(Alternative(Drop(Text("enumerate")), Drop(Text("itemize")), Drop(Text("description")), Drop(Text("figure")), Drop(Text("quote")), Drop(Text("quotation")), Series(Drop(Text("tabular")), Option(Drop(Text("*")))), Series(Drop(Text("tabbing")), Option(Drop(Text("*")))), Series(Drop(Text("displaymath")), Option(Drop(Text("*")))), Series(Drop(Text("equation")), Option(Drop(Text("*")))), Series(Drop(Text("eqnarray")), Option(Drop(Text("*")))), Series(Drop(Text("align")), Option(Drop(Text("ed"))), Option(Drop(Text("*"))))))
     blockcmd = Series(_DROP_BACKSLASH, Alternative(Series(Alternative(Series(Drop(Text("begin{")), dwsp__), Series(Drop(Text("end{")), dwsp__)), _env_name, Series(Drop(Text("}")), dwsp__)), Series(_structure_name, Lookahead(Drop(Text("{")))), Drop(Text("[")), Drop(Text("]")), _item_name))
     no_command = Alternative(Series(Drop(Text("\\begin{")), dwsp__), Series(Drop(Text("\\end{")), dwsp__), Series(_DROP_BACKSLASH, _structure_name, Lookahead(Drop(Text("{")))))
     text = Series(OneOrMore(Alternative(_TEXT, special)), ZeroOrMore(Series(S, OneOrMore(Alternative(_TEXT, special)))))
@@ -312,12 +314,10 @@ class LaTeXGrammar(Grammar):
     item.set(Series(Series(Drop(Text("\\item")), dwsp__), Option(config), sequence, mandatory=2))
     _block_environment.set(Series(Lookahead(_has_block_start), Alternative(_known_environment, generic_block)))
     latexdoc = Series(preamble, document, mandatory=1)
-    root__ = TreeReduction(latexdoc, CombinedParser.MERGE_TREETOPS)
-    
-    
-parsing: PseudoJunction = create_parser_transition(
-    LaTeXGrammar)
-get_grammar = parsing.factory # for backwards compatibility, only    
+    root__ = latexdoc
+        
+parsing: PseudoJunction = create_parser_junction(LaTeXGrammar)
+get_grammar = parsing.factory # for backwards compatibility, only
 
 
 #######################################################################
@@ -507,11 +507,6 @@ LaTeX_AST_transformation_table = {
                   lambda ctx: ctx[-1].name[:4] in ('cmd_', 'env_'))
 }
 
-
-# DEPRECATED, because it requires pickling the transformation-table, which rules out lambdas!
-# ASTTransformation: Junction = create_transition(
-#     LaTeX_AST_transformation_table, "cst", "ast", "transtable")
-
 def LaTeXTransformer() -> TransformerFunc:
     return partial(transformer, transformation_table=LaTeX_AST_transformation_table.copy(),
                    src_stage='cst', dst_stage='ast')
@@ -640,7 +635,7 @@ class LaTeXCompiler(Compiler):
         return node
 
 
-compiling: Junction = create_transition(
+compiling: Junction = create_junction(
     LaTeXCompiler, "ast", "LaTeXML".lower())
 
 
@@ -661,7 +656,7 @@ compiling: Junction = create_transition(
 
 # # change the names of the source and destination stages. Source
 # # ("LaTeX") in this example must be the name of some earlier stage, though.
-# postprocessing: Junction = create_transition("LaTeX", "refined", PostProcessing)
+# postprocessing: Junction = create_junction("LaTeX", "refined", PostProcessing)
 #
 
 #######################################################################

@@ -171,15 +171,26 @@ def finalize_presets(fail_on_error: bool=False):
     #     THREAD_LOCALS.config = {}  # reset THREAD_LOCALS
 
 
+RENAMED_KEYS = {
+    'ast_serialization': 'AST_serialization',
+    'cst_serialization': 'CST_serialization'
+}
+
+
 def set_preset_value(key: str, value: Any, allow_new_key: bool=False):
     global CONFIG_PRESET, ACCESSING_PRESETS, PRESETS_CHANGED
     if not ACCESSING_PRESETS:
         raise AssertionError('Presets must be made accessible with access_presets() first, '
                              'before they can be set!')
-    if not allow_new_key and key not in CONFIG_PRESET:
-        raise ValueError(
-            '"%s" is not a valid config variable. Use "allow_new_key=True" to add new variables '
-            'or choose one of %s' % (key, list(CONFIG_PRESET.keys())))
+    if not allow_new_key:
+        oldkey = key
+        if key not in CONFIG_PRESET:  key = RENAMED_KEYS.get(key, key)
+        if key not in CONFIG_PRESET:
+            raise ValueError(
+                '"%s" is not a valid config variable. Use "allow_new_key=True" to add  '
+                ' new variables or choose one of %s' % (key, list(CONFIG_PRESET.keys())))
+        elif oldkey != key:
+            print(f'Deprecation Warning: Key {oldkey} has been renamed to {key}!')
     validate_value(key, value)
     CONFIG_PRESET[key] = value
     PRESETS_CHANGED = True
@@ -221,7 +232,6 @@ def read_local_config(ini_filename: str) -> str:
         ini_filename = basename
     if not os.path.exists(ini_filename):
         # try cfg-file in the applications' config-directory
-        # TODO: use a more portable method
         dirname = os.path.splitext(basename)[0]
         cfg_filename = os.path.join(os.path.expanduser('~'), '.config', dirname, 'config.ini')
         if os.path.exists(cfg_filename):
@@ -342,10 +352,15 @@ def set_config_value(key: str, value: Any, allow_new_key: bool = False):
     """
     with access_lock:
         cfg = _config_dict()
-        if not allow_new_key and key not in cfg and key not in CONFIG_PRESET:
-            raise ValueError(
-                '"%s" is not a valid config variable. Use "allow_new_key=True" to '
-                'add new variables or choose one of %s' % (key, list(cfg.keys())))
+        if not allow_new_key:
+            oldkey = key
+            if key not in CONFIG_PRESET:  key = RENAMED_KEYS.get(key, key)
+            if key not in CONFIG_PRESET:
+                raise ValueError(
+                    '"%s" is not a valid config variable. Use "allow_new_key=True" to '
+                    'add new variables or choose one of %s' % (key, list(cfg.keys())))
+            elif oldkey != key:
+                print(f'Deprecation Warning: Key {oldkey} has been renamed to {key}!')
         validate_value(key, value)
         cfg[key] = value
 
@@ -433,13 +448,15 @@ CONFIG_PRESET['infinite_loop_warning'] = True
 #                  of data by JSON parsers that are not aware of the order
 #                  of entries in dictionaries. (e.g. Python < 3.6)
 # Default values: "compact" for concrete syntax trees and "XML" for abstract
-#                 syntax trees and "S-expression" for any other kind of tree.
-_serializations = frozenset({'XML', 'HTML', 'json', 'indented', 'tree', 'S-expression', 'SXML'})
-CONFIG_PRESET['cst_serialization'] = 'S-expression'
-CONFIG_PRESET['ast_serialization'] = 'S-expression'
-CONFIG_PRESET['default_serialization'] = 'S-expression'
-ALLOWED_PRESET_VALUES['cst_serialization'] = _serializations
-ALLOWED_PRESET_VALUES['ast_serialization'] = _serializations
+#                 syntax trees and "sxpr" (read "S-Expression") for any other
+#                 kind of tree.
+_serializations = frozenset({'XML', 'HTML', 'json', 'indented', 'tree',
+                             'S-expression', 'sxpr', 'SXML', 'SXML1', 'SXML2'})
+CONFIG_PRESET['CST_serialization'] = 'sxpr'
+CONFIG_PRESET['AST_serialization'] = 'sxpr'
+CONFIG_PRESET['default_serialization'] = 'sxpr'
+ALLOWED_PRESET_VALUES['CST_serialization'] = _serializations
+ALLOWED_PRESET_VALUES['AST_serialization'] = _serializations
 ALLOWED_PRESET_VALUES['default_serialization'] = _serializations
 
 # Defines the maximum line length for flattened S-expressions.
@@ -455,7 +472,6 @@ CONFIG_PRESET['flatten_sxpr_threshold'] = 120
 # the same line as the last line of the content.
 CONFIG_PRESET['compact_sxpr_threshold'] = 10
 
-
 # How to treat illegal attribute values when serializing as XML,
 # e.g. attr="<". Possible values are:
 # 'ignore' - faulty attribute values will be serialized nonetheless
@@ -467,11 +483,12 @@ CONFIG_PRESET['compact_sxpr_threshold'] = 10
 # 'fail'  - an error will be raised, when an illegal attribute value
 #           is encountered while serializing a tree as XML. Illegal
 #           attribute values can still be set, though, since they
-#           they concern only the XMl-serialization and not the
+#           concern only the XMl-serialization and not the
 #           S-expression or JSON serialization.
 # Default value = "fail"
 CONFIG_PRESET['xml_attribute_error_handling'] = 'fail'
 ALLOWED_PRESET_VALUES['xml_attribute_error_handling'] = frozenset({'ignore', 'fix', 'lxml', 'fail'})
+
 
 ########################################################################
 #
@@ -481,7 +498,7 @@ ALLOWED_PRESET_VALUES['xml_attribute_error_handling'] = frozenset({'ignore', 'fi
 
 # Defines which syntax tree should be logged during compilation:
 # The concrete syntax tree, the abstract syntax tree or both.
-# Possible values are {'ast'}, {'cst'} or {'ast', 'cst'}
+# Possible values are {'AST'}, {'CST'} or {'AST', 'CST'}
 # Default value: empty set
 CONFIG_PRESET['log_syntax_trees'] = frozenset()
 
@@ -492,7 +509,7 @@ CONFIG_PRESET['log_syntax_trees'] = frozenset()
 #
 ########################################################################
 
-# Carries out static analysis on the the parser tree before parsing starts
+# Carries out static analysis on the parser tree before parsing starts
 # to ensure its correctness. EXPERIMENTAL! Possible values are:
 # 'early' - static analysis is carried out by DHParser.ebnf.EBNFCompiler,
 #           already. Any errors it revealed will be located in the EBNF
@@ -542,8 +559,8 @@ CONFIG_PRESET['default_literalws'] = "none"
 # Default value for the brand of EBNF that DHParser accepts
 # 'fixed'       - Allows to use suffix syntax (?, +, *) as well as classic
 #       EBNF-syntax ([], {}). The delimiters are fixed before first use to
-#       the DHParser-standard and will not be read from configuration-value
-#       "delimiter_set".
+#       the DHParser-standard and will only be read once from
+#       configuration-value "delimiter_set" upon first usage.
 # 'classic'     - relatively closest to the ISO-standard, i.e. uses [] and {}
 #       for optional and zero or more elements, respectively. Does not allow
 #       the ?, +, * suffixes (NOT YET IMPLEMENTED!). Allows the specification
@@ -554,7 +571,9 @@ CONFIG_PRESET['default_literalws'] = "none"
 #       allows character ranges within square brackets with ordinal values,
 #       only. Uses | as delimiter for alternatives.
 # 'configurable' - like fixed, but the delimiter constants will be configured
-#       from the configuration-value 'delimiter_set' (see below).
+#       from the configuration-value 'delimiter_set' (see below) each
+#       time the grammar object is requested with DHParser.ebnf.get_ebnf_grammar()
+#       or DHParser.ebnf.parse_ebnf().
 # 'heuristic'   - the most liberal mode, allows about everything. However,
 #       because it employs heuristics to distinguish ambiguous cases, it
 #       may lead to unexpected errors and require the user to resolve the

@@ -9,32 +9,51 @@
 
 # # change the names of the source and destination stages. Source
 # # ("{NAME}") in this example must be the name of some earlier stage, though.
-# postprocessing: Junction = create_transition("{NAME}", "refined", PostProcessing)
+# postprocessing: Junction = create_junction(PostProcessing, "{NAME}", "refined")
 #
+# DON'T FORGET TO ADD ALL POSTPROCESSING-JUNCTIONS TO THE GLOBAL
+# "junctions"-set IN SECTION "Processing-Pipeline" BELOW!
 
+#######################################################################
+#
+# Processing-Pipeline
+#
 #######################################################################
 
 # Add your own stages to the junctions and target-lists, below
 # (See DHParser.compile for a description of junctions)
 
-# add your own post-processing junctions, here, e.g. postprocessing.junction
+# ADD YOUR OWN POST-PROCESSING-JUNCTIONS HERE:
 junctions = set([ASTTransformation, compiling])
+
 # put your targets of interest, here. A target is the name of result (or stage)
 # of any transformation, compilation or postprocessing step after parsing.
 # Serializations of the stages listed here will be written to disk when
-# calling process_file() or batch_process().
-targets = set([compiling.dst])
+# calling process_file() or batch_process() and also appear in test-reports.
+targets = end_points(junctions)
+# alternative: targets = set([compiling.dst])
+
+# provide a set of those stages for which you would like to see the output
+# in the test-report files, here. (AST is always included)
+test_targets = set(j.dst for j in junctions)
+# alternative: test_targets = targets
+
 # add one or more serializations for those targets that are node-trees
 serializations = expand_table(dict([('*', ['sxpr'])]))
 
+
+#######################################################################
+#
+# Main program
+#
 #######################################################################
 
-def compile_src(source: str, target: str = "{NAME}".lower()) -> Tuple[Any, List[Error]]:
+def compile_src(source: str, target: str = "{NAME}") -> Tuple[Any, List[Error]]:
     """Compiles the source to a single targte and returns the result of the compilation
     as well as a (possibly empty) list or errors or warnings that have occurred in the
     process.
     """
-    full_compilation_result = full_compile(
+    full_compilation_result = full_pipeline(
         source, preprocessing.factory, parsing.factory, junctions, set([target]))
     return full_compilation_result[target]
 
@@ -89,9 +108,16 @@ def main(called_from_app=False) -> bool:
                 print(f.read())
             sys.exit(1)
         elif parser_update:
-            print(os.path.basename(__file__) + ' has changed. '
-                  'Please run again in order to apply updated compiler')
-            sys.exit(0)
+            if '--dontrerun' in sys.argv:
+                print(os.path.basename(__file__) + ' has changed. '
+                      'Please run again in order to apply updated compiler')
+                sys.exit(0)
+            else:
+                import platform, subprocess
+                call = ['python', __file__, '--dontrerun'] + sys.argv[1:]
+                result = subprocess.run(call, capture_output=True)
+                print(result.stdout.decode('utf-8'))
+                sys.exit(result.returncode)
     else:
         print('Could not check whether grammar requires recompiling, '
               'because grammar was not found at: ' + grammar_path)
@@ -109,6 +135,8 @@ def main(called_from_app=False) -> bool:
                         help='Write output file even if errors have occurred')
     parser.add_argument('--singlethread', action='store_const', const='singlethread',
                         help='Run batch jobs in a single thread (recommended only for debugging)')
+    parser.add_argument('--dontrerun', action='store_const', const='dontrerun',
+                        help='Do not automatically run again if the grammar has been recompiled.')
     outformat = parser.add_mutually_exclusive_group()
     outformat.add_argument('-x', '--xml', action='store_const', const='xml', 
                            help='Format result as XML')
@@ -136,15 +164,20 @@ def main(called_from_app=False) -> bool:
         access_presets()
         set_preset_value('history_tracking', True)
         set_preset_value('resume_notices', True)
-        set_preset_value('log_syntax_trees', frozenset(['cst', 'ast']))  # don't use a set literal, here!
+        set_preset_value('log_syntax_trees', frozenset(['CST', 'AST']))  # don't use a set literal, here!
         finalize_presets()
     start_logging(log_dir)
 
     if args.singlethread:
         set_config_value('batch_processing_parallelization', False)
 
-    if args.xml:
-        RESULT_FILE_EXTENSION = '.xml'
+    if args.xml:  outfmt = 'xml'
+    elif args.sxpr:  outfmt = 'sxpr'
+    elif args.sxml:  outfmt = 'sxml'
+    elif args.tree:  outfmt = 'tree'
+    elif args.json:  outfmt = 'json'
+    else:  outfmt = get_config_value('default_serialization')
+    serializations['*'] = [outfmt]
 
     def echo(message: str):
         if args.verbose:
@@ -181,12 +214,6 @@ def main(called_from_app=False) -> bool:
 
         if not errors or (not has_errors(errors, ERROR)) \
                 or (not has_errors(errors, FATAL) and args.force):
-            if args.xml:  outfmt = 'xml'
-            elif args.sxpr:  outfmt = 'sxpr'
-            elif args.sxml:  outfmt = 'sxml'
-            elif args.tree:  outfmt = 'tree'
-            elif args.json:  outfmt = 'json'
-            else:  outfmt = 'default'
             print(result.serialize(how=outfmt) if isinstance(result, Node) else result)
             if errors:  print('\n---')
 
