@@ -254,7 +254,6 @@ UNKNOWN_MACRO_ARGUMENT                   = ErrorCode(1170)
 UNDEFINED_MACRO                          = ErrorCode(1180)
 RECURSIVE_MACRO_CALL                     = ErrorCode(1190)
 
-
 ERROR_WHILE_RECOVERING_FROM_ERROR        = ErrorCode(1301)
 
 # EBNF-specific and static analysis errors
@@ -269,6 +268,10 @@ BAD_ORDER_OF_ALTERNATIVES                = ErrorCode(1570)
 BAD_REPETITION_COUNT                     = ErrorCode(1580)
 MALFORMED_REGULAR_EXPRESSION             = ErrorCode(1585)
 EMPTY_GRAMMAR_ERROR                      = ErrorCode(1590)
+
+# Other Errors
+
+PYTHON_ERROR_IN_TEST                     = ErrorCode(1710)
 
 # fatal errors
 
@@ -421,7 +424,7 @@ class Error:
         """Returns a signature to quickly check the equality of errors"""
         return (self.line << 32 | self.column << 16 | self.code).to_bytes(8, 'big')
 
-    def rangeObj(self) -> dict:
+    def range_obj(self) -> dict:
         """Returns the range (position plus length) of the error as an LSP-Range-Object.
         https://microsoft.github.io/language-server-protocol/specifications/specification-current/#range
         """
@@ -429,14 +432,14 @@ class Error:
         return {'start': {'line': self.line - 1, 'character': self.column - 1},
                 'end': {'line': self.end_line - 1, 'character': self.end_column - 1}}
 
-    def diagnosticObj(self) -> dict:
+    def diagnostic_obj(self) -> dict:
         """Returns the Error as Language Server Protocol Diagnostic object.
         https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic
         """
         def relatedObj(relatedError: 'Error') -> dict:
             uri = relatedError.orig_doc
             return {
-                'location': {'uri': uri, 'range': relatedError.rangeObj()},
+                'location': {'uri': uri, 'range': relatedError.range_obj()},
                 'message': relatedError.message
             }
 
@@ -448,7 +451,7 @@ class Error:
             severity = 1
 
         diagnostic = {
-            'range': self.rangeObj(),
+            'range': self.range_obj(),
             'severity': severity,
             'code': self.code,
             'source': 'DHParser',

@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import ast
 import bisect
-import collections.abc
 import concurrent.futures
 import functools
 import hashlib
@@ -39,8 +38,7 @@ import os
 import sys
 import threading
 import traceback
-
-assert sys.version_info >= (3, 5, 3), "DHParser requires at least Python-Version 3.5.3!"
+import typing
 
 try:
     if sys.version.find('PyPy') >= 0:
@@ -55,7 +53,6 @@ try:
 except ImportError:
     from DHParser.externallibs import dataclasses36 as dataclasses
 
-import typing
 from typing import Any, Iterable, Sequence, Set, AbstractSet, Union, Dict, List, Tuple, \
     Optional, Type, Callable
 try:
@@ -174,11 +171,11 @@ def identity(x):
 global_id_counter: int = 0
 
 
-# def gen_id() -> str:
-#     """Generates a unique id. (Not thread-safe!)"""
-#     global global_id_counter
-#     global_id_counter += 1
-#     return str(global_id_counter)
+def gen_id() -> int:
+    """Generates a unique id. (Not thread-safe!)"""
+    global global_id_counter
+    global_id_counter += 1
+    return global_id_counter
 
 
 class ThreadLocalSingletonFactory:
@@ -189,15 +186,23 @@ class ThreadLocalSingletonFactory:
 
     Note: Parameter uniqueID should be provided if class_or_factory is not
     unique but generic. See source code of
-    :py:func:`DHParser.dsl.create_transtable_transition`
+    :py:func:`DHParser.dsl.create_transtable_junction`
     """
 
     def __init__(self, class_or_factory, name: str = "", *,
                  uniqueID: Union[str, int] = 0,
-                 ident = None):
+                 ident=None):
+        if ident is not None:
+            deprecation_warning('Parameter "ident" of DHParser.toolkit.ThreadLocalSingletonFactory'
+                                ' is deprecated and will be ignored.')
         self.class_or_factory = class_or_factory
         # partial functions do not have a __name__ attribute!
         name = name or getattr(class_or_factory, '__name__', '') or class_or_factory.func.__name__
+        if not uniqueID:
+            if not hasattr(self.__class__, 'lock'):
+                self.__class__.lock = threading.Lock()
+            with self.__class__.lock:
+                uniqueID = gen_id()
         self.singleton_name = f"{name}_{str(id(self))}_{str(uniqueID)}_singleton"
         THREAD_LOCALS = access_thread_locals()
         assert not hasattr(THREAD_LOCALS, self.singleton_name), self.singleton_name
@@ -348,7 +353,12 @@ def deprecation_warning(message: str):
         try:
             raise DeprecationWarning(message)
         except DeprecationWarning as e:
-            if get_config_value('deprecation_policy') == 'warn':
+            try:
+                deprecation_policy = get_config_value('deprecation_policy')
+            except AssertionError as e:
+                deprecation_policy = 'warn'
+                print(e)
+            if deprecation_policy == 'warn':
                 stacktrace = traceback.format_exc()
                 print(stacktrace)
             else:
@@ -370,10 +380,11 @@ def deprecated(message: str) -> Callable:
         >>> set_config_value('deprecation_policy', save)
     """
     assert isinstance(message, str)
+
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
-            deprecation_warning(message)
+            deprecation_warning(message or str(f))
             return f(*args, **kwargs)
         return wrapper
     return decorator
@@ -429,7 +440,6 @@ def normalize_circular_path(path: Union[Tuple[str, ...], AbstractSet[Tuple[str, 
         return path[i:] + path[:i]
 
 
-
 #######################################################################
 #
 #  string manipulation and regular expressions
@@ -465,6 +475,7 @@ def re_find(s, r, pos=0, endpos=9223372036854775807):
             return None
 
 
+@deprecated('escape_re() is deprecated. Use re.escape() from the Python-Standard-Library instead!')
 def escape_re(strg: str) -> str:
     """
     Returns the string with all regular expression special characters escaped.
@@ -507,14 +518,14 @@ def normalize_docstring(docstring: str) -> str:
             indent = min(indent, len(line) - len(stripped))
     if indent >= 255:  indent = 0
     # remove trailing empty lines
-    while lines and not lines[-1].strip(): lines.pop()
+    while lines and not lines[-1].strip():  lines.pop()
     if lines:
         if lines[0].strip():
             lines = [lines[0]] + [line[indent:] for line in lines[1:]]
         else:
             lines = [line[indent:] for line in lines[1:]]
         # remove any empty lines at the beginning
-        while lines and not lines[0].strip(): del lines[0]
+        while lines and not lines[0].strip():  del lines[0]
         return '\n'.join(lines)
     return ''
 
@@ -533,8 +544,8 @@ def abbreviate_middle(s: str, max_length: int) -> str:
 
 
 @cython.locals(wrap_column=cython.int, tolerance=cython.int, a=cython.int, i=cython.int, k=cython.int, m=cython.int)
-def wrap_str_nicely(s: str, wrap_column: int=79, tolerance: int=24,
-                    wrap_chars: str=")]>, ") -> str:
+def wrap_str_nicely(s: str, wrap_column: int = 79, tolerance: int = 24,
+                    wrap_chars: str = ")]>, ") -> str:
     r"""Line-wraps a single-line output string at 'wrap_column'. Tries to
     find a suitable point for wrapping, i.e. after any of the wrap_characters.
 
@@ -606,8 +617,8 @@ def wrap_str_nicely(s: str, wrap_column: int=79, tolerance: int=24,
     return '\n'.join(parts)
 
 
-def printw(s: Any, wrap_column: int=79, tolerance: int=24,
-           wrap_chars: str=")]>, "):
+def printw(s: Any, wrap_column: int = 79, tolerance: int = 24,
+           wrap_chars: str = ")]>, "):
     """Prints the string or other object nicely wrapped.
     See :py:func:`wrap_str_nicely`."""
     if isinstance(s, (list, tuple, dict)) and wrap_chars == ")]>, ":
@@ -623,12 +634,12 @@ def escape_formatstr(s: str) -> str:
     so that they are not misinterpreted as place-holder by "".format().
     """
     s = re.sub(r'(?<!\{)\{(?!\{)', '{{', s)
-    s = re.sub(r'(?<!\})\}(?!\})', '}}', s)
+    s = re.sub(r'(?<!})}(?!})', '}}', s)
     return s
 
 
 RX_IDENTIFIER = re.compile(r'\w+')
-RX_NON_IDENTIFIER = re.compile(r'[^\w]+')
+RX_NON_IDENTIFIER = re.compile(r'\W+')
 
 
 @cython.locals(i=cython.int, delta=cython.int)
@@ -723,7 +734,7 @@ RX_ENTITY = re.compile(r'&(?:_|:|[A-Z]|[a-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u
 
 def validate_XML_attribute_value(value: Any) -> str:
     """Validates an XML-attribute value and returns the quoted string-value
-    if successful. Otherwise raises a ValueError.
+    if successful. Otherwise, raises a ValueError.
     """
     value = str(value)
     contains_doublequote = value.find('"') >= 0
@@ -733,7 +744,8 @@ def validate_XML_attribute_value(value: Any) -> str:
                           'value. Use entities to avoid this conflict.)') % value)
     if value.find('<') >= 0:
         raise ValueError(f'XML-attribute value "{value}" must not contain "<"! Change '
-            f'config-variable "xml_attribute_error_handling" to "fix" to avoid this error.')
+                         f'config-variable "xml_attribute_error_handling" to "fix" to '
+                         f'avoid this error.')
     i = value.find('&')
     while i >= 0:
         if not RX_ENTITY.match(value, i):
@@ -788,7 +800,7 @@ def lxml_XML_attribute_value(value: Any) -> str:
 
 
 def issubtype(sub_type, base_type) -> bool:
-    """Returns `True` if sub_type is a sub-type of `base_type`.
+    """Returns `True` if sub_type is a subtype of `base_type`.
     WARNING: Implementation is somewhat "hackish" and might break
     with new Python-versions.
     """
@@ -816,7 +828,6 @@ def issubtype(sub_type, base_type) -> bool:
     true_st = origin(sub_type)
     true_bt = origin(base_type)[0]
     return any(issubclass(st, true_bt) for st in true_st)
-
 
 
 def isgenerictype(t):
@@ -881,7 +892,7 @@ def has_fenced_code(text_or_file: str, info_strings=('ebnf', 'test')) -> bool:
     """
     Checks whether `text_or_file` contains fenced code blocks, which are
     marked by one of the given info strings.
-    See http://spec.commonmark.org/0.28/#fenced-code-blocks for more
+    See https://spec.commonmark.org/0.28/#fenced-code-blocks for more
     information on fenced code blocks in common mark documents.
     """
     if is_filename(text_or_file):
@@ -901,7 +912,7 @@ def has_fenced_code(text_or_file: str, info_strings=('ebnf', 'test')) -> bool:
     rx_fence = re.compile(fence_tmpl % (label_re, label_re), flags=re.IGNORECASE)
 
     for match in rx_fence.finditer(markdown):
-        matched_string = re.match(r'(?:\n`+)|(?:\n~+)', match.group(0)).group(0)
+        matched_string = re.match(r'\n`+|\n~+', match.group(0)).group(0)
         if markdown.find(matched_string, match.end()) >= 0:
             return True
         else:
@@ -921,25 +932,29 @@ def md5(*txt):
     return md5_hash.hexdigest()
 
 
-def compile_python_object(python_src: str, catch_obj_regex="DSL") -> Any:
+def compile_python_object(python_src: str, catch_obj="DSLGrammar") -> Any:
     """
     Compiles the python source code and returns the (first) object
-    the name of which is matched by ``catch_obj_regex``. If catch_obj
-    is the empty string, the namespace dictionary will be returned.
+    the name of which is either equal to or matched by ``catch_obj_regex``.
+    If catch_obj is the empty string, the namespace dictionary will be returned.
     """
-    if isinstance(catch_obj_regex, str):
-        catch_obj_regex = re.compile(catch_obj_regex)
     code = compile(python_src, '<string>', 'exec')
     namespace = {}  # type: Dict[str, Any]
     exec(code, namespace)  # safety risk?
-    if catch_obj_regex.pattern:
-        matches = [key for key in namespace if catch_obj_regex.match(key)]
+    if catch_obj:
+        if isinstance(catch_obj, str):
+            try:
+                obj = namespace[catch_obj]
+                return obj
+            except KeyError:
+                catch_obj = re.compile(catch_obj)
+        matches = [key for key in namespace if catch_obj.fullmatch(key)]
         if len(matches) < 1:
             raise ValueError("No object matching /%s/ defined in source code." %
-                             catch_obj_regex.pattern)
+                             catch_obj.pattern)
         elif len(matches) > 1:
             raise ValueError("Ambiguous matches for %s : %s" %
-                             (str(catch_obj_regex), str(matches)))
+                             (str(catch_obj), str(matches)))
         return namespace[matches[0]] if matches else None
     else:
         return namespace
@@ -1137,7 +1152,7 @@ def json_encode_string(s: str) -> str:
     return '"' + ESCAPE.sub(lambda m: ESCAPE_DCT[m.group(0)], s) + '"'
 
 
-def json_dumps(obj: JSON_Type, *, cls=json.JSONEncoder, partially_serialized: bool=False) -> str:
+def json_dumps(obj: JSON_Type, *, cls=json.JSONEncoder, partially_serialized: bool = False) -> str:
     """Returns json-object as string. Other than the standard-library's
     `json.dumps()`-function `json_dumps` allows to include alrady serialzed
     parts (in the form of JSONStr-objects) in the json-object. Example::
@@ -1349,7 +1364,7 @@ def pp_json_str(jsons: str) -> str:
 #######################################################################
 
 class SingleThreadExecutor(concurrent.futures.Executor):
-    """SingleThreadExecutor is a replacement for
+    r"""SingleThreadExecutor is a replacement for
     concurrent.future.ProcessPoolExecutor and
     concurrent.future.ThreadPoolExecutor that executes any submitted
     task immediately in the submitting thread. This helps to avoid
@@ -1358,10 +1373,12 @@ class SingleThreadExecutor(concurrent.futures.Executor):
     so is helpful for debugging.
 
     It is not recommended to use this in asynchronous code or code that
-    relies on the submit() or map()-method of executors to return quickly.
+    relies on the submit()- or map()-method of executors to return quickly.
     """
 
     def submit(self, fn, *args, **kwargs) -> concurrent.futures.Future:
+        """Run function "fn" with the given args and kwargs synchronously
+        without multithreading or multiprocessing."""
         future = concurrent.futures.Future()
         try:
             result = fn(*args, **kwargs)

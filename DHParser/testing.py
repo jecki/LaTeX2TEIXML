@@ -41,7 +41,7 @@ import sys
 import threading
 import traceback
 import time
-from typing import Dict, List, Union, Deque, cast
+from typing import Dict, List, Union, Deque, Optional, cast
 
 if sys.version_info >= (3, 6, 0):
     OrderedDict = dict
@@ -49,11 +49,11 @@ else:
     from collections import OrderedDict
 
 from DHParser.configuration import get_config_value, set_config_value
-from DHParser.compile import run_pipeline, extract_data
+from DHParser.pipeline import extract_data, run_pipeline
 from DHParser.error import Error, is_error, PARSER_LOOKAHEAD_MATCH_ONLY, \
     PARSER_LOOKAHEAD_FAILURE_ONLY, MANDATORY_CONTINUATION_AT_EOF, \
     MANDATORY_CONTINUATION_AT_EOF_NON_ROOT, CAPTURE_STACK_NOT_EMPTY_NON_ROOT_ONLY, \
-    AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT
+    AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT, PYTHON_ERROR_IN_TEST
 from DHParser.log import is_logging, clear_logs, local_log_dir, log_parsing_history
 from DHParser.parse import Lookahead
 from DHParser.server import RX_CONTENT_LENGTH, RE_DATA_START, JSONRPC_HEADER_BYTES
@@ -85,24 +85,75 @@ __all__ = ('unit_from_config',
            'MockStream')
 
 
-UNIT_STAGES = frozenset({'match*', 'match', 'fail', 'ast', 'cst'})
-RESULT_STAGES = frozenset({'__cst__', '__ast__', '__err__'})
+UNIT_STAGES = frozenset({'match*', 'match', 'fail', 'AST', 'CST'})
+STARTING_STAGES = frozenset({'match*', 'match', 'fail'})
+RESULT_STAGES = frozenset({'__CST__', '__AST__', '__err__'})
 
 RX_SECTION = re.compile(r'\s*\[(?P<stage>\w+(:?\.\w+)*):(?P<symbol>\w+)\]')
-RE_VALUE = '(?:"""((?:.|\n)*?)""")|' + "(?:'''((?:.|\n)*?)''')|" + \
-           r'(?:"(.*?)")|' + "(?:'(.*?)')|" + r'(.*(?:\n(?:\s*\n)*    .*)*)'
+RX_METADATA_SECTION = re.compile(r'\s*\[(?P<metadata>\w+)\]')
+RE_MULTILINE_DOUBLE_QUOTE = r'(?:""("(?:.|\n)*?")"")'
+RE_MULTILINE_SINGLE_QUOTE = r"(?:''('(?:.|\n)*?')'')"
+RE_ONELINE_DOUBLE_QUOTE = r'(".*?")'
+RE_ONELINE_SINGLE_QUOTE = r"('.*?')"
+# Any data as long as it is indented after the first line.
+# In practice, S-expressions, XML and nodetree-JSON will be interpreted
+RE_MULTILINE_DATA = r'(.*(?:\n(?:\s*\n)*    .*)*)'
+RE_VALUE = '|'.join([RE_MULTILINE_DOUBLE_QUOTE,
+                     RE_MULTILINE_SINGLE_QUOTE,
+                     RE_ONELINE_DOUBLE_QUOTE,
+                     RE_ONELINE_SINGLE_QUOTE,
+                     RE_MULTILINE_DATA])
+# RE_VALUE = '(?:"""((?:.|\n)*?)""")|' + "(?:'''((?:.|\n)*?)''')|" + \
+#            r'(?:"(.*?)")|' + "(?:'(.*?)')|" + r'(.*(?:\n(?:\s*\n)*    .*)*)'
 # the following does not work with pypy3, because pypy's re-engine does not
 # support local flags, e.g. '(?s: )'
 # RE_VALUE = r'(?:"""((?s:.*?))""")|' + "(?:'''((?s:.*?))''')|" + \
 #            r'(?:"(.*?)")|' + "(?:'(.*?)')|" + '(.*(?:\n(?:\s*\n)*    .*)*)'
-RX_ENTRY = re.compile(r'\s*(\w+\*?)\s*:\s*(?:{value})\s*'.format(value=RE_VALUE))
+RX_ENTRY = re.compile(r'\s*([\w.]+\*?)\s*[:=]\s*(?:{value})\s*'.format(value=RE_VALUE))
 RX_COMMENT = re.compile(r'\s*[#;].*(?:\n|$)')
 
 
-def normalize_code(testcode: str, full_normalization: bool=False) -> str:
+def normalize_code(testcode: str,
+                   full_normalization: bool=False,
+                   never_deserialize: bool=False) \
+        -> Union[str, Node]:
     """Removes leading and trailing empty lines (if full_normalization is True)
-    and leading indentation (always) from multiline text. Single line text
-    will be returned unchanged.
+    and leading indentation (always) from multiline text. Furthermore, removes
+    quotation marks from strings.
+
+    In case the test-code was not enclosed in single or double quotation marks,
+    normalize_code also attemts to deserialize the content as S-expression or XML
+    and returns the resulting node-tree, if successful.
+
+    In all other cases the normalized code is returned as string.
+
+    :param testcode: The test-code
+    :param full_normalization:  If True, leading or trailing empty lines will be
+        ignored.
+    :param never_deserialize:  Never return the test-code as deserialized node-tree.
+        Thus, strings containing S-expressions or XML will be returned as such.
+
+    :return: The normalized test-code, which can either be:
+        a) a string, if the string passed to parameter ``testcode`` contains quotation
+            marks (either '  or ") of the same kind in its first and last character,
+            or if the string passed can neither be interpreted as an XML nor as an
+            S-expression-tree.
+        b) a node-tree, if the string passed to parameter ``testcode`` does not begin
+            and end with quotation marks AND if the test-code can be interpreted
+            as an S-expression or as XML-code.
+
+    Examples::
+
+        >>> code = '''first line
+        ...     indented second line'''
+        >>> print(normalize_code(code))
+        first line
+        indented second line
+        >>> normalize_code('(a (b X))')
+        Node('a', (Node('b', 'X')))
+        >>> normalize_code('"(a (b X))"')
+        '(a (b X))'
+
     """
     lines = testcode.split('\n')
     if len(lines) > 1:
@@ -124,19 +175,31 @@ def normalize_code(testcode: str, full_normalization: bool=False) -> str:
             for k in range(len(lines) - 1, -1, -1):
                 if lines[k]:  break
             lines = lines[i:k + 1]
-        testcode = '\n'.join(lines)
-    return testcode
+    if lines[0][:1] in ('"', "'") and lines[-1][-1:] in ('"', "'"):
+        # remove string markers
+        lines[0] = lines[0][1:]
+        lines[-1] = lines[-1][:-1]
+    elif not never_deserialize:
+        code = '\n'.join(lines)
+        try:
+            tree = deserialize(code)
+            return tree
+        except ValueError:
+            return code
+    return '\n'.join(lines)
 
 
-def unit_from_config(config_str, filename, allowed_stages=UNIT_STAGES):
+def unit_from_config(config_str: str, filename: str, allowed_stages=UNIT_STAGES):
     """ Reads grammar unit tests contained in a file in config file (.ini)
     syntax.
 
-    Args:
-        config_str (str): A string containing a config-file with Grammar unit-tests
+    :param config_str: A string containing a config-file with Grammar unit-tests
+    :param filename: The file-name of the config-file containing ``config_str``.
+    :param allows_stages: A set of stage names of stages in the processing pipeline
+        for which the test-file may contain tests.
 
     Returns:
-        A dictionary representing the unit tests.
+        A JSON-like object(i.e. dictionary) representing the unit tests.
     """
     # TODO: issue a warning if the same match:xxx or fail:xxx block appears more than once
 
@@ -152,13 +215,33 @@ def unit_from_config(config_str, filename, allowed_stages=UNIT_STAGES):
     OD = OrderedDict
     unit = OD()
 
+    # read meta-data
     pos = eat_comments(cfg, 0)
+    metadata_match = RX_METADATA_SECTION.match(cfg, pos)
+    while metadata_match:
+        mdsection = metadata_match.groupdict()['metadata']
+        if mdsection[-2:] != '__':
+            mdsection += '_' if mdsection[-1:] == '_' else '__'
+        unit.setdefault(mdsection, OD())
+        pos = eat_comments(cfg, metadata_match.span()[1])
+        entry_match = RX_ENTRY.match(cfg, pos)
+        while entry_match:
+            key, value = [group for group in entry_match.groups() if group is not None]
+            value = normalize_code(value, full_normalization=True)
+            unit[mdsection][key] = value
+            pos = eat_comments(cfg, entry_match.span()[1])
+            entry_match = RX_ENTRY.match(cfg, pos)
+        metadata_match = RX_METADATA_SECTION.match(cfg, pos)
+
+    # read test-data
     section_match = RX_SECTION.match(cfg, pos)
     first_section_missing = True
     while section_match:
         first_section_missing = False
         d = section_match.groupdict()
         stage = d['stage']
+        if stage.upper() == 'AST':  stage = 'AST'
+        if stage.upper() == 'CST':  stage = 'CST'
         if stage not in allowed_stages:
             raise KeyError(f'Unknown stage "{stage}" in file "{filename}"! '
                            f"must be one of: {allowed_stages}")
@@ -171,9 +254,9 @@ def unit_from_config(config_str, filename, allowed_stages=UNIT_STAGES):
         #     SyntaxError('No entries in section [%s:%s]' % (stage, symbol))
         while entry_match:
             testkey, testcode = [group for group in entry_match.groups() if group is not None]
-            testcode = normalize_code(
-                testcode, full_normalization=
-                stage not in ('match', 'fail', 'ast', 'cst'))
+            testcode = normalize_code(testcode,
+                full_normalization=stage not in UNIT_STAGES,
+                never_deserialize=stage in STARTING_STAGES)
             # test = unit.setdefault(symbol, OD()).setdefault(stage, OD())
             test = unit[symbol][stage]
             if testkey.strip('*') in test or (testkey.strip('*') + '*') in test:
@@ -188,8 +271,10 @@ def unit_from_config(config_str, filename, allowed_stages=UNIT_STAGES):
     if pos != len(cfg) and not re.match(r'\s+$', cfg[pos:]):
         err_head = 'N' if first_section_missing else 'Test NAME:STRING or n'
         err_str = err_head + 'ew section [TEST:PARSER] expected, ' \
-                  + 'where TEST is "match", "fail" or "ast"; in file ' \
-                  + '"%s", line %i' % (filename, cfg[:pos + 1].count('\n') + 1)
+                  + 'where TEST is "match", "fail" or "AST"; in file ' \
+                  + '"%s", line %i: "%s"' \
+                  % (filename, cfg[:pos + 1].count('\n') + 1,
+                     cfg[pos:cfg.find('\n', pos + 1)].strip('\n'))
         raise SyntaxError(err_str)
     return unit
 
@@ -211,7 +296,7 @@ def unit_from_json(json_str, filename, allowed_stages=UNIT_STAGES):
 
 
 # A dictionary associating file endings with reader functions that
-# transfrom strings containing the file's content to a nested dictionary
+# transform strings containing the file's content to a nested dictionary
 # structure of test cases.
 TEST_READERS = {
     '.ini': unit_from_config,
@@ -241,12 +326,12 @@ def unit_from_file(filename, additional_stages=UNIT_STAGES):
     errors = []
     for parser_name, tests in test_unit.items():
         # normalize case for test category names
-        keys = list(tests.keys())
-        for key in keys:
-            new_key = key.lower()
-            if new_key != key:
-                tests[new_key] = tests[keys]
-                del tests[keys]
+        # keys = list(tests.keys())
+        # for key in keys:
+        #     new_key = key.lower()
+        #     if new_key != key:
+        #         tests[new_key] = tests[key]
+        #         del tests[key]
 
         m_names = set(tests.get('match', dict()).keys())
         f_names = set(tests.get('fail', dict()).keys())
@@ -263,7 +348,12 @@ def unit_from_file(filename, additional_stages=UNIT_STAGES):
     return test_unit
 
 
-def get_report(test_unit) -> str:
+def indent(txt):
+    lines = txt.split('\n')
+    lines[0] = '    ' + lines[0]
+    return "\n    ".join(lines)
+
+def get_report(test_unit, serializations: Dict[str, List[str]] = dict()) -> str:
     """
     Returns a text-report of the results of a grammar unit test. The report
     lists the source of all tests as well as the error messages, if a test
@@ -277,15 +367,16 @@ def get_report(test_unit) -> str:
     with the asterix marker when needed than to output the CST for all tests
     which would unnecessarily bloat the test reports.
     """
-    def indent(txt):
-        lines = txt.split('\n')
-        lines[0] = '    ' + lines[0]
-        return "\n    ".join(lines)
-
     report = []
+    srl = { k: v[0] for k, v in serializations.items()}
     save = get_config_value('xml_attribute_error_handling')
     set_config_value('xml_attribute_error_handling', 'fix')
     for parser_name, tests in test_unit.items():
+        if parser_name[-2:] == '__':
+            heading = parser_name[:-2]
+            report.append(f"{heading}\n{'=' * len(heading)}\n\n"
+                + '\n'.join(f"{k} = {repr(v)}" for k, v in tests.items()))
+            continue
         heading = 'Test of parser: "%s"' % parser_name
         report.append('\n\n%s\n%s' % (heading, '=' * len(heading)))
         for test_name, test_code in tests.get('match', dict()).items():
@@ -297,24 +388,25 @@ def get_report(test_unit) -> str:
             if error:
                 report.append('\n### Error:\n')
                 report.append(error)
-            ast = tests.get('__ast__', {}).get(test_name, None)
-            cst = tests.get('__cst__', {}).get(test_name, None)
+            ast = tests.get('__AST__', {}).get(test_name, None)
+            cst = tests.get('__CST__', {}).get(test_name, None)
             if cst and (not ast or str(test_name).endswith('*')):
                 report.append('\n### CST\n')
-                report.append(indent(cst.serialize('cst')))
+                report.append(indent(cst.serialize(srl.get('CST', 'CST'))))
             if ast:
                 report.append('\n### AST\n')
-                report.append(indent(ast.serialize('ast')))
+                report.append(indent(ast.serialize(srl.get('AST', 'AST'))))
 
             compilation_stages = [key for key in tests
                                   if key[:2] + key[-2:] == '____' and key not in
-                                  {'__ast__', '__cst__', '__err__', 'match', 'fail'}]
+                                  {'__AST__', '__CST__', '__err__', 'match', 'fail'}]
             for stage in compilation_stages:
                 if test_name in tests[stage]:
                     result = tests[stage][test_name]
                     report.append(f'\n### {stage.strip("_")}\n')
                     if isinstance(result, Node):
-                        result_str = cast(Node, result).serialize('default')
+                        result_str = cast(Node, result).serialize(
+                            srl.get(stage.strip('_'), srl.get('*', 'default')))
                     else:
                         result_str = str(result)
                     report.append(indent(result_str))
@@ -359,9 +451,22 @@ def md_codeblock(code: str) -> str:
 
 
 def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT', verbose=False,
-                 junctions=set(), show=set()):
+                 junctions=set(), show=set(), serializations: Dict[str, List[str]] = dict()):
     """
     Unit tests for a grammar-parser and ast-transformations.
+
+    :param test_unit: The test-unit in a json-like dictionary format as it is returned by
+        :py:func:`~testing.unit_from_file`.
+    :param parser_factory: the parser-factory-object, typically an instance of
+        :py:class:`~parse.Grammar`.
+    :param transformer_factory: A factory-function for the AST-transformation-function.
+    :param report: the name of the subdirectory where the test-reports will be saved.
+        If the name is the empty string, no reports will be generated.
+    :param verbose: If True, more information will be printed to the console during testing.
+    :param junctions: A set of :py:class:`~compile.Junction`-objects that define further
+        processing stages after the AST-transformation.
+    :param show: A set of stage names that shall be shown in the report apart from the AST.
+        (The abstract-syntax-tree will always be shown!)
     """
     assert isinstance(report, str)
     assert isinstance(junctions, Set) and all(isinstance(e[0], str) and isinstance(e[2], str)
@@ -385,15 +490,14 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         except AttributeError:
             return k
 
-    def get(tests, category, key) -> str:
+    def get(tests, category, key) -> Union[Node, str]:
         try:
-            value = tests[category][key] if key in tests[category] \
-                else tests[category][clean_key(key)]
+            try:
+                return tests[category][key]
+            except KeyError:
+                return tests[category][clean_key(key)]
         except KeyError:
-            return ''
-            # raise AssertionError('%s-test %s for parser %s missing !?'
-            #                      % (category, test_name, parser_name))
-        return value
+            return ""
 
     if isinstance(test_unit, str):
         _, unit_name = os.path.split(os.path.splitext(test_unit)[0])
@@ -448,14 +552,45 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                     + '\n\t'.join(str(msg).replace('\n', '\n\t\t') for msg in test_errors))
                 # errata.append('\n\n')  # leads to wrong error count!!!
 
+    def flat_string_test(tests, stage, tree, test_name,
+                         parser_name, test_code, errata) -> Union[Node, str]:
+        compare = get(tests, stage, test_name)
+        if compare and isinstance(compare, str):
+            content = tree.content
+            if content == compare:
+                if verbose:  write(f'      {stage}-test "' + test_name + '" ... OK')
+                return ""
+            else:
+                try:
+                    return deserialize(compare)
+                except ValueError as e:
+                    test_code_str = "\n\t".join(test_code.split("\n"))
+                    e_str = str(e)
+                    if e_str.find('Malformed S-expression') >= 0:
+                        errata.append(f'{stage}-test {test_name} for parser {parser_name} '
+                                      f'failed because of\n\t{e_str}\n{compare}')
+                    else:
+                        errata.append(f'{stage}-test {test_name} for parser {parser_name} '
+                                      f'failed with: {e_str}:\n'
+                                      f'\tExpr.:     {test_code_str}\n'
+                                      f'\tExpected:  {compare}\n'
+                                      f'\tReceived:  {content}\n')
+                    return ""
+        return compare or ""
+
+    saved_config_values = dict()
     for parser_name, tests in test_unit.items():
-        # if not get_config_value('test_parallelization'):
-        #     print('  Testing parser: ' + parser_name)
+        if parser_name[-2:] == '__':
+            assert parser_name == 'config__', f'Unknown metadata-type: "{parser_name}"'
+            for key, value in tests.items():
+                saved_config_values[key] = get_config_value(key)
+                set_config_value(key, value)
+            continue
 
         track_history = get_config_value('history_tracking')
         try:
             if has_lookahead(parser_name):
-                set_tracer(parser[parser_name].descendants, trace_history)
+                set_tracer(parser[parser_name].descendants(), trace_history)
                 track_history = True
         except AttributeError:
             pass
@@ -472,6 +607,13 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         match_tests = set(tests['match'].keys()) if 'match' in tests else set()
         match_test_keys = {clean_key(k) for k in match_tests}
 
+        # normalize AST and CST-names to upper!
+        for key in tuple(tests.keys()):
+            KEY = key.upper()
+            if KEY in ('AST', 'CST') and KEY != key:
+                tests[KEY] = tests[key]
+                del tests[key]
+
         transformation_stages = {key for key in tests if key not in {'match', 'fail'}}
         for stage in transformation_stages:
             transformation_tests = set(tests[stage].keys())
@@ -480,7 +622,7 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                                      ' lack corresponding match-tests.')
         # cst and ast will be treated separately in the following and are thus not
         # needed any more in the list
-        for stage in ('cst', 'ast'):
+        for stage in ('CST', 'AST'):
             try:
                 transformation_stages.remove(stage)
             except (KeyError, ValueError):
@@ -489,17 +631,22 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         # run match tests
 
         for test_name, test_code in tests.get('match', dict()).items():
-            # if not get_config_value('test_parallelization'):
-            #     print('    Test: ' + str(test_name))
-
             errflag = len(errata)
+            err: Optional[Error] = None
+            clean_test_name = str(test_name).replace('*', '')
             try:
                 cst = parser(test_code, parser_name)
             except AttributeError as upe:
                 cst = RootNode()
                 cst = cst.new_error(Node(ZOMBIE_TAG, "").with_pos(0), str(upe))
-            clean_test_name = str(test_name).replace('*', '')
-            tests.setdefault('__cst__', {})[test_name] = cst
+            except KeyboardInterrupt as ctrlC:
+                if is_logging() and track_history:
+                    with local_log_dir('./LOGS'):
+                        log_parsing_history(parser, "interrupted_match_%s_%s.log" %
+                                            (parser_name, clean_test_name))
+                raise ctrlC
+
+            tests.setdefault('__CST__', {})[test_name] = cst
             # errors = []  # type: List[Error]
             if is_error(cst.error_flag) and not lookahead_artifact(cst):
                 errors = [e for e in cst.errors if e.code not in POSSIBLE_ARTIFACTS]
@@ -507,8 +654,8 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                               '\n\tExpr.:  %s\n\t%s' %
                               (test_name, parser_name, md_codeblock(test_code),
                                '\n'.join(str(m) for m in errors)))
-            if "ast" in tests or report or transformation_stages or show:
-                ast = copy.deepcopy(cst) if 'cst' in tests or str(test_name).find('*') >= 0 \
+            if 'AST' in tests or report or transformation_stages or show:
+                ast = copy.deepcopy(cst) if 'CST' in tests or str(test_name).find('*') >= 0 \
                       else cst
                 old_errors = set(ast.errors)
                 traverse(ast, {'*': remove_children({TEST_ARTIFACT})})
@@ -518,9 +665,9 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                     e.args = ('Test %s of parser %s failed, because:\n%s'
                               % (test_name, parser_name, e.args[0]),)
                     raise e
-                tests.setdefault('__ast__', {})[test_name] = ast
+                tests.setdefault('__AST__', {})[test_name] = ast
                 ast_errors = [e for e in ast.errors if e not in old_errors]
-                add_errors_to_errata(ast_errors, 'ast', test_name, parser_name)
+                add_errors_to_errata(ast_errors, 'AST', test_name, parser_name)
 
             # compilation-tests
 
@@ -534,7 +681,7 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                         f'{", ".join([repr(t) for t in tests.keys()])} in unit "{unit_name}"!')
                 old_errors = set(ast.errors)
                 try:
-                    targets = run_pipeline(junctions, {'ast': copy.deepcopy(ast)},
+                    targets = run_pipeline(junctions, {'AST': copy.deepcopy(ast)},
                                            transformation_stages | show)
                 except Exception as e:  # at least: (ValueError, IndexError)
                     # raise SyntaxError(f'Compilation-Test {test_name} of parser {parser_name} '
@@ -542,16 +689,22 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                     err = Error(f'Python Error in compilation-test {test_name} of parser '
                                 f'{parser_name} failed with: {str(e)}\n{traceback.format_exc()}\n'
                                 f'Processing of {test_name}:{parser_name} stopped at this point.',
-                                pos=0, line=1, column=0)
+                                pos=0, code=PYTHON_ERROR_IN_TEST, line=1, column=0)
                     add_errors_to_errata([err], '?', test_name, parser_name)
                     targets = dict()
                 t_errors: Dict[str, List[Error]] = {}
                 for stage in list(transformation_stages) + [t for t in targets if t in show]:
-                    tests.setdefault(f'__{stage}__', {})[test_name] = targets[stage][0]
-                    t_errors[stage] = [e for e in targets[stage][1] if e not in old_errors]
-                    for e in t_errors[stage]:
-                        old_errors.add(e)
-                    add_errors_to_errata(t_errors[stage], stage, test_name, parser_name)
+                    try:
+                        tests.setdefault(f'__{stage}__', {})[test_name] = targets[stage][0]
+                        t_errors[stage] = [e for e in targets[stage][1] if e not in old_errors]
+                        for e in t_errors[stage]:
+                            old_errors.add(e)
+                        add_errors_to_errata(t_errors[stage], stage, test_name, parser_name)
+                    except KeyError as ke:
+                        # ignore key errors in case they are only consequential errors
+                        # of earlier errors
+                        if err.code != PYTHON_ERROR_IN_TEST:
+                            raise(ke)
                 # keep test-items, so that the order of the items is the same as
                 # in which they are processed in the pipeline.
                 for t in targets:
@@ -566,37 +719,31 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 infostr = '    match-test "' + test_name + '" ... '
                 write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
 
-            if "cst" in tests and len(errata) == errflag:
-                try:
-                    compare = deserialize(get(tests, "cst", test_name))
-                except ValueError as e:
-                    raise SyntaxError('CST-TEST "%s" of parser "%s" failed with:\n%s'
-                                      % (test_name, parser_name, str(e)))
+            if 'CST' in tests and len(errata) == errflag:
+                compare = flat_string_test(tests, 'CST', cst, test_name,
+                                           parser_name, test_code, errata)
                 if compare:
                     if not compare.equals(cst):
                         errata.append('Concrete syntax tree test "%s" for parser "%s" failed:\n%s' %
-                                      (test_name, parser_name, cst.serialize('cst')))
+                                      (test_name, parser_name, cst.serialize('CST')))
                     if verbose:
-                        infostr = '      cst-test "' + test_name + '" ... '
+                        infostr = '      CST-test "' + test_name + '" ... '
                         write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
 
-            if "ast" in tests and len(errata) == errflag:
-                try:
-                    compare = deserialize(get(tests, "ast", test_name))
-                except ValueError as e:
-                    raise SyntaxError('AST-TEST "%s" of parser "%s" failed with:\n%s'
-                                      % (test_name, parser_name, str(e)))
+            if 'AST' in tests and len(errata) == errflag:
+                compare = flat_string_test(tests, 'AST', ast, test_name,
+                                           parser_name, test_code, errata)
                 if compare:
                     traverse(compare, {'*': remove_children({TEST_ARTIFACT})})
-                    if not compare.equals(ast):  # no worry: ast is defined if "ast" in tests
+                    if not compare.equals(ast):  # no worry: ast is defined if 'AST' in tests
                         ast_str = flatten_sxpr(ast.as_sxpr())
                         compare_str = flatten_sxpr(compare.as_sxpr())
-                        errata.append('Abstract syntax tree test "%s" for parser "%s" failed:'
-                                      '\n\tExpr.:     %s\n\tExpected:  %s\n\tReceived:  %s'
-                                      % (test_name, parser_name, '\n\t'.join(test_code.split('\n')),
-                                         compare_str, ast_str))
+                        templ = 'Abstract syntax tree test "%s" for parser "%s" failed:' \
+                                '\n\tExpr.:     %s\n\tExpected:  %s\n\tReceived:  %s'
+                        errata.append(templ % (test_name, parser_name, '\n\t'.join(test_code.split('\n')),
+                                               compare_str, ast_str))
                     if verbose:
-                        infostr = '      ast-test "' + test_name + '" ... '
+                        infostr = '      AST-test "' + test_name + '" ... '
                         write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
 
             if len(errata) == errflag and transformation_stages:
@@ -604,7 +751,8 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                     try:
                         data = extract_data(targets[stage][0])
                         if isinstance(data, Node):
-                            compare = deserialize(get(tests, stage, test_name))
+                            compare = flat_string_test(tests, stage, data, test_name,
+                                                       parser_name, test_code, errata)
                             if compare and not compare.equals(data):
                                 test_str = flatten_sxpr(data.as_sxpr())
                                 compare_str = flatten_sxpr(compare.as_sxpr())
@@ -617,23 +765,24 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                             compare = get(tests, stage, test_name).strip('\n')
                             if compare:
                                 test_str = str(data)
-                                if stage in ('match', 'fail', 'ast', 'cst'):
+                                if stage in ('match', 'fail', 'AST', 'CST'):
                                     test_str = normalize_code(test_str, full_normalization=False)
                                 else:
                                     test_str = test_str.strip('\n')
-                                # test_str = normalize_code(
-                                #     test_str, full_normalization=
-                                #     stage not in ('match', 'fail', 'ast', 'cst'))
                                 if not compare == test_str:
                                     test_code_str = "\n\t".join(test_code.split("\n"))
+                                    if compare.find('\n') >= 0 and compare.strip() == compare:
+                                        compare = '\n' + compare + '\n'
+                                    if test_str.find('\n') >= 0 and test_str.strip() == test_str:
+                                        test_str = '\n' + test_str + '\n'
                                     errata.append(f'{stage}-test {test_name} for parser {parser_name} failed:\n'
-                                                  f'\tExpr.:\n{test_code_str}\n'
-                                                  f'\tExpected:\n{compare}\n'
-                                                  f'\tReceived:\n{test_str}')
+                                                  f'\tExpr.:     {test_code_str}\n'
+                                                  f'\tExpected:  {compare}\n'
+                                                  f'\tReceived:  {test_str}')
                     except ValueError as e:
                         raise SyntaxError(f'{stage}-test {test_name} of parser {parser_name} '
                                           f'failed with:\n{str(e)}.')
-                    if verbose:
+                    if verbose and compare:
                         infostr = ' ' * (max(0, 9 - len(stage))) \
                                   + f'{stage}-test "' + test_name + '" ... '
                         write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
@@ -661,12 +810,22 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 errata.append('Unknown parser "{}" in fail test "{}"!'.format(
                     parser_name, test_name))
                 tests.setdefault('__err__', {})[test_name] = errata[-1]
-            if "ast" in tests or report:
+            if 'AST' in tests or report:
                 traverse(cst, {'*': remove_children({TEST_ARTIFACT})})
                 transform(cst)
             if not (is_error(cst.error_flag) and not lookahead_artifact(cst)):
-                errata.append('Fail test "%s" for parser "%s" yields match instead of '
-                              'expected failure!\n' % (test_name, parser_name))
+                # if cst.name != ZOMBIE_TAG:  # # not cst.pick(ZOMBIE_TAG, include_root=True):
+                #     # add syntax tree, if it is useful
+                #     try:
+                #         stage = cst.stage
+                #     except AttributeError:
+                #         stage = 'CST'
+                #     treestr = f'\n{indent(stage.upper() + ": " + cst.serialize(stage))}'
+                # else:
+                #     treestr = "\n    (AST not shown, because it is just a testing stub!)"
+                treestr = ''
+                errata.append(f'Fail test "{test_name}" for parser "{parser_name}" '
+                              f'yields match instead of expected failure!' + treestr)
                 tests.setdefault('__err__', {})[test_name] = errata[-1]
                 # write parsing-history log only in case of test-failure
                 if is_logging() and track_history:
@@ -681,11 +840,11 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
 
     # remove tracers, in case there are any:
-    set_tracer(parser.root_parser__.descendants, None)
+    set_tracer(parser.root_parser__.descendants(), None)
 
     # write test-report
     if report:
-        test_report = get_report(test_unit)
+        test_report = get_report(test_unit, serializations)
         if test_report:
             try:
                 os.mkdir(report)   # is a process-Lock needed, here?
@@ -694,6 +853,10 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
             with open(os.path.join(report, unit_name + '.md'), 'w', encoding='utf8') as f:
                 f.write(test_report)
                 f.flush()
+
+    # restore changed config values
+    for key, value in saved_config_values.items():
+        set_config_value(key, value)
 
     print('\n'.join(output))
     return errata
@@ -729,7 +892,8 @@ def grammar_suite(directory, parser_factory, transformer_factory,
                   fn_patterns=('*test*',),
                   ignore_unknown_filetypes=False,
                   report='REPORT', verbose=True,
-                  junctions=set(), show=set()):
+                  junctions=set(), show=set(),
+                  serializations: Dict[str, List[str]] = dict()):
     """
     Runs all grammar unit tests in a directory. A file is considered a test
     unit, if it has the word "test" in its name.
@@ -756,13 +920,12 @@ def grammar_suite(directory, parser_factory, transformer_factory,
 
     assert tests, f"No pattern from {fn_patterns} matched any test in directory {os.getcwd()}"
 
-    # TODO: fix "handle is closed" error in pypy3 when exiting the interpreter!
     with instantiate_executor(get_config_value('test_parallelization') and len(tests) > 1,
                               concurrent.futures.ProcessPoolExecutor) as pool:
         results = []
         for filename in tests:
             parameters = (filename, parser_factory, transformer_factory,
-                          report, verbose, junctions, show)
+                          report, verbose, junctions, show, serializations)
             results.append(pool.submit(grammar_unit, *parameters))
         done, not_done = concurrent.futures.wait(results)
         assert not not_done, str(not_done)
@@ -787,8 +950,6 @@ def grammar_suite(directory, parser_factory, transformer_factory,
             for error in all_errors[filename]:
                 error_report.append('\t' + '\n\t'.join(error.split('\n')))
     if error_report:
-        # if verbose:
-        #     print("\nFAILURE! %i error%s found!\n" % (err_N, 's' if err_N > 1 else ''))
         return ('Test suite "%s" revealed %s error%s:\n'
                 % (directory, err_N, 's' if err_N > 1 else '') + '\n'.join(error_report))
     if verbose:
@@ -803,7 +964,7 @@ def grammar_suite(directory, parser_factory, transformer_factory,
 ########################################################################
 
 
-RX_DEFINITION_OR_SECTION = re.compile(r'(?:^|\n)[ \t]*(\w+(?=[ \t]*=)|#:.*(?=\n|$|#))')
+RX_DEFINITION_OR_SECTION = re.compile(r'(?:^|\n)[ \t]*(\w(?:-?\w)*(?=[ \t]*:?:?=)|#:.*(?=\n|$|#))')
 SymbolsDictType: TypeAlias = Dict[str, List[str]]
 
 ALL_SYMBOLS = 'ALL_SYMBOLS'
@@ -849,11 +1010,13 @@ def extract_symbols(ebnf_text_or_file: str) -> SymbolsDictType:
 
     ebnf = load_if_file(ebnf_text_or_file)
     deflist = RX_DEFINITION_OR_SECTION.findall(ebnf)
+    deflist = [(re.sub(r'(?<=\w)-(?=\w)', '_', dfn) if dfn[:2] != '#:' else dfn)
+               for dfn in deflist]
     if not deflist:
         if ebnf_text_or_file.find('\n') < 0 and ebnf_text_or_file.endswith('.ebnf'):
-            deflist = '#: ' + os.path.splitext(ebnf_text_or_file)[0]
+            deflist = ['#: ' + os.path.splitext(ebnf_text_or_file)[0]]
         else:
-            deflist = '#: ALL'
+            deflist = ['#: ALL']
     symbols = OrderedDict()  # type: SymbolsDictType
     if deflist[0][:2] != '#:':
         curr_section = ALL_SYMBOLS
@@ -946,7 +1109,6 @@ def run_tests_in_class(cls_name, namespace, methods=()):
             if callable(func):
                 print("Running " + cls_name + "." + name)
                 setup();  func();  teardown()
-                # exec('obj.' + name + '()')
     else:
         obj, setup, teardown = instantiate(cls_name, namespace)
         for name in dir(obj):
@@ -1058,7 +1220,6 @@ def run_file(fname):
     f_lower = fname.lower()
     if f_lower.startswith('test_') and f_lower.endswith('.py'):
         print("RUNNING " + fname)
-        # print('\nRUNNING UNIT TESTS IN: ' + fname)
         exec('import ' + fname[:-3])
         runner('', eval(fname[:-3]).__dict__)
 
@@ -1154,7 +1315,7 @@ async def stdio(limit=asyncio.streams._DEFAULT_LIMIT, loop=None):
 
 
 class MockStream:
-    """Simulations a stream that can be written to from one side and read from
+    """Simulates a stream that can be written to from one side and read from
     from the other side like a pipe. Usage pattern::
 
         pipe = MockStream()
@@ -1187,15 +1348,10 @@ class MockStream:
     def closed(self) -> bool:
         countdown = 50
         while self._closed and self.data and countdown > 0:
-            # allow client to read any pending data
-            # print(self.name, 'not yet closed due to pending data')
             self.data_waiting.set()
             time.sleep(0.01)
             countdown -= 1
         return self._closed
-        # with self.lock:
-        #     result = self._closed and not self.data
-        # return result
 
     def data_available(self) -> int:
         """Returns the size of the available data."""

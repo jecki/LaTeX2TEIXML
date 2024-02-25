@@ -14,13 +14,14 @@ cdef class Parser:
     cdef public bint drop_content
     cdef public str node_name
     cdef public object eq_class
-    cdef public object sub_parsers
+    cdef public object _sub_parsers
     cdef public object _parse_proxy
     cdef public object _grammar
-    cdef object visited
-    cdef str _symbol
+    cdef public object visited
+    cdef public str _symbol
     cdef public object _descendants_cache
-    cdef public object _descendant_trails_cache
+    cdef public object _anon_desc_cache
+    cdef public object _desc_trails_cache
 
     cpdef reset(self)
     # cpdef __call__(self, location)
@@ -32,7 +33,13 @@ cdef class Parser:
     # cpdef descendants(self)
     # cpdef descendant_trails(self)
     # cpdef _apply(self, func, ptrail, flip)
-    cpdef apply(self, func)
+    # cpdef apply(self, func, grammar)
+
+cdef class LeafParser(Parser):
+    pass
+
+cdef class NoMemoizationParser(LeafParser):
+    pass
 
 # cpdef mixin_comment(whitespace, str)
 
@@ -68,14 +75,14 @@ cdef class Grammar:
     # cdef public object static_analysis_errors__
     # cdef public object parser_names
 
-cdef class PreprocessorToken(Parser):
+cdef class PreprocessorToken(LeafParser):
     pass
 
-cdef class Text(Parser):
+cdef class Text(NoMemoizationParser):
     cdef public str text
     cdef public int len
 
-cdef class RegExp(Parser):
+cdef class RegExp(LeafParser):
     cdef public object regexp
 
 cdef class Whitespace(RegExp):
