@@ -38,8 +38,7 @@ from DHParser.compile import Compiler, compile_source, Junction, full_compile
 from DHParser.configuration import set_config_value, get_config_value, access_thread_locals, \
     access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN
 from DHParser import dsl
-from DHParser.dsl import recompile_grammar, create_parser_transition, \
-    create_preprocess_transition, create_transition, PseudoJunction, never_cancel
+from DHParser.dsl import recompile_grammar, never_cancel
 from DHParser.ebnf import grammar_changed
 from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors, NOTICE, \
     WARNING, ERROR, FATAL
@@ -51,6 +50,7 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
     last_value, matching_bracket, optional_last_value, MERGE_TREETOPS
+from DHParser.pipeline import PseudoJunction, create_junction, create_parser_junction
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer
@@ -72,12 +72,10 @@ from DHParser.transform import is_empty, remove_if, TransformationDict, Transfor
 from DHParser import parse as parse_namespace__
 
 import DHParser.versionnumber
-if DHParser.versionnumber.__version_info__ < (1, 5, 0):
+if DHParser.versionnumber.__version_info__ < (1, 7, 0):
     print(f'DHParser version {DHParser.versionnumber.__version__} is lower than the DHParser '
-          f'version 1.5.0, {os.path.basename(__file__)} has first been generated with. '
+          f'version 1.7.0, {os.path.basename(__file__)} has first been generated with. '
           f'Please install a more recent version of DHParser to avoid unexpected errors!')
-
-from DHParser.pipeline import PseudoJunction, create_parser_junction
 
 
 #######################################################################
@@ -505,10 +503,6 @@ LaTeX_AST_transformation_table = {
 }
 
 
-# DEPRECATED, because it requires pickling the transformation-table, which rules out lambdas!
-# ASTTransformation: Junction = create_transition(
-#     LaTeX_AST_transformation_table, "cst", "ast", "transtable")
-
 def LaTeXTransformer() -> TransformerFunc:
     return partial(transformer, transformation_table=LaTeX_AST_transformation_table.copy(),
                    src_stage='cst', dst_stage='ast')
@@ -637,7 +631,7 @@ class LaTeXCompiler(Compiler):
         return node
 
 
-compiling: Junction = create_transition(
+compiling: Junction = create_junction(
     LaTeXCompiler, "ast", "LaTeXML".lower())
 
 
@@ -658,7 +652,7 @@ compiling: Junction = create_transition(
 
 # # change the names of the source and destination stages. Source
 # # ("LaTeX") in this example must be the name of some earlier stage, though.
-# postprocessing: Junction = create_transition("LaTeX", "refined", PostProcessing)
+# postprocessing: Junction = create_junction("LaTeX", "refined", PostProcessing)
 #
 
 #######################################################################
