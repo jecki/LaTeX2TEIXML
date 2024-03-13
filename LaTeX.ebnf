@@ -6,8 +6,8 @@
 @ comment    = /%.*/                                # note: trailing linefeed is not part of the comment proper
 @ reduction  = merge_treetops
 @ disposable = /_\w+/
-@ drop       = strings, backticked, _GAP, _PARSEP #, whitespace, regexps, _WSPC, _PARSEP, _LB,
-               # _has_block_start, _DROP_BACKSLASH, _structure_name, _env_name
+@ drop       = strings, backticked, _GAP, _PARSEP, whitespace, regexps, _WSPC, _PARSEP, _LB,
+               _has_block_start, _DROP_BACKSLASH, _structure_name, _env_name
 
 ########################################################################
 #

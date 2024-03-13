@@ -138,7 +138,7 @@ dmypy.json
 testdata/*.xml
 /beispiel/
 
-
+LaTeX-Examples/
 external_data/
 /Carnap_Tagebücher_XML.zip
 /Carnap_Tagebücher_XML/
