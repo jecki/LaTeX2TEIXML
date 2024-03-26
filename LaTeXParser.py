@@ -36,7 +36,8 @@ import DHParser
 
 from DHParser.compile import Compiler, compile_source, Junction, full_compile
 from DHParser.configuration import set_config_value, get_config_value, access_thread_locals, \
-    access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN
+    access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN, \
+    ALLOWED_PRESET_VALUES
 from DHParser import dsl
 from DHParser.dsl import recompile_grammar, never_cancel
 from DHParser.ebnf import grammar_changed
@@ -97,7 +98,9 @@ def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
 
 def preprocessor_factory() -> PreprocessorFunc:
     # below, the second parameter
-    find_next_include = gen_find_include_func(RE_INCLUDE, RE_COMMENT, lambda s: s + '.tex')
+    find_next_include = gen_find_include_func(
+        RE_INCLUDE, RE_COMMENT,
+        lambda s: s if s[-4:] == '.tex' else s + '.tex')
     include_prep = partial(preprocess_includes, find_next_include=find_next_include)
     tokenizing_prep = make_preprocessor(LaTeXTokenizer)
     return chain_preprocessors(include_prep, tokenizing_prep)
@@ -124,7 +127,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "5c8e2676eb6395cc6fd5004d6c7ca8fe"
+    source_hash__ = "c95d62eac7c2203f0be132b64b81cded"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
@@ -203,6 +206,7 @@ class LaTeXGrammar(Grammar):
     config = Series(Series(Drop(Text("[")), dwsp__), Alternative(Series(parameters, Lookahead(Series(Drop(Text("]")), dwsp__))), cfg_text), Series(Drop(Text("]")), dwsp__), mandatory=1)
     _block_content = Series(Option(Alternative(_PARSEP, S)), ZeroOrMore(Series(Alternative(_block_environment, _text_element, paragraph), Option(Alternative(_PARSEP, S)))))
     hide_from_toc = Series(Text("*"), dwsp__)
+    setlength = Series(Series(Drop(Text("\\setlength")), dwsp__), block, block)
     _pth = OneOrMore(Alternative(_PATH, ESCAPED))
     target = Series(_pth, ZeroOrMore(Series(NegativeLookbehind(Drop(RegExp('s?ptth'))), _COLON, _pth)), Option(Series(Alternative(Series(Option(_DROP_BACKSLASH), _HASH), Series(NegativeLookbehind(Drop(RegExp('s?ptth'))), _COLON)), _TAG)))
     path = Series(_pth, _PATHSEP)
@@ -228,7 +232,7 @@ class LaTeXGrammar(Grammar):
     generic_command = Alternative(Series(NegativeLookahead(no_command), CMDNAME, Option(starred), ZeroOrMore(Series(dwsp__, Alternative(config, block)))), Series(Drop(Text("{")), CMDNAME, _block_content, Drop(Text("}")), mandatory=3))
     assignment = Series(NegativeLookahead(no_command), CMDNAME, Series(Drop(Text("=")), dwsp__), Alternative(Series(number, Option(UNIT)), block, CHARS))
     text_command = Alternative(Series(TXTCOMMAND, ZeroOrMore(block)), ESCAPED, BRACKETS)
-    _known_command = Alternative(citet, citep, footnote, includegraphics, caption, multicolumn, hline, cline, documentclass, pdfinfo, hypersetup, label, ref, href, url, item)
+    _known_command = Alternative(citet, citep, footnote, includegraphics, caption, multicolumn, hline, cline, documentclass, pdfinfo, hypersetup, label, ref, href, url, item, setlength)
     _command = Alternative(_known_command, text_command, assignment, generic_command)
     _inline_math_text_bracket = RegExp('(?:[^\\\\]*(?:(?![\\\\][)])[\\\\])?)*')
     _inline_math_core = RegExp('[^$\\\\{}]+')
@@ -456,7 +460,7 @@ LaTeX_AST_transformation_table = {
     "multicolumn": [remove_tokens('{', '}')],
     "hline": [remove_whitespace, reduce_single_child],
     "ref, label, url": reduce_single_child,
-    "sequence": [],
+    "sequence": [replace_by_children],
     "paragraph": [strip(is_one_of({'S'}))],
     "_text_element": replace_by_single_child,
     "_line_element": replace_by_single_child,
@@ -690,6 +694,8 @@ def process_file(source: str, out_dir: str = '') -> str:
     extension. Returns the name of the error-messages file or an empty
     string, if no errors or warnings occurred.
     """
+    global serializations
+    serializations = get_config_value('LaTeXParser_serializations', serializations)
     return dsl.process_file(source, out_dir, preprocessing.factory, parsing.factory,
                             junctions, targets, serializations)
 
@@ -752,20 +758,16 @@ def main(called_from_app=False) -> bool:
                         help='Write output file even if errors have occurred')
     parser.add_argument('--singlethread', action='store_const', const='singlethread',
                         help='Run batch jobs in a single thread (recommended only for debugging)')
-    outformat = parser.add_mutually_exclusive_group()
-    outformat.add_argument('-x', '--xml', action='store_const', const='xml', 
-                           help='Format result as XML')
-    outformat.add_argument('-s', '--sxpr', action='store_const', const='sxpr',
-                           help='Format result as S-expression')
-    outformat.add_argument('-m', '--sxml', action='store_const', const='sxml',
-                           help='Format result as S-expression')
-    outformat.add_argument('-t', '--tree', action='store_const', const='tree',
-                           help='Format result as indented tree')
-    outformat.add_argument('-j', '--json', action='store_const', const='json',
-                           help='Format result as JSON')
+    parser.add_argument('-s', '--serialize', nargs='+', default=[])
 
     args = parser.parse_args()
     file_names, out, log_dir = args.files, args.out[0], ''
+
+    if args.serialize:
+        serializations['*'] = args.serialize
+        access_presets()
+        set_preset_value('LaTeXParser_serializations', serializations, allow_new_key=True)
+        finalize_presets()
 
     if args.debug is not None:
         log_dir = 'LOGS'
@@ -814,12 +816,7 @@ def main(called_from_app=False) -> bool:
 
         if not errors or (not has_errors(errors, ERROR)) \
                 or (not has_errors(errors, FATAL) and args.force):
-            if args.xml:  outfmt = 'xml'
-            elif args.sxpr:  outfmt = 'sxpr'
-            elif args.sxml:  outfmt = 'sxml'
-            elif args.tree:  outfmt = 'tree'
-            elif args.json:  outfmt = 'json'
-            else:  outfmt = 'default'
+            outfmt = serializations['*'][0]
             print(result.serialize(how=outfmt) if isinstance(result, Node) else result)
             if errors:  print('\n---')
 

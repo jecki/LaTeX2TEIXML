@@ -161,7 +161,7 @@ _command             = _known_command | text_command | assignment | generic_comm
 
 _known_command      = citet | citep | footnote | includegraphics | caption
                     | multicolumn | hline | cline | documentclass | pdfinfo
-                    | hypersetup | label | ref | href | url | item
+                    | hypersetup | label | ref | href | url | item | setlength
 text_command        = TXTCOMMAND { block } | ESCAPED | BRACKETS
 assignment          = !no_command CMDNAME "=" (number [UNIT] | block | CHARS)
 generic_command     = !no_command CMDNAME [starred] { ~ (config | block) }
@@ -189,6 +189,7 @@ href                = "\href{" urlstring "}" block
   path              = _pth _PATHSEP
   target            = _pth { <-!/s?ptth/ _COLON _pth } [ ([_DROP_BACKSLASH] _HASH| <-!/s?ptth/ _COLON) _TAG ]
   _pth              = { _PATH | ESCAPED }+
+setlength           = "\setlength" block block
 
 #######################################################################
 #

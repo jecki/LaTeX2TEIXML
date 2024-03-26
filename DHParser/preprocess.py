@@ -361,7 +361,8 @@ def gen_find_include_func(rx: Union[str, Any],
         m = rx.search(text, begin)
         if m:
             begin = m.start()
-            file_name = derive_file_name(m.group('name'))
+            name = m.group('name')
+            file_name = derive_file_name(name)
             return IncludeInfo(begin, m.end() - begin, file_name)
         else:
             return IncludeInfo(-1, 0, '')
