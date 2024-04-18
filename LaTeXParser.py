@@ -86,8 +86,6 @@ if DHParser.versionnumber.__version_info__ < (1, 7, 0):
 #######################################################################
 
 
-
-
 RE_INCLUDE = r'\\(?:input|include)\{(?P<name>.*)\}'
 RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
 
