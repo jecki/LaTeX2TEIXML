@@ -41,8 +41,11 @@ with Python's package-manager pip:
 
     $ pip install DHParser
 
-LaTeX2TEIXML assumes LaTeX-files to be stored in the unicode utf-8-format. Older manuscripts
+LaTeX2TEIXML assumes LaTeX-files to be stored in the Unicode utf-8-format. Older manuscripts
 can be converted with the `tex2utf8.py`-script. 
+
+See: https://tex.stackexchange.com/questions/4201/is-there-a-bnf-grammar-of-the-tex-language 
+for why only a subset of LaTeX can be supported. 
 
 Executables
 -----------

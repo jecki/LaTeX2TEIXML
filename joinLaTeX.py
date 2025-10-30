@@ -48,7 +48,10 @@ if __name__ == "__main__":
 
     if args.normalize is not None:
         # replace linefeeds within parahraphs with blanks
-        normalized = re.sub(r'(?<!\n)[ \t]*\n(?![ \t]*\n)[ \t]*', ' ', text)
+        step1 = re.sub(r'%[^\n]*', '', text)
+        step2 = re.sub(r'[ \t]+(?=\n)', '', step1)
+        step3 = re.sub(r'(?<!\n)[ \t]*\n(?![ \t]*\n)[ \t]*', ' ', step2)
+        normalized = re.sub(r'[ \t]*\n[ \t]*(?:\n[ \t]*)+', '\n\n', step3)
         out_text = normalized
     else:
         out_text = text
