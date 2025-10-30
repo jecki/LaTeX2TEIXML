@@ -2,6 +2,7 @@
 #cython: language_level=3
 #cython: c_string_type=unicode
 #cython: c_string_encoding=utf-8
+#cython: subinterpreters_compatible = own_gil
 
 
 cdef class EBNFDirectives:
@@ -17,6 +18,8 @@ cdef class EBNFDirectives:
     cdef public set drop
     cdef public int reduction
     cdef public object _super_ws
+    cdef public object optimizations
+    cdef public str flavor
 
 
 # cdef class EBNFCompiler:

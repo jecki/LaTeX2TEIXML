@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 #######################################################################
 #
 # SYMBOLS SECTION - Can be edited. Changes will be preserved.
@@ -11,14 +13,17 @@ import collections
 from functools import partial
 import os
 import sys
-from typing import Tuple, List, Union, Any, Optional, Callable, Set
+from typing import Tuple, List, Union, Any, Optional, Callable, Set, Dict
 
 try:
     scriptpath = os.path.dirname(__file__)
 except NameError:
     scriptpath = ''
+dhparser_parentdir = os.path.abspath(os.path.join(scriptpath, os.path.pardir, os.path.pardir))
 if scriptpath and scriptpath not in sys.path:
     sys.path.append(scriptpath)
+if dhparser_parentdir not in sys.path:
+    sys.path.append(dhparser_parentdir)
 
 try:
     import regex as re
@@ -28,23 +33,25 @@ from DHParser.compile import Compiler, compile_source
 from DHParser.pipeline import full_pipeline, Junction, PseudoJunction, create_preprocess_junction, \
     create_parser_junction, create_junction
 from DHParser.configuration import set_config_value, get_config_value, access_thread_locals, \
-    access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN
+    access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN, \
+    add_config_values
 from DHParser import dsl
 from DHParser.dsl import recompile_grammar, never_cancel, PseudoJunction
 from DHParser.ebnf import grammar_changed
 from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors, NOTICE, \
     WARNING, ERROR, FATAL
 from DHParser.log import start_logging, suspend_logging, resume_logging
-from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, ZOMBIE_TAG
+from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, ZOMBIE_TAG, \
+    CHAR_REF_PTYPE, ENTITY_REF_PTYPE, LEAF_PTYPES, EMPTY_NODE
 from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar, Parser, \
-    Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, INFINITE, ERR, \
+    Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, ERR, \
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
-    last_value, matching_bracket, optional_last_value
+    last_value, matching_bracket, optional_last_value, SmartRE, RX_NEVER_MATCH
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors
-from DHParser.toolkit import is_filename, load_if_file, cpu_count, RX_NEVER_MATCH, \
-    ThreadLocalSingletonFactory, expand_table, line_col
+from DHParser.toolkit import is_filename, load_if_file, cpu_count, \
+    ThreadLocalSingletonFactory, expand_table, line_col, INFINITE
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
 from DHParser.transform import is_empty, remove_if, TransformationDict, TransformerFunc, \
     transformation_factory, remove_children_if, move_fringes, normalize_whitespace, \
@@ -101,12 +108,12 @@ def preprocess_XML(source):
 #######################################################################
 
 class XMLGrammar(Grammar):
-    r"""Parser for a XML source file.
+    r"""Parser for an XML source file.
     """
     element = Forward()
-    source_hash__ = "1f039ac002d7c7aac4805b0a7da06efc"
+    source_hash__ = "44aaa6af7a9e915d4166bf64e3810265"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
-    disposable__ = re.compile('(?:$.)|(?:EncName$|PubidChars$|PubidCharsSingleQuoted$|EOF$|NameStartChar$|VersionNum$|tagContent$|CData$|Reference$|prolog$|NameChars$|CommentChars$|Misc$|BOM$)')
+    disposable__ = re.compile('(?:PubidCharsSingleQuoted$|Misc$|VersionNum$|PubidChars$|EncName$|EOF$|tagContent$|XmlPIAtts$|BOM$|NameChars$|Reference$|NameStartChar$|CData$|prolog$|CommentChars$)')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
     error_messages__ = {'tagContent': [('', "syntax error in tag-name of opening or empty tag:  {1}")],
@@ -118,49 +125,72 @@ class XMLGrammar(Grammar):
     WSP_RE__ = mixin_comment(whitespace=WHITESPACE__, comment=COMMENT__)
     wsp__ = Whitespace(WSP_RE__)
     dwsp__ = Drop(Whitespace(WSP_RE__))
-    EOF = Drop(NegativeLookahead(RegExp('.')))
-    CharRef = Alternative(Series(Drop(Text('&#')), RegExp('[0-9]+'), Drop(Text(';'))), Series(Drop(Text('&#x')), RegExp('[0-9a-fA-F]+'), Drop(Text(';'))))
-    CommentChars = RegExp('(?:(?!-)(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U00010000-\\U0010FFFF]))+')
-    PIChars = RegExp('(?:(?!\\?>)(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U00010000-\\U0010FFFF]))+')
-    CData = RegExp('(?:(?!\\]\\]>)(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U00010000-\\U0010FFFF]))+')
+    EOF = Drop(SmartRE(f'(?!.)', '!/./'))
+    S = RegExp('\\s+')
+    Char = RegExp('(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U00010000-\\U0010FF'
+       'FF])+')
+    CharRef = SmartRE(f'(?:\\&\\#)([0-9]+)(?:;)|(?:\\&\\#x)([0-9a-fA-F]+)(?:;)', "'&#' /[0-9]+/ ';'|'&#x' /[0-9a-fA-F]+/ ';'")
+    CommentChars = RegExp('(?:(?!-)(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U00010000-'
+       '\\U0010FFFF]))+')
+    PIChars = RegExp('(?:(?!\\?>)(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U0001000'
+       '0-\\U0010FFFF]))+')
+    CData = RegExp('(?:(?!\\]\\]>)(?:\\x09|\\x0A|\\x0D|[\\u0020-\\uD7FF]|[\\uE000-\\uFFFD]|[\\U0001'
+       '0000-\\U0010FFFF]))+')
     CharData = RegExp('(?:(?!\\]\\]>)[^<&])+')
     PubidChars = RegExp("(?:\\x20|\\x0D|\\x0A|[a-zA-Z0-9]|[-'()+,./:=?;!*#@$_%])+")
     PubidCharsSingleQuoted = RegExp('(?:\\x20|\\x0D|\\x0A|[a-zA-Z0-9]|[-()+,./:=?;!*#@$_%])+')
-    S = RegExp('\\s+')
     CDSect = Series(Drop(Text('<![CDATA[')), CData, Drop(Text(']]>')))
-    NameStartChar = RegExp('(?x)_|:|[A-Z]|[a-z]\n                   |[\\u00C0-\\u00D6]|[\\u00D8-\\u00F6]|[\\u00F8-\\u02FF]\n                   |[\\u0370-\\u037D]|[\\u037F-\\u1FFF]|[\\u200C-\\u200D]\n                   |[\\u2070-\\u218F]|[\\u2C00-\\u2FEF]|[\\u3001-\\uD7FF]\n                   |[\\uF900-\\uFDCF]|[\\uFDF0-\\uFFFD]\n                   |[\\U00010000-\\U000EFFFF]')
-    NameChars = RegExp('(?x)(?:_|:|-|\\.|[A-Z]|[a-z]|[0-9]\n                   |\\u00B7|[\\u0300-\\u036F]|[\\u203F-\\u2040]\n                   |[\\u00C0-\\u00D6]|[\\u00D8-\\u00F6]|[\\u00F8-\\u02FF]\n                   |[\\u0370-\\u037D]|[\\u037F-\\u1FFF]|[\\u200C-\\u200D]\n                   |[\\u2070-\\u218F]|[\\u2C00-\\u2FEF]|[\\u3001-\\uD7FF]\n                   |[\\uF900-\\uFDCF]|[\\uFDF0-\\uFFFD]\n                   |[\\U00010000-\\U000EFFFF])+')
-    Comment = Series(Drop(Text('<!--')), ZeroOrMore(Alternative(CommentChars, RegExp('-(?!-)'))), dwsp__, Drop(Text('-->')))
+    PredefEntityRef = SmartRE(f'\\&amp;|\\&lt;|\\&gt;|\\&quot;|\\&apos;', '"&amp;"|"&lt;"|"&gt;"|"&quot;"|"&apos;"')
+    NameChars = RegExp('(?x)(?:_|:|-|\\.|[A-Z]|[a-z]|[0-9]\n'
+                          '|\\u00B7|[\\u0300-\\u036F]|[\\u203F-\\u2040]\n'
+                          '|[\\u00C0-\\u00D6]|[\\u00D8-\\u00F6]|[\\u00F8-\\u02FF]\n'
+                          '|[\\u0370-\\u037D]|[\\u037F-\\u1FFF]|[\\u200C-\\u200D]\n'
+                          '|[\\u2070-\\u218F]|[\\u2C00-\\u2FEF]|[\\u3001-\\uD7FF]\n'
+                          '|[\\uF900-\\uFDCF]|[\\uFDF0-\\uFFFD]\n'
+                          '|[\\U00010000-\\U000EFFFF])+')
+    NameStartChar = RegExp('(?x)_|:|[A-Z]|[a-z]\n'
+                          '|[\\u00C0-\\u00D6]|[\\u00D8-\\u00F6]|[\\u00F8-\\u02FF]\n'
+                          '|[\\u0370-\\u037D]|[\\u037F-\\u1FFF]|[\\u200C-\\u200D]\n'
+                          '|[\\u2070-\\u218F]|[\\u2C00-\\u2FEF]|[\\u3001-\\uD7FF]\n'
+                          '|[\\uF900-\\uFDCF]|[\\uFDF0-\\uFFFD]\n'
+                          '|[\\U00010000-\\U000EFFFF]')
+    PseudoAttValue = Alternative(Series(Drop(Text('"')), ZeroOrMore(Alternative(RegExp('[^"<&]+'), CharRef, PredefEntityRef)), Drop(Text('"'))), Series(Drop(Text("\'")), ZeroOrMore(Alternative(RegExp("[^'<&]+"), CharRef, PredefEntityRef)), Drop(Text("\'"))))
     Name = Series(NameStartChar, Option(NameChars))
-    PITarget = Series(NegativeLookahead(RegExp('X|xM|mL|l')), Name)
-    PI = Series(Drop(Text('<?')), PITarget, Option(Series(dwsp__, PIChars)), Drop(Text('?>')))
-    Misc = OneOrMore(Alternative(Comment, PI, S))
+    PseudoAtt = Series(Name, dwsp__, Drop(Text("=")), dwsp__, PseudoAttValue, mandatory=2)
+    Comment = Series(Drop(Text('<!--')), ZeroOrMore(Alternative(CommentChars, RegExp('-(?!-)'))), dwsp__, Drop(Text('-->')))
+    XmlPIAtts = Series(NegativeLookahead(Series(Option(Char), Drop(Text("?>")), Option(Char))), ZeroOrMore(Series(dwsp__, PseudoAtt)), dwsp__)
+    PITarget = Series(SmartRE(f'(?![Xx][Mm][Ll])', '!/[Xx][Mm][Ll]/'), Name)
+    PI = Series(Drop(Text('<?')), PITarget, Option(Series(dwsp__, PIChars)), Drop(Text('?>')), mandatory=1)
+    UnknownXmlPI = Series(Drop(Text("<?")), Drop(RegExp('[Xx][Mm][Ll]-?')), Name, XmlPIAtts, Drop(Text("?>")), mandatory=3)
     EntityRef = Series(Drop(Text('&')), Name, Drop(Text(';')))
     Reference = Alternative(EntityRef, CharRef)
+    XmlModelPI = Series(Drop(Text("<?xml-model")), XmlPIAtts, Drop(Text("?>")), mandatory=1)
+    StyleSheetPI = Series(Drop(Text("<?xml-stylesheet")), XmlPIAtts, Drop(Text("?>")), mandatory=1)
     PubidLiteral = Alternative(Series(Drop(Text('"')), Option(PubidChars), Drop(Text('"'))), Series(Drop(Text("\'")), Option(PubidCharsSingleQuoted), Drop(Text("\'"))))
-    SystemLiteral = Alternative(Series(Drop(Text('"')), RegExp('[^"]*'), Drop(Text('"'))), Series(Drop(Text("\'")), RegExp("[^']*"), Drop(Text("\'"))))
+    SystemLiteral = SmartRE(f'(?:")([^"]*)(?:")|(?:\')([^\']*)(?:\')', '\'"\' /[^"]*/ \'"\'|"\'" /[^\']*/ "\'"')
     AttValue = Alternative(Series(Drop(Text('"')), ZeroOrMore(Alternative(RegExp('[^<&"]+'), Reference)), Drop(Text('"'))), Series(Drop(Text("\'")), ZeroOrMore(Alternative(RegExp("[^<&']+"), Reference)), Drop(Text("\'"))))
     content = Series(Option(CharData), ZeroOrMore(Series(Alternative(element, Reference, CDSect, PI, Comment), Option(CharData))))
+    Misc = Series(dwsp__, OneOrMore(Alternative(Series(Comment, dwsp__), Series(StyleSheetPI, dwsp__), Series(XmlModelPI, dwsp__), Series(UnknownXmlPI, dwsp__), Series(PI, dwsp__))))
     Attribute = Series(Name, dwsp__, Drop(Text('=')), dwsp__, AttValue, mandatory=2)
     ETag = Series(Drop(Text('</')), Name, dwsp__, Drop(Text('>')), mandatory=1)
-    tagContent = Series(NegativeLookahead(RegExp('[/!?]')), Name, ZeroOrMore(Series(dwsp__, Attribute)), dwsp__, Lookahead(Alternative(Drop(Text('>')), Drop(Text('/>')))), mandatory=1)
+    tagContent = Series(SmartRE(f'(?![/!?])', '!/[\\/!?]/'), Name, ZeroOrMore(Series(dwsp__, Attribute)), dwsp__, SmartRE(f'(?=>|/>)', "&'>'|'/>'"), mandatory=1)
     STag = Series(Drop(Text('<')), tagContent, Drop(Text('>')))
     emptyElement = Series(Drop(Text('<')), tagContent, Drop(Text('/>')))
     BOM = Drop(RegExp('[\\ufeff]|[\\ufffe]|[\\u0000feff]|[\\ufffe0000]'))
     ExternalID = Alternative(Series(Drop(Text('SYSTEM')), dwsp__, SystemLiteral, mandatory=1), Series(Drop(Text('PUBLIC')), dwsp__, PubidLiteral, dwsp__, SystemLiteral, mandatory=1))
     doctypedecl = Series(Drop(Text('<!DOCTYPE')), dwsp__, Name, Option(Series(dwsp__, ExternalID)), dwsp__, Drop(Text('>')), mandatory=2)
-    SDDecl = Series(dwsp__, Drop(Text('standalone')), dwsp__, Drop(Text('=')), dwsp__, Alternative(Series(Drop(Text("\'")), Alternative(Text("yes"), Text("no")), Drop(Text("\'"))), Series(Drop(Text('"')), Alternative(Text("yes"), Text("no")), Drop(Text('"')))))
+    SDDecl = SmartRE(f'{WSP_RE__}standalone{WSP_RE__}={WSP_RE__}(?:(?:(?:\')(?P<:Text>yes|no)(?:\'))|(?:(?:")(?P<:Text>yes|no)(?:")))', '~ \'standalone\' ~ \'=\' ~ "\'" `yes`|`no` "\'"|\'"\' `yes`|`no` \'"\'')
     EncName = RegExp('[A-Za-z][A-Za-z0-9._\\-]*')
     EncodingDecl = Series(dwsp__, Drop(Text('encoding')), dwsp__, Drop(Text('=')), dwsp__, Alternative(Series(Drop(Text("\'")), EncName, Drop(Text("\'"))), Series(Drop(Text('"')), EncName, Drop(Text('"')))))
     VersionNum = RegExp('[0-9]+\\.[0-9]+')
     VersionInfo = Series(dwsp__, Drop(Text('version')), dwsp__, Drop(Text('=')), dwsp__, Alternative(Series(Drop(Text("\'")), VersionNum, Drop(Text("\'"))), Series(Drop(Text('"')), VersionNum, Drop(Text('"')))))
     XMLDecl = Series(Drop(Text('<?xml')), VersionInfo, Option(EncodingDecl), Option(SDDecl), dwsp__, Drop(Text('?>')), mandatory=1)
-    prolog = Series(Option(Series(dwsp__, XMLDecl)), Option(Misc), Option(Series(doctypedecl, Option(Misc))))
+    prolog = Series(Option(Series(dwsp__, XMLDecl)), Option(Misc), dwsp__, Option(Series(doctypedecl, Option(Misc), dwsp__)))
     element.set(Alternative(emptyElement, Series(STag, content, ETag, mandatory=1)))
-    document = Series(Option(BOM), prolog, element, Option(Misc), EOF, mandatory=2)
-    resume_rules__ = {'tagContent': [re.compile(r'(?=>|\/>)')],
+    document = Series(Option(BOM), prolog, element, Option(Misc), dwsp__, EOF, mandatory=2)
+    resume_rules__ = {'tagContent': [re.compile(r'(?=>|/>)')],
                       'ETag': [re.compile(r'(?=>)')],
-                      'Attribute': [re.compile(r'(?=>|\/>)')]}
+                      'Attribute': [re.compile(r'(?=>|/>)')]}
     root__ = document
         
 parsing: PseudoJunction = create_parser_junction(XMLGrammar)
@@ -176,7 +206,7 @@ get_grammar = parsing.factory # for backwards compatibility, only
 
 XML_PTYPE = ":XML"
 
-WARNING_AMBIGUOUS_EMPTY_ELEMENT = ErrorCode(205)
+WARNING_INCONSISTENT_EMPTY_TAGS = ErrorCode(205)
 
 ERROR_TAG_NAME_MISMATCH = ErrorCode(2000)
 ERROR_VALUE_CONSTRAINT_VIOLATION = ErrorCode(2010)
@@ -186,17 +216,17 @@ ERROR_VALIDITY_CONSTRAINT_VIOLATION = ErrorCode(2020)
 class XMLTransformer(Compiler):
     """Compiler for the abstract-syntax-tree of a XML source file.
 
-    As of now, processing instructions, cdata-sections an document-type definition
-    declarations are simply dropped.
+    As of now, Cdata-sections and document-type definition will be parsed, but
+    not transformed into an AST and may not be re-serialized properly with Node.as_xml()
     """
     def __init__(self):
         super().__init__()
-        self.cleanup_whitespace = True  # remove empty CharData from mixed elements
-        self.expendables = {'PI', 'CDSect', 'doctypedecl'}
+        self.expendables = set()  # {'CDSect', 'doctypedecl', 'XmlModelPI', 'StyleSheetPI', 'UnknownXmlPI', 'PI'}
 
     def reset(self):
         super().reset()
-        self.preserve_whitespace = False
+        self.preserve_whitespace = get_config_value("XML.preserve_whitespace", False)
+        self.consistent_empty_tags = get_config_value("XML.consistent_empty_tags", False)
         self.non_empty_tags: Set[str] = set()
 
     def prepare(self, root: RootNode) -> None:
@@ -209,9 +239,9 @@ class XMLTransformer(Compiler):
     def extract_attributes(self, node_sequence):
         attributes = collections.OrderedDict()
         for node in node_sequence:
-            if node.name == "Attribute":
+            if node.name in ("Attribute", "PseudoAtt"):
                 assert node[0].name == "Name", node.as_sexpr()
-                # assert node[1].name == "AttValue", node.as_sxpr()
+                # assert node[1].name in ("AttValue", "PseudoAttValue"), node.as_sxpr()
                 attributes[node[0].content] = node[1].content.replace('\n', '')
         return attributes
 
@@ -224,7 +254,7 @@ class XMLTransformer(Compiler):
 
     def on_document(self, node):
         node.name = XML_PTYPE
-        self.tree.string_tags.update({TOKEN_PTYPE, XML_PTYPE, 'CharRef', 'EntityRef'})
+        self.tree.string_tags.update(LEAF_PTYPES)
         self.tree.empty_tags.update({'?xml'})
         node.result = tuple(self.compile(nd) for nd in node.children
                             if nd.name not in self.expendables)
@@ -255,22 +285,62 @@ class XMLTransformer(Compiler):
         if attributes:
             node.attr.update(attributes)
         node.result = ''
-        # self.tree.empty_tags.add('?xml')
         node.name = '?xml'  # node.parser = self.get_parser('?xml')
         return node
 
-    def on_content(self, node) -> Union[Tuple[Node], str]:
-        xml_content = tuple(self.compile(nd) for nd in node.children
-                            if nd.name not in self.expendables)
-        if len(xml_content) == 1:
-            if xml_content[0].name == TOKEN_PTYPE:
-                # reduce single CharData children
-                xml_content = xml_content[0].content
-        elif self.cleanup_whitespace and not self.preserve_whitespace:
-            # remove CharData that consists only of whitespace from mixed elements
-            xml_content = tuple(child for child in xml_content
-                                if child.name != TOKEN_PTYPE or child.content.strip() != '')
-        return xml_content
+    def XmlPI(self, node) -> Node:
+        attributes = self.extract_attributes(node.children)
+        if attributes:
+            node.attr.update(attributes)
+        node.result = ''
+        return node
+
+    def on_XmlModelPI(self, node) -> Node:
+        node.name = "?xml-model"
+        node = self.XmlPI(node)
+        return node
+
+    def on_StyleSheetPI(self, node) -> Node:
+        node.name = "?xml-stylesheet"
+        node = self.XmlPI(node)
+        return node
+
+    def on_UnknownXmlPI(self, node) -> Node:
+        node.name = f"?xml-{node['Name'].content}"
+        node = self.XmlPI(node)
+        return node
+
+    def on_PI(self, node) -> Node:
+        target = node['PITarget'].content
+        instructions = node.get('PIChars', EMPTY_NODE).content
+        node.name = f'?{target}'
+        if instructions:
+            node.attr['instructions__'] = instructions
+        node.result = ''
+        return node
+
+    def on_doctypedecl(self, node) -> Node:
+        return node
+
+    def on_CDSect(self, node) -> Node:
+        return node
+
+    def on_content(self, node) -> Union[Tuple[Node, ...], str]:
+        xml_content: List[Node] = []
+        preserve_ws = self.preserve_whitespace
+        for nd in node.children:
+            if nd.name in self.expendables:  continue
+            child = self.compile(nd)
+            if child.name != TOKEN_PTYPE:
+                xml_content.append(child)
+            elif preserve_ws or child.content.strip() != '':
+                if xml_content and xml_content[-1].name == TOKEN_PTYPE:
+                    xml_content[-1].result = xml_content[-1].content + child.content
+                else:
+                    xml_content.append(child)
+        if len(xml_content) == 1 and xml_content[0].name == TOKEN_PTYPE:
+            return xml_content[0].content
+        return tuple(xml_content)
 
     def on_element(self, node):
         if len(node.children) == 1:
@@ -289,12 +359,14 @@ class XMLTransformer(Compiler):
                                 f'tag name "{etag["Name"].content}" at {l}:{c}',
                                 ERROR_TAG_NAME_MISMATCH)
 
-        if tag_name in self.tree.empty_tags \
+        if self.consistent_empty_tags \
+                and tag_name in self.tree.empty_tags \
                 and tag_name not in self.non_empty_tags:  # warn only once!
             self.tree.new_error(node,
-                                f'Tag-name "{tag_name}" has already been used for an empty-tag '
-                                f'<{tag_name}/> earlier. This is considered bad XML-practice!',
-                                WARNING_AMBIGUOUS_EMPTY_ELEMENT)
+                f'Tag-name {tag_name} has already been used for an empty-tag '
+                f'{tag_name}/ earlier! Set XML.consistent_empty_tags to False '
+                'to suppress this warning. !',
+                                WARNING_INCONSISTENT_EMPTY_TAGS)
 
         self.non_empty_tags.add(tag_name)
         save_preserve_ws = self.preserve_whitespace
@@ -315,19 +387,32 @@ class XMLTransformer(Compiler):
         node.name = node['Name'].content
         node.result = ''
 
-        if node.name in self.non_empty_tags \
+        if self.consistent_empty_tags \
+                and node.name in self.non_empty_tags \
                 and node.name not in self.tree.empty_tags:  # warn only once!
             self.tree.new_error(node,
-                                f'Tag-name "{node.name}" has already been used for a non empty-tag '
-                                f'<{node.name}> ... </{node.name}> earlier. This is considered bad XML-practice!',
-                                WARNING_AMBIGUOUS_EMPTY_ELEMENT)
+                f'Tag-name {node.name} has already been used for a non empty-tag '
+                f'{node.name} ... /{node.name} earlier. Set XML.consistent_empty_tags '
+                'to False to suppress this warning. !',
+                                WARNING_INCONSISTENT_EMPTY_TAGS)
 
         self.tree.empty_tags.add(node.name)
         return node
 
-    def on_Reference(self, node):
-        replace_by_single_child(self.path)
+    def on_CharRef(self, node) -> Node:
+        # node.result = f"&#{node.content};"
+        node.name = ":CharRef"
         return node
+
+    def on_EntityRef(self, node) -> Node:
+        # node.result = f"&{node.content};"
+        node.result = node.content
+        node.name = ":EntityRef"
+        return node
+
+    def on_Reference(self, node) -> Node:
+        assert len(node.children) == 1
+        return self.compile(node.children[0])
 
     def on_Comment(self, node):
         node.name = '!--'
@@ -388,8 +473,9 @@ def compile_XML(ast):
 RESULT_FILE_EXTENSION = ".sxpr"  # Change this according to your needs!
 
 
-def compile_src(source: str) -> Tuple[Any, List[Error]]:
+def compile_src(source: str, cfg: Dict={}) -> Tuple[Any, List[Error]]:
     """Compiles ``source`` and returns (result, errors)."""
+    add_config_values(cfg)
     result_tuple = compile_source(source, get_preprocessor(), get_grammar(), get_transformer(),
                                   get_compiler())
     return result_tuple[:2]  # drop the AST at the end of the result tuple
@@ -407,7 +493,7 @@ def serialize_result(result: Any) -> Union[str, bytes]:
         return repr(result)
 
 
-def process_file(source: str, result_filename: str = '') -> str:
+def process_file(source: str, result_filename: str = '', cfg: Dict={}) -> str:
     """Compiles the source and writes the serialized results back to disk,
     unless any fatal errors have occurred. Error and Warning messages are
     written to a file with the same name as `result_filename` with an
@@ -416,7 +502,7 @@ def process_file(source: str, result_filename: str = '') -> str:
     string, if no errors of warnings occurred.
     """
     source_filename = source if is_filename(source) else ''
-    result, errors = compile_src(source)
+    result, errors = compile_src(source, cfg)
     if not has_errors(errors, FATAL):
         if os.path.abspath(source_filename) != os.path.abspath(result_filename):
             with open(result_filename, 'w', encoding='utf-8') as f:
@@ -433,7 +519,7 @@ def process_file(source: str, result_filename: str = '') -> str:
     return ''
 
 
-def batch_process(file_names: List[str], out_dir: str,
+def batch_process(file_names: List[str], out_dir: str, cfg: Dict={},
                   *, submit_func: Callable = None,
                   log_func: Callable = None) -> List[str]:
     """Compiles all files listed in filenames and writes the results and/or
@@ -451,7 +537,7 @@ def batch_process(file_names: List[str], out_dir: str,
         err_futures = []
         for name in file_names:
             dest_name = gen_dest_name(name)
-            err_futures.append(submit_func(process_file, name, dest_name))
+            err_futures.append(submit_func(process_file, name, dest_name, cfg))
         for file_name, err_future in zip(file_names, err_futures):
             error_filename = err_future.result()
             if log_func:
@@ -472,7 +558,7 @@ def batch_process(file_names: List[str], out_dir: str,
 
 if __name__ == "__main__":
     # recompile grammar if needed
-    script_path = os.path.abspath(__file__)
+    script_path = os.path.abspath(os.path.realpath(__file__))
     if script_path.endswith('Parser.py'):
         grammar_path = script_path.replace('Parser.py', '.ebnf')
     else:
@@ -518,6 +604,8 @@ if __name__ == "__main__":
                            help='Format result as indented tree')
     outformat.add_argument('-j', '--json', action='store_const', const='json',
                            help='Format result as JSON')
+    outformat.add_argument('-w', '--whitespace', action='store_const', const='whitespace',
+                           help='Preserve all whitespaces and linefeeds')
 
     args = parser.parse_args()
     file_names, out, log_dir = args.files, args.out[0], ''
@@ -535,6 +623,7 @@ if __name__ == "__main__":
         set_preset_value('history_tracking', True)
         set_preset_value('resume_notices', True)
         set_preset_value('log_syntax_trees', frozenset(['cst', 'ast']))  # don't use a set literal, here!
+        set_preset_value('XML.preserve_whitespace', bool(args.whitespace))
         finalize_presets()
     start_logging(log_dir)
 
@@ -586,4 +675,7 @@ if __name__ == "__main__":
         elif args.tree:  outfmt = 'tree'
         elif args.json:  outfmt = 'json'
         else:  outfmt = 'default'
-        print(result.serialize(how=outfmt) if isinstance(result, Node) else result)
+        if outfmt == 'xml' and get_config_value('XML.preserve_whitespace', False):
+            print(result.as_xml(inline_tags={result.name}))
+        else:
+            print(result.serialize(how=outfmt) if isinstance(result, Node) else result)

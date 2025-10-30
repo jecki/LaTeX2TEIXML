@@ -27,9 +27,10 @@ except (ImportError, ModuleNotFoundError):
 
 try:
     from DHParser.configuration import access_presets, set_preset_value, \
-        finalize_presets, get_config_value
+        finalize_presets, get_config_value, read_local_config
     from DHParser import dsl
     import DHParser.log
+    from DHParser.preprocess import nil_preprocessor_factory
     from DHParser import testing
 except ModuleNotFoundError:
     print('Could not import DHParser. Please adjust sys.path in file '
@@ -54,7 +55,8 @@ def recompile_grammar(grammar_src, force):
 
 
 def run_grammar_tests(fn_pattern, parser_factory, transformer_factory,
-                      junctions=set(), targets=set(), serializations=set()):
+                      junctions=set(), targets=set(), serializations=set(),
+                      preprocessor_factory=nil_preprocessor_factory):
     if fn_pattern.find('/') >= 0 or fn_pattern.find('\\') >= 0:
         testdir, fn_pattern = os.path.split(fn_pattern)
         if not testdir.startswith('/') or not testdir[1:2] == ':':
@@ -65,7 +67,8 @@ def run_grammar_tests(fn_pattern, parser_factory, transformer_factory,
     error_report = testing.grammar_suite(
         testdir, parser_factory, transformer_factory,
         fn_patterns=[fn_pattern], report='REPORT', verbose=True,
-        junctions=junctions, show=targets, serializations=serializations)
+        junctions=junctions, show=targets, serializations=serializations,
+        preprocessor_factory=preprocessor_factory)
     return error_report
 
 
@@ -74,19 +77,26 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Runs all grammar-tests in "test_grammar/" '
         'or a given test - after (re-)creating the parser script if necessary.')
     parser.add_argument('files', nargs='*')
-    parser.add_argument('-n', '--nohistory', action='store_const', const='nohistory',
-                        help="Don't log parsing history of failed tests.")
-    parser.add_argument('-d', '--debug', action='store_const', const='debug',
-                        help='Deprecated argument.')
     parser.add_argument('-s', '--scripts', action='store_const', const='scripts',
         help="Creates a server- and an app-script. Existing scripts will not be overwritten!")
     parser.add_argument('--singlethread', action='store_const', const='singlethread',
                         help='Run tests in a single thread (recommended only for debugging)')
+    parser.add_argument('-p', '--history', action='store_const', const='history',
+                        help="Detailed logs for of the parsing-history for all tests.")
+    parser.add_argument('-n', '--nohistory', action='store_const', const='nohistory',
+                        help="Deprecated argument")
+    parser.add_argument('-d', '--debug', action='store_const', const='debug',
+                        help='Deprecated argument.')
     args = parser.parse_args()
 
     if args.debug is not None:
         print('Argument -d or --debug is deprecated! Parsing-histories of failed tests will '
-              'be logged per default. This can be turned off with -n or --nohistory .')
+              'be logged per default. Use -p or --history to log all tests.')
+    if args.nohistory is not None:
+        print('Argument -n or --nohistory is deprecated! Only parsing-histories of failed '
+              'tests will be logged. Use -p or --history to log all tests.')
+
+    read_local_config(os.path.join(scriptdir, '{name}Config.ini'))
 
     config_test_parallelization = get_config_value('test_parallelization')
     access_presets()
@@ -95,7 +105,7 @@ if __name__ == '__main__':
     elif not config_test_parallelization:
         print('Tests will be run in a single-thread, because test-multiprocessing '
               'has been turned off in configuration file.')
-    set_preset_value('history_tracking', not args.nohistory)
+    set_preset_value('history_tracking', args.history)
     finalize_presets()
 
     if args.scripts:
@@ -103,21 +113,22 @@ if __name__ == '__main__':
 
     if args.files:
         # if called with a single filename that is either an EBNF file or a known
-        # test file type then use the given argument
+        # test file-type then use the given argument
         arg = args.files[0]
     else:
         # otherwise run all tests in the test directory
-        arg = '*_test_*.ini'
+        arg = '*test*.ini'
     if arg.endswith('.ebnf'):
         recompile_grammar(arg, force=True)
     else:
         recompile_grammar(os.path.join(scriptdir, '{name}.ebnf'),
                           force=False)
         sys.path.append('.')
-        from {name}Parser import parsing, ASTTransformation, \
+        from {name}Parser import parsing, ASTTransformation, preprocessing, \
             junctions, test_targets, serializations
         error_report = run_grammar_tests(arg, parsing.factory, ASTTransformation.factory,
-                                         junctions, test_targets, serializations)
+                                         junctions, test_targets, serializations,
+                                         preprocessing.factory)
         if error_report:
             print('\n')
             print(error_report)

@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,11 +31,10 @@ This functionality can be used for several purposes:
 2. recording of parsing history and "post-mortem"-debugging,
    implemented here and in module :py:mod:`log`
 
-3. Interrupting long running parser processes by polling
+3. Interrupting long-running parser processes by polling
    a threading.Event or multiprocessing.Event once in a while
 """
 
-# TODO: Add Trace-Parser-class
 
 from __future__ import annotations
 
@@ -47,11 +46,11 @@ except ImportError:
     import DHParser.externallibs.shadow_cython as cython
 
 from DHParser.error import Error, RESUME_NOTICE, RECURSION_DEPTH_LIMIT_HIT
-from DHParser.nodetree import Node, REGEXP_PTYPE, TOKEN_PTYPE, WHITESPACE_PTYPE, ZOMBIE_TAG
+from DHParser.nodetree import Node, REGEXP_PTYPE, TOKEN_PTYPE, WHITESPACE_PTYPE
 from DHParser.log import HistoryRecord, NONE_NODE
 from DHParser.parse import Grammar, Parser, ParserError, ParseFunc, ContextSensitive, \
-    UnaryParser, ERR, PARSER_PLACEHOLDER
-from DHParser.toolkit import line_col
+    UnaryParser, SmartRE, cancel_proxy
+from DHParser.toolkit import line_col, INFINITE
 
 __all__ = ('trace_history', 'set_tracer', 'resume_notices_on', 'resume_notices_off')
 
@@ -84,8 +83,12 @@ def set_tracer(parsers: Union[Grammar, Parser, Iterable[Parser]], tracer: Option
     if parsers:
         pivot = next(iter(parsers))
         assert all(pivot._grammar == parser._grammar for parser in parsers)
-        if tracer is not None:
+        if tracer is None:
+            pivot._grammar.history_tracking__ = False
+            pivot._grammar.resume_notices__ = False
+        else:
             pivot._grammar.history_tracking__ = True
+            pivot._grammar.resume_notices__ = True
         for parser in parsers:
             if parser.ptype != ':Forward':
                 parser.set_proxy(tracer)
@@ -116,10 +119,14 @@ def result_changed(node, history) -> bool:
 
 
 def call_item(parser: Parser, location: int, prefix: str = '') -> Tuple[str, int]:
-    if parser.node_name in (REGEXP_PTYPE, TOKEN_PTYPE, ":Retrieve", ":Pop"):
+    if parser.node_name in (REGEXP_PTYPE, TOKEN_PTYPE, ":Retrieve", ":Pop",
+                            ":SmartRE", ":SmartRE_Lookahead"):
         return f"{' ' or prefix}{parser.repr}", location  # ' ' added to avoid ':' as first char!
     else:
-        return f"{prefix}{parser.pname or parser.node_name}", location
+        name = parser.pname or parser.node_name
+        if isinstance(parser, SmartRE) and parser.is_lookahead():
+            name += ":SmartRE_Lookahead"
+        return f"{prefix}{name}", location
 
 
 def history_record(parser: Parser, grammar: Grammar,
@@ -131,7 +138,8 @@ def history_record(parser: Parser, grammar: Grammar,
     hnd = Node(node.name, doc[location:location_]).with_pos(location) if node else None
     lc = line_col(grammar.document_lbreaks__, location)
     errors = grammar.tree__.error_nodes.get(id(node), [])
-    if parser.node_name[0:1] == ':':
+    if parser.node_name[0:1] == ':' \
+            and not (isinstance(parser, SmartRE) and parser.is_lookahead()):
         if parser.pname:
             grammar.call_stack__[-1] = (f"{prefix}{parser.pname}", location)
         else:
@@ -143,15 +151,19 @@ def history_record(parser: Parser, grammar: Grammar,
                i=cython.int, L=cython.int)
 def trace_history(self: Parser, location: cython.int) -> Tuple[Optional[Node], cython.int]:
     grammar = self._grammar  # type: Grammar
+
     if not grammar.history_tracking__:
-        if location < 0:  return self.visited[-location]
+        if location < 0:
+            if location <= -INFINITE:  location = 0
+            return self.visited[-location]
         try:
             node, location = self._parse(location)  # <===== call to the actual parser!
         except ParserError as pe:
             raise pe
         return node, location
 
-    if location < 0:  # a negative location signals a memo-hit
+    if location < 0:  # a negative location signals a memo-hit. see parse.Parser.__call__() !!!
+        if location <= -INFINITE:  location = 0
         location = -location
         grammar.call_stack__.append(call_item(self, location, "RECALL: "))
         node, location_ = self.visited[location]
@@ -164,7 +176,7 @@ def trace_history(self: Parser, location: cython.int) -> Tuple[Optional[Node], c
     mre: Optional[ParserError] = grammar.most_recent_error__
     if mre is not None and location >= mre.error.pos:
         # add resume notice (mind that skip notices are added by
-        # `parse.MandatoryElementsParser.mandatory_violation()`
+        # `parse.MandatoryElementsParser.mandatory_violation()`)
         if mre.error.code == RECURSION_DEPTH_LIMIT_HIT:
             return mre.node, location
 
@@ -208,12 +220,19 @@ def trace_history(self: Parser, location: cython.int) -> Tuple[Optional[Node], c
     if self.node_name in (":Lookbehind", ":NegativeLookbehind"):
         grammar.call_stack__.append((' ' + cast(UnaryParser, self).parser.repr, location))
         stack_counter += 1
+    elif isinstance(self, SmartRE) and self.is_lookahead() \
+            and not grammar.call_stack__[-1][0].endswith(':SmartRE_Lookahead'):
+        grammar.call_stack__.append((' :SmartRE_Lookahead', location))
+        stack_counter += 1
     grammar.moving_forward__ = True
 
     try:
 
+        if grammar.cancel_query__ is not None:
+            node, location_ = cancel_proxy(self, location)
+        else:
 #####################################################################################
-        node, location_ = self._parse(location)   # <===== call to the actual parser!
+            node, location_ = self._parse(location)   # <===== call to the actual parser!
 #####################################################################################
 
     except ParserError as pe:
@@ -261,16 +280,11 @@ def trace_history(self: Parser, location: cython.int) -> Tuple[Optional[Node], c
                     record.call_stack[-2][0] in (":Lookbehind", ":NegativeLookbehind"):
                 record.text = grammar.reversed__[len(grammar.document__) - location_:]
             if not grammar.moving_forward__ \
-                    and not any(tag == ':Lookahead' \
+                    and not any(tag in (':Lookahead', ":NegativeLookahead")
+                                or tag.endswith(":SmartRE_Lookahead")
                                 for tag, _ in grammar.history__[-1].call_stack):
                 grammar.history__.pop()
             grammar.history__.append(record)
-    # elif node and node.name == ZOMBIE_TAG:
-    #     if id(node) in grammar.tree__.error_nodes:
-    #         lc = line_col(grammar.document_lbreaks__, location)
-    #         record = HistoryRecord(grammar.call_stack__, node, doc[location_:], lc,
-    #                                self.tree__.error_nodes[id(node)])
-    #         grammar.history__.append(record)
 
 
     grammar.moving_forward__ = False

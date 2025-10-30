@@ -1,4 +1,4 @@
-# dsl.py - Support for domain specific notations for DHParser
+# dsl.py - Support for domain-specific notations for DHParser
 #
 # Copyright 2016  by Eckhart Arnold (arnold@badw.de)
 #                 Bavarian Academy of Sciences an Humanities (badw.de)
@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,18 +17,14 @@
 
 """
 Module ``dsl`` contains high-level functions for the compilation
-of domain specific languages based on an EBNF-grammar.
+of domain-specific languages based on an EBNF-grammar.
 """
 
 from __future__ import annotations
 
 from collections import namedtuple
-import concurrent.futures
 from functools import lru_cache
-import inspect
 import os
-import platform
-import stat
 import sys
 from typing import Any, cast, List, Tuple, Union, Iterator, Iterable, Optional, \
     Callable, Sequence, Dict, Set
@@ -37,19 +33,19 @@ import DHParser.ebnf
 from DHParser.compile import Compiler, compile_source, CompilerFactory
 from DHParser.pipeline import full_pipeline, Junction
 from DHParser.configuration import get_config_value, set_config_value
-from DHParser.ebnf import EBNFCompiler, grammar_changed, DHPARSER_IMPORTS, \
+from DHParser.ebnf import EBNFCompiler, DHPARSER_IMPORTS, \
     get_ebnf_preprocessor, get_ebnf_grammar, get_ebnf_transformer, get_ebnf_compiler
 from DHParser.error import Error, is_error, has_errors, only_errors, canonical_error_strings, \
-    CANNOT_VERIFY_TRANSTABLE_WARNING, ErrorCode, ERROR
-from DHParser.log import suspend_logging, resume_logging, is_logging, log_dir, append_log
+    ErrorCode, ERROR
+from DHParser.log import suspend_logging, resume_logging, is_logging, append_log
 from DHParser.nodetree import Node
 from DHParser.parse import Grammar, ParserFactory
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, \
     PreprocessorFactory
-from DHParser.transform import TransformerFunc, TransformationDict, TransformerFactory
+from DHParser.transform import TransformerFunc, TransformerFactory
 from DHParser.toolkit import DHPARSER_DIR, load_if_file, is_python_code, is_filename, \
-    compile_python_object, re, as_identifier, cpu_count, \
-    deprecated, instantiate_executor
+    compile_python_object, re, as_identifier, cpu_count, LazyRE, CancelQuery, md5, \
+    deprecated, deprecation_warning, instantiate_executor, PickMultiCoreExecutor
 from DHParser.versionnumber import __version__, __version_info__
 
 
@@ -57,6 +53,7 @@ __all__ = ('DefinitionError',
            'CompilationError',
            'read_template',
            'load_compiler_suite',
+           'grammar_changed',
            'compileDSL',
            'raw_compileEBNF',
            'compileEBNF',
@@ -67,7 +64,6 @@ __all__ = ('DefinitionError',
            'create_scripts',
            'restore_server_script',
            'process_file',
-           'never_cancel',
            'batch_process')
 
 
@@ -89,7 +85,7 @@ SECTION_MARKER = """\n
 #######################################################################
 \n"""
 
-RX_SECTION_MARKER = re.compile(SECTION_MARKER.format(marker=r'.*?SECTION.*?'))
+RX_SECTION_MARKER = LazyRE(SECTION_MARKER.format(marker=r'.*?SECTION.*?'))
 RX_WHITESPACE = re.compile(r'\s*')
 
 SYMBOLS_SECTION = "SYMBOLS SECTION - Can be edited. Changes will be preserved."
@@ -176,8 +172,9 @@ def grammar_instance(grammar_representation) -> Tuple[Grammar, str]:
             resume_logging(lg_dir)
         if has_errors(messages):
             raise DefinitionError(only_errors(messages), grammar_src)
-        imports = DHPARSER_IMPORTS  
+        imports = DHPARSER_IMPORTS
         grammar_class = compile_python_object(imports + parser_py, r'\w+Grammar$')
+        import inspect
         if inspect.isclass(grammar_class) and issubclass(grammar_class, Grammar):
             parser_root = grammar_class()
         else:
@@ -193,6 +190,40 @@ def grammar_instance(grammar_representation) -> Tuple[Grammar, str]:
     return parser_root, grammar_src
 
 
+def grammar_changed(grammar_class, grammar_source: str) -> bool:
+    """
+    Returns ``True`` if ``grammar_class`` does not reflect the latest
+    changes of ``grammar_source``
+
+    Parameters:
+        grammar_class:  the parser class representing the grammar
+            or the file name of a compiler suite containing the grammar
+        grammar_source:  File name or string representation of the
+            EBNF code of the grammar
+
+    Returns (bool):
+        True, if the source text of the grammar is different from the
+        source from which the grammar class was generated
+    """
+    grammar = load_if_file(grammar_source)
+    chksum = md5(grammar, __version__)
+    if isinstance(grammar_class, str):
+        # grammar_class = load_compiler_suite(grammar_class)[1]
+        with open(grammar_class, 'r', encoding='utf8') as f:
+            pycode = f.read()
+        m = re.search(r'class \w*\(Grammar\)', pycode)
+        if m:
+            m = re.search(' {4}source_hash__ *= *"([a-z0-9]*)"',
+                          pycode[m.span()[1]:])
+            if m is None:
+                return False
+            return not (m.groups() and m.groups()[-1] == chksum)
+        else:
+            return True
+    else:
+        return chksum != grammar_class.source_hash__
+
+
 def compileDSL(text_or_file: str,
                preprocessor: Optional[PreprocessorFunc],
                dsl_grammar: Union[str, Grammar],
@@ -200,7 +231,7 @@ def compileDSL(text_or_file: str,
                compiler: Compiler,
                fail_when: ErrorCode = ERROR) -> Any:
     """
-    Compiles a text in a domain specific language (DSL) with an
+    Compiles a text in a domain-specific language (DSL) with an
     EBNF-specified grammar. Returns the compiled text or raises a
     compilation error.
 
@@ -239,6 +270,7 @@ def raw_compileEBNF(ebnf_src: str, branding="DSL", fail_when: ErrorCode = ERROR)
     compiler = get_ebnf_compiler(branding, ebnf_src)
     transformer = get_ebnf_transformer()
     compileDSL(ebnf_src, nil_preprocessor, grammar, transformer, compiler, fail_when)
+    # compile.result now contains the result of the last call
     return compiler
 
 
@@ -247,6 +279,12 @@ if DHParser.versionnumber.__version_info__ < {__version_info__}:
     print(f'DHParser version {{DHParser.versionnumber.__version__}} is lower than the DHParser '
           f'version {__version__}, {{os.path.basename(__file__)}} has first been generated with. '
           f'Please install a more recent version of DHParser to avoid unexpected errors!')
+"""
+
+LOCAL_CONFIG="""
+if sys.version_info >= (3, 14, 0):
+    CONFIG_PRESET['multicore_pool'] = 'InterpreterPool'
+read_local_config(os.path.join(scriptdir, '{NAME}Config.ini'))
 """
 
 
@@ -269,7 +307,7 @@ def compileEBNF(ebnf_src: str, branding="DSL") -> str:
     compiler = raw_compileEBNF(ebnf_src, branding)
     src = ["#/usr/bin/python\n",
            SECTION_MARKER.format(marker=SYMBOLS_SECTION),
-           DHPARSER_IMPORTS, VERSION_CHECK,
+           DHPARSER_IMPORTS, VERSION_CHECK, LOCAL_CONFIG.format(NAME = branding),
            SECTION_MARKER.format(marker=PREPROCESSOR_SECTION), compiler.gen_preprocessor_skeleton(),
            SECTION_MARKER.format(marker=CUSTOM_PARSER_SECTION), compiler.gen_custom_parser_example(),
            SECTION_MARKER.format(marker=PARSER_SECTION), compiler.result,
@@ -280,7 +318,7 @@ def compileEBNF(ebnf_src: str, branding="DSL") -> str:
     return '\n'.join(src)
 
 
-@lru_cache()
+
 def grammar_provider(ebnf_src: str,
                      branding="DSL",
                      additional_code: str = '',
@@ -307,7 +345,7 @@ def grammar_provider(ebnf_src: str,
         get_ebnf_compiler(branding, ebnf_src), fail_when)
     log_name = get_config_value('compiled_EBNF_log')
     if log_name and is_logging():  append_log(log_name, grammar_src)
-    imports = DHPARSER_IMPORTS  
+    imports = DHPARSER_IMPORTS
     parsing_stage = compile_python_object('\n'.join([imports, additional_code, grammar_src]),
                                           r'parsing')  # r'get_(?:\w+_)?grammar$'
     if callable(parsing_stage.factory):
@@ -316,20 +354,29 @@ def grammar_provider(ebnf_src: str,
     raise ValueError('Could not compile grammar provider!')
 
 
+
 def create_parser(ebnf_src: str, branding="DSL", additional_code: str = '') -> Grammar:
     """Compiles the ebnf source into a callable Grammar-object. This is
     essentially syntactic sugar for ``grammar_provider(ebnf)()``.
     """
     grammar_factory = grammar_provider(ebnf_src, branding, additional_code)
     grammar = grammar_factory()
-    grammar.python_src__ = grammar_factory.python_src__
+    src = getattr(grammar_factory, 'python_src__','')
+    # extract Grammar class from source code for more clarity
+    i = src.find(f'class {branding}Grammar(Grammar):')
+    assert i >= 0, src
+    src = src[i:]
+    k = src.find('\n') + 1
+    while k > 0 and (src[k:k + 1] == '\n' or src[k: k + 4] == '    '):
+        k = src.find('\n', k) + 1
+    grammar.python_src__ = (src[:k] if k > 0 else src).rstrip() + '\n'
     return grammar
 
 
 def split_source(file_name: str, file_content: str) -> List[str]:
     """Splits the ``file_content`` into the seven sections: intro, imports,
     preprocessor_py, parser_py, ast_py, compiler_py, outro.
-    Raises a value error, if the number of sections if not equal to 7.
+    Raises a value error if the number of sections is not equal to 7.
     """
     sections = RX_SECTION_MARKER.split(file_content)
     ls = len(sections)
@@ -343,7 +390,7 @@ def load_compiler_suite(compiler_suite: str) -> \
         Tuple[PreprocessorFactory, ParserFactory,
               TransformerFactory, CompilerFactory]:
     """
-    Extracts a compiler suite from file or string ``compiler_suite``
+    Extracts a compiler suite from the file name or string ``compiler_suite``
     and returns it as a tuple (preprocessor, parser, ast, compiler).
 
     Returns:
@@ -432,7 +479,7 @@ def run_compiler(text_or_file: str, compiler_suite: str, fail_when: ErrorCode = 
 def compile_on_disk(source_file: str,
                     parser_name: str = '',
                     compiler_suite: str = "",
-                    extension: str = ".xml") -> Iterable[Error]:
+                    extension: str = ".xml") -> Sequence[Error]:
     """
     Compiles a source file with a given compiler and writes the
     result to a file.
@@ -500,30 +547,7 @@ def compile_on_disk(source_file: str,
             source = f.read()
             sections = split_source(parser_name, source)
             intro, imports, preprocessor, _, ast, compiler, outro = sections
-            ast_trans_python_src = imports + ast
-            ast_trans_table = dict()  # type: TransformationDict
-            try:
-                ast_trans_table = compile_python_object(ast_trans_python_src,
-                                                        r'(?:\w+_)?AST_transformation_table$')
-            except Exception as e:
-                if isinstance(e, NameError):
-                    err_str = 'NameError "{}" while compiling AST-Transformation. ' \
-                              'Possibly due to a forgotten import at the beginning ' \
-                              'of the AST-Block (!)'.format(str(e))
-                elif isinstance(e, ValueError):
-                    err_str = f'Exception {type(e)}: "{e}" while compiling AST-Transformation. ' \
-                              f'This warning can safely be ignored, if a different method ' \
-                              f'without a transformation-table or no AST-transformation at ' \
-                              f'all is used for "{os.path.basename(rootname)}".'
-                else:
-                    err_str = 'Exception {} while compiling AST-Transformation: {}' \
-                              .format(str(type(e)), str(e))
-                messages.append(Error(err_str, 0, CANNOT_VERIFY_TRANSTABLE_WARNING))
-                if is_logging():
-                    with open(os.path.join(log_dir(), rootname + '_AST_src.py'), 'w',
-                              encoding='utf-8') as f:
-                        f.write(ast_trans_python_src)
-            messages.extend(ebnf_compiler.verify_transformation_table(ast_trans_table))
+            if imports[-1:] != '\n':  imports += "\n\n"
             # TODO: Verify compiler
         except (PermissionError, FileNotFoundError, IOError):
             intro, imports, preprocessor, _, ast, compiler, outro = '', '', '', '', '', '', ''
@@ -537,11 +561,12 @@ def compile_on_disk(source_file: str,
         if RX_WHITESPACE.fullmatch(outro):
             outro = read_template('DSLParser.pyi').format(NAME=compiler_name)
         if RX_WHITESPACE.fullmatch(imports):
-            imports = DHParser.ebnf.DHPARSER_IMPORTS + VERSION_CHECK
+            imports = DHParser.ebnf.DHPARSER_IMPORTS + VERSION_CHECK \
+                      + LOCAL_CONFIG.format(NAME=compiler_name)
         elif imports.find("from DHParser.") < 0 \
                 or imports.find('PseudoJunction') < 0 \
                 or imports.find('create_parser_junction') < 0:
-            imports += "\nfrom DHParser.pipeline import PseudoJunction, create_parser_junction\n"
+            imports += "\nfrom DHParser.pipeline import PseudoJunction, create_parser_junction\n\n"
         if RX_WHITESPACE.fullmatch(preprocessor):
             preprocessor = ebnf_compiler.gen_preprocessor_skeleton()
         if RX_WHITESPACE.fullmatch(ast):
@@ -572,6 +597,7 @@ def compile_on_disk(source_file: str,
             if f:
                 f.close()
 
+        import platform, stat
         if platform.system() != "Windows":
             # set file permissions so that the parser_name can be executed
             st = os.stat(parser_name)
@@ -637,7 +663,7 @@ def recompile_grammar(ebnf_filename: str,
     if not parser_name:
         parser_name = base + 'Parser.py'
     error_file_name = base + '_ebnf_MESSAGES.txt'
-    messages = []  # type: Iterable[Error]
+    messages = []  # type: Sequence[Error]
     if (not os.path.exists(parser_name) or force
             or grammar_changed(parser_name, ebnf_filename)):
         notify()
@@ -718,6 +744,7 @@ def create_scripts(ebnf_filename: str,
         template = read_template(template_name)
         with open(script_name, 'w', encoding='utf-8') as f:
             f.write(template.replace('DSL', name))
+        import platform, stat
         if platform.system() != "Windows":
             # set file permissions so that the server-script can be executed
             st = os.stat(script_name)
@@ -753,7 +780,8 @@ def process_file(source: str, out_dir: str,
                  parser_factory: ParserFactory,
                  junctions: Set[Junction],
                  targets: Set[str],
-                 serializations: Dict[str, List[str]]) -> str:
+                 serializations: Dict[str, List[str]],
+                 cancel_query: Optional[CancelQuery] = None) -> str:
     """Compiles the source and writes the serialized results back to disk,
     unless any fatal errors have occurred. Error and Warning messages are
     written to a file with the same name as `result_filename` with an
@@ -773,13 +801,17 @@ def process_file(source: str, out_dir: str,
     :param serializations: A dictionary of serialization names, e.g. "sxpr",
         "xml", "json" for those target stages that still are node-trees. These
         will be serialized and written to disk in all given serializations.
+    :param cancel_query: A boolean-valued function without parameters that
+        is polled during processing. If it returns True, processing will be
+        canceled.
 
     :return: either the empty string or the file name of a file that contains
         the errors or warnings that occurred while processing the source.
     """
     source_filename = source if is_filename(source) else 'unknown_document_name'
     dest_name = os.path.splitext(os.path.basename(source_filename))[0]
-    results = full_pipeline(source, preprocessor_factory, parser_factory, junctions, targets)
+    results = full_pipeline(source, preprocessor_factory, parser_factory, junctions, targets,
+                            cancel_query=cancel_query)
     end_results = {t: r for t, r in results.items() if t in targets}
 
     # create target directories
@@ -835,18 +867,47 @@ def never_cancel() -> bool:
     return False
 
 
+Future = object  # to save the import of concurrent.futures when not needed!
+                 # todo: Could protocols for structural typing be useful, here?
+
 def batch_process(file_names: List[str], out_dir: str,
-                  process_file: Callable[[Tuple[str, str]], str],
-                  *, submit_func: Callable = None,
-                  log_func: Callable = None,
-                  cancel_func: Callable = never_cancel) -> List[str]:
+                  process_file: Union[Callable[[Tuple[str, str, CancelQuery]], str],
+                                      Callable[[Tuple[str, str]], str]],
+                  *, submit_func: Optional[Callable[[Callable, str, str], Future]] = None,
+                  log_func: Optional[Callable[[str], None]] = None,
+                  cancel_query: Optional[CancelQuery] = None,
+                  cancel_func: Optional[CancelQuery] = None) -> List[str]:
     """Compiles all files listed in file_names and writes the results and/or
     error messages to the directory `our_dir`. Returns a list of error
     messages files.
+
+    :param file_names: A list of names of files to be processed with the
+        function passed to the process_file-parameter.
+    :param out_dir: The name of a directory, to which the output will be
+        written (i.e. compilation and/or pipeline-processing results as
+        well as possibly intermediate stages and error-logs)
+    :param process_file: A function for processing source-texts. This function
+        receives the name of a source file and output-directory as parameters
+        and returns the name of an error-log-file (if there have been errors)
+        or the empty string if there were none.
+    :param submit_func: A function which calls the process_file function. This
+        additional indirection allows executing the call in a separate thread
+        or process, if desired. submit_func must return a
+        concurrent.futures.Future()-object!
+    :param log_func: A function that receives a string as parameter and which
+        is called with an appropriate message whenever another file has been
+        fully processed.
+    :param cancel_query: A callback-function without parameters that returns
+        either True if further processing shall be canceled or False if
+        processing shall continue. This allows interrupting long-running
+        batch-processing tasks. Typically, cancel_query will be the
+        event.is_set-function of a multiprocessing.Event-object that has
+        been instantiated before calling batch_process.
+    :param cancel_func: DEPRECATED. Please, use cancel_query.
     """
-    def collect_results(res_iter, file_names, log_func, cancel_func) -> List[str]:
+    def collect_results(res_iter, file_names, log_func, cancel_query) -> List[str]:
         error_list = []
-        if cancel_func(): return error_list
+        if cancel_query(): return error_list
         for file_name, error_filename in zip(file_names, res_iter):
             if log_func:
                 suffix = (" with " + error_filename[error_filename.rfind('_') + 1:-4]) \
@@ -854,24 +915,52 @@ def batch_process(file_names: List[str], out_dir: str,
                 log_func(f'Compiled "%s"' % os.path.basename(file_name) + suffix)
             if error_filename:
                 error_list.append(error_filename)
-            if cancel_func(): return error_list
+            if cancel_query(): return error_list
         return error_list
 
+    import concurrent.futures
+    import inspect
+    if cancel_func is not None:
+        deprecation_warning('Parameter name "cancel_func" of function '
+            'DHParser.dsl.batch_process() is deprected. Use "cancel_query" instead!')
+        if cancel_query is None:
+            cancel_query = cancel_func
+    signature = inspect.signature(process_file)
+    parm_tuple = list(signature.parameters.values())[0]
+    pf_parms = len(str(parm_tuple.annotation).split(","))
+    if pf_parms <= 2:
+        deprecation_warning("'process_file'-function passed to DHParser.dsl.batch_process() "
+                            "appears to be outdated as it does not take a third paramter. "
+                            "It's signature ought to be (source: str, out_dir: str, "
+                            "cancel_query: DHParser.toolkit.CancelQuery).")
+        pf_parms = 2
+    else:
+        pf_parms = 3
     if submit_func is None:
         pool = instantiate_executor(get_config_value('batch_processing_parallelization'),
-                                    concurrent.futures.ProcessPoolExecutor)
-        res_iter = pool.map(process_file, ((name, out_dir) for name in file_names),
-            chunksize=min(get_config_value('batch_processing_max_chunk_size'),
-                          max(1, len(file_names) // (cpu_count() * 4))))
-        error_files = collect_results(res_iter, file_names, log_func, cancel_func)
+                                    PickMultiCoreExecutor)
+        chunksize = min(get_config_value('batch_processing_max_chunk_size'),
+                        max(1, len(file_names) // (cpu_count() * 4)))
+        if pf_parms == 3:
+            res_iter = pool.map(process_file,
+                                ((name, out_dir, cancel_query) for name in file_names),
+                                chunksize=chunksize)
+        else:
+            res_iter = pool.map(process_file, ((name, out_dir) for name in file_names),
+                                chunksize=chunksize)
+        error_files = collect_results(res_iter, file_names, log_func, cancel_query or never_cancel)
         if sys.version_info >= (3, 9):
             pool.shutdown(wait=True, cancel_futures=True)
         else:
             pool.shutdown(wait=True)
     else:
-        futures = [submit_func(process_file, name, out_dir) for name in file_names]
+        if pf_parms == 3:
+            futures = [submit_func(process_file, name, out_dir, cancel_query)
+                       for name in file_names]
+        else:
+            futures = [submit_func(process_file, name, out_dir) for name in file_names]
         res_iter = (f.result() for f in futures)
-        error_files = collect_results(res_iter, file_names, log_func, cancel_func)
+        error_files = collect_results(res_iter, file_names, log_func, cancel_query or never_cancel)
         for f in futures:  f.cancel()
         concurrent.futures.wait(futures)
     return error_files
@@ -879,7 +968,7 @@ def batch_process(file_names: List[str], out_dir: str,
 
 # moved or deprecated functions
 
-PseudoJunction = namedtuple('PseudoJunction', ['factory'], module=__name__)
+PseudoJunction = namedtuple('PseudoJunction', ['factory'], module=__name__)  # DEPRECATED: Use pipeline.PseudoJunction
 
 @deprecated('create_preprocess_junction() has moved to the pipeline-module! Use "from DHParser.pipeline import create_preprocess_junction"')
 def create_preprocess_junction(tokenizer, include_regex, comment_regex,
@@ -914,7 +1003,6 @@ def create_compiler_transition(*args, **kwargs):
             "because it does not work with lambdas as transformer functions!")
 def create_transtable_junction(table, src_stage, dst_stage):
     # This does not work if table contains functions that cannot be pickled (i.e. lambda-functions)!
-    from DHParser import pipeline
     return create_transtable_transition(table, src_stage, dst_stage)
 
 @deprecated('The name "create_transtable_transition()" is deprecated. Use "DHParser.pipeline.create_transtable_junction()" instead.')

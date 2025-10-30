@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,13 @@
 # permissions and limitations under the License.
 
 """
-Module ``testing`` contains support for unit-testing domain specific
+Module ``testing`` contains support for unit-testing of domain-specific
 languages. Tests for arbitrarily small components of the Grammar can
 be written into test files with ini-file syntax in order to test
 whether the parser matches or fails as expected. It can also be
 tested whether it produces an expected concrete or abstract syntax tree.
 Usually, however, unexpected failure to match a certain string is the
-main cause of trouble when constructing a context free Grammar.
+main cause of trouble when constructing a context-free Grammar.
 """
 
 from __future__ import annotations
@@ -33,37 +33,38 @@ from collections.abc import Set
 import concurrent.futures
 import copy
 import fnmatch
-import inspect
 import json
 import os
 import random
 import sys
 import threading
-import traceback
 import time
 from typing import Dict, List, Union, Deque, Optional, cast
 
-if sys.version_info >= (3, 6, 0):
-    OrderedDict = dict
-else:
-    from collections import OrderedDict
+assert sys.version_info >= (3, 6, 0)
+OrderedDict = dict
 
 from DHParser.configuration import get_config_value, set_config_value
-from DHParser.pipeline import extract_data, run_pipeline
 from DHParser.error import Error, is_error, PARSER_LOOKAHEAD_MATCH_ONLY, \
     PARSER_LOOKAHEAD_FAILURE_ONLY, MANDATORY_CONTINUATION_AT_EOF, \
     MANDATORY_CONTINUATION_AT_EOF_NON_ROOT, CAPTURE_STACK_NOT_EMPTY_NON_ROOT_ONLY, \
-    AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT, PYTHON_ERROR_IN_TEST
+    AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT, PYTHON_ERROR_IN_TEST, RESUME_NOTICE
 from DHParser.log import is_logging, clear_logs, local_log_dir, log_parsing_history
-from DHParser.parse import Lookahead
+from DHParser.parse import Lookahead, artifact
 from DHParser.server import RX_CONTENT_LENGTH, RE_DATA_START, JSONRPC_HEADER_BYTES
 from DHParser.nodetree import Node, RootNode, deserialize, flatten_sxpr, ZOMBIE_TAG
+from DHParser.pipeline import extract_data, run_pipeline
+from DHParser.preprocess import nil_preprocessor_factory
 from DHParser.trace import set_tracer, trace_history
 from DHParser.transform import traverse, remove_children
-from DHParser.toolkit import load_if_file, re, re_find, instantiate_executor, TypeAlias
+from DHParser.toolkit import load_if_file, re, instantiate_executor, TypeAlias, \
+    PickMultiCoreExecutor
 
 
-__all__ = ('unit_from_config',
+__all__ = ('UNIT_STAGES',
+           'unit_from_config',
+           'merge_test_units',
+           'unit_to_config',
            'unit_from_json',
            'TEST_READERS',
            'unit_from_file',
@@ -97,7 +98,7 @@ RE_ONELINE_DOUBLE_QUOTE = r'(".*?")'
 RE_ONELINE_SINGLE_QUOTE = r"('.*?')"
 # Any data as long as it is indented after the first line.
 # In practice, S-expressions, XML and nodetree-JSON will be interpreted
-RE_MULTILINE_DATA = r'(.*(?:\n(?:\s*\n)*    .*)*)'
+RE_MULTILINE_DATA = r"([^\n]*(?:\n     *[^ ][^\n]*|\s*?(?=\n     *[^ ]))*)"
 RE_VALUE = '|'.join([RE_MULTILINE_DOUBLE_QUOTE,
                      RE_MULTILINE_SINGLE_QUOTE,
                      RE_ONELINE_DOUBLE_QUOTE,
@@ -195,11 +196,11 @@ def unit_from_config(config_str: str, filename: str, allowed_stages=UNIT_STAGES)
 
     :param config_str: A string containing a config-file with Grammar unit-tests
     :param filename: The file-name of the config-file containing ``config_str``.
-    :param allows_stages: A set of stage names of stages in the processing pipeline
+    :param allowed_stages: A set of stage names of stages in the processing pipeline
         for which the test-file may contain tests.
 
     Returns:
-        A JSON-like object(i.e. dictionary) representing the unit tests.
+        A JSON-like object (i.e. dictionary) representing the unit tests.
     """
     # TODO: issue a warning if the same match:xxx or fail:xxx block appears more than once
 
@@ -227,7 +228,7 @@ def unit_from_config(config_str: str, filename: str, allowed_stages=UNIT_STAGES)
         entry_match = RX_ENTRY.match(cfg, pos)
         while entry_match:
             key, value = [group for group in entry_match.groups() if group is not None]
-            value = normalize_code(value, full_normalization=True)
+#            value = normalize_code(value, full_normalization=True)
             unit[mdsection][key] = value
             pos = eat_comments(cfg, entry_match.span()[1])
             entry_match = RX_ENTRY.match(cfg, pos)
@@ -277,6 +278,90 @@ def unit_from_config(config_str: str, filename: str, allowed_stages=UNIT_STAGES)
                      cfg[pos:cfg.find('\n', pos + 1)].strip('\n'))
         raise SyntaxError(err_str)
     return unit
+
+
+def normalize_test_units(*test_units):
+    """Replaces all non-string keys by string keys and removes all
+    "dump-CST"-markers (*)."""
+    for test_unit in test_units:
+        for symbol, tests in test_unit.items():
+            if symbol[-2:] == '__':  continue
+            for typ, cases in tests.items():
+                for name, case in tuple(cases.items()):
+                    del cases[name]
+                    name = str(name).strip().strip('*')
+                    cases[name] = case
+
+
+def merge_test_units(*test_units) -> Dict:
+    """Merges the tests from one or more test units into a single test-unit.
+    ATEENTION: Test-units will be normalized before merging"""
+    assert len(test_units) >= 1
+    normalize_test_units(*test_units)
+    merged = copy.deepcopy(test_units[0])
+    name_subst = dict()
+    for test_unit in test_units[1:]:
+        for symbol, tests in test_unit.items():
+            if symbol not in merged:
+                merged[symbol] = OrderedDict()
+            name_subst[symbol] = dict()
+            assert next(iter(tests.keys())).lower() == 'match' or 'match' not in tests
+            for typ, cases in tests.items():
+                if typ not in merged[symbol]:
+                    merged[symbol][typ] = OrderedDict()
+                for name, case in cases.items():
+                    if any(c == case for c in merged[symbol][typ].values()):
+                        continue
+                    names = str(name).strip('*')
+                    orig = names
+                    if names in name_subst[symbol]:
+                        names = name_subst[symbol][names]
+                    elif names in merged[symbol][typ]:
+                        m = re.match(r'\d+', names[::-1])
+                        if m:
+                            nr = int(names[-m.end():]) + 1
+                            names = names[:-m.end()]
+                        else:
+                            nr = 1
+                        while names + str(nr) in merged[symbol][typ]:
+                            nr += 1
+                        names = names + str(nr)
+                        if typ.lower() == 'match':
+                            name_subst[orig] = names
+                    merged[symbol][typ][names] = case
+    return merged
+
+
+def format_casestr(s: str) -> str:
+    """Adds quotation marks and possibly indentation to a text-case string."""
+    if s.find("\n") >= 0:
+        for q in ('"""', "'''"):
+            if s.find(q) < 0:
+                l = s.split('\n')
+                for i in range(1, len(l)):
+                    l[i] = "    " + l[i]
+                return ''.join((q, '\n'.join(l), q))
+    else:
+        for q in ('"', "'", '"""', "'''"):
+            if s.find(q) < 0:
+                return ''.join((q, s, q))
+    raise ValueError(
+        f"Cannot add quotation marks to {s}, because all possible single or tripple "
+        f"quotation marks already occurr in this string!")
+
+
+def unit_to_config(test_unit: Dict) -> str:
+    """Converts a test_unit (back) to a config-file."""
+    test_doc = []
+    for symbol, tests in test_unit.items():
+        for typ, cases in tests.items():
+            test_doc.append(f'[{typ}:{symbol}]')
+            for name, case in cases.items():
+                assert isinstance(case, str), str(case)
+                test_doc.append(f'{name}: {format_casestr(case)}')
+            test_doc.append('')
+        test_doc.append('')
+    return '\n'.join(test_doc)
 
 
 def unit_from_json(json_str, filename, allowed_stages=UNIT_STAGES):
@@ -359,10 +444,10 @@ def get_report(test_unit, serializations: Dict[str, List[str]] = dict()) -> str:
     lists the source of all tests as well as the error messages, if a test
     failed or the abstract-syntax-tree (AST) in case of success.
 
-    If an asterix has been appended to the test name then the concrete syntax
+    If an asterix has been appended to the test-name then the concrete syntax
     tree will also be added to the report in this particular case.
 
-    The purpose of the latter is to help constructing and debugging
+    The purpose of the latter is to help to construct and debugging
     of AST-Transformations. It is better to switch the CST-output on and off
     with the asterix marker when needed than to output the CST for all tests
     which would unnecessarily bloat the test reports.
@@ -374,8 +459,8 @@ def get_report(test_unit, serializations: Dict[str, List[str]] = dict()) -> str:
     for parser_name, tests in test_unit.items():
         if parser_name[-2:] == '__':
             heading = parser_name[:-2]
-            report.append(f"{heading}\n{'=' * len(heading)}\n\n"
-                + '\n'.join(f"{k} = {repr(v)}" for k, v in tests.items()))
+            report.append(f"{heading}\n{'=' * len(heading)}\n\n    "
+                + '\n    '.join(f"{k} = {repr(v)}" for k, v in tests.items()))
             continue
         heading = 'Test of parser: "%s"' % parser_name
         report.append('\n\n%s\n%s' % (heading, '=' * len(heading)))
@@ -429,6 +514,7 @@ def get_report(test_unit, serializations: Dict[str, List[str]] = dict()) -> str:
 
 
 POSSIBLE_ARTIFACTS = frozenset((
+    RESUME_NOTICE,
     PARSER_LOOKAHEAD_MATCH_ONLY,
     PARSER_LOOKAHEAD_FAILURE_ONLY,
     MANDATORY_CONTINUATION_AT_EOF_NON_ROOT,
@@ -451,7 +537,8 @@ def md_codeblock(code: str) -> str:
 
 
 def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT', verbose=False,
-                 junctions=set(), show=set(), serializations: Dict[str, List[str]] = dict()):
+                 junctions=set(), show=set(), serializations: Dict[str, List[str]] = dict(),
+                 preprocessor_factory=nil_preprocessor_factory):
     """
     Unit tests for a grammar-parser and ast-transformations.
 
@@ -467,6 +554,11 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         processing stages after the AST-transformation.
     :param show: A set of stage names that shall be shown in the report apart from the AST.
         (The abstract-syntax-tree will always be shown!)
+    :param serializations: A (not necessarily complete) dictionary of stages -> serialization
+        that allows to override the default serialization for specific stages.
+    :param preprocessor_factory: The preprocessor factory. This will be ignored of the
+        configuration variable test_skip_preprocessor is set to True. Beware that in this
+        case, all source snippets must already have been preprocessed.
     """
     assert isinstance(report, str)
     assert isinstance(junctions, Set) and all(isinstance(e[0], str) and isinstance(e[2], str)
@@ -507,6 +599,12 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
     if verbose:
         write("\nGRAMMAR TEST UNIT: " + unit_name)
     errata = []
+    config_history_tracking = get_config_value('history_tracking')
+    config_resume_notices = get_config_value('resume_notices')
+    if not get_config_value('test_skip_preprocessor', False):
+        preprocessor = preprocessor_factory()
+    else:
+        preprocessor = nil_preprocessor_factory()
     parser = parser_factory()
     transform = transformer_factory()
 
@@ -535,7 +633,7 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         if is_artifact:
             # don't remove zombie node with error message at the end
             # but change its name to indicate that it is an artifact!
-            for zombie in syntax_tree.select(ZOMBIE_TAG):
+            for zombie in syntax_tree.select(artifact):
                 zombie.name = TEST_ARTIFACT
                 zombie.result = 'Artifact can be ignored. Be aware, though, that also the ' \
                                 'tree structure may not be the same as in a non-testing ' \
@@ -578,18 +676,39 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                     return ""
         return compare or ""
 
+    def log_history(parser_name, test_code, test_name, test_type, track_history):
+        nonlocal parser, config_history_tracking
+        if not track_history:
+            set_tracer(parser[parser_name].descendants(), trace_history)
+            try:
+                _, prepped_text, _ ,_ = preprocessor(test_code, parser_name)
+                _ = parser(prepped_text, parser_name)
+            except AttributeError:
+                pass
+            except KeyboardInterrupt as ctrlC:
+                with local_log_dir('./LOGS'):
+                    log_parsing_history(parser, "interrupted_%s_%s_%s.log" %
+                                        (test_type, parser_name, clean_test_name))
+                raise ctrlC
+            finally:
+                set_tracer(parser[parser_name].descendants(), None)
+                parser.history_tracking__ = config_history_tracking
+        with local_log_dir('./LOGS'):
+            tname = test_name.replace('*', '')
+            log_parsing_history(parser, f"{test_type}_{parser_name}_{tname}.log")
+
     saved_config_values = dict()
     for parser_name, tests in test_unit.items():
         if parser_name[-2:] == '__':
             assert parser_name == 'config__', f'Unknown metadata-type: "{parser_name}"'
             for key, value in tests.items():
                 saved_config_values[key] = get_config_value(key)
-                set_config_value(key, value)
+                set_config_value(key, eval(value))
             continue
 
-        track_history = get_config_value('history_tracking')
+        track_history = config_history_tracking
         try:
-            if has_lookahead(parser_name):
+            if has_lookahead(parser_name) or track_history:
                 set_tracer(parser[parser_name].descendants(), trace_history)
                 track_history = True
         except AttributeError:
@@ -633,9 +752,11 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         for test_name, test_code in tests.get('match', dict()).items():
             errflag = len(errata)
             err: Optional[Error] = None
+            errors: List[Error] = []
             clean_test_name = str(test_name).replace('*', '')
             try:
-                cst = parser(test_code, parser_name)
+                _, prepped_text, back_mapping, errors = preprocessor(test_code, parser_name)
+                cst = parser(prepped_text, parser_name, back_mapping)  # , complete_match=True
             except AttributeError as upe:
                 cst = RootNode()
                 cst = cst.new_error(Node(ZOMBIE_TAG, "").with_pos(0), str(upe))
@@ -647,7 +768,7 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 raise ctrlC
 
             tests.setdefault('__CST__', {})[test_name] = cst
-            # errors = []  # type: List[Error]
+            for e in errors:  cst.add_error(None, e)
             if is_error(cst.error_flag) and not lookahead_artifact(cst):
                 errors = [e for e in cst.errors if e.code not in POSSIBLE_ARTIFACTS]
                 errata.append('Match test "%s" for parser "%s" failed:'
@@ -684,6 +805,7 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                     targets = run_pipeline(junctions, {'AST': copy.deepcopy(ast)},
                                            transformation_stages | show)
                 except Exception as e:  # at least: (ValueError, IndexError)
+                    import traceback
                     # raise SyntaxError(f'Compilation-Test {test_name} of parser {parser_name} '
                     #                   f'failed with:\n{str(e)}\n{traceback.format_exc()}')
                     err = Error(f'Python Error in compilation-test {test_name} of parser '
@@ -704,7 +826,7 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                         # ignore key errors in case they are only consequential errors
                         # of earlier errors
                         if err.code != PYTHON_ERROR_IN_TEST:
-                            raise(ke)
+                            raise ke
                 # keep test-items, so that the order of the items is the same as
                 # in which they are processed in the pipeline.
                 for t in targets:
@@ -787,13 +909,11 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                                   + f'{stage}-test "' + test_name + '" ... '
                         write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
 
-            if len(errata) > errflag:
-                tests.setdefault('__err__', {})[test_name] = errata[-1]
-                # write parsing-history log only in case of failure!
-                if is_logging() and track_history:
-                    with local_log_dir('./LOGS'):
-                        log_parsing_history(parser, "match_%s_%s.log" %
-                                            (parser_name, clean_test_name))
+            if len(errata) > errflag or config_history_tracking:
+                if len(errata) > errflag:
+                    tests.setdefault('__err__', {})[test_name] = errata[-1]
+                if is_logging():
+                    log_history(parser_name, test_code, clean_test_name, 'match', track_history)
 
         if verbose and 'fail' in tests:
             write('  Fail-Tests for parser "' + parser_name + '"')
@@ -803,7 +923,19 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         for test_name, test_code in tests.get('fail', dict()).items():
             errflag = len(errata)
             try:
-                cst = parser(test_code, parser_name)
+                cst = parser(test_code, parser_name, complete_match=True)
+                # complete_math=True, because fail-tests are specifically needed
+                # to test whitespace-parsers and thus must not tolerate left-over
+                # whitespace at the end!
+            except KeyboardInterrupt as ctrlC:
+                if is_logging() and track_history:
+                    with local_log_dir('./LOGS'):
+                        log_parsing_history(parser, "interrupted_fail_%s_%s.log" %
+                                            (parser_name, clean_test_name))
+                raise ctrlC
+            except Exception as e:
+                errata.append('Fail-test "%s" for parser "%s" failed with:\n%s' %
+                              (test_name, parser_name, str(e)))
             except AttributeError as upe:
                 node = Node(ZOMBIE_TAG, "").with_pos(0)
                 cst = RootNode(node).new_error(node, str(upe))
@@ -813,25 +945,15 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
             if 'AST' in tests or report:
                 traverse(cst, {'*': remove_children({TEST_ARTIFACT})})
                 transform(cst)
+            store_fail_log = config_history_tracking
             if not (is_error(cst.error_flag) and not lookahead_artifact(cst)):
-                # if cst.name != ZOMBIE_TAG:  # # not cst.pick(ZOMBIE_TAG, include_root=True):
-                #     # add syntax tree, if it is useful
-                #     try:
-                #         stage = cst.stage
-                #     except AttributeError:
-                #         stage = 'CST'
-                #     treestr = f'\n{indent(stage.upper() + ": " + cst.serialize(stage))}'
-                # else:
-                #     treestr = "\n    (AST not shown, because it is just a testing stub!)"
                 treestr = ''
                 errata.append(f'Fail test "{test_name}" for parser "{parser_name}" '
                               f'yields match instead of expected failure!' + treestr)
                 tests.setdefault('__err__', {})[test_name] = errata[-1]
-                # write parsing-history log only in case of test-failure
-                if is_logging() and track_history:
-                    with local_log_dir('./LOGS'):
-                        tname = test_name.replace('*', '')
-                        log_parsing_history(parser, f"fail_{parser_name}_{tname}.log")
+                store_fail_log = True
+            if is_logging() and store_fail_log:
+                log_history(parser_name, test_code, test_name, 'fail', track_history)
             if cst.error_flag:
                 tests.setdefault('__msg__', {})[test_name] = \
                     "\n".join(str(e) for e in cst.errors)
@@ -839,8 +961,10 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 infostr = '    fail-test  "' + test_name + '" ... '
                 write(infostr + ("OK" if len(errata) == errflag else "FAIL"))
 
-    # remove tracers, in case there are any:
-    set_tracer(parser.root_parser__.descendants(), None)
+        if track_history and not config_history_tracking:
+            set_tracer(parser[parser_name].descendants(), None)
+            parser.history_tracking__ = False
+        parser.resume_notices__ = config_resume_notices
 
     # write test-report
     if report:
@@ -893,10 +1017,32 @@ def grammar_suite(directory, parser_factory, transformer_factory,
                   ignore_unknown_filetypes=False,
                   report='REPORT', verbose=True,
                   junctions=set(), show=set(),
-                  serializations: Dict[str, List[str]] = dict()):
+                  serializations: Dict[str, List[str]] = dict(),
+                  preprocessor_factory=nil_preprocessor_factory):
     """
-    Runs all grammar unit tests in a directory. A file is considered a test
-    unit, if it has the word "test" in its name.
+    Runs all grammar unit tests in a directory. A file is considered a test-unit,
+    if it has the word "test" in its name.
+
+    :param directory: The path of a directory that contains test-files.
+    :param parser_factory: the parser-factory-object, typically an instance of
+        :py:class:`~parse.Grammar`.
+    :param transformer_factory: A factory-function for the AST-transformation-function.
+    :param fn_patterns: A glob patterns for selecting those files in the test-directory
+        that shall be used for testing.
+    :param ignore_unknown_filetypes: If True, unknown file types will silently be ignored.
+        Otherwise, an error will be raised if an unknown file-type is encountered
+    :param report: the name of the subdirectory where the test-reports will be saved.
+        If the name is the empty string, no reports will be generated.
+    :param verbose: If True, more information will be printed to the console during testing.
+    :param junctions: A set of :py:class:`~compile.Junction`-objects that define further
+        processing stages after the AST-transformation.
+    :param show: A set of stage names that shall be shown in the report apart from the AST.
+        (The abstract-syntax-tree will always be shown!)
+    :param serializations: A (not necessarily complete) dictionary of stages -> serialization
+        that allows to override the default serialization for specific stages.
+    :param preprocessor_factory: The preprocessor factory. This will be ignored of the
+        configuration variable test_skip_preprocessor is set to True. Beware that in this
+        case, all source snippets must already have been preprocessed.
     """
     assert isinstance(report, str)
     assert isinstance(show, set) and all(isinstance(element, str) for element in show), \
@@ -921,11 +1067,12 @@ def grammar_suite(directory, parser_factory, transformer_factory,
     assert tests, f"No pattern from {fn_patterns} matched any test in directory {os.getcwd()}"
 
     with instantiate_executor(get_config_value('test_parallelization') and len(tests) > 1,
-                              concurrent.futures.ProcessPoolExecutor) as pool:
+                              PickMultiCoreExecutor) as pool:
         results = []
         for filename in tests:
             parameters = (filename, parser_factory, transformer_factory,
-                          report, verbose, junctions, show, serializations)
+                          report, verbose, junctions, show, serializations,
+                          preprocessor_factory)
             results.append(pool.submit(grammar_unit, *parameters))
         done, not_done = concurrent.futures.wait(results)
         assert not not_done, str(not_done)
@@ -975,7 +1122,7 @@ def extract_symbols(ebnf_text_or_file: str) -> SymbolsDictType:
     Extracts all defined symbols from an EBNF-grammar. This can be used to
     prepare grammar-tests. The symbols will be returned as lists of strings
     which are grouped by the sections to which they belong and returned as
-    an ordered dictionary, they keys of which are the section names.
+    an ordered dictionary, the keys of which are the section names.
     In order to define a section in the ebnf-source, add a comment-line
     starting with "#:", followed by the section name. It is recommended
     to use valid file names as section names. Example:
@@ -1097,26 +1244,41 @@ def run_tests_in_class(cls_name, namespace, methods=()):
         returns the instance."""
         exec("instance = " + cls + "()", nspace)
         instance = nspace["instance"]
-        setup = instance.setup if "setup" in dir(instance) else lambda : 0
-        teardown = instance.teardown if "teardown" in dir(instance) else lambda : 0
-        return instance, setup, teardown
+        instance_dir = dir(instance)
+        if "setup" in instance_dir:
+            setup_method = instance.setup
+        elif "setup_method" in instance_dir:
+            setup_method = instance.setup_method
+        else:
+            setup_method = lambda : 0
+        if "teardown" in instance_dir:
+            teardown_method = instance.teardown
+        elif "teardown_method" in instance_dir:
+            teardown_method = instance.teardown_method
+        else:
+            teardown_method = lambda : 0
+        setup_class = instance.setup_class if "setup_class" in instance_dir else lambda : 0
+        teardown_class = instance.teardown_class if "teardown_class" in instance_dir else lambda : 0
+
+        return instance, setup_method, teardown_method, setup_class, teardown_class
 
     obj = None
+    obj, setup, teardown, setup_class, teardown_class = instantiate(cls_name, namespace)
+    setup_class()
     if methods:
-        obj, setup, teardown = instantiate(cls_name, namespace)
         for name in methods:
             func = obj.__getattribute__(name)
             if callable(func):
                 print("Running " + cls_name + "." + name)
                 setup();  func();  teardown()
     else:
-        obj, setup, teardown = instantiate(cls_name, namespace)
         for name in dir(obj):
             if name.lower().startswith("test"):
                 func = obj.__getattribute__(name)
                 if callable(func):
                     print("Running " + cls_name + "." + name)
                     setup();  func();  teardown()
+    teardown_class()
 
 
 def run_test_function(func_name, namespace):
@@ -1147,8 +1309,8 @@ def runner(tests, namespace, profile=False):
 
     :param tests: String or list of strings with the names of tests
         to run. If empty, runner searches by itself all objects the
-        of which starts with 'test' and runs it (if its a function)
-        or all of its methods that start with "test" if its a class
+        of which starts with 'test' and runs it (if it is a function)
+        or all of its methods that start with "test" if it is a class
         plus the "setup" and "teardown" methods if they exist.
 
     :param namespace: The namespace for running the test, usually
@@ -1187,6 +1349,7 @@ def runner(tests, namespace, profile=False):
         if not tests:
             tests = [name for name in namespace.keys() if name.lower().startswith('test')]
 
+    import inspect
     for name in tests:
         func_or_class, method = (name.split('.') + [''])[:2]
         if inspect.isclass(namespace[func_or_class]):
@@ -1231,7 +1394,7 @@ def run_path(path):
         files = os.listdir(path)
         results = []
         with instantiate_executor(get_config_value('test_parallelization') and len(files) > 1,
-                                  concurrent.futures.ProcessPoolExecutor) as pool:
+                                  PickMultiCoreExecutor) as pool:
             for f in files:
                 f_lower = f.lower()
                 if f_lower.startswith('test_') and f_lower.endswith('.py'):
@@ -1252,8 +1415,8 @@ def run_path(path):
 
 
 def clean_report(report_dir='REPORT'):
-    """Deletes any test-report-files in the REPORT sub-directory and removes
-    the REPORT sub-directory, if it is empty after deleting the files."""
+    """Deletes any test-report-files in the REPORT subdirectory and removes
+    the REPORT subdirectory, if it is empty after deleting the files."""
     # TODO: make this thread/process safe, if possible!!!!
     if os.path.exists(report_dir):
         files = os.listdir(report_dir)
@@ -1283,7 +1446,7 @@ async def read_full_content(reader) -> bytes:
         m = RX_CONTENT_LENGTH.match(data, i, i + 100) if i >= 0 else None
         if m:
             content_length = int(m.group(1))
-            m2 = re_find(data, RE_DATA_START)
+            m2 = re.search(RE_DATA_START, data)
             if m2:
                 header_size = m2.end()
                 if len(data) < header_size + content_length:
@@ -1315,7 +1478,7 @@ async def stdio(limit=asyncio.streams._DEFAULT_LIMIT, loop=None):
 
 
 class MockStream:
-    """Simulates a stream that can be written to from one side and read from
+    """Simulates a stream that can be written to from one side and read
     from the other side like a pipe. Usage pattern::
 
         pipe = MockStream()
@@ -1444,3 +1607,4 @@ class MockStream:
             self.data_waiting.wait()
             data.extend(self._readline())
         return b''.join(data)
+

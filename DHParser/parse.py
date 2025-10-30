@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,14 +32,13 @@ for an example.
 from __future__ import annotations
 
 import functools
-from bisect import bisect_left
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 import copy
 from functools import lru_cache
-from typing import Callable, cast, List, Tuple, Set, FrozenSet, Dict, Collection, \
-    DefaultDict, Sequence, Union, Optional, Iterator, Hashable, AbstractSet
+from typing import Callable, cast, Collection, DefaultDict, Sequence, Union, Optional, \
+    NamedTuple, Iterator
 
-from DHParser.configuration import get_config_value
+from DHParser.configuration import get_config_value, NEVER_MATCH_PATTERN
 from DHParser.error import Error, ErrorCode, MANDATORY_CONTINUATION, \
     UNDEFINED_RETRIEVE, PARSER_LOOKAHEAD_FAILURE_ONLY, CUSTOM_PARSER_FAILURE, \
     PARSER_LOOKAHEAD_MATCH_ONLY, PARSER_STOPPED_BEFORE_END, PARSER_NEVER_TOUCHES_DOCUMENT, \
@@ -50,15 +49,18 @@ from DHParser.error import Error, ErrorCode, MANDATORY_CONTINUATION, \
     AUTOCAPTURED_SYMBOL_NOT_CLEARED, RECURSION_DEPTH_LIMIT_HIT, CAPTURE_STACK_NOT_EMPTY_WARNING, \
     MANDATORY_CONTINUATION_AT_EOF_NON_ROOT, CAPTURE_STACK_NOT_EMPTY_NON_ROOT_ONLY, \
     AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT, ERROR_WHILE_RECOVERING_FROM_ERROR, \
-    ZERO_LENGTH_CAPTURE_POSSIBLE_WARNING, PARSER_STOPPED_ON_RETRY, ERROR, \
-    INFINITE_LOOP_WARNING, REDUNDANT_PARSER_WARNING, SourceMapFunc, has_errors, is_error
+    ZERO_LENGTH_CAPTURE_POSSIBLE_WARNING, PARSER_STOPPED_ON_RETRY, ERROR, CANCELED, \
+    INFINITE_LOOP_WARNING, REDUNDANT_PARSER_WARNING, PARSER_STOPPED_BEFORE_END_WARNING, \
+    has_errors, is_error
 from DHParser.log import CallItem, HistoryRecord
-from DHParser.preprocess import BEGIN_TOKEN, END_TOKEN, RX_TOKEN_NAME
+from DHParser.preprocess import BEGIN_TOKEN, END_TOKEN, RX_TOKEN_NAME, SourceMapFunc
 from DHParser.stringview import StringView, EMPTY_STRING_VIEW
-from DHParser.nodetree import ChildrenType, Node, RootNode, WHITESPACE_PTYPE, TOKEN_PTYPE, \
-     MIXED_CONTENT_TEXT_PTYPE, ZOMBIE_TAG, EMPTY_NODE, EMPTY_PTYPE, ResultType, LEAF_NODE
-from DHParser.toolkit import sane_parser_name, escape_ctrl_chars, re, \
-    abbreviate_middle, RX_NEVER_MATCH, RxPatternType, linebreaks, line_col, TypeAlias
+from DHParser.nodetree import Node, RootNode, WHITESPACE_PTYPE, \
+    KEEP_COMMENTS_PTYPE, TOKEN_PTYPE, MIXED_CONTENT_TEXT_PTYPE, ZOMBIE_TAG, EMPTY_NODE, \
+    EMPTY_PTYPE, LEAF_NODE, ChildrenType, ResultType
+from DHParser.toolkit import sane_parser_name, escape_ctrl_chars, re, matching_brackets, \
+    abbreviate_middle, RxPatternType, linebreaks, line_col, TypeAlias, List, Tuple, \
+    MutableSet, AbstractSet, FrozenSet, Dict, INFINITE, LazyRE, CancelQuery, deprecated
 
 try:
     import cython
@@ -68,11 +70,15 @@ except (ImportError, NameError):
 
 __all__ = ('parser_names',
            'ParserError',
+           'ARTIFACT_NAMES',
+           'artifact',
            'ApplyFunc',
            'ApplyToTrailFunc',
            'FlagFunc',
            'ParseFunc',
+           'BoundParseFunc',
            'ParsingResult',
+           'ParserCallable',
            'ParserFactory',
            'copy_parser_base_attrs',
            'Parser',
@@ -80,7 +86,12 @@ __all__ = ('parser_names',
            'GrammarError',
            'UninitializedError',
            'ensure_drop_propagation',
+           'cancel_proxy',
+           'NEVER_MATCH_PATTERN',
+           'RX_NEVER_MATCH',
            'Grammar',
+           'match',
+           'fullmatch',
            'is_grammar_placeholder',
            'is_parser_placeholder',
            'Always',
@@ -101,8 +112,16 @@ __all__ = ('parser_names',
            'DropRegExp',
            'mixin_comment',
            'mixin_nonempty',
+           'NO_TREE_REDUCTION',
+           'FLATTEN',
+           'MERGE_TREETOPS',
+           'MERGE_LEAVES',
            'CombinedParser',
            'TreeReduction',
+           'RX_NAMED_GROUPS',
+           'PARSER_PLACEHOLDER',
+           'NoMemoizationParser',
+           'SmartRE',
            'CustomParseFunc',
            'Custom',
            'CustomParser',
@@ -120,7 +139,6 @@ __all__ = ('parser_names',
            'Series',
            'Alternative',
            'longest_match',
-           'INFINITE',
            'Counted',
            'Interleave',
            'Required',
@@ -198,14 +216,14 @@ class ParserError(Exception):
     different kind of error like ``UnknownParserError``) is when a :py:class:`Series`
     or :py:class:`Interleave`-parser detects a missing mandatory element.
 
-    :ivar origin:  The parser within which the error has been raised
+    :ivar parser:  The parser within which the error has been raised
     :ivar node:  The node within which the error is locted
     :ivar node_orig_len:  The original size of that node. The actual size
         of that node may change due to later processing steps und thus not
-        be reliable any more for the description of the error.
+        be reliable anymore for the description of the error.
     :ivar location:  The location in the document where the parser that caused the
         error started. This is not to be confused with the location where the error
-        occurred, because by the time the error occurs the parser may already have
+        occurred, because by the time the error occurrs the parser may already have
         read some part of the document.
     :ivar error:  The :py:class:`~error.Error` object containing among other things
         the exact error location.
@@ -217,14 +235,14 @@ class ParserError(Exception):
 
     """
     def __init__(self,
-                 origin: Parser,
+                 parser: Parser,
                  node: Node,
                  node_orig_len: int,
                  location: int,
                  error: Error, *,
                  first_throw: bool):
         assert node is not None
-        self.parser = origin  # type: Parser
+        self.parser = parser  # type: Parser
         self.node = node      # type: Node
         self.node_orig_len = node_orig_len  # type: int
         self.location = location  # type: int
@@ -249,7 +267,7 @@ class ParserError(Exception):
 
     def new_PE(self, **kwargs):
         """Returns a new ParserError object with the same attribute values
-        as ``self``, except those that are reassigned in ``kwargs``.::
+        as ``self``, except those that are reassigned in ``kwargs``::
 
             >>> pe = ParserError(Parser(), Node('test', ""), 0, 0, Error("", 0), first_throw=True)
             >>> pe_derived = pe.new_PE(first_throw = False)
@@ -258,7 +276,7 @@ class ParserError(Exception):
             >>> pe_derived.first_throw
             False
         """
-        args = {"origin": self.parser,
+        args = {"parser": self.parser,
                 "node": self.node,
                 "node_orig_len": self.node_orig_len,
                 "location": self.location,
@@ -281,17 +299,18 @@ ReentryPointAlgorithm: TypeAlias = Callable[[StringView, int, int], Tuple[int, i
 
 # @cython.returns(cython.int)
 # must not use: @functools.lru_cache(), because resume-function may contain
-# context sensitive parsers!!!
+# context-sensitive parsers!!!
 @cython.locals(upper_limit=cython.int, closest_match=cython.int, pos=cython.int)
 def reentry_point(rest: StringView,
                   rules: ResumeList,
                   comment_regex,
-                  search_window: int = -1) -> Tuple[int, Node]:
+                  search_window: int = -1,
+                  skip_node_name: str = "") -> Tuple[int, Node]:
     """
     Finds the point where parsing should resume after a ParserError has been caught.
     The algorithm makes sure that this reentry-point does not lie inside a comment.
     The re-entry point is always the point after the end of the match of the regular
-    expression defining the re-entry point. (Use look ahead, if you want to define
+    expression defining the re-entry point. (Use lookahead if you want to define
     the re-entry point by what follows rather than by what text precedes the point.)
 
     REMARK: The algorithm assumes that any stretch of the document that matches
@@ -300,8 +319,7 @@ def reentry_point(rest: StringView,
     use constructs that look like comments (i.e. will be matched by ``comment_regex``)
     but are none in other areas. For example::
 
-            my_string = "# This is not a comment"; foo()  # This is a comment
-            bar()
+        my_string = "# This is not a comment"; foo()  # This is a comment bar()
 
     Here the reentry-algorithm would overlook ``foo()`` and jump directly to ``bar()``.
     However, since the reentry-algorithm only needs to be good enough to do its
@@ -317,6 +335,10 @@ def reentry_point(rest: StringView,
         reentry-point. A value smaller than zero means that the complete remaining
         text will be searched. A value of zero effectively turns of resuming after
         error
+    :param skip_node_name: A name for the skip-node that is used to store that part
+        of the document that will be skipped before continuing with the parsing process.
+        f"_R{nr}__" will be added to the skip-node name, where "nr" is the nummer
+        of the skip-rule, of which there can be more than one for the same parser.
     :return: A tuple of the integer index (counted from the beginning of rest!)
         of the closest reentry point and a Node
         capturing all text from ``rest`` up to this point or ``(-1, None)`` if no
@@ -332,7 +354,7 @@ def reentry_point(rest: StringView,
     @cython.locals(a=cython.int, b=cython.int)
     def next_comment() -> Tuple[int, int]:
         """Returns the [start, end[ intervall of the next comment in the text.
-        The comment-iterator start at the beginning of the ``rest`` of the
+        The comment-iterator starts at the beginning of the ``rest`` of the
         document and is reset for each search rule.
         """
         nonlocal rest, comments
@@ -394,7 +416,8 @@ def reentry_point(rest: StringView,
         return k + length if k >= 0 else upper_limit
 
     # find the closest match
-    for rule in rules:
+    nr = 0
+    for nr, rule in enumerate(rules, 1):
         comments = rest.finditer(comment_regex)
         if isinstance(rule, Parser):
             parser = cast(Parser, rule)
@@ -433,8 +456,15 @@ def reentry_point(rest: StringView,
     if closest_match == upper_limit:
         closest_match = -1
     if skip_node is None:
-        skip_node = Node(ZOMBIE_TAG, rest[:max(closest_match, 0)])
+        skip_node = Node(f'{skip_node_name}_R{nr}__', rest[:max(closest_match, 0)])
     return closest_match, skip_node
+
+
+ARTIFACT_NAMES = ('_skip_', '_resume_', ZOMBIE_TAG)
+
+def artifact(nd: Node) -> bool:
+    """Returns True, if node is a skip, resume or ZOMBIE-node."""
+    return nd.name[-2:] == '__' and any(nd.name.find(part) >= 0 for part in ARTIFACT_NAMES)
 
 
 ########################################################################
@@ -443,11 +473,10 @@ def reentry_point(rest: StringView,
 #
 ########################################################################
 
-
 _GRAMMAR_PLACEHOLDER = None  # type: Optional[Grammar]
 
 
-def get_grammar_placeholder() -> 'Grammar':
+def get_grammar_placeholder() -> Grammar:
     global _GRAMMAR_PLACEHOLDER
     if _GRAMMAR_PLACEHOLDER is None:
         _GRAMMAR_PLACEHOLDER = Grammar.__new__(Grammar)
@@ -458,7 +487,6 @@ def is_grammar_placeholder(grammar: Optional['Grammar']) -> bool:
     return grammar is None or cast(Grammar, grammar) is _GRAMMAR_PLACEHOLDER
 
 
-
 ParsingResult: TypeAlias = Tuple[Optional[Node], int]
 MemoizationDict: TypeAlias = Dict[int, ParsingResult]
 
@@ -466,12 +494,13 @@ ApplyFunc: TypeAlias = Callable[['Parser'], Optional[bool]]
 ParserTrail: TypeAlias = Tuple['Parser']
 ApplyToTrailFunc: TypeAlias = Callable[[ParserTrail], Optional[bool]]
 # The return value of ``True`` stops any further application
-FlagFunc: TypeAlias = Callable[[ApplyFunc, Set[ApplyFunc]], bool]
+FlagFunc: TypeAlias = Callable[[ApplyFunc, MutableSet[ApplyFunc]], bool]
 ParseFunc: TypeAlias = Callable[['Parser', int], ParsingResult]
+BoundParseFunc: TypeAlias = Callable[[int], ParsingResult]
 
 
 class Parser:
-    """
+    r"""
     (Abstract) Base class for Parser combinator parsers. Any parser
     object that is actually used for parsing (i.e. no mock parsers)
     should be derived from this class.
@@ -503,9 +532,9 @@ class Parser:
     :py:class:`ZeroOrMore` or :py:class:`Option`). If ``i > 0`` then the
     parser has "moved forward".
 
-    If the parser does not match it returns ``(None, text)``. **Note** that
+    If the parser does not match, it returns ``(None, text)``. **Note** that
     this is not the same as an empty match ``("", text)``. Any empty match
-    can for example be returned by the :py:class:`ZeroOrMore`-parser in case
+    can, for example, be returned by the :py:class:`ZeroOrMore`-parser in case
     the contained parser is repeated zero times.
 
     :ivar pname:  The parser's name.
@@ -529,30 +558,23 @@ class Parser:
                 ``pname``, otherwise it is the name of the parser's type
                 prefixed with a colon ":".
 
-    :ivar eq_class: A unique number for the class of functionally
-                equivalent parsers that this parser belongs to.
-                (This serves the purpose of optimizing memoization,
-                by tying memoization dictionaries to the classes
-                of functionally equivalent parsers, rather than to
-                the individual parsers themselves.)
-
     :ivar visited:  Mapping of places this parser has already been to
                 during the current parsing process onto the results the
                 parser returned at the respective place. This dictionary
                 is used to implement memoizing.
 
-    :ivar parse_proxy: Usually, just a reference to ``self._parse``, but can
+    :ivar \_parse_proxy: Usually, just a reference to ``self._parse``, but can
                 be overwritten to run th call to the ``_parse``-method
                 through a proxy like, for example, a tracing debugger.
                 See :py:mod:`~DHParser.trace`
-                
-    :ivar sub_parsers: set of parsers that are directly referred to by
+
+    :ivar \_sub_parsers: Set of parsers that are directly referred to by
                 this parser, e.g. parser "a" defined by the EBNF-expression
                 "a = b (b | c)" has the sub-parser-set {b, c}.
 
-                Notes: 1.the set is empty for parser that derive neither
+                Notes: 1.the set is empty for parsers that derive neither
                 from :py:class:`UnaryParser` nor from :py:class:`NaryParser`
-                2. unary parser have exactly on sub-parser 3. n-ary parsers
+                2. unary parsers have exactly one sub-parser 3. n-ary parsers
                 have one or more sub_parsers. For n-ary-parsers
                 len(p.sub_parser) can be lower than len(p.parsers), in case
                 one and the same parser is referred to more than once
@@ -582,23 +604,22 @@ class Parser:
         self.node_name = self.ptype   # type: str   # can be changed later
         self.disposable = True        # type: bool
         self.drop_content = False     # type: bool
-        self.eq_class = id(self)      # type: int
-        self._sub_parsers = frozenset()  # type: AbstractSet[Parser]
+        self._sub_parsers = frozenset()  # type: FrozenSet[Parser]
         # this indirection is required for Cython-compatibility
-        self._parse_proxy = self._parse  # type: ParseFunc
+        self._parse_proxy = self._parse  # type: BoundParseFunc
         try:
             self._grammar = get_grammar_placeholder()  # type: Grammar
         except NameError:
-            pass                      # ensures Cython-compatibility
-        self._symbol = ''             # type: Parser
+            pass                        # ensures Cython-compatibility
+        self._symbol = ''               # type: str
         self._descendants_cache = None  # type: Optional[AbstractSet[Parser]]
         self._anon_desc_cache = None    # type: Optional[AbstractSet[Parser]]
         self._desc_trails_cache = None  # type: Optional[AbstractSet[ParserTrail]]
         self.reset()
 
     def __deepcopy__(self, memo):
-        """Deepcopy method of the parser. Upon instantiation of a Grammar-
-        object, parsers will be deep-copied to the Grammar object. If a
+        """Deepcopy method of the parser. Upon instantiation of a Grammar-object,
+        parsers will be deep-copied to the Grammar object. If a
         derived parser-class changes the signature of the ``__init__``-constructor,
         ``__deepcopy__``-method must be replaced (i.e. overridden without
         calling the same method from the superclass) by the derived class.
@@ -625,7 +646,7 @@ class Parser:
         This is the closest parser with a pname that contains this parser."""
         if not self._symbol:
             try:
-                self._symbol = self.grammar.associated_symbol__(self)
+                self._symbol = self.grammar.associated_symbol__(self).pname
             except AttributeError:
                 # return an empty string, if parser is not connected to grammar,
                 # but be sure not to save the empty string in self._symbol
@@ -637,38 +658,35 @@ class Parser:
         """Returns the parser's name if it has a name and ``self.__repr__()`` otherwise."""
         return self.pname if self.pname else self.__repr__()
 
-    def gen_memoization_dict(self) -> dict:
-        """Create and return an empty memoization dictionary. This allows to customize
-        memoization dictionaries. The default is to just return a new plain dictionary."""
-        return dict()
-
     def reset(self):
         """Initializes or resets any parser variables. If overwritten,
         the ``reset()``-method of the parent class must be called from the
         ``reset()``-method of the derived class."""
         # global _GRAMMAR_PLACEHOLDER
         # grammar = self._grammar
-        self.visited: MemoizationDict = self._grammar.get_memoization_dict__(self)
+        self.visited: MemoizationDict = dict()
 
     @cython.locals(next_location=cython.int, location=cython.int, gap=cython.int, i=cython.int)
     def _handle_parsing_error(self, pe: ParserError, location: cython.int) -> ParsingResult:
         grammar = self._grammar
         gap = pe.location - location
         cut = grammar.document__[location:location + gap]
-        rules = tuple(grammar.resume_rules__.get(self.symbol.pname, []))
+        rules = tuple(grammar.resume_rules__.get(self.symbol, []))
         next_location = pe.location + pe.node_orig_len
         rest = grammar.document__[next_location:]
-        i, skip_node = reentry_point(rest, rules, grammar.comment_rx__,
-                                     grammar.reentry_search_window__)
+        i, skip_node = reentry_point(
+            rest, rules, grammar.comment_rx__, grammar.reentry_search_window__,
+            f'{pe.parser.symbol}_resume')
         if i >= 0 or self == grammar.start_parser__:
             # either a reentry point was found or the
             # error has fallen through to the first level
             assert pe.node._children or (not pe.node.result)
             # apply reentry-rule or catch error at root-parser
             if i < 0:  i = 0
-            zombie = pe.node.pick_child(ZOMBIE_TAG)  # type: Optional[Node]
+            zombie = pe.node.pick_child(artifact)  # type: Optional[Node]
             if zombie and not zombie.result:
                 zombie.result = rest[:i]
+                zombie.name = skip_node.name
                 tail = tuple()  # type: ChildrenType
             else:
                 # nd.attr['err'] = pe.error.message
@@ -728,10 +746,10 @@ class Parser:
             # if location has already been visited by the current parser, return saved result
             visited = self.visited  # using local variable for better performance
             if location in visited:
-                if grammar.history_tracking__ and self._parse_proxy != self._parse:
-                    return self._parse_proxy(-location)  # a negative location signals a memo-hit
-                else:
-                    return visited[location]
+                if grammar.history_tracking__  and self._parse_proxy.__name__ == 'trace_history' \
+                        and self._parse_proxy.__module__ == 'DHParser.trace':
+                    return self._parse_proxy(-location or -INFINITE)  # a negative location signals a memo-hit
+                return visited[location]
 
             save_suspend_memoization = grammar.suspend_memoization__
             grammar.suspend_memoization__ = False
@@ -822,7 +840,7 @@ class Parser:
         """Sets the parser name to ``pname`` and returns ``self``. If
         `disposable` is True, the nodes produced by the parser will also be
         marked as disposable, i.e. they can be eliminated bur their content
-        will be retained. The same can be achived by prefixing the panme-string
+        will be retained. The same can be achieved by prefixing the panme-string
         with a colon ":" or with "HIDE:". Another possible prefix is "DROP:"
         in which case the nodes will be dropped entirely, including their
         content. (This is useful to keep delimiters out of the syntax-tree.)
@@ -971,51 +989,8 @@ class Parser:
                 return True
         return False
 
-    def _signature(self) -> Hashable:
-        """This method should be implemented by any non-abstract descendant
-        parser class. The implementation must make sure that all instances
-        that have the same signature always yield the same parsing result
-        for the same piece of text.
-
-        It does not hurt, but only wastes an opportunity for optimization,
-        if two functionally equivalent parsers provide different signatures.
-        It is a serious mistake, though, if two functionally non-equivalent
-        parsers have the same signature.
-
-        By returning ``id(self)`` this mistake will become impossible, but
-        it will turn signature-based memoization-optimization off for
-        this parser.
-        """
-        return id(self)
-
-    def signature(self) -> Hashable:
-        """Returns a value that is identical for two different
-        parser objects if they are functionally equivalent, i.e.
-        yield the same return value for the same call parameters::
-
-            >>> a = Text('[')
-            >>> b = Text('[')
-            >>> c = Text(']')
-            >>> a is b
-            False
-            >>> a.signature() == b.signature()
-            True
-            >>> a.signature() == c.signature()
-            False
-
-        The purpose of parser-signatures is to optimize better
-        memoization in cases of code repetition in the grammar.
-
-        DO NOT OVERRIDE THIS METHOD. In order to implement a
-        signature function, the protected method ``_signature``
-        should be overridden instead.
-        """
-        # hex-id is added to ensure uniqueness (for macro-names, in particular)
-        return f'{self.pname}_{hex(id(self))}' if self.pname else self._signature()
-
-
     def static_error(self, msg: str, code: ErrorCode) -> 'AnalysisError':
-        return AnalysisError(self.symbol.pname, self, Error(msg, 0, code))
+        return AnalysisError(self.symbol, self, Error(msg, 0, code))
 
     def static_analysis(self) -> List['AnalysisError']:
         """Analyses the parser for logical errors after the grammar has been
@@ -1025,11 +1000,11 @@ class Parser:
 
 def assign(name: str, parser: Parser) -> Parser:
     r"""Assigns a name to the given parser. This does the same
-    as the :py:meth:`Parser.name`-method. Example:::
+    as the :py:meth:`Parser.name`-method. Example::
 
-    >>> doc = assign("doc", RegExp(r"\w+"))
-    >>> print(doc.pname)
-    doc
+        >>> doc = assign("doc", RegExp(r"\w+"))
+        >>> print(doc.pname)
+        doc
     """
     return parser.name(name)
 
@@ -1097,7 +1072,7 @@ class NoMemoizationParser(LeafParser):
         self.visited: MemoizationDict = BLACKHOLE_SINGLETON
 
     def reset(self):
-        # no need to initialize self.visited, it's always the BLACKHOLE_SINLGETON
+        # no need to initialize self.visited, it's always the BLACKHOLE_SINGLETON
         pass
 
     @cython.locals(next_location=cython.int, gap=cython.int, i=cython.int, save_suspend_memoization=cython.bint)
@@ -1130,9 +1105,6 @@ class NoMemoizationParser(LeafParser):
 
         return node, next_location
 
-    def gen_memoization_dict(self) -> dict:
-        return self.visited  # BlackHoleDict()
-
 
 def copy_parser_base_attrs(src: Parser, duplicate: Parser):
     """Duplicates all attributes of the Parser-class from ``src`` to ``duplicate``."""
@@ -1140,23 +1112,6 @@ def copy_parser_base_attrs(src: Parser, duplicate: Parser):
     duplicate.disposable = src.disposable
     duplicate.drop_content = src.drop_content
     duplicate.node_name = src.node_name
-    duplicate.eq_class = src.eq_class
-
-
-def determine_eq_classes(parsers: Collection[Parser]):
-    """Sorts the parsers originating in root (imperfectly) into equivalence
-    classes and assigns respective the class identifier to the ``eq_class``-field
-    of each parser."""
-    eq_classes: Dict[Hashable, int] = {}
-
-    def assign_eq_class(p: Parser) -> bool:
-        nonlocal eq_classes
-        signature = p.signature()
-        p.eq_class = eq_classes.setdefault(signature, id(p))
-        return False
-
-    for p in parsers:
-        assign_eq_class(p)
 
 
 def Drop(parser: Parser) -> Parser:
@@ -1195,7 +1150,6 @@ def get_parser_placeholder() -> Parser:
         PARSER_PLACEHOLDER.disposable = False
         PARSER_PLACEHOLDER.drop_content = False
         PARSER_PLACEHOLDER.node_name = ':PLACEHOLDER__'
-        PARSER_PLACEHOLDER.eq_class = id(PARSER_PLACEHOLDER)
         PARSER_PLACEHOLDER.sub_parsers = frozenset()
     return cast(Parser, PARSER_PLACEHOLDER)
 
@@ -1231,6 +1185,10 @@ def has_non_autocaptured_symbols(ptrail: ParserTrail) -> Optional[bool]:
 #
 ########################################################################
 
+
+RX_NEVER_MATCH = LazyRE(NEVER_MATCH_PATTERN)
+
+
 def mixin_comment(whitespace: str, comment: str, always_match: bool = True) -> str:
     r"""
     Returns a regular expression pattern that merges comment and whitespace
@@ -1241,7 +1199,7 @@ def mixin_comment(whitespace: str, comment: str, always_match: bool = True) -> s
     nesting comments is not possible. It also makes it much harder to
     use directives inside comments (which isn't recommended, anyway).
 
-    Examples:
+    Examples::
 
         >>> import re
         >>> combined = mixin_comment(r"\s+", r"#.*")
@@ -1257,9 +1215,12 @@ def mixin_comment(whitespace: str, comment: str, always_match: bool = True) -> s
         >>> rx.match('   # comment').group(0)
         '   # '
     """
-    whitespace = '(?:' + whitespace + (')?' if always_match else ')')
+    if re.match(whitespace, ""):
+        whitespace = f'(?:{whitespace})'
+    else:
+        whitespace = '(?:' + whitespace + (')?' if always_match else ')')
 
-    if comment:
+    if comment and comment != NEVER_MATCH_PATTERN:
         comment = '(?:' + comment + ')'
         return '(?:' + whitespace + '(?:' + comment + whitespace + ')*)'
     return whitespace
@@ -1296,18 +1257,11 @@ def mixin_nonempty(whitespace: str) -> str:
     return whitespace
 
 
-# # AnalysisError = Tuple[str, Parser, Error]      # pname, parser, error
-# class AnalysisError(NamedTuple):
-#     symbol: str
-#     parser: Parser
-#     error: Error
-
-# collections.namedtuple needed for Cython compatibility
-AnalysisError = namedtuple('AnalysisError',
-    ['symbol',  ## type: str
-     'parser',  ## type: Parser
-     'error'    ## type: Error
-    ], module=__name__)
+class AnalysisError(NamedTuple):
+    symbol: str
+    parser: Parser
+    error: Error
+    __module__ = __name__  # required for cython compatibility
 
 
 class GrammarError(Exception):
@@ -1328,11 +1282,33 @@ class GrammarError(Exception):
 class UninitializedError(Exception):
     """An error that results from unintialized objects. This can be
     a consequence of some broken boot-strapping-process."""
-    def __init__(self, msg: string):
+    def __init__(self, msg: str):
         self.msg = msg
 
     def __str__(self):
         return f'UninitializedError: {self.msg}'
+
+
+class CancelError(Exception):
+    "An error that is raised, if parsing has been canceled by a cancel_query."
+    def __init__(self, location):
+        self.location = location
+
+    def __str__(self):
+        return f'CancelError: {self.location}'
+
+
+CANCEL_QUERY_INTERVAL = 10
+
+
+def cancel_proxy(self: Parser, location: cython.int) -> Tuple[Optional[Node], cython.int]:
+    grammar = self.grammar
+    grammar.cancel_interval__ -= 1
+    if grammar.cancel_interval__ < 0:
+        grammar.cancel_interval__ = CANCEL_QUERY_INTERVAL
+        if grammar.cancel_query__():
+            raise CancelError(location)
+    return self._parse(location)
 
 
 RESERVED_PARSER_NAMES = ('root__', 'dwsp__', 'wsp__', 'comment__', 'root_parser__', 'ff_parser__')
@@ -1342,7 +1318,7 @@ def reset_parser(parser):
     return parser.reset()
 
 
-def _propagate_drop(p: parser):
+def _propagate_drop(p: Parser):
     """propagates the drop_content flag to all unnamed children."""
     assert p.drop_content
     for c in p.sub_parsers:
@@ -1350,7 +1326,7 @@ def _propagate_drop(p: parser):
             c.drop_content = True
             _propagate_drop(c)
 
-def ensure_drop_propagation(p: parser):
+def ensure_drop_propagation(p: Parser):
     if p.drop_content:
         _propagate_drop(p)
     else:
@@ -1363,11 +1339,20 @@ def ensure_drop_propagation(p: parser):
                 raise e
 
 
+def is_disposable(name: str, disposables: AbstractSet[str]|RxPatternType) -> bool:
+    if name[0:1] == ':':
+        return True
+    elif isinstance(disposables, AbstractSet):
+        return name in disposables
+    else:
+        return bool(re.match(disposables, name))
+
+
 class Grammar:
     r"""
     Class Grammar directs the parsing process and stores global state
     information of the parsers, i.e. state information that is shared
-    accross parsers.
+    across parsers.
 
     Grammars are basically collections of parser objects, which are
     connected to an instance object of class Grammar. There exist two
@@ -1385,7 +1370,7 @@ class Grammar:
 
     Collecting the parsers that define a grammar in a descendant class of
     class Grammar and assigning the named parsers to class variables
-    rather than global variables has several advantages:
+    rather than to global variables has several advantages:
 
     1. It keeps the namespace clean.
 
@@ -1464,7 +1449,7 @@ class Grammar:
                 matches the error message of the first matching expression is used
                 instead of the generic mandatory violation error messages. This
                 allows to answer typical kinds of errors (say putting a colon ","
-                where a semi-colon ";" is expected) with more informative error
+                where a semicolon ";" is expected) with more informative error
                 messages.
 
     :cvar disposable\__: A set of parser-names or a regular expression to
@@ -1653,8 +1638,8 @@ class Grammar:
     parser_initialization__ = ["pending"]  # type: List[str]
     resume_rules__ = dict()        # type: Dict[str, ResumeList]
     skip_rules__ = dict()          # type: Dict[str, ResumeList]
-    error_messages__ = dict()      # type: Dict[str, Sequence[PatternMatchType, str]]
-    disposable__ = frozenset()     # type: Set[str]|RxPatternType
+    error_messages__ = dict()      # type: Dict[str, Tuple[PatternMatchType, str]]
+    disposable__ = frozenset()     # type: FrozenSet[str]|RxPatternType
     # some default values
     COMMENT__ = r''  # type: str  # r'#.*'  or r'#.*(?:\n|$)' if combined with horizontal wspc
     WHITESPACE__ = r'[ \t]*(?:\n[ \t]*)?(?!\n)'  # spaces plus at most a single linefeed
@@ -1692,27 +1677,17 @@ class Grammar:
             cdict = cls.__dict__
             # cls.static_analysis_errors__ = []
             cls.parser_names__ = []
-            disposables = cls.disposable__
-            disposables_specified_as_set = isinstance(disposables, AbstractSet)
             for entry, parser in cdict.items():
                 if isinstance(parser, Parser) and entry not in RESERVED_PARSER_NAMES:
-                    if disposables_specified_as_set:
-                        anonymous = ":" if entry in disposables else ""
-                    else:
-                        anonymous = ":" if disposables.match(entry) else ""
+                    anonymous = ":" if is_disposable(entry, cls.disposable__) else ""
                     assert anonymous or not parser.drop_content, entry
                     if isinstance(parser, Forward):
                         if not cast(Forward, parser).parser.pname:
                             cast(Forward, parser).parser.name(anonymous + entry)
-                            # cast(Forward, parser).parser.pname = entry
-                            # cast(Forward, parser).parser.disposable = anonymous
                     else:
                         parser.name(anonymous + entry)
-                        # parser.pname = entry
-                        # parser.disposable = anonymous
                     cls.parser_names__.append(entry)
                     ensure_drop_propagation(parser)
-            # if cls != Grammar:
             cls.parser_initialization__ = ["done"]  # (over-)write subclass-variable
 
 
@@ -1759,8 +1734,8 @@ class Grammar:
         :param static_analysis: If not None, this overrides the config value
             "static_analysis".
         """
-        self.all_parsers__ = set()             # type: Set[Parser]
-        # add compiled regular expression for comments, if it does not already exist
+        self.all_parsers__: MutableSet[Parser] = set()
+        # add compiled regular expression for comments if it does not already exist
         if not hasattr(self, 'comment_rx__') or self.comment_rx__ is None:
             if hasattr(self.__class__, 'COMMENT__') and self.__class__.COMMENT__:
                 self.comment_rx__ = re.compile(self.__class__.COMMENT__)
@@ -1769,15 +1744,19 @@ class Grammar:
         else:
             assert ((self.__class__.COMMENT__
                      and self.__class__.COMMENT__ == self.comment_rx__.pattern)
-                    or (not self.__class__.COMMENT__ and self.comment_rx__ == RX_NEVER_MATCH))
-        self.start_parser__ = None               # type: Optional[Parser]
-        self._dirty_flag__ = False               # type: bool
-        self.left_recursion__ = get_config_value('left_recursion')                # type: bool
-        self.history_tracking__ = get_config_value('history_tracking')            # type: bool
-        self.resume_notices__ = get_config_value('resume_notices')                # type: bool
-        self.max_parser_dropouts__ = get_config_value('max_parser_dropouts')      # type: int
-        self.reentry_search_window__ = get_config_value('reentry_search_window')  # type: int
-        self.associated_symbol_cache__ = dict()                   # type: Dict[Parser, Parser]
+                    or (not self.__class__.COMMENT__ and
+                        self.comment_rx__.pattern == RX_NEVER_MATCH.pattern))
+        self.start_parser__: Optional[Parser] = None
+        self._dirty_flag__: bool = False
+        self.left_recursion__: bool = get_config_value('left_recursion')
+        self.history_tracking__: bool = get_config_value('history_tracking')
+        self.resume_notices__: bool = get_config_value('resume_notices')
+        self.max_parser_dropouts__: int = get_config_value('max_parser_dropouts')
+        self.reentry_search_window__: int = get_config_value('reentry_search_window')
+        self.associated_symbol_cache__: Dict[Parser, Parser] = dict()
+        self.cancel_query__: Optional[CancelQuery] = None
+        self.cancel_query_last__: Optional[CancelQuery] = None
+        self.cancel_interval__: int = CANCEL_QUERY_INTERVAL
         self._reset__()
 
         # prepare parsers in the class, first
@@ -1809,8 +1788,8 @@ class Grammar:
         assert 'root_parser__' in self.__dict__
         assert self.root_parser__ == self.__dict__['root_parser__']
         self.ff_parser__ = self.root_parser__
-        self.unconnected_parsers__: Set[Parser] = set()
-        self.resume_parsers__: Set[Parser] = set()
+        self.unconnected_parsers__: MutableSet[Parser] = set()
+        self.resume_parsers__: MutableSet[Parser] = set()
         resume_lists = []
         if hasattr(self, 'resume_rules__'):
             resume_lists.extend(self.resume_rules__.values())
@@ -1828,7 +1807,6 @@ class Grammar:
             parser = self[name]  # deep-copy and initialize with grammar-object (see __getitem__)
             if parser not in root_connected:  self.unconnected_parsers__.add(parser)
 
-        determine_eq_classes(self.all_parsers__)
         for p in self.all_parsers__:  reset_parser(p)
         if not root:  TreeReduction(self.all_parsers__, self.early_tree_reduction__)
 
@@ -1858,10 +1836,12 @@ class Grammar:
         try:
             return self.__dict__[key]
         except KeyError:
-            #  p = getattr(self, key, None)
             parser_template = getattr(self.__class__, key, None)
             if parser_template:
-                # add parser to grammar object on the fly...
+                if key != parser_template.pname:
+                    raise AttributeError(
+                        f'Illegal parser-name "{key}" for grammar {self.__class__.__name__}!')
+                # add parser to grammar-object on the fly...
                 parser = copy.deepcopy(parser_template)
                 parser.apply(self._add_parser__, self)
                 assert self[key] == parser
@@ -1885,8 +1865,6 @@ class Grammar:
         self.rollback__: List[Tuple[int, Callable]] = []
         self.last_rb__loc__: int = -2
         self.suspend_memoization__: bool = False
-        # memoization dictionaries, one per parser equivalence class
-        self.memoization__: Dict[int, MemoizationDict] = {}
         # support for call stack tracing
         self.call_stack__: List[CallItem] = []  # name, location
         # snapshots of call stacks
@@ -1913,20 +1891,11 @@ class Grammar:
         return self._reversed__
 
 
-    def get_memoization_dict__(self, parser: Parser) -> MemoizationDict:
-        """Returns the memoization dictionary for the parser's equivalence class.
-        """
-        try:
-            return self.memoization__.setdefault(parser.eq_class, parser.gen_memoization_dict())
-        except AttributeError:  # happens when grammar object is the _GRAMMAR_PLACEHOLDER
-            return dict()
-
-
     def __call__(self,
                  document: str,
                  start_parser: Union[str, Parser] = "root_parser__",
                  source_mapping: Optional[SourceMapFunc] = None,
-                 *, complete_match: bool = True) -> RootNode:
+                 *, complete_match: Union[bool, str] = "WSP_RE__") -> RootNode:
         """
         Parses a document with parser-combinators.
 
@@ -1935,7 +1904,12 @@ class Grammar:
             with which to start. This is useful for testing particular parsers
             (i.e. particular parts of the EBNF-Grammar.)
         :param complete_match: If True, an error is generated, if
-            ``start_parser`` did not match the entire document.
+            ``start_parser`` did not match the entire document. If complete_match
+            is a string (default) it suffices that the remaining text after the
+            match consists of whitespace. The string is interpreted as the name
+            of an attribute of self that contains a regular expression string
+            defining the ensuing whitespace. If False, no error is generated
+            even if not the complete text has been matched.
         :return: The root node of the parse-tree alias "concrete-syntax-tree".
         """
         assert source_mapping is None or callable(source_mapping), source_mapping
@@ -1946,10 +1920,11 @@ class Grammar:
             predecessors to the node."""
             if predecessors:
                 tail = predecessors[-1].pick(LEAF_NODE, reverse=True, include_root=True)
-                return tail.pos + tail.strlen()
+                if tail is not None:
+                    return tail.pos + tail.strlen()
             return 0
 
-        def lookahead_failure_only(parser):
+        def lookahead_failure_only(parser) ->bool:
             """EXPERIMENTAL!
 
             Checks if failure to match document was only due to a succeeding
@@ -1962,20 +1937,26 @@ class Grammar:
             def is_lookahead(name: str) -> bool:
                 custom_parser_class = None
 
-                def find_parser_class(parser, name):
+                def find_parser_class(parser, name) -> bool:
                     nonlocal custom_parser_class
                     if parser.__class__.__name__ == name:
                         custom_parser_class = parser.__class__
                         return True
+                    return False
 
                 try:
-                    return (name in self and isinstance(self[name], Lookahead)
-                            or name[0] == ':' and issubclass(eval(name[1:]), Lookahead))
-                except NameError:  
+                    return ((name in self
+                             and (isinstance(self[name], Lookahead)
+                                  or (isinstance(self[name], RegExp)
+                                      and self[name].regexp.pattern[0:3] in ('(?=', '(?!'))
+                                  or (isinstance(self[name], SmartRE)
+                                      and self[name].pattern[0:3] in ('(?=', '(?!'))))
+                            or (name[0] == ':' and issubclass(eval(name[1:]), Lookahead)))
+                except NameError:
                     #  eval(name[1:]) failed, because custom parsers are not visible from here
                     nonlocal parser
                     parser.apply(functools.partial(find_parser_class, name=name[1:]))
-                    if custom_parser_class:
+                    if custom_parser_class is not None:
                         return issubclass(custom_parser_class, Lookahead)
                     return False
 
@@ -2012,14 +1993,23 @@ class Grammar:
         self.start_parser__ = parser
         assert isinstance(document, str)
         # eliminate BOM (byte order mark) https://en.wikipedia.org/wiki/Byte_order_mark
-        self.text__ = document[1:] if document[0:1] == '\ufeff' else document
+        if document[0:1] in ('\ufeff', '\uffef'):
+            self.text__ = document[1:]
+        elif document[0:3] in ('\xef\xbb\xbf', '\x00\x00\ufeff', '\x00\x00\ufffe'):
+            self.text__ = document[3:]
+        else:
+            self.text__ = document
+        self.text__ = document[1:] if document[0:1] in ('\ufeff', '\uffef') else document
         self.document__ = StringView(self.text__)
         self.document_length__ = len(self.document__)
         self._document_lbreaks__ = linebreaks(self.text__) if self.history_tracking__ else []
         # done by reset: self.last_rb__loc__ = -2  # rollback location
+        self.set_cancel_query__()
         result = None  # type: Optional[Node]
         stitches = []  # type: List[Node]
         L = len(self.document__)
+        if L >= INFINITE:
+            raise ValueError(f"Document of size {L} exceeds maximum size of {INFINITE - 1} !")
         if L == 0:
             try:
                 result, _ = parser(0)
@@ -2029,12 +2019,12 @@ class Grammar:
                 result = Node(ZOMBIE_TAG, '').with_pos(0)
                 if lookahead_failure_only(parser):
                     self.tree__.new_error(
-                        result, 'Parser "%s" only did not match empty document '
+                        result, 'Parser %s only did not match empty document '
                                 'because of lookahead' % str(parser),
                         PARSER_LOOKAHEAD_FAILURE_ONLY)
                 else:
                     self.tree__.new_error(
-                        result, 'Parser "%s" did not match empty document.' % str(parser),
+                        result, 'Parser %s did not match empty document.' % str(parser),
                         PARSER_STOPPED_BEFORE_END)
 
         # copy to local variable, so break condition can be triggered manually
@@ -2045,6 +2035,13 @@ class Grammar:
                 result, location = parser(location)
             except ParserError as pe:
                 result, location = pe.node, L
+                for k in self.variables__:  del self.variables__[k]
+            except CancelError as ce:
+                result = Node(EMPTY_NODE.name, '').with_pos(0)
+                self.tree__.new_error(
+                    result, f'Parsing was canceled at position: {ce.location} of {L}!', CANCELED)
+                location = L
+                for k in self.variables__:  del self.variables__[k]
             if result is EMPTY_NODE:  # don't ever deal out the EMPTY_NODE singleton!
                 result = Node(EMPTY_PTYPE, '').with_pos(0)
 
@@ -2057,7 +2054,10 @@ class Grammar:
             # in order to allow proper error-reporting when testing sub-parsers with
             # lookaheads etc.
 
-            if location < L and complete_match:
+            if location < L and (complete_match is True
+                    or (complete_match is not False and
+                        re.fullmatch(getattr(self, complete_match),
+                                     self.text__[location:]) is None)):
                 rest = self.document__[location:]
                 fwd = rest.find("\n") + 1 or len(rest)
                 skip, location = rest[:fwd], location + fwd
@@ -2074,12 +2074,12 @@ class Grammar:
                     # in a test case this is not necessarily an error.
                     if lookahead_failure_only(parser):
                         # error_msg = # f'Parser "{parser.name}" stopped before end, because ' \
-                        error_msg = f'Parser "{err_pname}" did not match: »{err_text}« ' \
+                        error_msg = f'Parser {err_pname} did not match: »{err_text}« ' \
                                     f'- but only because of lookahead.'
                         error_code = PARSER_LOOKAHEAD_FAILURE_ONLY
                     else:
                         # error_msg = f'Parser "{parser.name}" stopped before end, because' \
-                        error_msg = f'Parser "{err_pname}" did not match: »{err_text}«'
+                        error_msg = f'Parser {err_pname} did not match: »{err_text}«'
                         error_code = PARSER_STOPPED_BEFORE_END
                     if self.history_tracking__:
                         error_msg += '\n    Most advanced fail: %s\n    Last match:    %s;' % \
@@ -2087,18 +2087,30 @@ class Grammar:
                                       str(HistoryRecord.last_match(self.history__)))
                 else:
                     stitches.append(result)
+                    error_msg = ""
                     for h in reversed(self.history__):
-                        if h.node and (h.node.name != EMPTY_NODE.name or h.node.result) \
-                                and any(tag == ':Lookahead' for tag, _ in h.call_stack):
+                        if h.node and (h.node.name != EMPTY_NODE.name or h.node.result
+                                       or h.call_stack[-1][0].endswith(':SmartRE_Lookahead')):
+                            for tag, _ in h.call_stack:
+                                if tag in (':Lookahead', ':NegativeLookahead'):
+                                    if h.node.pos + h.node.strlen() == len(self.document__):
+                                        error_msg = "Parser stopped before end, " \
+                                                  "but matched with lookahead."
+                                    break
+                                elif tag.endswith(':SmartRE_Lookahead'):
+                                    if h.node.pos >= self.ff_pos__:
+                                        error_msg = "Parser stopped before end, " \
+                                                  "but might have matched with lookahead."
+                                    break
+                            else:
+                                continue
                             break
                     else:
                         h = HistoryRecord([], Node(EMPTY_NODE.name, '').with_pos(0),
                                           StringView(''), (0, 0))
-                    if h.status in (h.MATCH, h.DROP) \
-                            and (h.node.pos + h.node.strlen() == len(self.document__)):
+                    if h.status in (h.MATCH, h.DROP) and error_msg:
                         # TODO: this case still needs unit-tests and support in testing.py
                         err_pos = h.node.pos
-                        error_msg = "Parser stopped before end, but matched with lookahead."
                         error_code = PARSER_LOOKAHEAD_MATCH_ONLY
                         max_parser_dropouts = -1  # no further retries!
                     else:
@@ -2106,7 +2118,7 @@ class Grammar:
                         err_pos = i
                         fs = self.document__[i:i + 10].replace('\n', '\\n')
                         if i + 10 < len(self.document__) - 1:  fs += '...'
-                        root_name = self.associated_symbol__(self.start_parser__).pname
+                        root_name = self.start_parser__.symbol
                         error_msg = f'Parser "{root_name}" ' \
                             f"stopped before end, at: »{fs}«" + \
                             (("Trying to recover" +
@@ -2125,9 +2137,11 @@ class Grammar:
                     err_pos = max(err_pos, stitch.pos)
                 if len(stitches) > 2:
                     error_msg = f'Error after {len(stitches) - 2}. reentry: ' + error_msg
-                    err_code = PARSER_STOPPED_ON_RETRY
+                    error_code = PARSER_STOPPED_ON_RETRY
                     err_pos = stitch.pos  # in this case stich.pos is more important than ff_pos
-                if error_code in {PARSER_LOOKAHEAD_MATCH_ONLY, PARSER_LOOKAHEAD_FAILURE_ONLY} \
+                if error_code in {PARSER_LOOKAHEAD_MATCH_ONLY,
+                                  PARSER_LOOKAHEAD_FAILURE_ONLY,
+                                  PARSER_STOPPED_BEFORE_END} \
                         or not any(e.pos == err_pos for e in self.tree__.errors if is_error(e)):
                     error = Error(error_msg, err_pos, error_code)
                     self.tree__.add_error(stitch, error)
@@ -2137,7 +2151,14 @@ class Grammar:
                             [(stitch.name, stitch.pos)], stitch,
                             self.document__[error.pos:], lc, [error]))
             else:
-                # if complete_match is False, ignore the rest and leave while loop
+                # if complete_match is not True, ignore the rest and leave while loop
+                if location < L and not isinstance(complete_match, bool):
+                    # match was complete except for trailing whitespace
+                    if result is None: result = Node(EMPTY_PTYPE, '').with_pos(0)
+                    self.tree__.add_error(result, Error(
+                        f'Parser "{parser.pname}" stopped before end, '
+                        f'because of trailing whitespace.',
+                        location, PARSER_STOPPED_BEFORE_END_WARNING))
                 location = L
         if stitches:
             if location < L:
@@ -2181,10 +2202,10 @@ class Grammar:
         return self.tree__
 
 
-    def match(self,
-              parser: Union[str, Parser],
-              string: str,
-              source_mapping: Optional[SourceMapFunc] = None):
+    def match__(self,
+                parser: Union[str, Parser],
+                string: str,
+                source_mapping: Optional[SourceMapFunc] = None) -> Optional[str]:
         """Returns the matched string, if the parser matches the
         beginning of a string or ``None`` if the parser does not match."""
         result = self(string, parser, source_mapping, complete_match=False)
@@ -2193,11 +2214,18 @@ class Grammar:
         else:
             return str(result)
 
+    @deprecated("Grammar.match() is deprecated, use Grammar.match__() or match(grammar, ...) instead!")
+    def match(self,
+              parser: Union[str, Parser],
+              string: str,
+              source_mapping: Optional[SourceMapFunc] = None) -> Optional[str]:
+        return self.match__(parser, string, source_mapping)
 
-    def fullmatch(self,
-                  parser: Union[str, Parser],
-                  string: str,
-                  source_mapping: Optional[SourceMapFunc] = None):
+
+    def fullmatch__(self,
+                    parser: Union[str, Parser],
+                    string: str,
+                    source_mapping: Optional[SourceMapFunc] = None) -> Optional[str]:
         """Returns the matched string, if the parser matches the
         complete string or ``None`` if the parser does not match."""
         result = self(string, parser, source_mapping, complete_match=True)
@@ -2205,6 +2233,29 @@ class Grammar:
             return None
         else:
             return str(result)
+
+    @deprecated("Grammar.fullmatch() is deprecated, use Grammar.match__() or fullmatch(grammar, ...) instead!")
+    def fullmatch(self,
+                  parser: Union[str, Parser],
+                  string: str,
+                  source_mapping: Optional[SourceMapFunc] = None) -> Optional[str]:
+        return self.fullmatch__(parser, string, source_mapping)
+
+
+    def set_cancel_query__(self):
+        if self.cancel_query__ != self.cancel_query_last__:
+            for p in self.all_parsers__:
+                if isinstance(p, LeafParser):
+                    if self.cancel_query__ is None:
+                        p.set_proxy(None)
+                    elif p._parse_proxy == p._parse:
+                        p.set_proxy(cancel_proxy)
+                    else:
+                        assert p._parse_proxy.__name__ in ("cancel_proxy", "trace_history"), \
+                            f"DHParser-Error: Currently, cancel_query cannot be used in " \
+                            f"combination with {p._parse_proxy.__name__}."
+            self.cancel_query_last__ = self.cancel_query__
+        self.cancel_interval__ = CANCEL_QUERY_INTERVAL
 
 
     @property
@@ -2367,20 +2418,36 @@ class Grammar:
             return result
 
         self.fill_associated_symbol_cache__()
-        # cache = dict()  # type: Dict[Parser, Set[Parser]]
+        # cache = dict()  # type: Dict[Parser, MutableSet[Parser]]
         # for debugging: all_parsers = sorted(list(self.all_parsers__), key=lambda p:p.pname)
         for parser in self.all_parsers__:
             error_list.extend(parser.static_analysis())
             if parser.pname and not has_leaf_parsers(parser):
-                error_list.append(AnalysisError(parser.symbol.pname, parser, Error(
+                error_list.append(AnalysisError(parser.symbol, parser, Error(
                     'Parser %s is entirely cyclical and, therefore, cannot even touch '
                     'the parsed document' % cast('CombinedParser', parser).location_info(),
                     0, PARSER_NEVER_TOUCHES_DOCUMENT)))
         return error_list
 
 
-ParserFunc: TypeAlias = Union[Grammar, Callable[[str], RootNode], functools.partial]
-ParserFactory: TypeAlias = Union[Callable[[], ParserFunc], functools.partial]
+def match(grammar: Grammar,
+          parser: Union[str, Parser],
+          string: str,
+          source_mapping: Optional[SourceMapFunc] = None) -> Optional[str]:
+    """See :py:func:`Grammar.match__`"""
+    return grammar.match__(parser, string, source_mapping)
+
+
+def fullmatch(grammar: Grammar,
+              parser: Union[str, Parser],
+              string: str,
+              source_mapping: Optional[SourceMapFunc] = None) -> Optional[str]:
+    """See :py:func:`Grammar.fullmatch__`"""
+    return grammar.fullmatch__(parser, string, source_mapping)
+
+
+ParserCallable: TypeAlias = Union[Grammar, Callable[[str], RootNode], functools.partial]
+ParserFactory: TypeAlias = Union[Callable[[], ParserCallable], functools.partial]
 
 
 def dsl_error_msg(parser: Parser, error_str: str) -> str:
@@ -2420,9 +2487,7 @@ class Unparameterized(NoMemoizationParser):
     """Unparameterized parsers do not receive any parameters on instantiation.
     As a consequence, different instances of the same unparameterized
     parser are always functionally equivalent."""
-
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__,
+    pass
 
 
 class Always(Unparameterized):
@@ -2444,7 +2509,7 @@ class Never(Unparameterized):
 
 
 class AnyChar(Unparameterized):
-    """A parser that returns the next unicode character of the document
+    """A parser that returns the next Unicode character of the document
     whatever that is. The parser fails only at the very end of the text."""
     @cython.locals(location_=cython.int, L=cython.int)
     def _parse(self, location: cython.int) -> ParsingResult:
@@ -2471,7 +2536,7 @@ class PreprocessorToken(LeafParser):
     def __init__(self, token: str) -> None:
         assert token and token.isupper()
         assert RX_TOKEN_NAME.match(token)
-        super(PreprocessorToken, self).__init__()
+        super().__init__()
         self.pname = token
         if token:
             self.disposable = False
@@ -2555,7 +2620,7 @@ class ERR(LeafParser):
     message at the current location."""
 
     def __init__(self, err_msg: str, err_code: ErrorCode = ERROR) -> None:
-        super(ERR, self).__init__()
+        super().__init__()
         self.err_msg, self.err_code = extract_error_code(err_msg, err_code)
 
     def __deepcopy__(self, memo):
@@ -2595,7 +2660,7 @@ class Text(NoMemoizationParser):
     assert TOKEN_PTYPE == ":Text"
 
     def __init__(self, text: str) -> None:
-        super(Text, self).__init__()
+        super().__init__()
         self.text = text
         self.len = len(text)
 
@@ -2625,9 +2690,6 @@ class Text(NoMemoizationParser):
     def is_optional(self) -> Optional[bool]:
         return not self.text
 
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__, self.text
-
 
 class IgnoreCase(Text):
     """
@@ -2645,7 +2707,7 @@ class IgnoreCase(Text):
     """
 
     def __init__(self, text: str) -> None:
-        super(IgnoreCase, self).__init__(text.lower())
+        super().__init__(text.lower())
         self.len = len(text)
 
     @cython.locals(location_=cython.int)
@@ -2660,6 +2722,26 @@ class IgnoreCase(Text):
                 return Node(self.node_name, comp_text, True), location_
             return EMPTY_NODE, location
         return None, location
+
+
+class LazyPattern:
+    def __init__(self, obj, pattern: str):
+        self.pattern = pattern
+        self.obj = obj
+        self.expired = False
+
+    def match(self, *args, **kwargs):
+        assert not self.expired, str(self.obj)
+        obj = self.obj
+        if hasattr(obj, "lazy_initialization"):
+            obj.lazy_initialization(self.pattern)
+        else:
+            obj.regexp = re.compile(self.pattern)
+        self.expired = True
+        return obj.regexp.match(*args, **kwargs)
+
+    def __deepcopy__(self, memo):
+        raise TypeError
 
 
 class RegExp(LeafParser):
@@ -2683,8 +2765,8 @@ class RegExp(LeafParser):
     """
 
     def __init__(self, regexp) -> None:
-        super(RegExp, self).__init__()
-        self.regexp = re.compile(regexp) if isinstance(regexp, str) else regexp
+        super().__init__()
+        self.regexp = LazyPattern(self, regexp) if isinstance(regexp, str) else regexp
 
     def __deepcopy__(self, memo):
         # `regex` supports deep copies, but not `re`
@@ -2731,57 +2813,10 @@ class RegExp(LeafParser):
             return True
         return super().is_optional()
 
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__, self.regexp.pattern
+    def is_lookahead(self) -> bool:
+        """Just a heuristic for the simplemost cases!"""
+        return self.regexp.pattern[0:3] in ('(?=', '(?!')
 
-
-class SmartRE(RegExp):
-    r"""
-    Regular expression parser that returns a tree with a node for every
-    captured group (named as the group or as the number of the group,
-    in case it  is not a named group). The space between groups is dropped.
-
-    EXPERIMENTAL
-
-    Example::
-
-        >>> name = SmartRE(r'(?P<christian_name>\w+)\s+(?P<family_name>\w+)').name("name")
-        >>> Grammar(name)("Arthur Schopenhauer").as_sxpr()
-        '(name (christian_name "Arthur") (family_name "Schopenhauer"))'
-
-    EBNF-Notation:  ``/ ... /``
-
-    EBNF-Example:   ``name = /(?P<first_name>\w+)\s+(?P<last_name>\w+)/``
-    """
-    def __init__(self, regexp) -> None:
-        pattern = regexp if isinstance(regexp, str) else regexp.pattern
-        assert pattern.find('(?P<') >= 0, f"Named group(s) missing in SmartRE: {pattern}"
-        super(SmartRE, self).__init__(regexp)
-
-    def _parse(self, location: cython.int) -> ParsingResult:
-        try:
-            match = self.regexp.match(self._grammar.text__, location)
-        except KeyboardInterrupt as e:
-            raise KeyboardInterrupt(f'Stopped while processing regular expression:  {self.regexp}'
-                f'  at pos {location}:  {self._grammar.text__[location:location + 40]}  ...') \
-                from e
-        if match:
-            captures = match.groupdict()
-            if sum(len(content) for content in captures.values()) or not self.disposable:
-                end = match.end()
-                if self.drop_content:
-                    return EMPTY_NODE, end
-                result = tuple(Node(name, content) for name, content in captures.items()
-                               if content or not self.disposable)
-                for nd in result:  nd._pos = match.start(nd.name)
-                L = len(result)
-                if L > 1 or self.node_name[0:1] != ':':
-                    return Node(self.node_name, result), end
-                elif L == 1:
-                    return result[0], end
-                return EMPTY_NODE, end
-            return EMPTY_NODE, location
-        return None, location
 
 
 def DropText(text: str) -> Text:
@@ -2827,7 +2862,6 @@ def DTKN(token, wsL='', wsR=r'\s*'):
 
 
 class Whitespace(RegExp):
-    # TODO: Keep comments, if they exist
     r"""A variant of RegExp that it meant to be used for insignificant whitespace.
     In contrast to RegExp, Whitespace always returns a match. If the defining
     regular expression did not match, an empty match is returned.
@@ -2836,7 +2870,7 @@ class Whitespace(RegExp):
         containing comments should be kept, even if the self.drop_content
         flag is True. If keep_comments and drop_flag are both True
         a stretch of whitespace containing a comment will be renamed
-        to "comment__" and whitspace that does not contain any comments
+        to "comment\__" and whitspace that does not contain any comments
         will be dropped.
 
     Example::
@@ -2860,7 +2894,7 @@ class Whitespace(RegExp):
     assert WHITESPACE_PTYPE == ":Whitespace"
 
     def __init__(self, regexp, keep_comments: bool = False) -> None:
-        super(Whitespace, self).__init__(regexp)
+        super().__init__(regexp)
         self.keep_comments = keep_comments
 
     def __deepcopy__(self, memo):
@@ -2967,7 +3001,7 @@ class CombinedParser(Parser):
     process, as well.
 
     Doing flatteining or merging during AST-transformation will ensure
-    that it is only performed only on those nodes that made it into the
+    that it is performed only on those nodes that made it into the
     concrete-syntax-tree. Mergeing, in particular, might become costly
     because of potentially many string-concatenations. But then again,
     the usual depth-first-traversal during AST-transformation will take
@@ -2976,12 +3010,12 @@ class CombinedParser(Parser):
     merging to the AST-transformation stage.)
 
     Another optimization consists in returning the singleton EMPTY_NODE
-    for dropped contents, rather than creating an new empty node every
+    for dropped contents, rather than creating a new empty node every
     time empty content is returned. This optimization should always work.
     """
 
     def __init__(self):
-        super(CombinedParser, self).__init__()
+        super().__init__()
         self._return_value = self._return_value_flatten
         self._return_values = self._return_values_flatten
 
@@ -3191,7 +3225,7 @@ class CombinedParser(Parser):
         """Returns a description of the location of the parser within the grammar
         for the purpose of transparent error reporting."""
         return '%s%s in definition of "%s" as %s' \
-            % (self.pname or '_', self.ptype, self.symbol.pname, str(self))
+            % (self.pname or '_', self.ptype, self.symbol, str(self))
 
     NO_TREE_REDUCTION = 0
     FLATTEN = 1  # "flatten" vertically    (A (:Text "data"))  -> (A "data")
@@ -3199,14 +3233,12 @@ class CombinedParser(Parser):
     MERGE_LEAVES = 3  #  (A (:Text "hey ") (:RegExp "you") (C "!")) -> (A (:Text "hey you") (C "!"))
     DEFAULT_OPTIMIZATION = FLATTEN
 
-
 # duplicate this definitions on toplevel for forward-compatibility
 
 NO_TREE_REDUCTION = 0
 FLATTEN = 1  # "flatten" vertically    (A (:Text "data"))  -> (A "data")
 MERGE_TREETOPS = 2  # "merge" horizontally  (A (:Text "hey ") (:RegExp "you")) -> (A "hey you")
 MERGE_LEAVES = 3  #  (A (:Text "hey ") (:RegExp "you") (C "!")) -> (A (:Text "hey you") (C "!"))
-DEFAULT_OPTIMIZATION = FLATTEN
 
 
 def copy_combined_parser_attrs(src: CombinedParser, duplicate: CombinedParser):
@@ -3225,7 +3257,7 @@ def TreeReduction(root_or_parserlist: Union[Parser, Collection[Parser]],
     Returns the root-parser or, if a collection has been passed, the
     PARSER_PLACEHOLDER
 
-    Examples, how tree-reduction wors::
+    Examples, how tree-reduction works::
 
         >>> root = Text('A') + Text('B') | Text('C') + Text('D')
         >>> grammar = Grammar(TreeReduction(root, CombinedParser.NO_TREE_REDUCTION))
@@ -3304,6 +3336,181 @@ def TreeReduction(root_or_parserlist: Union[Parser, Collection[Parser]],
         return get_parser_placeholder()
 
 
+KEEP_COMMENTS_NAME = KEEP_COMMENTS_PTYPE[1:] + '__'
+RX_NAMED_GROUPS = LazyRE(r'\(\?P<(:?\w+)>')
+
+
+def _with_pos(nd: Node, pos: int) -> Node:
+    """A faster replacement for Node.with_pos()"""
+    nd._pos = pos
+    return nd
+
+
+class SmartRE(CombinedParser):
+    r"""
+    Regular expression parser that returns a tree with a node for every
+    captured group (named as the group or as the number of the group,
+    in case it  is not a named group). The space between groups is dropped.
+
+    Example::
+
+        >>> name = SmartRE(r'(?P<christian_name>\w+)\s+(?P<family_name>\w+)').name("name")
+        >>> Grammar(name)("Arthur Schopenhauer").as_sxpr()
+        '(name (christian_name "Arthur") (family_name "Schopenhauer"))'
+        >>> name = SmartRE(r'(?P<christian_name>\w+)(\s+)(?P<family_name>\w+)').name("name")
+        >>> Grammar(name)("Arthur Schopenhauer").as_sxpr()
+        '(name (christian_name "Arthur") (:RegExp " ") (family_name "Schopenhauer"))'
+
+    EBNF-Notation:  ``/ ... /``
+
+    EBNF-Example:   ``name = /(?P<first_name>\w+)\s+(?P<last_name>\w+)/``
+    """
+    def __init__(self, pattern,
+                 repr_str: str = '') -> None:
+        super().__init__()
+        self.repr_str = repr_str
+        self.groups: Optional[List[Tuple[str, bool]]] = None
+        if isinstance(pattern, str):
+            self.pattern = pattern
+            self.regexp = LazyPattern(self, pattern)
+        else:
+            self.pattern = pattern.pattern
+            self.regexp = pattern
+        self.is_lookahead_: Optional[bool] = None
+
+    @cython.locals(i=cython.int)
+    def lazy_initialization(self, pattern: str):
+        group_names = RX_NAMED_GROUPS.findall(pattern)
+        # assert group_names, f"Named group(s) missing in SmartRE: {pattern}"
+        names = dict()
+        for i, name in enumerate(group_names):
+            if name[0:1] == ":":
+                alias = name[1:] + '_' * (i + len(group_names) + 4)
+            else:
+                alias = name + '_' * (i + 2)
+            names[alias] = name
+            pattern = pattern.replace(f'(?P<{name}>', f'(?P<{alias}>', 1)
+        regexp = re.compile(pattern)
+        realname = {index: names[alias] for alias, index in regexp.groupindex.items()}
+        self.groups = []
+        disposables = self.grammar.disposable__
+        for i in range(1, regexp.groups + 1):
+            name = realname.get(i, ":RegExp")
+            self.groups.append((name, is_disposable(name, disposables)))
+        pattern = RX_NAMED_GROUPS.sub('(', pattern)
+        self.regexp = re.compile(pattern)
+
+        if self.is_lookahead() and self.node_name[:1] == ":":
+            self.node_name = ":SmartRE_Lookahead"
+
+    def __deepcopy__(self, memo):
+        # `regex` supports deep copies, but not `re`
+        try:
+            regexp = copy.deepcopy(self.regexp, memo)
+        except TypeError:
+            regexp = self.pattern
+        duplicate = self.__class__(regexp, self.repr_str)
+        duplicate.pattern = self.pattern
+        duplicate.groups = copy.deepcopy(self.groups, memo)
+        duplicate.is_lookahead_ = self.is_lookahead_
+        copy_combined_parser_attrs(self, duplicate)
+        return duplicate
+
+    @cython.locals(i=cython.int, disposable=cython.bint)
+    def _parse(self, location: cython.int) -> ParsingResult:
+        try:
+            match = self.regexp.match(self._grammar.text__, location)
+        except KeyboardInterrupt as e:
+            raise KeyboardInterrupt(f'Stopped while processing regular expression:  {self.regexp}'
+                f'  at pos {location}:  {self._grammar.text__[location:location + 40]}  ...') \
+                from e
+        if match:
+            values = match.groups()
+            end = match.end()
+            if not self.disposable or any((content and len(content)) for content in values):
+                if self.drop_content:
+                    return EMPTY_NODE, end
+                assert self.groups is not None
+                results = tuple(_with_pos(Node(name, content), match.start(i))
+                                for i, ((name, disposable), content) in enumerate(zip(self.groups, values), start=1)
+                                if content is not None
+                                   and (((not disposable or content)
+                                         and name != KEEP_COMMENTS_PTYPE)
+                                        or content.strip()))
+                return self._return_values(results), end
+            return EMPTY_NODE, end
+        return None, location
+
+    def __repr__(self):
+        if self.repr_str:
+            return self.repr_str
+        pattern = self.pattern
+        try:
+            pattern = pattern.replace(self._grammar.WSP_RE__, '~')
+            if self._grammar.COMMENT__:
+                pattern = pattern.replace(self._grammar.COMMENT__, 'comment__')
+            if self._grammar.WHITESPACE__:
+                pattern = pattern.replace(self._grammar.WHITESPACE__, 'whitespace__')
+            pattern = pattern.replace('(?:', '(') # .replace('(?P', '(')
+            i = len(pattern)
+            l = i - 1
+            while l < i:
+                i = len(pattern)
+                pattern = pattern.replace('\\\\', '\\')
+                l = len(pattern)
+        except (AttributeError, NameError):
+            pass
+        return '/' + abbreviate_middle(pattern, 118) + '/'
+
+    def is_optional(self) -> Optional[bool]:
+        if not self.regexp.pattern:
+            return True
+        return super().is_optional()
+
+    def is_lookahead(self) -> bool:
+        r"""
+        Just a heuristic test - not perfect::
+
+            >>> print(SmartRE(r'(?:alpha(?=x))').is_lookahead())
+            True
+            >>> print(SmartRE(r'(?!alpha)').is_lookahead())
+            True
+            >>> print(SmartRE(r'(?P<x>\w+)(?=\d)\d+').is_lookahead())
+            False
+            >>> print(SmartRE(r'(?=(?::)(?:\s*))').is_lookahead())
+            True
+        """
+        if self.is_lookahead_ is not None:
+            return self.is_lookahead_
+        pattern = RX_NAMED_GROUPS.sub('(', self.regexp.pattern).replace('(?:', '(')
+        if pattern.lstrip('(')[0:2] in ('?=', '?!'):
+            return True
+        mb = None
+        i = pattern.rfind('(?=')
+        if i > 0:
+            mb = matching_brackets(pattern, '(', ')', )
+            mb.reverse()
+            rs_pattern = pattern.rstrip(')')
+            for a, b in mb:
+                if a == i:
+                    if len(rs_pattern) <= b:
+                        self.is_lookahead_ = True
+                        return True
+        i = pattern.rfind('(?!')
+        if i > 0:
+            if mb is None:
+                mb = matching_brackets(pattern, '(', ')', )
+                mb.reverse()
+            rs_pattern = pattern.rstrip(')')
+            for a, b in mb:
+                if a == i:
+                    if len(rs_pattern) <= b:
+                        self.is_lookahead_ = True
+                        return True
+        return False
+
+
+
 CustomParseFunc: TypeAlias = Callable[[StringView], Optional[Node]]
 
 
@@ -3323,7 +3530,7 @@ class CustomParser(CombinedParser):
     """
 
     def __init__(self, parse_func: CustomParseFunc) -> None:
-        super(CustomParser, self).__init__()
+        super().__init__()
         assert callable(parse_func), f"Not a CustomParseFunc: {parse_func}"
         self.parse_func: CustomParseFunc = parse_func
 
@@ -3355,12 +3562,11 @@ class CustomParser(CombinedParser):
                 node.name = save_name
             return node, location + node.strlen()
 
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__, id(self.parse_func)
-
     def __repr__(self):
         pf = self.parse_func
-        pfname = getattr(pf, '__name__', getattr(pf.__class__, '__name__', str(pf)))
+        pfname = getattr(pf, '__name__',
+                         getattr(getattr(pf, '__class__', None), '__name__',
+                                 str(pf)))
         return f'Custom({pfname})'
 
 
@@ -3371,7 +3577,10 @@ def Custom(custom_parser: Union[Parser, CustomParseFunc, str]) -> Parser:
         return CustomParser(custom_parser)
     elif isinstance(custom_parser, str):
         custom_parser = globals().get(custom_parser, custom_parser)
-        assert callable(custom_parser), f"Not a CustomParseFunc: {custom_parser}"
+        if callable(custom_parser):
+            return CustomParser(cast(CustomParseFunc, custom_parser))
+        else:
+            raise AssertionError(f"Not a CustomParseFunc: {custom_parser}")
     else:
         raise ValueError(f'Illegal parameter {custom_parser} of type {type(custom_parser)}')
 
@@ -3395,7 +3604,7 @@ class UnaryParser(CombinedParser):
     """
 
     def __init__(self, parser: Parser) -> None:
-        super(UnaryParser, self).__init__()
+        super().__init__()
         # assert isinstance(parser, Parser), str(parser)
         self.parser = parser  # type: Parser
         self.sub_parsers = frozenset({parser})
@@ -3406,16 +3615,13 @@ class UnaryParser(CombinedParser):
         copy_combined_parser_attrs(self, duplicate)
         return duplicate
 
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__, self.parser.signature()
-
 
 class LateBindingUnary(UnaryParser):
     """Superclass for late-binding unary parsers. LateBindingUnary only stores
     the name of a parser upon object creation. This name is resolved at the time
     when the late-binding-parser-object is connected to the grammar.
 
-    EXPERIMENTAL !!
+    EXPERIMENTAL !!!
 
     A possible use case is a custom parser derived from LateBindingUnary that
     calls another parser without having to worry about whether the called
@@ -3425,7 +3631,7 @@ class LateBindingUnary(UnaryParser):
     not be abused for recursive parser calls either!"""
 
     def __init__(self, parser_name: str) -> None:
-        super(LateBindingUnary, self).__init__(get_parser_placeholder())
+        super().__init__(get_parser_placeholder())
         self.parser_name: str = parser_name
 
     def  __deepcopy__(self, memo):
@@ -3443,9 +3649,6 @@ class LateBindingUnary(UnaryParser):
             self.parser = getattr(self.grammar, self.parser_name)
             self.sub_parsers = frozenset({self.parser})
         return self.parser
-
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__, self.parser_name
 
     @property
     def sub_parsers(self) -> FrozenSet[Parser]:
@@ -3486,8 +3689,8 @@ class Option(UnaryParser):
     EBNF-Example:  ``number = ["-"]  /\d+/  [ /\.\d+/ ]``
     """
 
-    def __init__(self, parser: Parser) -> None:
-        super(Option, self).__init__(parser)
+    # def __init__(self, parser: Parser) -> None:
+    #     super().__init__(parser)
 
     def _parse(self, location: cython.int) -> ParsingResult:
         node, location = self.parser(location)
@@ -3516,7 +3719,7 @@ def infinite_loop_warning(parser, node, location):
         if node is EMPTY_NODE:  node = Node(EMPTY_PTYPE, '').with_pos(location)
         dsl_error(parser, node,
                   f'Repeating parser did not make any progress! Was inner parser '
-                  f'of "{parser.symbol.pname}" really intended to capture empty text?',
+                  f'of "{parser.symbol}" really intended to capture empty text?',
                   INFINITE_LOOP_WARNING)
 
 
@@ -3587,7 +3790,7 @@ class OneOrMore(UnaryParser):
         >>> Grammar(sentence)('Wo viel der Weisheit, da auch viel des Grämens.').content
         'Wo viel der Weisheit, da auch viel des Grämens.'
         >>> str(Grammar(sentence)('.'))  # an empty sentence also matches
-        ' <<< Error on "." | Parser "root->/\\\\w+,?/" did not match: ».« >>> '
+        ' <<< Error on "." | Parser root->/\\\\w+,?/ did not match: ».« >>> '
         >>> forever = OneOrMore(RegExp('(?=.)|$'))
         >>> Grammar(forever)('')  # infinite loops will automatically be broken
         Node('root', '')
@@ -3634,9 +3837,6 @@ class OneOrMore(UnaryParser):
         return errors
 
 
-INFINITE = 2**30
-
-
 def to_interleave(parser: Parser) -> Parser:
     """Converts a :py:clas:`Counted`-parser into an :py:class:`Interleave`-parser. Any other
     parser is simply passed through."""
@@ -3648,7 +3848,7 @@ def to_interleave(parser: Parser) -> Parser:
 
 class Counted(UnaryParser):
     """Counted applies a parser for a number of repetitions within a given range, i.e.
-    the parser must at least match the lower bound number of repetitions and it can
+    the parser must at least match the lower bound number of repetitions, and it can
     at most match the upper bound number of repetitions.
 
     Examples::
@@ -3676,7 +3876,7 @@ class Counted(UnaryParser):
     defining a dedicated class makes the purpose clearer and runs slightly faster.
     """
     def __init__(self, parser: Parser, repetitions: Tuple[int, int]) -> None:
-        super(Counted, self).__init__(parser)
+        super().__init__(parser)
         assert repetitions[0] <= repetitions[1]
         self.repetitions = repetitions  # type: Tuple[int, int]
 
@@ -3740,9 +3940,6 @@ class Counted(UnaryParser):
                 + self.location_info(), BADLY_NESTED_OPTIONAL_PARSER))
         return errors
 
-    def _signature(self) -> Hashable:
-        return self.__class__.__name__, self.parser.signature(), self.repetitions
-
 
 ########################################################################
 #
@@ -3764,7 +3961,7 @@ class NaryParser(CombinedParser):
     """
 
     def __init__(self, *parsers: Parser) -> None:
-        super(NaryParser, self).__init__()
+        super().__init__()
         # assert all([isinstance(parser, Parser) for parser in parsers]), str(parsers)
         if len(parsers) == 0:
             raise ValueError('Cannot initialize NaryParser with zero parsers.')
@@ -3777,9 +3974,6 @@ class NaryParser(CombinedParser):
         duplicate = self.__class__(*parsers)
         copy_combined_parser_attrs(self, duplicate)
         return duplicate
-
-    def _signature(self) -> Hashable:
-        return (self.__class__.__name__,) + tuple(p.signature() for p in self.parsers)
 
 
 def starting_string(parser: Parser) -> str:
@@ -3839,6 +4033,7 @@ class Alternative(NaryParser):
 
     EBNF-Example:  ``number = /\d+\.\d+/ | /\d+/``
     """
+
     @cython.locals(location_=cython.int)
     def _parse(self, location: cython.int) -> ParsingResult:
         for parser in self.parsers:
@@ -3936,7 +4131,8 @@ def longest_match(strings: List[str], text: Union[StringView, str], n: int = 1) 
         return strings[0] if text.startswith(strings[0]) else ''
     head = str(text[:n])
     if not head:  return ''
-    i = bisect_left(strings, head)
+    import bisect
+    i = bisect.bisect_left(strings, head)
     if i >= len(strings) or (i == 0 and not strings[0].startswith(head)):
         return ''
     match = longest_match(strings[i:], text, n + 1)
@@ -3952,7 +4148,7 @@ def longest_match(strings: List[str], text: Union[StringView, str], n: int = 1) 
 #     """
 #
 #     def __init__(self, *parsers: Parser) -> None:
-#         super(TextAlternative, self).__init__(*parsers)
+#         super().__init__(*parsers)
 #         heads: List[str] = []
 #         for p in parsers:
 #             while isinstance(p, Synonym):
@@ -4022,7 +4218,7 @@ class ErrorCatchingNary(NaryParser):
         >>> str(num_parser('3.1415'))
         '3.1415'
         >>> str(num_parser('3.'))
-        '3. <<< Error on "" | »/[0-9]+/« expected by parser \'fraction\', but END OF FILE found instead! >>> '
+        '3. <<< Error on "" | /[0-9]+/ expected by parser \'fraction\', but END OF FILE found instead! >>> '
 
     In this example, the first item of the fraction, i.e. the decimal dot,
     is non-mandatory, because only the parser with an index of one or more
@@ -4041,7 +4237,7 @@ class ErrorCatchingNary(NaryParser):
     """
     def __init__(self, *parsers: Parser,
                  mandatory: int = NO_MANDATORY) -> None:
-        super(ErrorCatchingNary, self).__init__(*parsers)
+        super().__init__(*parsers)
         length = len(self.parsers)
         if mandatory < 0:
             mandatory += length
@@ -4060,10 +4256,11 @@ class ErrorCatchingNary(NaryParser):
         skip-list ist empty, -1 and a zombie-node are returned.
         """
         text_ = self.grammar.document__[location:]
-        skip = tuple(self.grammar.skip_rules__.get(self.symbol.pname, []))
+        skip = tuple(self.grammar.skip_rules__.get(self.symbol, []))
         if skip:
             gr = self._grammar
-            reloc, zombie = reentry_point(text_, skip, gr.comment_rx__, gr.reentry_search_window__)
+            reloc, zombie = reentry_point(text_, skip, gr.comment_rx__, gr.reentry_search_window__,
+                                          f'{self.symbol}_skip')
             return reloc, zombie
         return -1, Node(ZOMBIE_TAG, '')
 
@@ -4081,23 +4278,26 @@ class ErrorCatchingNary(NaryParser):
         This is a helper function that abstracts functionality that is
         needed by the Interleave-parser as well as the Series-parser.
 
-        :param location: the point, where the mandatory violation happend.
-                As usual the string view represents the remaining text from
+        :param location: the point, where the mandatory violation happened.
+                As usual, the string view represents the remaining text from
                 this point.
         :param failed_on_lookahead: True if the violating parser was a
                 Lookahead-Parser.
         :param expected:  the expected (but not found) text at this point.
-        :param err_node: A zombie-node that captures the text from the
                 position where the error occurred to a suggested
                 reentry-position.
         :param reloc: A position offset that represents the reentry point for
                 parsing after the error occurred.
+        :param err_node: The node to which the mandatory violation error shall
+                be attached. Usually, this is the skip-node so that the error
+                will be located exactly where the violation occurred.
 
         :return:   a tuple of an error object and a location for the
                 continuation the parsing process
         """
         grammar = self._grammar
         text_ = self.grammar.document__[location:]
+
         err_node._pos = -1  # bad hack to avoid error in case position is re-set
         err_node.with_pos(location)  # for testing artifacts
         error_code = MANDATORY_CONTINUATION
@@ -4108,7 +4308,7 @@ class ErrorCatchingNary(NaryParser):
             found = '»' + text_[:10].replace('\n', '\\n') + '«'
         else:
             found = "END OF FILE"
-        sym = self.symbol.pname
+        sym = self.symbol
         err_msgs = self.grammar.error_messages__.get(sym, [])
         for search, message in err_msgs:
             is_func = callable(search)           # search rule is a function: StringView -> bool
@@ -4127,8 +4327,10 @@ class ErrorCatchingNary(NaryParser):
                                   location, MALFORMED_ERROR_STRING)
                     grammar.tree__.add_error(err_node, error)
         else:
-            msg = '%s expected by parser %s, but %s found instead!' \
-                  % (f"»{repr(expected)[1:-1]}«", repr(sym), found)
+            repr_expected = repr(expected)[1:-1]
+            if len(repr_expected) > 2 and (repr_expected[0] + repr_expected[-1]) in ('""', "''"):
+                repr_expected = repr_expected[1:-1]
+            msg = f'{repr_expected} expected by parser {repr(sym)}, but {found} found instead!'
         if failed_on_lookahead and not text_:
             if grammar.start_parser__ is grammar.root_parser__:
                 error_code = MANDATORY_CONTINUATION_AT_EOF
@@ -4147,7 +4349,7 @@ class ErrorCatchingNary(NaryParser):
         errors = super().static_analysis()
         msg = []
         length = len(self.parsers)
-        sym = self.grammar.associated_symbol__(self).pname
+        # sym = self.symbol
         # if self.mandatory == NO_MANDATORY and sym in self.grammar.error_messages__:
         #     msg.append('Custom error messages require that parameter "mandatory" is set!')
         # elif self.mandatory == NO_MANDATORY and sym in self.grammar.skip_rules__:
@@ -4179,13 +4381,40 @@ class Series(ErrorCatchingNary):
         >>> Grammar(variable_name)('variable_1').content
         'variable_1'
         >>> str(Grammar(variable_name)('1_variable'))
-        ' <<< Error on "1_variable" | Parser "root->/(?!\\\\d)\\\\w/" did not match: »1_variable« >>> '
+        ' <<< Error on "1_variable" | Parser root->/(?!\\\\d)\\\\w/ did not match: »1_variable« >>> '
 
     EBNF-Notation: ``... ...``    (sequence of parsers separated by a blank or new line)
 
     EBNF-Example:  ``series = letter letter_or_digit``
     """
     # RX_ARGUMENT = re.compile(r'\s(\S)')
+
+    def __init__(self, *parsers: Parser,
+                 mandatory: int = NO_MANDATORY) -> None:
+        super().__init__(*parsers, mandatory=mandatory)
+        if mandatory >= len(self.parsers):
+            self._parse_proxy = self._quick_parse
+
+    def set_proxy(self, proxy: Optional[ParseFunc]):
+        if self.mandatory >= len(self.parsers) and proxy is None:
+            self._parse_proxy = self._quick_parse
+        else:
+            if self._parse_proxy == self._quick_parse:
+                self._parse_proxy = self._parse  # to avoid assertion error in the super()-call
+            super(Series, self).set_proxy(proxy)
+
+    @cython.locals(location_=cython.int)
+    def _quick_parse(self, location: cython.int) -> ParsingResult:
+        """faster Series-parsing-method if mandatory marker is not used."""
+        results = []  # type: List[Node]
+        location_ = location
+        for parser in self.parsers:
+            node, location_ = parser(location_)
+            if node is None:
+                return None, location
+            if node._result or not node.name[0] == ':':  # node.anonymous:  # drop anonymous empty nodes
+                results.append(node)
+        return self._return_values(tuple(results)), location_
 
     @cython.locals(location_=cython.int, pos=cython.int, reloc=cython.int, mandatory=cython.int)
     def _parse(self, location: cython.int) -> ParsingResult:
@@ -4200,9 +4429,14 @@ class Series(ErrorCatchingNary):
                     return None, location
                 else:
                     parser_str = str(parser) if is_context_sensitive(parser) else parser.repr
+                    qq = parser_str[0] + parser_str[-1]
+                    if parser.node_name[0] == ":" and qq in ('""', "''", "``"):
+                        parser_str = f'»{parser_str[1:-1]}«'
                     reloc, node = self.get_reentry_point(location_)
+                    lookahead = isinstance(parser, Lookahead) \
+                                or (isinstance(parser, SmartRE) and parser.pattern[0:3] in ("(?=", "(?!"))
                     error, location_ = self.mandatory_violation(
-                        location_, isinstance(parser, Lookahead), parser_str, reloc, node)
+                        location_, lookahead, parser_str, reloc, node)
                     # check if parsing of the series can be resumed somewhere
                     if reloc >= 0:
                         nd, location_ = parser(location_)  # try current parser again
@@ -4280,7 +4514,7 @@ class Interleave(ErrorCatchingNary):
     def __init__(self, *parsers: Parser,
                  mandatory: int = NO_MANDATORY,
                  repetitions: Sequence[Tuple[int, int]] = ()) -> None:
-        super(Interleave, self).__init__(*parsers, mandatory=mandatory)
+        super().__init__(*parsers, mandatory=mandatory)
         assert all(0 <= r[0] <= r[1] for r in repetitions)
         if len(repetitions) == 0:
             repetitions = [(1, 1)] * len(parsers)
@@ -4302,7 +4536,7 @@ class Interleave(ErrorCatchingNary):
         results = ()  # type: Tuple[Node, ...]
         location_ = location  # type: int
         counter = [0] * len(self.parsers)
-        consumed = set()  # type: Set[Parser]
+        consumed = set()  # type: MutableSet[Parser]
         error = None  # type: Optional[Error]
         while True:
             # there is an order of testing, but no promise about the order of testing, here!
@@ -4381,10 +4615,6 @@ class Interleave(ErrorCatchingNary):
                     BAD_REPETITION_COUNT))
         return errors
 
-    def _signature(self) -> Hashable:
-        return (self.__class__.__name__,) \
-               + tuple(p.signature() for p in self.parsers) \
-               + tuple(self.repetitions)
 
 ########################################################################
 #
@@ -4466,14 +4696,14 @@ class Lookbehind(FlowParser):
         p = parser
         while isinstance(p, Synonym):
             p = p.parser
-        assert isinstance(p, RegExp) or isinstance(p, Text)
         self.regexp = None
         self.text = ''  # type: str
         if isinstance(p, RegExp):
-            self.regexp = cast(RegExp, p).regexp
+            self.regexp = LazyPattern(self, cast(RegExp, p).regexp.pattern)
         else:  # p is of type Text
+            assert isinstance(p, Text)
             self.text = cast(Text, p).text
-        super(Lookbehind, self).__init__(parser)
+        super().__init__(parser)
 
     @cython.locals(start=cython.int)
     def _parse(self, location: cython.int) -> ParsingResult:
@@ -4574,9 +4804,6 @@ class ContextSensitive(UnaryParser):
         """
         return location if location != location_ else location-1
 
-    def _signature(self) -> Hashable:
-        return id(self)
-
 
 class Capture(ContextSensitive):
     """
@@ -4585,7 +4812,7 @@ class Capture(ContextSensitive):
     contained parser's name. This requires the contained parser to be named.
     """
     def __init__(self, parser: Parser, zero_length_warning: bool = True) -> None:
-        super(Capture, self).__init__(parser)
+        super().__init__(parser)
         self.zero_length_warning: bool = zero_length_warning
         self._can_capture_zero_length: Optional[bool] = None
 
@@ -4703,17 +4930,19 @@ class Retrieve(ContextSensitive):
     The constructor parameter ``symbol`` determines which variable is
     used.
 
-    :ivar symbol: The parser that has stored the value to be retrieved, in
-        other words: "the observed parser"
-    :ivar match_func: a procedure that through which the processing to the
-        retrieved symbols is channeled. In the simplest case it merely
+    :ivar parser: The name of the parser that has stored the value
+        to be retrieved, in other words: "the observed parser".
+        (class Retrieve reuses the instance variable "parser" of its
+         superclass Unary with a slightly different semantic)
+    :ivar match: a procedure through which the processing of the
+        retrieved symbols is channeled. In the simple most case, it merely
         returns the last string stored by the observed parser. This can
         be (mis-)used to execute any kind of semantic action.
     """
 
-    def __init__(self, symbol: Parser, match_func: MatchVariableFunc = None) -> None:
+    def __init__(self, symbol: Parser, match_func: Optional[MatchVariableFunc] = None) -> None:
         assert isinstance(symbol, Capture)
-        super(Retrieve, self).__init__(symbol)
+        super().__init__(symbol)
         self.match = match_func if match_func else last_value
 
     def __deepcopy__(self, memo):
@@ -4799,8 +5028,8 @@ class Pop(Retrieve):
     The constructor parameter ``symbol`` determines which variable is
     used.
     """
-    def __init__(self, symbol: Parser, match_func: MatchVariableFunc = None) -> None:
-        super(Pop, self).__init__(symbol, match_func)
+    def __init__(self, symbol: Parser, match_func: Optional[MatchVariableFunc] = None) -> None:
+        super().__init__(symbol, match_func)
 
     def reset(self):
         super(Pop, self).reset()
@@ -4856,7 +5085,7 @@ class Synonym(UnaryParser):
     RegExp('\d\d\d\d') carries the name 'JAHRESZAHL' or 'jahr'.
     """
     def __init__(self, parser: Parser) -> None:
-        super(Synonym, self).__init__(parser)
+        super().__init__(parser)
 
     def _parse(self, location: cython.int) -> ParsingResult:
         node, location = self.parser(location)
@@ -4868,7 +5097,8 @@ class Synonym(UnaryParser):
                     return Node(self.node_name, '', True), location
                 if node.name[0] == ':':  # node.anonymous:
                     # eliminate anonymous child-node on the fly
-                    node.name = self.node_name
+                    # node.name = self.node_name   # Bit mistake: this can spoil the memo-cache
+                    return Node(self.node_name, node._result), location
                 else:
                     return Node(self.node_name, (node,)), location
         return node, location
@@ -4904,10 +5134,13 @@ class Forward(UnaryParser):
             has already been called recursively at this place. This
             is needed to implement left recursion. The number of
             calls becomes irrelevant once a result has been memoized.
+
+    The Forward parser class also contains the algorithm to handle left-recursive
+    grammars. See it's __call__()-method.
     """
 
     def __init__(self):
-        super(Forward, self).__init__(get_parser_placeholder())
+        super().__init__(get_parser_placeholder())
         # self.parser = get_parser_placeholder  # type: Parser
         self.cycle_reached: bool = False
         self.sub_parsers = frozenset()
@@ -4916,12 +5149,6 @@ class Forward(UnaryParser):
         super(Forward, self).reset()
         self.recursion_counter: Dict[int, int] = dict()
         assert not self.pname, "Forward-Parsers mustn't have a name!"
-
-    # def name(self, pname: str="", disposable: Optional[bool] = None) -> Parser:
-    #     """Sets the parser name to ``pname`` and returns ``self``."""
-    #     self.pname = pname
-    #     self.disposable = True if disposable is True else False
-    #     return self
 
     def __deepcopy__(self, memo):
         duplicate = self.__class__()
@@ -4933,7 +5160,6 @@ class Forward(UnaryParser):
         duplicate.disposable = self.disposable
         duplicate.node_name = self.node_name  # Forward-Parser should not have a tag name!
         duplicate.drop_content = parser.drop_content
-        # duplicate.eq_class = self.eq_class
         duplicate.sub_parsers = frozenset({parser})
         return duplicate
 
@@ -4949,13 +5175,13 @@ class Forward(UnaryParser):
         handling. In order to do so it (unfortunately) has to duplicate some code
         from :py:meth:`Parser.__call__`.
 
-        The algorithm roughly follows:
+        The algorithm for avoiding infinite loops in left-recursive grammars roughly follows:
         https://medium.com/@gvanrossum_83706/left-recursive-peg-grammars-65dab3c580e1
         See also:
-        http://www.vpri.org/pdf/tr2007002_packrat.pdf
+        https://tinlizzie.org/VPRIPapers/tr2007002_packrat.pdf
         """
         grammar = self._grammar
-        if not grammar.left_recursion__:  # TODO: add a static check and flag: self.left_recursive__!
+        if not grammar.left_recursion__:
             return self.parser(location)
 
         # rollback variable changing operation if parser backtracks
@@ -5078,9 +5304,3 @@ class Forward(UnaryParser):
         if not parser.drop_content:  parser.disposable = self.disposable
         self.drop_content = parser.drop_content
         self.pname = ""
-
-    def _signature(self) -> Hashable:
-        # This code should theoretically never be reached, except when debugging
-        signature = self.pname or self.parser.pname
-        assert signature
-        return signature

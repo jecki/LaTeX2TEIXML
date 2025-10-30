@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,25 +20,19 @@
 Module ``toolkit`` contains utility functions that are needed across
 several of the other DHParser-Modules Helper functions that are not
 needed in more than one module are best placed within that module and
-not in the toolkit-module. An acceptable exception to this rule are
+not in the toolkit-module. Acceptable exceptions to this rule are
 functions that are very generic.
 """
 
 from __future__ import annotations
 
-import ast
-import bisect
-import concurrent.futures
+# import concurrent.futures # commented out to save startup time
 import functools
-import hashlib
 import io
 import json
-import multiprocessing
 import os
 import sys
-import threading
-import traceback
-import typing
+
 
 try:
     if sys.version.find('PyPy') >= 0:
@@ -48,22 +42,32 @@ try:
 except ImportError:
     import re
 
-try:
-    import dataclasses
-except ImportError:
-    from DHParser.externallibs import dataclasses36 as dataclasses
-
-from typing import Any, Iterable, Sequence, Set, AbstractSet, Union, Dict, List, Tuple, \
-    Optional, Type, Callable
-try:
-    from typing import Protocol
-except ImportError:
-    class Protocol:
-        pass
-try:
-    from typing import TypeAlias
-except ImportError:
-    from DHParser.externallibs.typing_extensions import TypeAlias
+if sys.version_info >= (3, 12, 0):
+    from collections.abc import Iterable, Sequence, Set, MutableSet, Callable, Container, Hashable
+    from typing import Any, Type, Union, Optional, TypeAlias, Protocol
+    AbstractSet = Set
+    FrozenSet = frozenset
+    Dict = dict
+    List = list
+    Tuple = tuple
+    ByteString: TypeAlias = Union[bytes, bytearray]
+    static = staticmethod
+else:
+    from typing import Any, Iterable, Sequence, Set, AbstractSet, Union, Dict, List, Tuple, \
+        FrozenSet, MutableSet, Optional, Type, Callable, Container, Hashable, ByteString
+    try:
+        from typing import Protocol
+    except ImportError:
+        class Protocol:
+            pass
+    try:
+        from typing import TypeAlias
+    except ImportError:
+        from DHParser.externallibs.typing_extensions import TypeAlias
+    if sys.version_info >= (3, 10, 0):
+        static = staticmethod
+    else:
+        static = lambda f: f
 
 try:
     import cython
@@ -75,28 +79,30 @@ except (NameError, ImportError):
     import DHParser.externallibs.shadow_cython as cython
 
 from DHParser.configuration import access_thread_locals, get_config_value, set_config_value, \
-    NEVER_MATCH_PATTERN
+    CONFIG_PRESET, NEVER_MATCH_PATTERN
 from DHParser.stringview import StringView
 
 
-__all__ = ('typing',
-           're',
-           'dataclasses',
-           'Protocol',
-           'TypeAlias',
+__all__ = ('re',
            'cython_optimized',
+           'DHPARSER_FILES',
            'identify_python',
            'identity',
+           'CancelQuery',
+           'get_annotations',
            # 'gen_id',
            'ThreadLocalSingletonFactory',
-           'RX_NEVER_MATCH',
+           'LazyRE',
            'RX_ENTITY',
            'RX_NON_ASCII',
            'validate_XML_attribute_value',
            'fix_XML_attribute_value',
            'lxml_XML_attribute_value',
+           'ascii_xml_entity',
+           'ascii_char_code',
+           'xml_entity',
+           'char_code',
            'RxPatternType',
-           're_find',
            'escape_re',
            'escape_ctrl_chars',
            'is_filename',
@@ -106,6 +112,7 @@ __all__ = ('typing',
            'concurrent_ident',
            'unrepr',
            'abbreviate_middle',
+           'wrap_str_literal',
            'wrap_str_nicely',
            'printw',
            'escape_formatstr',
@@ -115,6 +122,8 @@ __all__ = ('typing',
            'first',
            'last',
            'NOPE',
+           'INFINITE',
+           'subf',
            'matching_brackets',
            'linebreaks',
            'line_col',
@@ -122,6 +131,9 @@ __all__ = ('typing',
            'normalize_docstring',
            'issubtype',
            'isgenerictype',
+           'DeserializeFunc',
+           'cached_load',
+           'clear_from_cache',
            'load_if_file',
            'is_python_code',
            'md5',
@@ -139,13 +151,36 @@ __all__ = ('typing',
            'pp_json_str',
            'sane_parser_name',
            'normalize_circular_path',
+           'normalize_circular_paths',
            'DHPARSER_DIR',
            'deprecated',
            'deprecation_warning',
            'SingleThreadExecutor',
            'multiprocessing_broken',
+           'MultiCoreManager',
+           'PickMultiCoreExecutor',
            'instantiate_executor',
-           'cpu_count')
+           'cpu_count',
+           # Type Aliases
+           'Iterable',
+           'Sequence',
+           'Set',
+           'AbstractSet',
+           'MutableSet',
+           'FrozenSet',
+           'Callable',
+           'Container',
+           'ByteString',
+           'Any',
+           'Type',
+           'Union',
+           'Optional',
+           'TypeAlias',
+           'Protocol',
+           'Dict',
+           'List',
+           'Tuple',
+           'static')
 
 
 #######################################################################
@@ -154,9 +189,15 @@ __all__ = ('typing',
 #
 #######################################################################
 
+DHPARSER_FILES = {'dsl.py', 'log.py', 'parse.py', 'server.py', 'testing.py', 'transform.py',
+                  'compile.py', 'ebnf.py', 'lsp.py', 'pipeline.py', 'singledispatch_shim.py',
+                  'toolkit.py', 'validate.py', 'configuration.py', 'error.py', 'nodetree.py',
+                  'preprocess.py', 'stringview.py', 'trace.py', 'versionnumber.py'}
+
+
 def identify_python() -> str:
-    """Returns a reasonable identification string for the python interpreter,
-    e.g. "cpython 3.8.6"."""
+    """Returns a reasonable identification string for the
+    python interpreter, e.g., "cpython 3.8.6"."""
     return "%s %i.%i.%i" % (sys.implementation.name, *sys.version_info[:3])
 
 
@@ -166,6 +207,9 @@ def identity(x):
     able to check whether a function parameter has been assigned
     another than the default value or not."""
     return x
+
+
+CancelQuery: TypeAlias = Callable[[], bool]  # A type for a cancellation-callback
 
 
 global_id_counter: int = 0
@@ -184,11 +228,10 @@ class ThreadLocalSingletonFactory:
     the same instance of `class_or_factory` for one and the
     same thread, but different instances for different threads.
 
-    Note: Parameter uniqueID should be provided if class_or_factory is not
-    unique but generic. See source code of
+    Note: Parameter uniqueID should be provided if class_or_factory is
+    not unique but generic. See the source code of
     :py:func:`DHParser.dsl.create_transtable_junction`
     """
-
     def __init__(self, class_or_factory, name: str = "", *,
                  uniqueID: Union[str, int] = 0,
                  ident=None):
@@ -200,6 +243,7 @@ class ThreadLocalSingletonFactory:
         name = name or getattr(class_or_factory, '__name__', '') or class_or_factory.func.__name__
         if not uniqueID:
             if not hasattr(self.__class__, 'lock'):
+                import threading
                 self.__class__.lock = threading.Lock()
             with self.__class__.lock:
                 uniqueID = gen_id()
@@ -219,23 +263,35 @@ class ThreadLocalSingletonFactory:
 
 @functools.lru_cache()
 def is_filename(strg: str) -> bool:
+    r"""
+    Tries to guess whether the given string is a file name. It is
+    assumed that it is NOT a filename if any of the following
+    conditions is true:
+
+    - It starts with a byte-order mark, i.e. '\ufffe' or '\ufeff'.
+    - It starts or ends with a blank, i.e. " ".
+    - It contains any of the characters in the set [\*?"<>|].
+
+    For disambiguation of non-filenames it is best to add a
+    byteorder-mark to the beginning of the string, because this
+    will be stripped by the DHParser's parser, anyway!
     """
-    Tries to guess whether string ``strg`` is a file name.
-    """
-    return strg.find('\n') < 0 and strg[:1] != " " and strg[-1:] != " " \
+    return strg and strg[0:1] not in ('\ufeff', '\ufffe') \
+        and strg[0:3] not in ('\xef\xbb\xbf', '\x00\x00\ufeff', '\x00\x00\ufffe') \
+        and strg.find('\n') < 0 \
+        and strg[:1] != " " and strg[-1:] != " " \
         and all(strg.find(ch) < 0 for ch in '*?"<>|')
-    #   and strg.select_if('*') < 0 and strg.select_if('?') < 0
 
 
 def is_html_name(url: str) -> bool:
-    """Returns True, if url ends with .htm or .html"""
+    """Returns True if the URL ends with .htm or .html"""
     return url[-5:].lower() == '.html' or url[-4:].lower() == '.htm'
 
 
 @cython.locals(i=cython.int, L=cython.int)
 def relative_path(from_path: str, to_path: str) -> str:
     """Returns the relative path in order to open a file from
-    `to_path` when the script is running in `from_path`. Example:
+    `to_path` when the script is running in `from_path`. Example::
 
         >>> relative_path('project/common/dir_A', 'project/dir_B').replace(chr(92), '/')
         '../../dir_B'
@@ -255,7 +311,7 @@ def relative_path(from_path: str, to_path: str) -> str:
 
 def split_path(path: str) -> Tuple[str, ...]:
     """Splits a filesystem path into its components. Other than
-    os.path.split() it does not only split of the last part::
+    os.path.split(), it does not only split of the last part::
 
         >>> split_path('a/b/c')
         ('a', 'b', 'c')
@@ -272,6 +328,7 @@ def concurrent_ident() -> str:
     """
     Returns an identificator for the current process and thread
     """
+    import multiprocessing, threading
     if sys.version_info >= (3, 8, 0):
         return multiprocessing.current_process().name + '_' + str(threading.get_native_id())
     else:
@@ -283,9 +340,8 @@ class unrepr:
     unrepr encapsulates a string representing a python function in such
     a way that the representation of the string yields the function call
     itself rather than a string representing the function call and delimited
-    by quotation marks.
+    by quotation marks. Example::
 
-    Example:
         >>> "re.compile(r'abc+')"
         "re.compile(r'abc+')"
         >>> unrepr("re.compile(r'abc+')")
@@ -313,7 +369,8 @@ class unrepr:
 def as_list(item_or_sequence) -> List[Any]:
     """Turns an arbitrary sequence or a single item into a list. In case of
     a single item, the list contains this element as its sole item."""
-    if isinstance(item_or_sequence, Iterable):
+    if isinstance(item_or_sequence, Iterable) \
+            and not isinstance(item_or_sequence, (str, bytes, bytearray)):
         return list(item_or_sequence)
     return [item_or_sequence]
 
@@ -321,14 +378,34 @@ def as_list(item_or_sequence) -> List[Any]:
 def as_tuple(item_or_sequence) -> Tuple[Any]:
     """Turns an arbitrary sequence or a single item into a tuple. In case of
     a single item, the tuple contains this element as its sole item."""
-    if isinstance(item_or_sequence, Iterable):
+    if isinstance(item_or_sequence, Iterable) \
+            and not isinstance(item_or_sequence, (str, bytes, bytearray)):
         return tuple(item_or_sequence)
     return (item_or_sequence,)
 
 
+def as_set(item_or_sequence: Hashable) -> MutableSet[Any]:
+    """Turns an arbitrary sequence or a single item into a set. In case of
+    a single item, the set contains this element as its sole item."""
+    if isinstance(item_or_sequence, Iterable) \
+            and not isinstance(item_or_sequence, (str, bytes, bytearray)):
+        return set(item_or_sequence)
+    return {item_or_sequence}
+
+
+def as_frozenset(item_or_sequence: Hashable) -> FrozenSet[Any]:
+    """Turns an arbitrary sequence or a single item into a set. In case of
+    a single item, the set contains this element as its sole item."""
+    if isinstance(item_or_sequence, Iterable) \
+            and not isinstance(item_or_sequence, (str, bytes, bytearray)):
+        return frozenset(item_or_sequence)
+    return frozenset({item_or_sequence})
+
+
 def first(item_or_sequence: Union[Sequence, Any]) -> Any:
     """Returns an item or the first item of a sequence of items."""
-    if isinstance(item_or_sequence, Sequence):
+    if isinstance(item_or_sequence, Sequence) \
+            and not isinstance(item_or_sequence, (str, bytes, bytearray)):
         return item_or_sequence[0]
     else:
         return item_or_sequence
@@ -336,13 +413,14 @@ def first(item_or_sequence: Union[Sequence, Any]) -> Any:
 
 def last(item_or_sequence: Union[Sequence, Any]) -> Any:
     """Returns an item or the first item of a sequence of items."""
-    if isinstance(item_or_sequence, Sequence):
+    if isinstance(item_or_sequence, Sequence) \
+            and not isinstance(item_or_sequence, (str, bytes, bytearray)):
         return item_or_sequence[-1]
     else:
         return item_or_sequence
 
 
-DEPRECATION_WARNINGS_ISSUED: Set[str] = set()
+DEPRECATION_WARNINGS_ISSUED: MutableSet[str] = set()
 
 
 def deprecation_warning(message: str):
@@ -359,6 +437,7 @@ def deprecation_warning(message: str):
                 deprecation_policy = 'warn'
                 print(e)
             if deprecation_policy == 'warn':
+                import traceback
                 stacktrace = traceback.format_exc()
                 print(stacktrace)
             else:
@@ -390,6 +469,17 @@ def deprecated(message: str) -> Callable:
     return decorator
 
 
+def get_annotations(item):
+    if sys.version_info >= (3, 14):
+        from annotationlib import get_annotations, Format
+        return get_annotations(item, format=Format.VALUE)
+    elif sys.version_info >= (3, 10):
+        import inspect
+        return inspect.get_annotations(item)
+    else:
+        return item.__annotations__
+
+
 #######################################################################
 #
 # miscellaneous (DHParser-specific)
@@ -397,24 +487,22 @@ def deprecated(message: str) -> Callable:
 #######################################################################
 
 
-DHPARSER_DIR = os.path.dirname(os.path.abspath(__file__))
+DHPARSER_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 # DHPARSER_PARENTDIR = os.path.dirname(DHPARSER_DIR.rstrip('/').rstrip('\\'))
 
 
 def sane_parser_name(name) -> bool:
     """
-    Checks whether given name is an acceptable parser name. Parser names
+    Checks whether the given name is an acceptable parser name. Parser names
     must not be preceded or succeeded by a double underscore '__'!
     """
 
     return name and name[:2] != '__' and name[-2:] != '__'
 
 
-def normalize_circular_path(path: Union[Tuple[str, ...], AbstractSet[Tuple[str, ...]]]) \
-        -> Union[Tuple[str, ...], Set[Tuple[str, ...]]]:
+def normalize_circular_path(path: Tuple[str, ...]) -> Tuple[str, ...]:
     """Returns a normalized version of a `circular path` represented as
-    a tuple or - if called with a set of paths instead of a single path
-    - a set of normalized paths.
+    a tuple.
 
     A circular (or "recursive") path is a tuple of items, the order of which
     matters, but not the starting point. This can, for example, be a tuple of
@@ -426,18 +514,26 @@ def normalize_circular_path(path: Union[Tuple[str, ...], AbstractSet[Tuple[str, 
     definition of a factor includes a (bracketed) expression and thus
     refers back to `expression`
     Normalizing is done by "ring-shifting" the tuple so that it starts
-    with the alphabetically first symbol in the path.
+    with the alphabetically first symbol in the path::
 
-    >>> normalize_circular_path(('term', 'factor', 'expression'))
-    ('expression', 'term', 'factor')
+        >>> normalize_circular_path(('term', 'factor', 'expression'))
+        ('expression', 'term', 'factor')
+    """
+    assert isinstance(path, Tuple)
+    first_sym = min(path)
+    i = path.index(first_sym)
+    return path[i:] + path[:i]
+
+
+def normalize_circular_paths(path: Union[Tuple[str, ...], AbstractSet[Tuple[str, ...]]]) \
+        -> Union[Tuple[str, ...], MutableSet[Tuple[str, ...]], MutableSet]:
+    """Like :py:func:`normalize_circular_path`, but normalizes a whole set of
+    paths at once.
     """
     if isinstance(path, AbstractSet):
         return {normalize_circular_path(p) for p in path}
     else:
-        assert isinstance(path, Tuple)
-        first_sym = min(path)
-        i = path.index(first_sym)
-        return path[i:] + path[:i]
+        return normalize_circular_path(path)
 
 
 #######################################################################
@@ -447,17 +543,128 @@ def normalize_circular_path(path: Union[Tuple[str, ...], AbstractSet[Tuple[str, 
 #######################################################################
 
 
-RX_NEVER_MATCH = re.compile(NEVER_MATCH_PATTERN)
-RxPatternType = Any
+class LazyRE:
+    """
+    A lazily-evaluating regular expression. This allows defining as many
+    regular expressions on the top-level as you like without wasting
+    startup-time.
+
+    >>> rx = LazyRE(r'\\w+')
+    >>> rx.match('abc').group(0)
+    'abc'
+    >>> rx.match('!?')
+    """
+
+    def __init__(self, regexp: str, flags = 0):
+        self.regexp = regexp
+        self.re_flags = flags
+        self.rx = None
+
+    def compile_me(self):
+        if self.rx is None:
+            self.rx = re.compile(self.regexp, self.re_flags)
+            self.search = self.rx.search
+            self.match = self.rx.match
+            self.fullmatch = self.rx.fullmatch
+            self.split = self.rx.split
+            self.findall = self.rx.findall
+            self.finditer = self.rx.finditer
+            self.sub = self.rx.sub
+            self.subn = self.rx.subn
+
+    @property
+    def Pattern(self):
+        if self.rx is None:
+            self.rx = re.compile(self.regexp)
+        return self.rx
+
+    @property
+    def pattern(self):
+        if self.rx is None:
+            self.rx = re.compile(self.regexp)
+        return self.rx.pattern
+
+    @property
+    def flags(self):
+        if self.rx is None:
+            self.rx = re.compile(self.regexp)
+        return self.rx.flags
+
+    @property
+    def groups(self):
+        if self.rx is None:
+            self.rx = re.compile(self.regexp)
+        return self.rx.groups
+
+    @property
+    def groupindex(self):
+        if self.rx is None:
+            self.rx = re.compile(self.regexp)
+        return self.rx.groupindex
+
+    def search(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.search(*args, **kwargs)
+
+    def match(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.match(*args, **kwargs)
+
+    def fullmatch(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.fullmatch(*args, **kwargs)
+
+    def split(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.split(*args, **kwargs)
+
+    def findall(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.findall(*args, **kwargs)
+
+    def finditer(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.finditer(*args, **kwargs)
+
+    def sub(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.sub(*args, **kwargs)
+
+    def subn(self, *args, **kwargs):
+        self.compile_me()
+        return self.rx.subn(*args, **kwargs)
 
 
+# RX_NEVER_MATCH = LazyRE(NEVER_MATCH_PATTERN)  # DEPRECATED: moved to parse.py
+try:
+    RxPatternType: TypeAlias = re.Pattern
+except AttributeError:
+    RxPatternType: TypeAlias = Any
+
+
+def subf(rx: Union[RxPatternType, LazyRE], repl: Callable[[str], str], text) -> str:
+    r"""Substitutes a pattern in text with a replacement that is derived
+    from the found matches by a function. Example::
+
+    >>> RX_CTRL_CHARS = re.compile(r'''[\x00-\x08\x0B-\x1F]''')
+    >>> subf(RX_CTRL_CHARS, lambda s: str(ord(s)), '\r')
+    '13'
+    """
+    a = 0
+    chunks = []
+    for m in rx.finditer(text):
+        start = m.start()
+        if a < start:
+            chunks.append(text[a:start])
+        chunks.append(repl(m.group(0)))
+        a = m.end()
+    if a < len(text): chunks.append(text[a:])
+    return ''.join(chunks)
+
+
+@deprecated('find_re() is deprecated. Use re.search() from the Python-Standard-Library, instead!')
 def re_find(s, r, pos=0, endpos=9223372036854775807):
-    """
-    Returns the match of the first occurrence of the regular expression
-    `r` in string (or byte-sequence) `s`. This is essentially a wrapper
-    for `re.finditer()` to avoid a try-catch StopIteration block.
-    If `r` cannot be found, `None` will be returned.
-    """
+    """DEPRECATED! Use re.search() from the Python-Standard-Library!"""
     if isinstance(r, (str, bytes)):
         if (pos, endpos) != (0, 9223372036854775807):
             r = re.compile(r)
@@ -473,13 +680,14 @@ def re_find(s, r, pos=0, endpos=9223372036854775807):
             return m
         except StopIteration:
             return None
+    else:
+        return None
 
 
 @deprecated('escape_re() is deprecated. Use re.escape() from the Python-Standard-Library instead!')
 def escape_re(strg: str) -> str:
     """
     Returns the string with all regular expression special characters escaped.
-    TODO: Remove this function in favor of re.escape()
     """
 
     # assert isinstance(strg, str)
@@ -493,7 +701,7 @@ def escape_re(strg: str) -> str:
 def escape_ctrl_chars(strg: str) -> str:
     r"""
     Replace all control characters (e.g. `\n` `\t`) in a string
-    by their back-slashed representation and replaces backslash by
+    by their backslashed representation and replaces backslash by
     double backslash.
     """
     s = repr(strg.replace('\\', r'\\')).replace('\\\\', '\\')[1:-1]
@@ -543,13 +751,68 @@ def abbreviate_middle(s: str, max_length: int) -> str:
     return s
 
 
+def wrap_str_literal(s: Union[str, List[str]], column: int = 80, offset: int = 0) -> str:
+    r"""Wraps an excessively long string literal over several lines.
+    Example::
+
+        >>> s = '"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"'
+        >>> print(wrap_str_literal(s, 25))
+        "abcdefghijklmnopqrstuvwx"
+        "yzABCDEFGHIJKLMNOPQRSTUVW"
+        "XYZ0123456789"
+        >>> s = 'r"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"'
+        >>> print("Call(" + wrap_str_literal(s, 40, 5) + ")")
+        Call(r"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM"
+             r"NOPQRSTUVWXYZ0123456789")
+        >>> s = 'fr"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"'
+        >>> print("Call(" + wrap_str_literal(s, 40, 5) + ")")
+        Call(fr"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM"
+             fr"NOPQRSTUVWXYZ0123456789")
+        >>> s = ['r"abcde', 'ABCDE"']
+        >>> print(wrap_str_literal(s))
+        r"abcde"
+        r"ABCDE"
+    """
+    if isinstance(s, list):
+        assert len(s) > 0
+        parts = s
+        s = '\n'.join(s)
+    else:
+        parts = None
+    if s[0:1].isalpha():
+        i = 2 if s[1:2].isalpha() else 1
+        r = s[0:i]
+        s = s[i:]
+        if parts is not None:
+            parts[0] = parts[0][i:]
+    else:
+        r = ''
+    q = s[0:1]
+    assert len(s) >= 2 and q == s[-1] and q in ('"', "'", "`", "´"), \
+        "string literal must be enclosed by quotation marks"
+    if parts is None:
+        parts = [s[i: i + column] for i in range(0, len(s), column)]
+        for i in range(len(parts) - 1):
+            p = parts[i]
+            k = 1
+            while k <= len(p) and p[-k] == '\\':
+                k += 1
+            k -= 1
+            if k > 0:
+                parts[i] = p[:-k]
+                parts[i + 1] = p[-k:] + parts[i + 1]
+    if r:  parts[0] = r + parts[0]
+    wrapped = (''.join([q, '\n', ' ' * offset, r, q])).join(parts)
+    return wrapped
+
+
 @cython.locals(wrap_column=cython.int, tolerance=cython.int, a=cython.int, i=cython.int, k=cython.int, m=cython.int)
 def wrap_str_nicely(s: str, wrap_column: int = 79, tolerance: int = 24,
                     wrap_chars: str = ")]>, ") -> str:
     r"""Line-wraps a single-line output string at 'wrap_column'. Tries to
-    find a suitable point for wrapping, i.e. after any of the wrap_characters.
+    find a suitable point for wrapping, i.e., after any of the wrap_characters.
 
-    If the strings spans multiple lines, the existing linebreaks will be kept
+    If the strings span multiple lines, the existing linebreaks will be kept
     and no rewrapping takes place. In order to enforce rewrapping of multiline
     strings, use: ``wrap_str_nicely(repr(s)[1:-1])``. (repr() replaces
     linebreaks by the \\n-marker. The slicing [1:-1] removes the opening
@@ -602,7 +865,6 @@ def wrap_str_nicely(s: str, wrap_column: int = 79, tolerance: int = 24,
             if i - m > tolerance // 2:
                 continue
             k = s.rfind(ch, a, m)
-            probe = s[k + 1]
             while k < i and s[k + 1] in wrap_chars and s[k + 1] != ' ':  k += 1
             if i - k <= tolerance:
                 parts.append(s[a:k + 1])
@@ -638,18 +900,18 @@ def escape_formatstr(s: str) -> str:
     return s
 
 
-RX_IDENTIFIER = re.compile(r'\w+')
-RX_NON_IDENTIFIER = re.compile(r'\W+')
+RX_IDENTIFIER = LazyRE(r'\w+')
+RX_NON_IDENTIFIER = LazyRE(r'\W+')
 
 
 @cython.locals(i=cython.int, delta=cython.int)
 def as_identifier(s: str, replacement: str = "_") -> str:
     r"""Converts a string to an identifier that matches /\w+/ by
     substituting any character not matching /\w/ with the given
-    replacement string:
+    replacement string::
 
-    >>> as_identifier('EBNF-m')
-    'EBNF_m'
+        >>> as_identifier('EBNF-m')
+        'EBNF_m'
     """
     ident = []
     i = 0
@@ -669,29 +931,67 @@ def as_identifier(s: str, replacement: str = "_") -> str:
 
 
 NOPE = []  # a list that is empty and is supposed to remain empty
+INFINITE = 2**30  # a practically infinite value
+
+_RX_CHARSET = LazyRE(r'(?<=\[)(?:(?<!\\)(?:\\\\)*\\\]|[^\]])*(?=\])')
+_RX_ESCAPED_ROUND_BRACKET = LazyRE(r'(?<!\\)(?:\\\\)*\\[()]')
+_RX_ESCAPED_SQUARE_BRACKET = LazyRE(r'(?<!\\)(?:\\\\)*\\[\[\]]')
+
+
+def _sub_size(rx: Union[RxPatternType, LazyRE], text: str, fill_char: str = ' ') -> str:
+    """Substitutes matches of a regular expression with a fill-string
+    of the same size. Example::
+
+        >>> _RX_CHARSET = re.compile(r'(?<=\\[)(?:(?:\\\\)*\\\\]|[^\\]])*(?=\\])')
+        >>> _sub_size(_RX_CHARSET, r'([^\\d()]*(?=[\\d\\](]))')
+        '([     ]*(?=[     ]))'
+    """
+    assert len(fill_char) == 1
+    return subf(rx, lambda ms: len(ms) * fill_char, text)
+    # a = 0
+    # chunks = []
+    # for m in rx.finditer(text):
+    #     start = m.start()
+    #     end = m.end()
+    #     if a < start:
+    #         chunks.append(text[a:start])
+    #     chunks.append(fill_char * (end - start))
+    #     a = end
+    # if a < len(text): chunks.append(text[a:])
+    # return ''.join(chunks)
 
 
 @cython.locals(da=cython.int, db=cython.int, a=cython.int, b=cython.int)
 def matching_brackets(text: str,
                       openB: str,
                       closeB: str,
-                      unmatched: list = NOPE) -> List[Tuple[int, int]]:
+                      unmatched: list = NOPE,
+                      is_regex: bool=False) -> List[Tuple[int, int]]:
     """Returns a list of matching bracket positions. Fills an empty list
     passed to parameter `unmatched` with the positions of all
-    unmatched brackets.
+    unmatched brackets. If rx is True, escaped brackets and brackets inside
+    charsets will be ignored. In other words, only brackets that are
+    control-characters of the regular expression will be considered.
+    Examples::
 
-    >>> matching_brackets('(a(b)c)', '(', ')')
-    [(2, 4), (0, 6)]
-    >>> matching_brackets('(a)b(c)', '(', ')')
-    [(0, 2), (4, 6)]
-    >>> unmatched = []
-    >>> matching_brackets('ab(c', '(', ')', unmatched)
-    []
-    >>> unmatched
-    [2]
+        >>> matching_brackets('(a(b)c)', '(', ')')
+        [(2, 4), (0, 6)]
+        >>> matching_brackets('(a)b(c)', '(', ')')
+        [(0, 2), (4, 6)]
+        >>> unmatched = []
+        >>> matching_brackets('ab(c', '(', ')', unmatched)
+        []
+        >>> unmatched
+        [2]
+        >>> matching_brackets(r'([^\\d()]*(?=[\\d(]))', '(', ')', is_regex=True)
+        [(9, 17), (0, 18)]
     """
     assert not unmatched, \
         "Please pass an empty list as unmatched flag, not: " + str(unmatched)
+    if is_regex:
+        text = _sub_size(_RX_CHARSET, text)
+        text = _sub_size(_RX_ESCAPED_ROUND_BRACKET, text)
+        text = _sub_size(_RX_ESCAPED_SQUARE_BRACKET, text)
     stack, matches = [], []
     da = len(openB)
     db = len(closeB)
@@ -722,14 +1022,14 @@ def matching_brackets(text: str,
 
 
 # see definition of EntityRef in: XML-grammar: XML-grammar, see https://www.w3.org/TR/xml/
-RX_ENTITY = re.compile(r'&(?:_|:|[A-Z]|[a-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]'
-                       r'|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]'
-                       r'|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]'
-                       r'|[\U00010000-\U000EFFFF])(?:_|:|-|\.|[A-Z]|[a-z]|[0-9]|\u00B7'
-                       r'|[\u0300-\u036F]|[\u203F-\u2040]|[\u00C0-\u00D6]|[\u00D8-\u00F6]'
-                       r'|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]'
-                       r'|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]'
-                       r'|[\uFDF0-\uFFFD]|[\U00010000-\U000EFFFF])*;')
+RX_ENTITY = LazyRE(r'&(?:_|:|[A-Z]|[a-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]'
+                   r'|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]'
+                   r'|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]'
+                   r'|[\U00010000-\U000EFFFF])(?:_|:|-|\.|[A-Z]|[a-z]|[0-9]|\u00B7'
+                   r'|[\u0300-\u036F]|[\u203F-\u2040]|[\u00C0-\u00D6]|[\u00D8-\u00F6]'
+                   r'|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]'
+                   r'|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]'
+                   r'|[\uFDF0-\uFFFD]|[\U00010000-\U000EFFFF])*;')
 
 
 def validate_XML_attribute_value(value: Any) -> str:
@@ -757,7 +1057,7 @@ def validate_XML_attribute_value(value: Any) -> str:
 
 def fix_XML_attribute_value(value: Any) -> str:
     """Returns the quoted XML-attribute value. In case the values
-    contains illegal characters, like '<', these will be replaced by
+    contain illegal characters, like '<', these will be replaced by
     XML-entities."""
     value = str(value)
     value = value.replace('<', '&lt;')
@@ -776,20 +1076,60 @@ def fix_XML_attribute_value(value: Any) -> str:
     return value
 
 
-RX_NON_ASCII = re.compile(r'[^\U00000000-\U000000FF]')
+RX_NON_ASCII = LazyRE(r'[^\U00000000-\U000000FF]')
 
 
 def lxml_XML_attribute_value(value: Any) -> str:
     """Makes sure that the attribute value works with the lxml-library,
     at the cost of replacing all characters with a code > 256 by
-    a quesiton mark.
+    a question mark.
 
-    :param value: the original attribute value
-    :return: the quoted and lxml-compatible attribute value.
+    :param value: The original attribute value.
+    :return: The quoted and lxml-compatible attribute value.
     """
     value = str(value)
     value = RX_NON_ASCII.sub('?', value)
     return fix_XML_attribute_value(value)
+
+
+def xml_entity(unicode_ch) -> str:
+    r"""Converts a Unicode character to an XML entity."""
+    o = ord(unicode_ch)
+    if o < 256:
+        return f'&#x{o:02x};'
+    elif o < 65536:
+        return f'&#x{o:04x};'
+    else:
+        assert o < 2**32 -1
+        return f'&#x{o:08x};'
+
+
+def char_code(unicode_ch) -> str:
+    r"""Converts a Unicode character to an XML entity."""
+    o = ord(unicode_ch)
+    if o < 256:
+        return f'\\x{o:02x}'
+    elif o < 65536:
+        return f'\\x{o:04x}'
+    else:
+        assert o < 2**32 -1
+        return f'\\x{o:08x}'
+
+
+def ascii_xml_entity(ch) -> str:
+    r"""Converts a character to an XML entity. Example::
+
+    >>> print(ascii_xml_entity('\r'))
+    &#x0d;"""
+    return f'&#x{ord(ch):02x};'
+
+
+def ascii_char_code(ch) -> str:
+    r"""Converts a character with ord(ch) < 256 to char-code. Example::
+
+    >>> print(ascii_char_code('a'))
+    \x61"""
+    return f'\\x{ord(ch):02x}'
 
 
 #######################################################################
@@ -802,7 +1142,7 @@ def lxml_XML_attribute_value(value: Any) -> str:
 def issubtype(sub_type, base_type) -> bool:
     """Returns `True` if sub_type is a subtype of `base_type`.
     WARNING: Implementation is somewhat "hackish" and might break
-    with new Python-versions.
+    with new Python versions.
     """
     def origin(t) -> tuple:
         def fix(t: Any) -> Any:
@@ -844,14 +1184,14 @@ def isgenerictype(t):
 #######################################################################
 
 
-RX_FILEPATH = re.compile(r'[^ \t][^\n\t?*=]+(?<![ \t])')  # r'[\w/:. \\]+'
+RX_FILEPATH = LazyRE(r'[^ \t][^\n\t?*=]+(?<![ \t])')  # r'[\w/:. \\]+'
 
 
 def load_if_file(text_or_file) -> str:
     """
-    Reads and returns content of a text-file if parameter
-    `text_or_file` is a file name (i.e. a single line string),
-    otherwise (i.e. if `text_or_file` is a multi-line string)
+    Reads and returns the content of a text-file if parameter
+    `text_or_file` is a file name (i.e., a single line string),
+    otherwise (i.e., if `text_or_file` is a multi-line string)
     `text_or_file` is returned.
     """
 
@@ -863,14 +1203,92 @@ def load_if_file(text_or_file) -> str:
         except FileNotFoundError:
             if RX_FILEPATH.fullmatch(text_or_file):
                 raise FileNotFoundError(
-                    'File not found or not a valid filepath or URL: "%s".\n' 
-                    '(If "%s" was not meant to be a file name then, please, add '
-                    'an empty line to distinguish source data from a file name.)'
+                    'File not found or not a valid filepath or URL: "%s".\n'
+                    '(If "%s" was NOT meant to be a file name then, add a byte-order mark '
+                    r'to the beginning of the string "\ufeff" for disambiguation, e.g. '
+                    r'source_snippet = "\ufeff" + source_snippet)'
                     % (text_or_file, text_or_file))
             else:
                 return text_or_file
+        except UnicodeDecodeError as e:
+            e.add_note(
+                f'The file "{text_or_file}" could not be read. '
+                'Please check that the file is not corrupted.')
+            raise
     else:
         return text_or_file
+
+
+DeserializeFunc: TypeAlias = Union[Callable[[str], Any], functools.partial]
+
+
+def cached_load(file_name: str, deserialize: DeserializeFunc, cachedir: str = "~/.cache") -> Any:
+    """
+    Loads and deserializes a file into a python-object. The Python object will
+    be pickled and written to "cachedir". If a pickled version already exists,
+    the same file will not be deserialized again, but the pickled version will be loaded.
+    If cachedir == "", the pickled version will always be preferred, even if the
+    original file has been updated. In this case, in order to invalidate the cache,
+    the pickled version must be deleted manually.
+    Otherwise, and this includes the case cachedir == ".", a hash value is used
+    to check whether the original file has been updated, in which case, the
+    source-file will be loaded and deserialized anew.
+
+    :param file_name: The name of the file to load.
+    :param deserialize: The function to deserialize the content of the file.
+    :param cachedir: The directory to cache the pickled version in.
+    :returns: The deserialized python object.
+    """
+    import pickle, typing
+    if os.path.sep == "/": cachedir = cachedir.replace('\\', os.path.sep)
+    else: cachedir = cachedir.replace('/', os.path.sep)
+    if cachedir:
+        cachedir = os.path.realpath(os.path.expanduser(cachedir))
+        appname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+        cachedir = os.path.join(cachedir, appname)
+        os.makedirs(cachedir, exist_ok=True)
+    name = os.path.splitext(os.path.basename(file_name))[0]
+    cache_name = os.path.join(cachedir, name + '.pickled')
+    source: Optional[str] = None
+    if os.path.isfile(cache_name):
+        try:
+            with open(cache_name, 'rb') as f:
+                hash_data, data = pickle.load(f)
+            if cachedir:
+                with open(file_name, 'r', encoding='utf-8') as f:
+                    source = f.read()
+                if hash_data == hash(source):
+                    return data
+            else:
+                return data
+        except pickle.UnpicklingError as e:
+            print(f'{e} encountered while loading data from cache "{cache_name}"!'
+                  f'If this error persists, then delete the cache file "{cache_name}" manually.')
+    if source is None:
+        with open(file_name, 'r', encoding='utf-8') as f:
+            source = f.read()
+    data = deserialize(typing.cast(str, source))
+    with open(cache_name, 'wb') as f:
+        pickle.dump((hash(source), data), f)
+    return data
+
+
+def clear_from_cache(file_name: str, cachedir: str = "~/.cache"):
+    """Removes the cached version of `file_name` from the cache.
+    (See :py:func:`cached_load`)
+    """
+    if os.path.sep == "/": cachedir = cachedir.replace('\\', os.path.sep)
+    else: cachedir = cachedir.replace('/', os.path.sep)
+    appname = ""
+    if cachedir:
+        cachedir = os.path.realpath(os.path.expanduser(cachedir))
+        appname = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+        cachedir = os.path.join(cachedir, appname)
+    name = os.path.splitext(os.path.basename(file_name))[0]
+    cache_name = os.path.join(cachedir, name + '.pickled')
+    os.remove(cache_name)
+    if appname and not os.listdir(cachedir):
+        os.rmdir(cachedir)
 
 
 def is_python_code(text_or_file: str) -> bool:
@@ -881,6 +1299,7 @@ def is_python_code(text_or_file: str) -> bool:
     if is_filename(text_or_file):
         return text_or_file[-3:].lower() == '.py'
     try:
+        import ast
         ast.parse(text_or_file)
         return True
     except (SyntaxError, ValueError, OverflowError):
@@ -923,9 +1342,9 @@ def has_fenced_code(text_or_file: str, info_strings=('ebnf', 'test')) -> bool:
 def md5(*txt):
     """
     Returns the md5-checksum for `txt`. This can be used to test if
-    some piece of text, for example a grammar source file, has changed.
+    some piece of text, for example, a grammar source file, has changed.
     """
-
+    import hashlib
     md5_hash = hashlib.md5()
     for t in txt:
         md5_hash.update(t.encode('utf8'))
@@ -971,7 +1390,7 @@ def compile_python_object(python_src: str, catch_obj="DSLGrammar") -> Any:
 @functools.lru_cache()
 def linebreaks(text: Union[StringView, str]) -> List[int]:
     """
-    Returns a list of indices all line breaks in the text.
+    Returns a list of the indices of all line breaks in the text.
     """
     assert isinstance(text, (StringView, str)), \
         "Type %s of `text` is not a string type!" % str(type(text))
@@ -994,6 +1413,7 @@ def line_col(lbreaks: List[int], pos: cython.int) -> Tuple[cython.int, cython.in
         return 0, pos
     if pos < 0 or pos > lbreaks[-1]:  # one character behind EOF is still an allowed position!
         raise ValueError('Position %i outside text of length %s !' % (pos, lbreaks[-1]))
+    import bisect
     line = bisect.bisect_left(lbreaks, pos)
     column = pos - lbreaks[line - 1]
     return line, column
@@ -1031,34 +1451,38 @@ def text_pos(text: Union[StringView, str],
 # def smart_list(arg: Union[str, Iterable[T]]) -> Union[Sequence[str], Sequence[T]]:
 def smart_list(arg: Union[str, Iterable, Any]) -> Union[Sequence, Set]:
     """
-    Returns the argument as list, depending on its type and content.
+    Returns the argument as a list, depending on its type and content.
 
     If the argument is a string, it will be interpreted as a list of
     comma separated values, trying ';', ',', ' ' as possible delimiters
-    in this order, e.g.
-    >>> smart_list('1; 2, 3; 4')
-    ['1', '2, 3', '4']
-    >>> smart_list('2, 3')
-    ['2', '3']
-    >>> smart_list('a b cd')
-    ['a', 'b', 'cd']
+    in this order, e.g.::
+
+        >>> smart_list('1; 2, 3; 4')
+        ['1', '2, 3', '4']
+        >>> smart_list('2, 3')
+        ['2', '3']
+        >>> smart_list('a b cd')
+        ['a', 'b', 'cd']
 
     If the argument is a collection other than a string, it will be
-    returned as is, e.g.
-    >>> smart_list((1, 2, 3))
-    (1, 2, 3)
-    >>> smart_list({1, 2, 3})
-    {1, 2, 3}
+    returned as is, e.g.::
+
+        >>> smart_list((1, 2, 3))
+        (1, 2, 3)
+        >>> smart_list({1, 2, 3})
+        {1, 2, 3}
 
     If the argument is another iterable than a collection, it will
-    be converted into a list, e.g.
-    >>> smart_list(i for i in {1,2,3})
-    [1, 2, 3]
+    be converted into a list, e.g.::
+
+        >>> smart_list(i for i in {1,2,3})
+        [1, 2, 3]
 
     Finally, if none of the above is true, the argument will be
-    wrapped in a list and returned, e.g.
-    >>> smart_list(125)
-    [125]
+    wrapped in a list and returned, e.g.::
+
+        >>> smart_list(125)
+        [125]
     """
 
     if isinstance(arg, str):
@@ -1097,6 +1521,8 @@ def expand_table(compact_table: Dict) -> Dict:
     return expanded_table
 
 
+
+
 #######################################################################
 #
 # JSON RPC support
@@ -1111,7 +1537,7 @@ JSON_Dict: TypeAlias = Dict[str, JSON_Type]
 class JSONstr:
     """
     JSONStr is a special type that encapsulates already serialized
-    json-chunks in json object-trees. ``json_dumps`` will insert the content
+    JSON chunks in JSON object-trees. ``json_dumps`` will insert the content
     of a JSONStr-object literally, rather than serializing it as other
     objects.
     """
@@ -1126,7 +1552,7 @@ class JSONstr:
 
 
 class JSONnull:
-    """JSONnull is a special type that is serialized as ``null`` by ``json_dumps``.
+    """JSONnull is a special type serialized as ``null`` by ``json_dumps``.
     This can be used whenever it is inconvenient to use ``None`` as the null-value.
     """
     __slots__ = []
@@ -1137,7 +1563,7 @@ class JSONnull:
 
 # the following string-escaping tables and procedures have been
 # copy-pasted and slightly adapted from the std-library
-ESCAPE = re.compile(r'[\x00-\x1f\\"\b\f\n\r\t]')
+ESCAPE = LazyRE(r'[\x00-\x1f\\"\b\f\n\r\t]')
 ESCAPE_DCT = {'\\': '\\\\', '"': '\\"', '\x08': '\\b', '\x0c': '\\f', '\n': '\\n', '\r': '\\r',
               '\t': '\\t', '\x00': '\\u0000', '\x01': '\\u0001', '\x02': '\\u0002',
               '\x03': '\\u0003', '\x04': '\\u0004', '\x05': '\\u0005', '\x06': '\\u0006',
@@ -1154,9 +1580,9 @@ def json_encode_string(s: str) -> str:
 
 def json_dumps(obj: JSON_Type, *, cls=json.JSONEncoder, partially_serialized: bool = False) -> str:
     """Returns json-object as string. Other than the standard-library's
-    `json.dumps()`-function `json_dumps` allows to include alrady serialzed
+    `json.dumps()`-function `json_dumps` allows including already serialzed
     parts (in the form of JSONStr-objects) in the json-object. Example::
-        
+
         >>> already_serialized = '{"width":640,"height":400"}'
         >>> literal = JSONstr(already_serialized)
         >>> json_obj = {"jsonrpc": "2.0", "method": "report_size", "params": literal, "id": None}
@@ -1165,7 +1591,7 @@ def json_dumps(obj: JSON_Type, *, cls=json.JSONEncoder, partially_serialized: bo
 
     :param obj: A json-object (or a tree of json-objects) to be serialized
     :param cls: The class of a custom json-encoder berived from ``json.JSONEncoder``
-    :param partially_serialized: If True, :py:class:`JSONStr`-objects within the json tree
+    :param partially_serialized: If True, :py:class:`JSONStr`-objects within the JSON tree
         will be encoded (by inserting their content). If False, :py:class:`JSONStr`-objects
         will raise a TypeError, but encoding will be faster.
     :return: The string-serialized form of the json-object.
@@ -1248,10 +1674,10 @@ def json_dumps(obj: JSON_Type, *, cls=json.JSONEncoder, partially_serialized: bo
         return ''.join(serialize(obj))
     else:
         class MyEncoder(json.JSONEncoder):
-            def default(self, obj):
-                if obj is JSONnull or isinstance(obj, JSONnull):
+            def default(self, o):
+                if o is JSONnull or isinstance(o, JSONnull):
                     return None
-                return cls.default(self, obj)
+                return cls.default(self, o)
         return json.dumps(obj, cls=MyEncoder, indent=None, separators=(',', ':'))
 
 
@@ -1260,10 +1686,10 @@ def json_rpc(method: str,
              ID: Optional[int] = None,
              partially_serialized: bool = True) -> str:
     """Generates a JSON-RPC-call string for `method` with parameters `params`.
-    
+
     :param method: The name of the rpc-function that shall be called
     :param params: A json-object representing the parameters of the call
-    :param ID: An ID for the json-rpc-call or `None` 
+    :param ID: An ID for the json-rpc-call or `None`
     :param partially_serialized: If True, the `params`-object may contain
         already serialized parts in form of `JSONStr`-objects.
         If False, any `JSONStr`-objects will lead to a TypeError.
@@ -1276,9 +1702,10 @@ def json_rpc(method: str,
 
 
 def pp_json(obj: JSON_Type, *, cls=json.JSONEncoder) -> str:
-    """Returns json-object as pretty-printed string. Other than the standard-library's
-    `json.dumps()`-function `pp_json` allows to include already serialized
-    parts (in the form of JSONStr-objects) in the json-object. Example::
+    """Returns the JSON object as a pretty-printed string. Other than the
+    standard-library's `json.dumps()`-function `pp_json` allows including
+    already serialized parts (in the form of JSONStr-objects) in the json-object.
+    Example::
 
         >>> already_serialized = '{"width":640,"height":400"}'
         >>> literal = JSONstr(already_serialized)
@@ -1352,7 +1779,7 @@ def pp_json(obj: JSON_Type, *, cls=json.JSONEncoder) -> str:
 
 def pp_json_str(jsons: str) -> str:
     """Pretty-prints and already serialized (but possibly ugly-printed)
-    json object in a well-readable form. Syntactic sugar for:
+    JSON object in a well-readable form. Syntactic sugar for:
     `pp_json(json.loads(jsons))`."""
     return pp_json(json.loads(jsons))
 
@@ -1363,7 +1790,7 @@ def pp_json_str(jsons: str) -> str:
 #
 #######################################################################
 
-class SingleThreadExecutor(concurrent.futures.Executor):
+class SingleThreadExecutor:
     r"""SingleThreadExecutor is a replacement for
     concurrent.future.ProcessPoolExecutor and
     concurrent.future.ThreadPoolExecutor that executes any submitted
@@ -1376,9 +1803,10 @@ class SingleThreadExecutor(concurrent.futures.Executor):
     relies on the submit()- or map()-method of executors to return quickly.
     """
 
-    def submit(self, fn, *args, **kwargs) -> concurrent.futures.Future:
+    def submit(self, fn, *args, **kwargs):  # -> concurrent.futures.Future:
         """Run function "fn" with the given args and kwargs synchronously
         without multithreading or multiprocessing."""
+        import concurrent.futures
         future = concurrent.futures.Future()
         try:
             result = fn(*args, **kwargs)
@@ -1387,10 +1815,23 @@ class SingleThreadExecutor(concurrent.futures.Executor):
             future.set_exception(e)
         return future
 
+    def map(self, fn, *iterables, timeout=None, chunksize=1):
+        return map(fn, *iterables)
+
+    def shutdown(self, wait=True, *, cancel_futures=False):
+        pass
+
+    # context-manager
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        return None
+
 
 @functools.lru_cache(None)
 def multiprocessing_broken() -> str:
-    """Returns an error message, if, for any reason multiprocessing is not safe
+    """Returns an error message, if, for any reason, multiprocessing is not safe
     to be used. For example, multiprocessing does not work with
     PyInstaller (under Windows) or GraalVM.
     """
@@ -1401,30 +1842,256 @@ def multiprocessing_broken() -> str:
     return ""
 
 
+class InterpreterEventShim:
+    def __init__(self):
+        from concurrent.interpreters import create_queue
+        self.queue = create_queue()
+
+    def is_set(self):
+        return self.queue.qsize() > 0
+
+    def set(self):
+        if self.queue.qsize() == 0:
+            self.queue.put_nowait(1)
+
+    def clear(self):
+        while self.queue.qsize() > 0:
+            _ = self.queue.get_nowait()
+            self.queue.task_done()
+
+    def wait(self, timeout=None):
+        if self.is_set():
+            return True
+        import queue
+        try:
+            _ = self.queue.get(block=True, timeout=timeout)
+        except queue.Empty:
+            return False
+        self.queue.task_done()
+        if not self.is_set():
+            self.set()
+        return True
+
+
+class ManagerShim:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        pass
+
+    def start(self):
+        pass
+
+    def shutdown(self):
+        pass
+
+
+class ThreadingManagerShim(ManagerShim):
+    def Event(self):
+        import threading
+        return threading.Event()
+
+    def Queue(self):
+        import queue
+        return queue.Queue()
+
+
+class InterpreterManagerShim(ManagerShim):
+    def Event(self):
+        return InterpreterEventShim()
+
+    def Queue(self):
+        from concurrent.interpreters import create_queue
+        return create_queue()
+
+
+def eval_debug_parallel_execution() -> str:
+    mode = get_config_value('debug_parallel_execution')  # type: str
+    if mode == "commandline":
+        options = [arg for arg in sys.argv if arg[:2] == '--']
+        if '--singlethread' in options:
+            return "singlethread"
+        elif '--multithreading' in options:
+            return "multithreading"
+        else:
+            return "multicore"
+    elif mode == "singlethread":
+        return "singlethread"
+    elif mode == "multithreading" or (mode in ('multicore', 'multiprocessing')
+                                      and multiprocessing_broken()):
+        return "multithreading"
+    else:
+        assert mode in ('multicore', 'multiprocessing')
+        if mode == "multiprocessing":
+            print('Value "multiprocessing" for config-variable "debug_parallel_execution"'
+                  ' is deprecated. Please, use "multicore", instead!')
+        return "multicore"
+
+
+def MultiCoreManager():
+    mode = eval_debug_parallel_execution()
+    if mode == 'multicore':
+        if sys.version_info >= (3, 14, 0) \
+                and CONFIG_PRESET['multicore_pool'] == 'InterpreterPool':
+            return InterpreterManagerShim()
+        else:
+            import multiprocessing
+            return multiprocessing.Manager()
+    else:
+        return ThreadingManagerShim()
+
+
+
+# def unpickle_result(result):
+#     import pickle
+#     try:
+#         return pickle.loads(result)
+#     except (TypeError, pickle.UnpicklingError):
+#         return result
+#
+#
+# class FutureWrapper:
+#     def __init__(self, future):
+#         self.future = future
+#
+#     def cancel(self):
+#         return self.future.cancel()
+#
+#     def cancelled(self):
+#         return self.future.cancelled()
+#
+#     def running(self):
+#         return self.future.running()
+#
+#     def done(self):
+#         return self.future.done()
+#
+#     def result(self, timeout=None):
+#         result = self.future.result(timeout)
+#         return unpickle_result(result)
+#
+#     def execption(self, timeout=None):
+#         return self.future.exception(timeout)
+#
+#     def add_done_callback(self, fn):
+#         pass # TODO: Wrap fn
+#
+#
+# def pickled_return(f):
+#     import pickle  # , functools
+#     # @functools.wraps(f)
+#     def wrapper(*args, **kwargs):
+#         result = f(*args, **kwargs)
+#         return pickle.dumps(result)
+#     return wrapper
+#
+#
+# class InterpreterPoolWrapper:
+#     def __init__(self, interpreter_pool_executor):
+#         assert sys.version_info >= (3, 14, 0)
+#         from concurrent.futures import InterpreterPoolExecutor
+#         assert isinstance(interpreter_pool_executor, InterpreterPoolExecutor)
+#         self.pool = interpreter_pool_executor
+#
+#     def __enter__(self):
+#         return self.pool.__enter__()
+#
+#     def __exit__(self, *exc_details):
+#         return self.pool.__exit__(*exc_details)
+#
+#     def submit(self, fn, *args, ** kwargs):
+#         # fn = pickeld_return(fn)  # apply decorator
+#         future = self.pool.submit(fn, *args, **kwargs)
+#         return future
+#         return FutureWrapper(future)
+#
+#     def map(self, fn, *iterables, timeout=None, chunksize=1, buffersize=None):
+#         # fn = pickled_return(fn)
+#         results = self.pool.map(fn, *iterables,
+#                                 timeout=timeout, chunksize=chunksize, buffersize=buffersize)
+#         return (unpickle_result(r) for r in results)
+#
+#     def shutdown(self, wait=True, *, cancel_futures=False):
+#         self.pool.shutdown(wait, cancel_futures=cancel_futures)
+
+
+class PickMultiCoreExecutorShim:
+    def __call__(self):  # -> Type[concurrent.futures.Executor]:
+        """Returns an instance of the most lightweight
+        concurrent.futures.Executor that can make use of all available cpu
+        cores. For Python versions >= 3.14 this is an instance of
+        concurrent.futures.InterpreterPoolExecutor. For older Python-versions
+        an instance of concurrent.futures.ProcessPoolExecutor is returned.
+        """
+        mode = eval_debug_parallel_execution()  # type: str
+        if mode == "commandline":
+            options = [arg for arg in sys.argv if arg[:2] == '--']
+            if '--singlethread' in options:
+                raise AssertionError("--singlethread forbids using a multi-core-executor")
+            elif '--multithreading' in options:
+                raise AssertionError("--multithreating forbids using a multi-core-executor")
+        elif multiprocessing_broken():
+                raise AssertionError("multi-core-executor does not work with PyInstaller")
+        else:
+            assert mode in ('multicore', 'multiprocessing')
+        import concurrent.futures
+        import DHParser.stringview
+        if sys.version_info >= (3, 14, 0) \
+                and CONFIG_PRESET['multicore_pool'] == 'InterpreterPool' \
+                and not getattr(DHParser.stringview, 'cython_optimized', False):
+            return concurrent.futures.InterpreterPoolExecutor()
+        else:
+            return concurrent.futures.ProcessPoolExecutor()
+
+
+PickMultiCoreExecutor = PickMultiCoreExecutorShim()
+
+
 def instantiate_executor(allow_parallel: bool,
-                         preferred_executor: Type[concurrent.futures.Executor],
-                         *args, **kwargs) -> concurrent.futures.Executor:
-    """Instantiates an Executor of a particular type, if the value of the
-    configuration variable 'debug_parallel_execution' allows to do so.
-    Otherwise, a surrogate executor will be returned.
-    If 'allow_parallel` is False, a SingleThreadExecutor will be instantiated,
+                         preferred_executor = PickMultiCoreExecutor,  # : Type[concurrent.futures.Executor],
+                         *args, **kwargs):  # -> concurrent.futures.Executor:
+    """Instantiates an Executor of a particular type.
+
+    If `allow_parallel` is False, a SingleThreadExecutor will be instantiated,
     regardless of the preferred_executor and any configuration values.
+
+    Parallel execution can still be blocked by the configuration variable
+    'debug_parallel_execution'. (The default
+    is to allow full multiprocessing unless a command-line switch was used to
+    trigger a different behavior.) Otherwise, a surrogate executor will be returned.
+
+    :param allow_parallel: If false, a SingeThreadExecutor-object will be returned.
+        If true, it depends on the config value of 'debug_parallel_executor'
+        (see comments in config.py for a detailed explanation)
+    :param preferred_executor: the preferred executor class that is used if the
+        parameter allaw_parallel is true and 'debug_parallel_executor' does not
+        forbid the use of this kind of executor. The unofficial default value
+        is MultiCoreExecutor, which yields a ProcessPoolExecutor for Python
+        versions <= 3.13 and a wrapped InterpreterPoolExecutor for Python
+        versions 3.14 and above.
+    :returns: An executor-object, either an instance of concurrent.futures.Executor
+        or SingleThreadExecutor (see above).
     """
     if allow_parallel:
+        import concurrent.futures
         mode = get_config_value('debug_parallel_execution')  # type: str
         if mode == "commandline":
-            options = [arg for arg in sys.argv if arg[:2] == '--']  # type: List[str]
+            options = [arg for arg in sys.argv if arg[:2] == '--']
             if '--singlethread' in options:  mode = 'singlethread'
             elif '--multithreading' in options:  mode = 'multithreading'
-            else:  mode = 'multiprocessing'
+            else:  mode = 'multicore'
         if mode == "singlethread":
             return SingleThreadExecutor()
-        elif mode == "multithreading" or (mode == "multiprocessing" and multiprocessing_broken()):
-            if issubclass(preferred_executor, concurrent.futures.ProcessPoolExecutor):
+        elif mode == "multithreading" or multiprocessing_broken():
+            if not issubclass(preferred_executor, concurrent.futures.ThreadPoolExecutor):
                 return concurrent.futures.ThreadPoolExecutor(*args, **kwargs)
         else:
-            assert mode == "multiprocessing", \
-                'Config variable "debug_parallel_execution" as illegal value "%s"' % mode
+            assert mode in ("multicore", "multiprocessing"), \
+                f'Config variable "debug_parallel_execution" has illegal value "{mode}"'
+            if mode == "multiprocessing":
+                print('Value "multiprocessing" for config-variable "debug_parallel_execution"'
+                      ' is deprecated. Please, use "multicore", instead!')
         return preferred_executor(*args, **kwargs)
     return SingleThreadExecutor()
 
@@ -1445,7 +2112,7 @@ def cpu_count() -> int:
 
 
 try:
-    if sys.stdout.encoding.upper() != "UTF-8":  # and  platform.system() == "Windows":
+    if sys.stdout.encoding.lower() != "utf-8":  # and  platform.system() == "Windows":
         # make sure that `print()` does not raise an error on
         # non-ASCII characters:
         # sys.stdout = cast(io.TextIOWrapper, codecs.getwriter("utf-8")(cast(

@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,6 @@ from __future__ import annotations
 
 import collections
 import contextlib
-import html
 import os
 from typing import List, Tuple, Union, Optional, Sequence
 
@@ -65,7 +64,7 @@ except ImportError:
     import DHParser.externallibs.shadow_cython as cython
 
 from DHParser.configuration import access_presets, finalize_presets, get_config_value, \
-    set_config_value, get_preset_value, set_preset_value
+    set_config_value, get_preset_value, set_preset_value, is_accessing_presets
 from DHParser.error import Error
 from DHParser.stringview import StringView
 from DHParser.nodetree import Node, FrozenNode, ZOMBIE_TAG, EMPTY_PTYPE
@@ -101,13 +100,19 @@ CallItem: TypeAlias = Tuple[str, int]      # call stack item: (name, location)
 def start_logging(dirname: str = "LOGS"):
     """Turns logging on and sets the log-directory to ``dirname``.
     The log-directory, if it does not already exist, will be created
-    lazily, i.e. only when logging actually starts."""
-    access_presets()
+    lazily, i.e. only when logging actually starts.
+
+    This function should best be called before spawning any subprocesses,
+    otherwise the dirname might not be propagated to the subprocesses."""
+    accessing_presets = is_accessing_presets()
+    if not accessing_presets:
+        access_presets()
     log_dir = os.path.abspath(dirname) if dirname else ''
     if log_dir != get_preset_value('log_dir'):
         set_preset_value('log_dir', log_dir)
-        set_config_value('log_dir', log_dir)
-    finalize_presets()
+        # set_config_value('log_dir', log_dir)
+    if not accessing_presets:
+        finalize_presets()
 
 
 def suspend_logging() -> str:
@@ -139,10 +144,10 @@ def log_dir(path: str = "") -> str:
     as well as the information whether logging is turned on or off will not
     automatically be transferred to any subprocesses. This needs to be done
     explicitly. (See :py:func:`testing.grammar_suite` for an example, how this can
-    be done.
+    be done.)
 
     Parameters:
-        path:   The directory path. If empty, the configured value will be
+        path: The directory path. If empty, the configured value will be
             used, i.e. ``configuration.get_config_value('log_dir')``.
 
     Returns:
@@ -399,6 +404,7 @@ class HistoryRecord:
         """
         Returns history record formatted as an html table row.
         """
+        import html
         stack = html.escape(self.stack).replace(
             '-&gt;', '<span>&shy;-&gt;</span>').replace('<-', '&lt;-')
         status = html.escape(self.status)

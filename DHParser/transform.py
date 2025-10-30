@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,9 +30,8 @@ from __future__ import annotations
 
 import collections.abc
 from functools import partial, singledispatch, reduce
-import inspect
 import operator
-from typing import AbstractSet, ByteString, Callable, cast, Container, Dict, \
+from typing import AbstractSet, Callable, cast, Container, Dict, \
     Tuple, List, Sequence, Union, Optional
 
 try:
@@ -42,18 +41,19 @@ except ImportError:
 
 from DHParser.error import ErrorCode, AST_TRANSFORM_CRASH, ERROR
 from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, LEAF_PTYPES, PLACEHOLDER, \
-    RootNode, parse_sxpr, flatten_sxpr, Path
+    RootNode, parse_sxpr, flatten_sxpr, Path, pp_path
 from DHParser.toolkit import issubtype, isgenerictype, expand_table, smart_list, re, \
-    deprecation_warning, TypeAlias
+    deprecation_warning, TypeAlias, ByteString
 
 
 __all__ = ('TransformationDict',
            'TransformationProc',
            'TransformationTableType',
-           'ConditionFunc',
+           'CondFunc',
            'KeyFunc',
            'TransformerFunc',
            'TransformerCallable',
+           'TransformerFactory',
            'transformation_factory',
            'key_node_name',
            'Filter',
@@ -70,11 +70,13 @@ __all__ = ('TransformationDict',
            'all_of',
            'is_named',
            'update_attr',
+           'update_attr_unless',
            'swap_attributes',
            'replace_by_single_child',
            'replace_by_children',
            'reduce_single_child',
            'replace_or_reduce',
+           'swap_nested_nodes',
            'change_name',
            # 'change_tag_name',
            'replace_child_names',
@@ -89,11 +91,14 @@ __all__ = ('TransformationDict',
            'add_attributes',
            'del_attributes',
            'normalize_whitespace',
+           'fuse_anonymous_leaves',
+           'fuse',
            'merge_adjacent',
            'merge_leaves',
            'merge_connected',
            'merge_results',
            'move_fringes',
+           'pull_up',
            'left_associative',
            'lean_left',
            'apply_if',
@@ -165,7 +170,7 @@ TransformationProc: TypeAlias = Callable[[Path], None]
 TransformationDict: TypeAlias = Dict[str, Union[Callable, Sequence[Callable]]]
 TransformationCache: TypeAlias = Dict[str, Tuple[Sequence[Filter], Sequence[Callable]]]
 TransformationTableType: TypeAlias = Dict[str, Union[Sequence[Callable], TransformationDict]]
-ConditionFunc: TypeAlias = Callable  # Callable[[Path], bool]
+CondFunc: TypeAlias = Callable[[Path], bool]
 KeyFunc: TypeAlias = Callable[[Node], str]
 CriteriaType: TypeAlias = Union[int, str, Callable]
 TransformerFunc: TypeAlias = Union[Callable[[RootNode], RootNode], partial]
@@ -248,6 +253,7 @@ def transformation_factory(t1=None, t2=None, t3=None, t4=None, t5=None):
 
     def decorator(f):
         nonlocal t1
+        import inspect
         sig = inspect.signature(f)
         params = list(sig.parameters.values())[1:]
         if len(params) == 0:
@@ -451,10 +457,19 @@ def traverse(tree: Node,
             try:
                 call(path)
             except Exception as ae:
-                raise AssertionError('An exception occurred when transforming "%s" with %s:\n%s'
-                                     % (key, str(call), ae.__class__.__name__ + ': ' + str(ae)))
+                if isinstance(path[0], RootNode) and path[0].docname:
+                    raise AssertionError(
+                        f'An exepction occured when transforming {pp_path(path, (1, 20))}\n'
+                        f'in document "{path[0].docname}"\nwith {str(call)}:\n'
+                        f'{ae.__class__.__name__}: {ae}')
+                else:
+                    raise AssertionError(
+                        f'An exception occurred when transforming {pp_path(path, (1, 20))}\n'
+                        f'with\n{str(call)}:\n{ae.__class__.__name__}: {ae}')
 
+    for call in table.get('<<<', []):  call([tree])
     traverse_recursive([tree])
+    for call in table.get('>>>', []):  call([tree])
     return tree
     # assert transformation_table['__cache__']
 
@@ -528,7 +543,7 @@ def merge_treetops(node: Node):
 @transformation_factory(dict)
 def traverse_locally(path: Path,
                      transformation_table: dict,  # actually: TransformationTableType
-                     key_func: Callable = key_node_name):  # actually: KeyFunc
+                     key_func: KeyFunc = key_node_name):  # actually: KeyFunc
     """
     Transforms the syntax tree starting from the last node in the path
     according to the given transformation table. The purpose of this function is
@@ -562,7 +577,7 @@ def apply_transformations(path: Path, transformation: Union[Callable, Sequence[C
 @transformation_factory(collections.abc.Callable, tuple)
 def apply_if(path: Path,
              transformation: Union[Callable, Tuple[Callable, ...]],
-             condition: Callable):
+             condition: CondFunc):
     """Applies a transformation only if a certain condition is met."""
     if condition_guard(condition(path)):
         apply_transformations(path, transformation)
@@ -572,7 +587,7 @@ def apply_if(path: Path,
 def apply_ifelse(path: Path,
                  if_transformation: Union[Callable, Tuple[Callable, ...]],
                  else_transformation: Union[Callable, Tuple[Callable, ...]],
-                 condition: Callable):
+                 condition: CondFunc):
     """Applies a one particular transformation if a certain condition is met
     and another transformation otherwise."""
     if condition_guard(condition(path)):
@@ -584,7 +599,7 @@ def apply_ifelse(path: Path,
 @transformation_factory(collections.abc.Callable, tuple)
 def apply_unless(path: Path,
                  transformation: Union[Callable, Tuple[Callable, ...]],
-                 condition: Callable):
+                 condition: CondFunc):
     """Applies a transformation if a certain condition is *not* met."""
     if not condition_guard(condition(path)):
         apply_transformations(path, transformation)
@@ -620,7 +635,7 @@ def any_of(path: Path, bool_func_set: AbstractSet[collections.abc.Callable]) -> 
 
 @transformation_factory(collections.abc.Set)
 def all_of(path: Path, bool_func_set: AbstractSet[collections.abc.Callable]) -> bool:
-    """Returns True, if all of the bool functions in `bool_func_set` evaluate to True
+    """Returns True, if all the bool functions in `bool_func_set` evaluate to True
     for the given path."""
     return all(bf(path) for bf in bool_func_set)
 
@@ -638,13 +653,13 @@ def all_of(path: Path, bool_func_set: AbstractSet[collections.abc.Callable]) -> 
 #######################################################################
 
 @transformation_factory(collections.abc.Callable)
-def three_valued(path: Path, cond_true: Callable, cond_false: Callable) -> Optional[bool]:
+def three_valued(path: Path, cond_true: CondFunc, cond_false: CondFunc) -> Optional[bool]:
     """Returns True, if ``cond_true`` evaluates to True, 
     Returns False, if ``cond_true`` does not evaluate to True but
     cond_false evaluates to True. Returns None, otherwise.
     
     Note that this means that the first parameter has precedence.
-    Expresses as truth-table, this looks like::
+    Expressed as truth-table, this looks like::
 
         T T -> T
         T F -> T
@@ -673,7 +688,7 @@ def is_anonymous(path: Path) -> bool:
     """Returns ``True`` if the current node is anonymous."""
     # return path[-1].anonymous
     tn = path[-1].name
-    return not tn or tn[0] == ':'
+    return not bool(tn) or tn[0] == ':'
 
 
 def is_anonymous_leaf(path: Path) -> bool:
@@ -692,7 +707,7 @@ RX_WHITESPACE = re.compile(r'\s*$')
 def contains_only_whitespace(path: Path) -> bool:
     r"""Returns ``True`` for nodes that contain only whitespace regardless
     of the name, i.e. nodes the content of which matches the regular
-    expression /\s*/, including empty nodes. Note, that this is not true
+    expression /\s*/, including empty nodes. Note that this is not true
     for anonymous whitespace nodes that contain comments."""
     return bool(RX_WHITESPACE.match(path[-1].content))
 
@@ -720,10 +735,22 @@ def is_one_of(path: Path, name_set: AbstractSet[str]) -> bool:
     return path[-1].name in name_set
 
 
+@transformation_factory(str)
+def is_a(path: Path, name: str) -> bool:
+    """Returns True, if path[-1].name == name."""
+    return path[-1].name == name
+
+
 @transformation_factory(collections.abc.Set)
 def not_one_of(path: Path, name_set: AbstractSet[str]) -> bool:
     """Returns true, if the node's name is not one of the given tag names."""
     return path[-1].name not in name_set
+
+
+@transformation_factory(str)
+def not_a(path: Path, name: str) -> bool:
+    """Returns False, if path[-1].name != name."""
+    return path[-1].name != name
 
 
 @transformation_factory(str)
@@ -758,13 +785,19 @@ def has_content(path: Path, content: str) -> bool:
 
 
 @transformation_factory(str)
-def has_attr(path: Path, attr: str, value: Optional[str] = None) -> bool:
+def has_attr(path: Path, attr: str="", value: Optional[str] = None) -> bool:
     """
-    Returns true, if the node has the attribute ``attr`` and its value
+    Returns True, if the node has the attribute ``attr`` and its value
     equals ``value``. If ``value`` is None, True is returned if the attribute
-    exists, no matter what it value is.
+    exists, no matter what its value is.
     """
+    if isinstance(path, Node):
+        raise ValueError('Function DHParser.transform.has_attr() expects a path, not a node! '
+                         'Use method node.has_attr() to check whether a node has attributes '
+                         'or has a particular attribute or a particular attribute value?')
     node = path[-1]
+    if not attr:
+        return node.has_attr()
     if value is None:
         return node.has_attr(attr)
     else:
@@ -782,7 +815,7 @@ def has_ancestor(path: Path,
 
     :param generations: determines how deep `has_ancestor` should dive into
         the ancestry. "1" means only the immediate parents wil be considered,
-        "2" means also the grandparents, ans so on.
+        "2" means also the grandparents, and so on.
         A value smaller or equal zero means all ancestors will be considered.
     :param until: node-names which, when reached, will stop `has_ancestor`
         from searching further, even if the `generations`-parameter would
@@ -812,7 +845,7 @@ def has_parent(path: Path, name_set: AbstractSet[str]) -> bool:
 
 
 def has_children(path: Path) -> bool:
-    """Checks whether last node in path has children."""
+    """Checks whether last node in 'path' has children."""
     return bool(path[-1]._children)
 
 
@@ -820,6 +853,18 @@ def has_children(path: Path) -> bool:
 def has_descendant(path: Path, name_set: AbstractSet[str],
                    generations: int = -1,
                    until: Union[AbstractSet[str], str] = frozenset()) -> bool:
+    """Checks whether a node with one of the given tag names appears somewhere
+    among the descendants (children and children's children etc.)
+    of the last node in the path.
+
+    :param generations: determines how deep `has_descendant` should dive into
+        the descendants. "1" means only the immediate children wil be considered,
+        "2" means also the grandchildren, and so on.
+        A value smaller or equal zero means all ancestors will be considered.
+    :param until: node-names which, when reached, will stop `has_descendant`
+        from searching further, even if the `generations`-parameter would
+        allow a deeper search.
+    """
     assert generations != 0
     if until:
         if isinstance(until, str):  until = {until}
@@ -848,6 +893,8 @@ def has_child(path: Path, name_set: AbstractSet[str]) -> bool:
 
 @transformation_factory(collections.abc.Set)
 def has_sibling(path: Path, name_set: AbstractSet[str]):
+    """Checks whether the last node in the path has a node with one of the
+    given names as sibling."""
     if len(path) >= 2:
         node = path[-1]
         for child in path[-2]._children:
@@ -863,26 +910,27 @@ def has_sibling(path: Path, name_set: AbstractSet[str]):
 #######################################################################
 
 
-def update_attr(dest: Node, src: Union[Node, Tuple[Node, ...]], root: RootNode):
+def update_attr(dest: Node, src: Union[Node, Tuple[Node, ...]], root: Node):
     """
     Adds all attributes from `src` to `dest` and transfers all errors
     from `src` to `dest`. This is needed, in order to keep the attributes
     if the child node is going to be eliminated.
     """
     if isinstance(src, Node):
-        src = (Node,)
+        src = (src,)
     for s in src:
         # update attributes
         if s != dest and hasattr(s, '_attributes'):
             for k, v in s.attr.items():
                 if k in dest.attr and v != dest.attr[k]:
                     raise ValueError('Conflicting attribute values %s and %s for key %s '
-                                     'when reducing %s to %s ! Tree transformation stopped.'
+                                     'when merging or reducing %s to %s ! '
+                                     'Tree transformation stopped.'
                                      % (v, dest.attr[k], k, str(src), str(dest)))
                 dest.attr[k] = v
         # transfer errors
         try:
-            root.transfer_errors(s, dest)
+            cast(RootNode, root).transfer_errors(s, dest)
             # ids = id(s)
             # if ids in root.error_nodes:
             #     root.error_nodes.setdefault(id(dest), []).extend(root.error_nodes[ids])
@@ -890,6 +938,21 @@ def update_attr(dest: Node, src: Union[Node, Tuple[Node, ...]], root: RootNode):
         except AttributeError:
             # root was not of type RootNode, probably a doc-test
             pass
+
+
+def update_attr_unless(dest: Node,
+                       src: Union[Node, Tuple[Node, ...]],
+                       root: Node,
+                       exclude: Optional[CondFunc]):
+    """Like :py:func:`update_attr`, but exclude the attributes from those src nodes for which
+    `unless` is `True`."""
+    if exclude is None:
+        update_attr(dest, src, root)
+    else:
+        if isinstance(src, Node):
+            src = (Node,)
+        src = tuple(s for s in src if not exclude([s]))
+        update_attr(dest, src, root)
 
 
 def swap_attributes(node: Node, other: Node):
@@ -911,7 +974,7 @@ def swap_attributes(node: Node, other: Node):
             other._attributes = None
 
 
-def _replace_by(node: Node, child: Node, root: RootNode):
+def _replace_by(node: Node, child: Node, root: Node):
     """
     Replaces node's contents by child's content including the tag name.
     """
@@ -925,9 +988,14 @@ def _replace_by(node: Node, child: Node, root: RootNode):
     update_attr(node, (child,), root)
 
 
-def _reduce_child(node: Node, child: Node, root: RootNode):
+def _reduce_child(node: Node, child: Node, root: Node):
     """
-    Sets node's results to the child's result, keeping node's name.
+    Sets node's results to the child's result, keeping node's name.Example::
+
+    >>> nested = RootNode(parse_sxpr('(i (span `(style "letter-spacing:.25pt") "m."))'))
+    >>> _reduce_child(nested, nested[0], nested)
+    >>> nested.as_sxpr()
+    '(i `(style "letter-spacing:.25pt") "m.")'
     """
     node._set_result(child._result)
     update_attr(node, (child,), root)
@@ -959,7 +1027,7 @@ def replace_by_single_child(path: Path):
     """
     node = path[-1]
     if len(node._children) == 1:
-        _replace_by(node, node._children[0], cast(RootNode, path[0]))
+        _replace_by(node, node._children[0], path[0])
 
 
 def replace_by_children(path: Path):
@@ -994,11 +1062,11 @@ def reduce_single_child(path: Path):
     """
     node = path[-1]
     if len(node._children) == 1:
-        _reduce_child(node, node._children[0], cast(RootNode, path[0]))
+        _reduce_child(node, node._children[0], path[0])
 
 
 @transformation_factory(collections.abc.Callable)
-def replace_or_reduce(path: Path, condition: Callable = is_named):
+def replace_or_reduce(path: Path, condition: CondFunc = is_named):
     """
     Replaces node by a single child, if condition is True on child.
     Reduces the child, if condition is not True and not None.
@@ -1009,9 +1077,19 @@ def replace_or_reduce(path: Path, condition: Callable = is_named):
         child = node._children[0]
         cond = condition(path)
         if cond:
-            _replace_by(node, child, cast(RootNode, path[0]))
+            _replace_by(node, child, path[0])
         elif cond is not None:
-            _reduce_child(node, child, cast(RootNode, path[0]))
+            _reduce_child(node, child, path[0])
+
+
+def swap_nested_nodes(path: Path):
+    """Swaps the tag-name and attributes with those of
+    a single child. e.g. (A (B "...")) -> (B (A "..."))."""
+    node = path[-1]
+    if len(node.children) == 1:
+        child = node._result[0]
+        child.name, node.name = node.name, child.name
+        swap_attributes(node, child) 
 
 
 @transformation_factory(str)
@@ -1063,7 +1141,7 @@ def replace_tag_names(path: Path, replacements: Dict[str, str]):
 
 
 @transformation_factory(collections.abc.Callable)
-def flatten(path: Path, condition: Callable = is_anonymous, recursive: bool = True):
+def flatten(path: Path, condition: CondFunc = is_anonymous, recursive: bool = True):
     """
     Flattens all children, that fulfill the given ``condition``
     (default: all unnamed children). Flattening means that wherever a
@@ -1092,7 +1170,7 @@ def flatten(path: Path, condition: Callable = is_anonymous, recursive: bool = Tr
                 if recursive:
                     flatten(path, condition, recursive)
                 new_result.extend(child._children)
-                update_attr(node, (child,), cast(RootNode, path[0]))
+                update_attr(node, (child,), path[0])
             else:
                 new_result.append(child)
         path.pop()
@@ -1120,7 +1198,7 @@ MergeRule = Callable[[Sequence[Node]], Node]
 
 
 def join_content(package: Sequence[Node]) -> Node:
-    return Node('joined', "".join(nd.content for nd in package), True)
+    return Node('joined', "".join(nd.content for nd in package), True).with_pos(package[0]._pos)
 
 
 def pick_longest_content(package: Sequence[Node]) -> Node:
@@ -1132,19 +1210,19 @@ def pick_longest_content(package: Sequence[Node]) -> Node:
         if ndL > L:
             longest = content
             L = ndL
-    return Node('joined', longest, True)
+    return Node('joined', longest, True).with_pos(package[0]._pos)
 
 
 def fix_content(fixed_content: str) -> MergeRule:
     def fix(package: Sequence[Node]) -> Node:
         nonlocal fixed_content
-        return Node('joined', fixed_content)
+        return Node('joined', fixed_content).with_pos(package[0]._pos)
     return fix
 
 
 @transformation_factory(collections.abc.Callable)
 def collapse_children_if(path: Path,
-                         condition: Callable,
+                         condition: CondFunc,
                          target_name: str,
                          merge_rule: MergeRule = join_content):
     """
@@ -1164,7 +1242,7 @@ def collapse_children_if(path: Path,
 
     node = path[-1]
     if not node._children:
-        return  # do nothing if its a leaf node
+        return  # do nothing if it is a leaf node
     package = []  # type: List[Node]
     result = []  # type: List[Node]
 
@@ -1181,11 +1259,11 @@ def collapse_children_if(path: Path,
             package = []
 
     for child in node._children:
-        if condition([child]):
+        if condition(path + [child]):
             if child._children:
-                collapse_children_if([child], condition, target_name)
+                collapse_children_if(path + [child], condition, target_name)
                 for c in child._children:
-                    if condition([c]):
+                    if condition(path + [child, c]):
                         package.append(c)
                     else:
                         close_package()
@@ -1200,19 +1278,85 @@ def collapse_children_if(path: Path,
     node.result = tuple(result)
 
 
-@transformation_factory(collections.abc.Callable)
-def merge_adjacent(path: Path, condition: Callable, preferred_name: str = ''):
+def fuse_anonymous_leaves(result: list[Node]) -> list[Node, ...]:
+    """Mereges all anonymous leave nodes and returns a list of the
+    merge nodes, e.g.::
+
+    >>> tree = parse_sxpr('(p (:t "alpha") (:t "beta") (x "zzz") (:y (:t "uuu")) (:t "gamma"))')
+    >>> tree.result = tuple(fuse_anonymous_leaves(list(tree.children)))
+    >>> print(tree.as_sxpr())
+    (p (:t "alphabeta") (x "zzz") (:y (:t "uuu")) (:t "gamma"))
     """
-    Merges adjacent nodes that fulfill the given `condition`. It is
-    assumed that ``condition`` is never true for leaf-nodes and non-leaf-nodes
-    alike. Otherwise, a type-error might ensue!
+    i = 0
+    L = len(result)
+    cuts = []
+    while i < L:
+        nd = result[i]
+        if not nd._children and nd.name[0:1] == ':':  # anonymous leaf node
+            k = i + 1
+            while k < L and not result[k]._children and result[k].name[0:1] == ':':
+                k += 1
+            if k - i > 1:
+                nd.result = ''.join(r._result for r in result[i:k])
+                cuts.append((i + 1, k))
+            i = k
+        else:
+            i += 1
+    if cuts:
+        for a, b in reversed(cuts):
+            del result[a:b]
+    return result
+
+
+def fuse(result: Sequence[Node],
+         swallow: Optional[CondFunc] = None) -> Union[str, Tuple[Node, ...]]:
+    """Merges the nodes in the given sequence of nodes by either
+    merging their content if they are all leaves nodes or their results.
+
+    :param result: The sequence of nodes to merge.
+    :param swallow: A function that takes a node as an argument and
+        returns True if the node should be added as a whole
+        without merging its content.
+        See :py:func:`merge_adjacent for an example`.
+    :returns: The merges result, either a tuple of nodes or a
+        string with the merged content in case all nodes where
+        leave-nodes and no node was "swallowed".
+    """
+    if swallow is not None:
+        if not isinstance(result, list):
+            result = list(result)
+        for i in range(len(result)):
+            if swallow([result[i]]):
+                result[i] = Node(':Swallowed', result[i])
+    if not any(node._children for node in result):
+        return ''.join(nd._result for nd in result)
+    else:
+        new_result = []
+        for nd in result:
+            if nd._children:
+                new_result.extend(nd._children)
+            else:
+                new_result.append(Node(TOKEN_PTYPE, nd._result).with_pos(nd._pos))
+        new_result = fuse_anonymous_leaves(new_result)
+        return tuple(new_result)
+
+
+@transformation_factory(collections.abc.Callable)
+def merge_adjacent(path: Path,
+                   condition: CondFunc,
+                   preferred_name: str = '',
+                   *, swallow: Optional[CondFunc] = None):
+    """
+    Merges adjacent nodes that fulfill the given `condition`. In case,
+    some nodes are leaf-nodes, but others are not, the leaf-nodes' content
+    will be added as TOKEN_PTYPE-Node to the result of the merged node.
 
     The merged node's name will be set to the value ``preferred_name``
     unless that value is the empty string. In this case the name of the
     first node of the merge will be chosen. (Note that the assignment
     of the preferred name only happens if a merge actually took place,
     i.e. if there are at least two nodes that have been merged.
-    `´merge_adjacent()`` will not rename single nodes.)
+    ``merge_adjacent()`` will not rename single nodes.)
 
     'merge_adjacent' differs from :py:func:`collapse_children_if` in
     two respects:
@@ -1223,13 +1367,36 @@ def merge_adjacent(path: Path, condition: Callable, preferred_name: str = ''):
        if it actually occurs among the nodes to be merged.
 
     This, if 'merge_adjacent' is substituted for 'collapse_children_if'
-    in doc-string example of the latter function, the example yields::
+    in the doc-string example of the latter function, the example yields::
 
         >>> sxpr = '(place (abbreviation "p.") (page "26") (superscript "b") (mark ",") (page "18"))'
         >>> tree = parse_sxpr(sxpr)
         >>> merge_adjacent([tree], not_one_of({'superscript', 'subscript'}), '')
         >>> print(flatten_sxpr(tree.as_sxpr()))
         (place (abbreviation "p.26") (superscript "b") (mark ",18"))
+
+    The parameter ``swallow`` takes a function that must yield true
+    for those nodes that shall be swallowed as a whole, i.e. of which
+    the content shall not be merged and which keep their name. This is
+    useful if you'd like to keep certain nodes intact like, for
+    example, internet links, when merging a sequence of nodes, as seen
+    below. Without the swallow-parameter, the link (node named "a") will
+    not be retained in the merged node, but merely its attribute is
+    copied, which may not be what had been intended::
+
+        >>> tree = parse_sxpr('''(p (t "In ") (a `(href "www.munich.de") "München")
+        ...                       (t "steht ") (t "ein ") (t "Hofbräuhaus."))''')
+        >>> import copy;  tree_copy = copy.deepcopy(tree)
+        >>> merge_adjacent([tree], is_one_of('t', 'a'))
+        >>> print(tree.as_sxpr())
+        (p (t `(href "www.munich.de") "In Münchensteht ein Hofbräuhaus."))
+
+    To reatain the link-node, merge_adjacent must be instructed to swallow
+    nodes with the name "a" as a whole::
+
+        >>> merge_adjacent([tree_copy], is_one_of('t', 'a'), swallow=is_a('a'))
+        >>> print(tree_copy.as_sxpr())
+        (p (t (:Text "In ") (a `(href "www.munich.de") "München") (:Text "steht ein Hofbräuhaus.")))
     """
     node = path[-1]
     children = node._children
@@ -1238,20 +1405,21 @@ def merge_adjacent(path: Path, condition: Callable, preferred_name: str = ''):
         i = 0
         L = len(children)
         while i < L:
-            if condition([children[i]]):
-                initial = () if children[i]._children else ''
+            if condition(path + [children[i]]):
+                # initial = () if children[i]._children else ''
                 k = i
                 i += 1
-                while i < L and condition([children[i]]):
+                while i < L and condition(path + [children[i]]):
                     i += 1
                 if i > k:
                     adjacent = children[k:i]
                     head = adjacent[0]
-                    names = {nd.name for nd in adjacent}
-                    head.result = reduce(operator.add, (nd.result for nd in adjacent), initial)
-                    update_attr(head, adjacent[1:], cast(RootNode, path[0]))
-                    if preferred_name and len(adjacent) > 1:  #  in names:
+                    if swallow is not None and swallow([head]):
+                        head = Node(preferred_name or head.name, '').with_pos(head._pos)
+                    elif preferred_name and len(adjacent) > 1:
                         head.name = preferred_name
+                    head.result = fuse(adjacent, swallow)
+                    update_attr_unless(head, adjacent[1:], path[0], swallow)
                     new_result.append(head)
             else:
                 new_result.append(children[i])
@@ -1263,12 +1431,14 @@ merge_leaves = merge_adjacent(is_anonymous_leaf)
 
 
 @transformation_factory(collections.abc.Callable)
-def merge_connected(path: Path, content: Callable, delimiter: Callable,
-                    content_name: str = '', delimiter_name: str = ''):
+def merge_connected(path: Path, content: CondFunc, delimiter: CondFunc,
+                    content_name: str = '', delimiter_name: str = '',
+                    *, swallow: Optional[CondFunc] = None):
     """
     Merges sequences of content and delimiters. Other than `merge_adjacent()`, which
     does not make this distinction, delimiters at the fringe of content blocks are not
-    included in the merge.
+    included in the merge. (Note that other than :py:func:`merge_adjacent` the
+    content name is always assigned to content nodes, but not to delimiters.)
 
     :param path: The path, i.e. list of "ancestor" nodes, ranging from the
         root node (`path[0]`) to the current node (`path[-1]`)
@@ -1281,7 +1451,10 @@ def merge_connected(path: Path, content: Callable, delimiter: Callable,
     identify delimiter nodes must never come true for one and the same node!!!
     """
     # first, merge all delimiters
-    merge_adjacent(path, delimiter, delimiter_name)
+    if swallow is None:
+        merge_adjacent(path, delimiter, delimiter_name)
+    else:
+        merge_adjacent(path, lambda p: delimiter(p) and not swallow(p), delimiter_name)
     node = path[-1]
     children = node._children
     if children:
@@ -1289,22 +1462,23 @@ def merge_connected(path: Path, content: Callable, delimiter: Callable,
         i = 0
         L = len(children)
         while i < L:
-            if content([children[i]]):
-                initial = () if children[i]._children else ''
+            if content(path + [children[i]]):
+                # initial = () if children[i]._children else ''
                 k = i
                 i += 1
-                while i < L and (content([children[i]]) or delimiter([children[i]])):
+                while i < L and (content(path + [children[i]]) or delimiter(path + [children[i]])):
                     i += 1
-                if delimiter([children[i - 1]]):
+                if delimiter(path + [children[i - 1]]):
                     i -= 1
                 if i > k:
                     adjacent = children[k:i]
                     head = adjacent[0]
-                    names = {nd.name for nd in adjacent}
-                    head.result = reduce(operator.add, (nd.result for nd in adjacent), initial)
-                    update_attr(head, adjacent[1:], cast(RootNode, path[0]))
-                    if content_name in names:
+                    if swallow is not None and swallow([head]):
+                        head = Node(content_name, '').with_pos(head._pos)
+                    elif content_name:
                         head.name = content_name
+                    head.result = fuse(adjacent, swallow)  # reduce(operator.add, (nd.result for nd in adjacent), initial)
+                    update_attr_unless(head, adjacent[1:], path[0], swallow)
                     new_result.append(head)
             else:
                 new_result.append(children[i])
@@ -1312,7 +1486,7 @@ def merge_connected(path: Path, content: Callable, delimiter: Callable,
         node._set_result(tuple(new_result))
 
 
-def merge_results(dest: Node, src: Tuple[Node, ...], root: RootNode) -> bool:
+def merge_results(dest: Node, src: Tuple[Node, ...], root: Node) -> bool:
     """
     Merges the results of nodes `src` and writes them to the result
     of `dest` type-safely, if all src nodes are leaf-nodes (in which case
@@ -1329,19 +1503,24 @@ def merge_results(dest: Node, src: Tuple[Node, ...], root: RootNode) -> bool:
         '123456'
     """
     if all(nd._children for nd in src):
-        dest.result = reduce(operator.add, (nd._children for nd in src[1:]), src[0]._children)
+        # dest.result = reduce(operator.add, (nd._children for nd in src[1:]), src[0]._children)
+        result = []
+        for nd in src:
+            result.extend(nd._children)
+        result = fuse_anonymous_leaves(result)
+        dest.result = tuple(result)
         update_attr(dest, src, root)
         return True
-    elif all(not nd._children for nd in src):
-        dest.result = reduce(operator.add, (nd.content for nd in src[1:]), src[0].content)
+    elif not any(nd._children for nd in src):
+        dest.result = ''.join(nd._result for nd in src)  # reduce(operator.add, (nd.content for nd in src[1:]), src[0].content)
         update_attr(dest, src, root)
         return True
     return False
 
-
+# TODO: parameterize to move only left or right fringes!
 @transformation_factory(collections.abc.Callable)
 @cython.locals(a=cython.int, b=cython.int, i=cython.int)
-def move_fringes(path: Path, condition: Callable, merge: bool = True):
+def move_fringes(path: Path, condition: CondFunc, *, side:str = "both", merge: bool = True):
     """
     Moves adjacent nodes on the left and right fringe that fulfill the given condition
     to the parent node. If the `merge`-flag is set, a moved node will be merged with its
@@ -1379,6 +1558,10 @@ def move_fringes(path: Path, condition: Callable, merge: bool = True):
 
     WARNING: This function should never follow replace_by_children() in the transformation list!!!
     """
+    assert side in ('left', 'right', 'both'), \
+        (f'Parameter side of function move_fringes() must have one of the values '
+         f'"left", "right", "both", but not "{side}"!')
+
     node = path[-1]
     if len(path) <= 1 or not node._children:
         return
@@ -1393,12 +1576,14 @@ def move_fringes(path: Path, condition: Callable, merge: bool = True):
 
     a, b = 0, len(children)
     while a < b:
-        if condition([children[a]]):
+        if condition(path + [children[a]]):
             a += 1
-        elif condition([children[b - 1]]):
+        elif condition(path + [children[b - 1]]):
             b -= 1
         else:
             break
+    if side == "left":  b = len(children)
+    elif side == "right":  a = 0
     before = children[:a]
     after = children[b:]
     children = children[a:b]
@@ -1426,17 +1611,64 @@ def move_fringes(path: Path, condition: Callable, merge: bool = True):
 
             if len(before) + len(prevN) > 1:
                 target = before[-1] if before else prevN[0]
-                if merge_results(target, prevN + before, cast(RootNode, path[0])):
+                if merge_results(target, prevN + before, path[0]):
                     before = (target,)
             before = before or prevN
 
             if len(after) + len(nextN) > 1:
                 target = after[0] if after else nextN[-1]
-                if merge_results(target, after + nextN, cast(RootNode, path[0])):
+                if merge_results(target, after + nextN, path[0]):
                     after = (target,)
             after = after or nextN
 
         parent._set_result(parent_children[:a + 1] + before + (node,) + after + parent_children[b:])
+
+
+def pull_up(path):
+    """Moves the last Node in the list one level up in the hierarchy.
+
+    >>> tree = parse_sxpr('(p (t "A") (i (t "1") (X "---") (t "2")) (t "B"))')
+    >>> path = tree.pick_path('X')
+    >>> pull_up(path)
+    >>> print(tree.as_sxpr())
+    (p (t "A") (i (t "1")) (X (i "---")) (i (t "2")) (t "B"))
+
+    >>> tree = parse_sxpr('(p (t "A") (i (X "---") (t "2")) (t "B"))')
+    >>> path = tree.pick_path('X')
+    >>> pull_up(path)
+    >>> print(tree.as_sxpr())
+    (p (t "A") (X (i "---")) (i (t "2")) (t "B"))
+
+    >>> tree = parse_sxpr('(p (t "A") (i  (t "1") (X "---")) (t "B"))')
+    >>> path = tree.pick_path('X')
+    >>> pull_up(path)
+    >>> print(tree.as_sxpr())
+    (p (t "A") (i (t "1")) (X (i "---")) (t "B"))
+
+    >>> tree = parse_sxpr('(p (t "A") (i (X "---")) (t "B"))')
+    >>> path = tree.pick_path('X')
+    >>> pull_up(path)
+    >>> print(tree.as_sxpr())
+    (p (t "A") (X (i "---")) (t "B"))
+
+    EXPERIMENTAL!!!
+    """
+    node = path[-1]
+    if len(path) <= 2:
+        return
+    parent = path[-2]
+    ur_parent = path[-3]
+    i = parent.index(node)
+    i2 = ur_parent.index(parent)
+    node._set_result(Node(parent.name, node.result).with_pos(node._pos).with_attr(parent.attr))
+    children = ur_parent._children
+    inlay = []
+    if i > 0:
+        inlay.append(Node(parent.name, parent[:i]).with_pos(parent._pos).with_attr(parent.attr))
+    inlay.append(node)
+    if i < len(parent.children) - 1:
+        inlay.append(Node(parent.name, parent[i + 1:]).with_pos(parent[i + 1]._pos).with_attr(parent.attr))
+    ur_parent._set_result(children[:i2] + tuple(inlay) + children[i2 + 1:])
 
 
 def left_associative(path: Path):
@@ -1459,7 +1691,7 @@ def left_associative(path: Path):
 @transformation_factory(collections.abc.Set)
 def lean_left(path: Path, operators: AbstractSet[str]):
     """
-    Turns a right leaning tree into a left leaning tree:
+    Turns a right-leaning tree into a left-leaning tree:
 
         (op1 a (op2 b c))  ->  (op2 (op1 a b) c)
 
@@ -1467,11 +1699,11 @@ def lean_left(path: Path, operators: AbstractSet[str]):
     parser, `lean_left` can be used to rearrange the tree structure
     so that it properly reflects the order of association.
 
-    This transformation is needed, if you want to get the order of
+    This transformation is needed if you want to get the order of
     precedence right, when writing a grammar, say, for arithmetic
-    that avoids left-recursion. (DHParser does support left-recursion
+    that avoids left-recursion. (DHParser does support left-recursion,
     but left-recursive grammars might not be compatible with
-    other PEG-frameworks any more.)
+    other PEG-frameworks anymore.)
 
     ATTENTION: This transformation function moves forward recursively,
     so grouping nodes must not be eliminated during traversal! This
@@ -1506,7 +1738,7 @@ def lean_left(path: Path, operators: AbstractSet[str]):
 
 
 @transformation_factory(collections.abc.Callable)
-def lstrip(path: Path, condition: Callable = contains_only_whitespace):
+def lstrip(path: Path, condition: CondFunc = contains_only_whitespace):
     """Recursively removes all leading child-nodes that fulfill a given condition."""
     node = path[-1]
     i = 1
@@ -1521,7 +1753,7 @@ def lstrip(path: Path, condition: Callable = contains_only_whitespace):
 
 
 @transformation_factory(collections.abc.Callable)
-def rstrip(path: Path, condition: Callable = contains_only_whitespace):
+def rstrip(path: Path, condition: CondFunc = contains_only_whitespace):
     """Recursively removes all trailing nodes that fulfill a given condition."""
     node = path[-1]
     i, L = 0, len(node._children)
@@ -1537,7 +1769,7 @@ def rstrip(path: Path, condition: Callable = contains_only_whitespace):
 
 
 @transformation_factory(collections.abc.Callable)
-def strip(path: Path, condition: Callable = contains_only_whitespace):
+def strip(path: Path, condition: CondFunc = contains_only_whitespace):
     """Removes leading and trailing child-nodes that fulfill a given condition."""
     lstrip(path, condition)
     rstrip(path, condition)
@@ -1552,7 +1784,7 @@ def keep_children(path: Path, section: slice = slice(None)):
 
 
 @transformation_factory(collections.abc.Callable)
-def keep_children_if(path: Path, condition: Callable):
+def keep_children_if(path: Path, condition: CondFunc):
     """Removes all children for which `condition()` returns `True`."""
     node = path[-1]
     if node._children:
@@ -1580,7 +1812,7 @@ def keep_content(path: Path, regexp: str):
 
 
 @transformation_factory(collections.abc.Callable)
-def remove_children_if(path: Path, condition: Callable):
+def remove_children_if(path: Path, condition: CondFunc):
     """Removes all children for which `condition()` returns `True`."""
     node = path[-1]
     if node._children:
@@ -1671,7 +1903,7 @@ def remove(path: Path):
 
 
 @transformation_factory(collections.abc.Callable)
-def remove_if(path: Path, condition: Callable):
+def remove_if(path: Path, condition: CondFunc):
     """Removes node if condition is `True`"""
     if condition(path):
         remove(path)
@@ -1687,17 +1919,17 @@ def remove_if(path: Path, condition: Callable):
 
 
 @transformation_factory(collections.abc.Callable)
-def transform_result(path: Path, func: Callable):  # Callable[[ResultType], ResultType]
+def transform_result(path: Path, func: CondFunc):  # Callable[[ResultType], ResultType]
     """
     Replaces the result of the node. ``func`` takes the node's result
-    as an argument an returns the mapped result.
+    as an argument and returns the mapped result.
     """
     node = path[-1]
     node.result = func(node.result)
 
 
-@transformation_factory  # (str)
-def replace_content_with(path: Path, content: str):  # Callable[[Node], ResultType]
+@transformation_factory(str)
+def replace_content_with(path: Path, content: str):
     """
     Replaces the content of the node with the given text content.
     """
@@ -1752,7 +1984,7 @@ NodeGenerator = Callable[[], Node]
 DynamicResultType = Union[Tuple[NodeGenerator, ...], NodeGenerator, str]
 
 
-AT_THE_END = 2**32   # VERY VERY last position in a tuple of childe nodes
+AT_THE_END = 2**32   # VERY, VERY last position in a tuple of child-nodes
 
 
 def node_maker(name: str,
@@ -1824,7 +2056,7 @@ def normalize_position_representation(path: Path, position: PositionType) -> Tup
 
 
 @transformation_factory(int, tuple, collections.abc.Callable)
-def insert(path: Path, position: PositionType, node_factory: Callable):
+def insert(path: Path, position: PositionType, node_factory: CondFunc):
     """Inserts a delimiter at a specific position within the children. If
     `position` is `None` nothing will be inserted. Position values greater
     or equal the number of children mean that the delimiter will be appended
@@ -1850,7 +2082,7 @@ def insert(path: Path, position: PositionType, node_factory: Callable):
 
 
 @transformation_factory(collections.abc.Callable)
-def delimit_children(path: Path, node_factory: Callable):
+def delimit_children(path: Path, node_factory: CondFunc):
     """Add a delimiter drawn from the `node_factory` between all children."""
     insert(path, delimiter_positions, node_factory)
 
@@ -1886,7 +2118,7 @@ def add_error(path: Path, error_msg: str, error_code: ErrorCode = ERROR):
 
 @transformation_factory(collections.abc.Callable)
 def error_on(path: Path,
-             condition: Callable,
+             condition: CondFunc,
              error_msg: str = '',
              error_code: ErrorCode = ERROR):
     """
@@ -1902,9 +2134,9 @@ def error_on(path: Path,
 
 #
 # @transformation_factory(collections.abc.Callable)
-# def warn_on(path: Path, condition: Callable, warning: str = ''):
+# def warn_on(path: Path, condition: ConditionFunc, warning: str = ''):
 #     """
-#     Checks for `condition`; adds an warning message if condition is not met.
+#     Checks for `condition`; adds a warning message if condition is not met.
 #     """
 #     node = path[-1]
 #     if not condition(path):

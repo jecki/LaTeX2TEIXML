@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,26 +20,24 @@
 Module ``preprocess`` contains functions for preprocessing source
 code before the parsing stage as well as source mapping facilities
 to map the locations of parser and compiler errors to the
-non-preprocessed source text.
+non-preprocessed source text. (See :py:class:`~error.SourceMap`)
 
-Preprocessing (and source mapping of errors) will only be needed
-for some domain specific languages, most notably those that
-cannot completely be described entirely with context-free grammars.
+Preprocessing (and source mapping of errors) are useful
+in cases where a syntax or certain syntactical features (like marking
+blocks with indentation for example), cannot be described completely
+with context-free grammars.
 """
 
 from __future__ import annotations
 
-import bisect
-from collections import namedtuple
 import functools
-import inspect
 import os
-from typing import Union, Optional, Callable, Tuple, List, Any, NamedTuple
+from typing import Union, Optional, Callable, Tuple, List, Dict, Any, \
+    NamedTuple
 
-from DHParser.error import Error, SourceMap, SourceLocation, SourceMapFunc, \
-    add_source_locations
+from DHParser.error import Error, add_source_locations
 from DHParser.stringview import StringView
-from DHParser.toolkit import re, TypeAlias
+from DHParser.toolkit import re, TypeAlias, LazyRE
 
 
 __all__ = ('RX_TOKEN_NAME',
@@ -48,16 +46,25 @@ __all__ = ('RX_TOKEN_NAME',
            'END_TOKEN',
            'IncludeInfo',
            'FindIncludeFunc',
+           'IncludeReaderFunc',
+           'DeriveFileNameFunc',
            'PreprocessorFunc',
            'PreprocessorFactory',
            'PreprocessorResult',
+           'result_from_mapping',
            'Tokenizer',
            'make_token',
            'strip_tokens',
+           'SourceLocation',
+           'SourceMap',
+           'SourceMapFunc',
+           'gen_neutral_srcmap_func',
+           'source_map',
+           'apply_src_mappings',
            'nil_preprocessor',
+           'nil_preprocessor_factory',
            'chain_preprocessors',
            'prettyprint_tokenized',
-           'gen_neutral_srcmap_func',
            'tokenized_to_original_mapping',
            'make_preprocessor',
            'gen_find_include_func',
@@ -77,53 +84,61 @@ TOKEN_DELIMITER = '\x1c'
 END_TOKEN = '\x1d'
 RESERVED_TOKEN_CHARS = BEGIN_TOKEN + TOKEN_DELIMITER + END_TOKEN
 
-RX_TOKEN_NAME = re.compile(r'\w+')
-RX_TOKEN_ARGUMENT = re.compile(r'[^\x1b\x1c\x1d]*')
-RX_TOKEN = re.compile(r'\x1b(?P<name>\w+)\x1c(?P<argument>[^\x1b\x1c\x1d]*)\x1d')
+RX_TOKEN_NAME = LazyRE(r'\w+')
+RX_TOKEN_ARGUMENT = LazyRE(r'[^\x1b\x1c\x1d]*')
+RX_TOKEN = LazyRE(r'\x1b(?P<name>\w+)\x1c(?P<argument>[^\x1b\x1c\x1d]*)\x1d')
 
-
-# class IncludeInfo(NamedTuple):
-#     begin: int
-#     length: int
-#     file_name: str
-
-# collections.namedtuple needed for Cython 2 compatbility
-IncludeInfo = namedtuple('IncludeInfo',
-    ['begin',       ## type: int
-     'length',      ## type: int
-     'file_name'],  ## type: str
-    module=__name__)
-
+class IncludeInfo(NamedTuple):
+    begin: int
+    length: int
+    file_name: str
+    __module__ = __name__  # required for cython/pickle compatibility
 
 def has_includes(sm: SourceMap) -> bool:
     return any(fname != sm.original_name for fname in sm.file_names)
 
+class SourceLocation(NamedTuple):
+    """A particular location in the original, not preprocessed source code.
 
-# class PreprocessorResult(NamedTuple):
-#     original_text: Union[str, StringView]
-#     preprocessed_text: Union[str, StringView]
-#     back_mapping: SourceMapFunc
-#     errors: List[Error]
+    :ivar original_name: The original source filename. If the document is composed of
+        a master file and (possibly nested) includes this will be the name of the file
+        that the position is related to.
+    :ivar original_text: The original, i.e. not yet preprocessed text-content of the
+        file the position relates to.
+    :ivar pos: The location within original_text.
+    """
+    original_name: str          # the file name (or path or uri) of the source code
+    original_text: Union[str, StringView]  # the source code itself
+    pos: int                    # a position within the code
+    __module__ = __name__       # needed for cython compatibility
 
-# collections.namedtuple needed for Cython 2 compatbility
-PreprocessorResult = namedtuple('PreprocessorResult',
-    ['original_text',      ## type: Union[str, StringView]
-     'preprocessed_text',  ## type: Union[str, StringView]
-     'back_mapping',       ## type: SourceMapFunc
-     'errors'],            ## type: List[Error]
-    module=__name__)
+SourceMapFunc: TypeAlias = Union[Callable[[int], SourceLocation], functools.partial]
 
+class PreprocessorResult(NamedTuple):
+    original_text: Union[str, StringView]
+    preprocessed_text: Union[str, StringView]
+    back_mapping: SourceMapFunc
+    errors: List[Error]
+    __module__ = __name__  # required for cython/pickle compatibility
+
+def result_from_mapping(mapping: SourceMap,
+              original_text: Union[str, StringView],
+              processed_text: Union[str, StringView],
+              errors: List[Error]) -> PreprocessorResult:
+    mapping.validate()
+    mapper = functools.partial(source_map, srcmap=mapping)
+    return PreprocessorResult(original_text, processed_text, mapper, errors)
 
 FindIncludeFunc: TypeAlias = Union[Callable[[str, int], IncludeInfo],   # (document: str,  start: int)
                                    functools.partial]
+IncludeReaderFunc = Callable[[str], str]
+IncludeReaderFactory = Callable[[], IncludeReaderFunc]
 DeriveFileNameFunc: TypeAlias = Union[Callable[[str], str], functools.partial]  # include name -> file name
-PreprocessorFunc: TypeAlias = Union[Callable[[str, str], PreprocessorResult],  # text: str, filename: str
+PreprocessorFunc: TypeAlias = Union[Callable[[str, str], PreprocessorResult],  # (text: str, filename: str) -> result
                                     functools.partial]
 PreprocessorFactory: TypeAlias = Callable[[], PreprocessorFunc]
 Tokenizer: TypeAlias = Union[Callable[[str], Tuple[str, List[Error]]],
                              functools.partial]
-
-# a functions that merely adds preprocessor tokens to a source text
 
 
 #######################################################################
@@ -137,24 +152,14 @@ def nil_preprocessor(original_text: str, original_name: str) -> PreprocessorResu
     """
     A preprocessor that does nothing, i.e. just returns the input.
     """
-    return PreprocessorResult(original_text,
-                              original_text,
-                              lambda i: SourceLocation(original_name, original_text, i),
-                              [])
+    def neutral_back_mapping(pos: int) -> SourceLocation:
+        return SourceLocation(original_name, original_text, pos)
+
+    return PreprocessorResult(original_text, original_text, neutral_back_mapping, [])
 
 
-def _apply_mappings(position: int, mappings: List[SourceMapFunc]) -> SourceLocation:
-    """
-    Sequentially apply a number of mapping functions to a source position.
-    In the context of source mapping, the source position usually is a
-    position within a preprocessed source text and mappings should therefore
-    be a list of reverse-mappings in reversed order.
-    """
-    assert mappings
-    filename, text = '', ''
-    for mapping in mappings:
-        filename, text, position = mapping(position)
-    return SourceLocation(filename, text, position)
+def nil_preprocessor_factory() -> PreprocessorFunc:
+    return nil_preprocessor
 
 
 def _apply_preprocessors(original_text: str, original_name: str,
@@ -162,9 +167,9 @@ def _apply_preprocessors(original_text: str, original_name: str,
         -> PreprocessorResult:
     """
     Applies several preprocessing functions sequentially to a source text
-    and returns the preprocessed text as well as a function that maps text-
-    positions in the processed text onto the corresponding position in the
-    original source test.
+    and returns the preprocessed text as well as a function that maps
+    text-positions in the processed text onto the corresponding position
+    in the original source test.
     """
     processed = original_text
     mapping_chain = []
@@ -177,13 +182,13 @@ def _apply_preprocessors(original_text: str, original_name: str,
                 chain.reverse()
             else:
                 chain = [gen_neutral_srcmap_func(original_text, original_name)]
-            add_source_locations(errors, functools.partial(_apply_mappings, mappings=chain))
+            add_source_locations(errors, functools.partial(apply_src_mappings, mappings=chain))
         mapping_chain.append(mapping_func)
         error_list.extend(errors)
     mapping_chain.reverse()
     return PreprocessorResult(
         original_text, processed,
-        functools.partial(_apply_mappings, mappings=mapping_chain),
+        functools.partial(apply_src_mappings, mappings=mapping_chain),
         error_list)
 
 
@@ -250,11 +255,100 @@ def strip_tokens(tokenized: str) -> str:
 #
 #######################################################################
 
+class SourceMap(NamedTuple):
+    """Class SourceMap captures a mapping from the preprocessed source code (that is
+    possibly also stitched together from different files) to the original source files
+    and source positions. It is possible to use more than one source map (see
+    :py:func:`apply_src_mappings`). Thus, several preprocessing stages can be applied
+    in sequence and the positions, say where errors occurred, can still be back-propagated
+    to the original input file(s).
+
+    :ivar original_name: The original source filename. If the source allows includes,
+        this should be the name of the master file.
+    :ivar positions: A list of locations in the processed file. Each location is to be
+        understood as a marker from which on a different the position in the processed
+        file must be shifted by a different offset to gain the position in the original
+        file. The first element in the list of positions should always be 0 and
+        contain as its last element the length of the processed source plus 1 (or higher).
+        (+1 allows the location to exceed the end of the text by 1 which makes writing
+         algorithms easier that if the location was not allowed to point beyond the end
+         of the text.)
+    :ivar offsets: The list of offsets corresponding to the positions. For each position
+        entry positions[n], the corresponding offsets value offsets[n] contains
+        the offset (positive or negative or zero) that will be added to all locations
+        in the half-open interval [ positions[n], positions[n + 1] [
+    :ivar file_names: A list of file names corresponding to the positions, i.e. for each
+        position[n] the name of the file that the text from this position just until
+        before the next position was taken from.
+    :ivar originals_dict: A dictionary, mapping the file-names to their text-content in
+        form of a :py:class:`~stringview.StringView`-object.
+    """
+    original_name: str          # nome or path or uri of the original source file
+    positions: List[int]        # a list of locations
+    offsets: List[int]          # the corresponding offsets to be added from these locations onward
+    file_names: List[str]       # list of file_names to which the source locations relate
+    originals_dict: Dict[str, Union[str, StringView]]  # File names => (included) source texts
+    __module__ = __name__       # needed for cython compatibility
+
+    def validate(self) -> SourceMap:   # actually returns Self
+        if len(self.positions) != len(self.offsets) != len(self.file_names):
+            raise ValueError("The length of the lists of positions, offsets and file names "
+                             "must be equal.")
+        if len(self.positions) < 2:
+            raise ValueError("The length of the lists of positions, offsets and file names "
+                             "must be at least 2.")
+        if self.positions[0] != 0:
+            raise ValueError("The first element of the list of positions must be 0.")
+        if not all(self.positions[i] < self.positions[i + 1]
+                   for i in range(len(self.positions) - 1)):
+            raise ValueError("The list of positions must be strictly increasing.")
+        return self
+
 
 def gen_neutral_srcmap_func(original_text: Union[StringView, str], original_name: str = '') -> SourceMapFunc:
     """Generates a source map function that maps positions to itself."""
     if not original_name:  original_name = 'UNKNOWN_FILE'
-    return lambda pos: SourceLocation(original_name, original_text, pos)
+    # return lambda pos: SourceLocation(original_name, original_text, pos)
+    return functools.partial(SourceLocation, original_name, original_text)
+
+
+def source_map(position: int, srcmap: SourceMap) -> SourceLocation:
+    """
+    Maps a position in a (pre-)processed text to its corresponding
+    position in the original document according to the given source map.
+
+    :param  position: the position in the processed text
+    :param  srcmap:  the source map, i.e. a mapping of locations to offset values
+        and source texts.
+    :returns:  the mapped position
+    """
+    assert len(srcmap.positions) == len(srcmap.offsets) == len(srcmap.file_names)
+    # assert set(srcmap.file_names) == set(srcmap.originals_dict.keys())
+    import bisect
+    i = bisect.bisect_right(srcmap.positions, position)
+    if 0 < i < len(srcmap.positions):
+        original_name = srcmap.file_names[i - 1]
+        return SourceLocation(
+            original_name,
+            srcmap.originals_dict[original_name],
+            min(position + srcmap.offsets[i - 1], srcmap.positions[i] + srcmap.offsets[i]))
+    raise ValueError(f"Position {position} seems is out of range "
+                     f"[{srcmap.positions[0]}, {srcmap.positions[-1]}[ "
+                     f"or source map ist corrupted.")
+
+
+def apply_src_mappings(position: int, mappings: List[SourceMapFunc]) -> SourceLocation:
+    """
+    Sequentially apply a number of mapping functions to a source position.
+    In the context of source mapping, the source position usually is a
+    position within a preprocessed source text and mappings should therefore
+    be a list of reverse-mappings in reversed order.
+    """
+    assert mappings
+    filename, text = '', ''
+    for mapping in mappings:
+        filename, text, position = mapping(position)
+    return SourceLocation(filename, text, position)
 
 
 def tokenized_to_original_mapping(tokenized_text: str,
@@ -289,37 +383,13 @@ def tokenized_to_original_mapping(tokenized_text: str,
         positions.append(len(tokenized_text) + 1)
         offsets.append(offsets[-1])
 
-    # post conditions
-    assert len(positions) == len(offsets), '\n' + str(positions) + '\n' + str(offsets)
-    assert positions[0] == 0
-    assert all(positions[i] < positions[i + 1] for i in range(len(positions) - 1))
-
     # specific condition for preprocessor tokens
     assert all(offsets[i] > offsets[i + 1] for i in range(len(offsets) - 2))
 
     L = len(positions)
     return SourceMap(
-        original_name, positions, offsets, [original_name] * L, {original_name: original_text})
-
-
-def source_map(position: int, srcmap: SourceMap) -> SourceLocation:
-    """
-    Maps a position in a (pre-)processed text to its corresponding
-    position in the original document according to the given source map.
-
-    :param  position: the position in the processed text
-    :param  srcmap:  the source map, i.e. a mapping of locations to offset values
-        and source texts.
-    :returns:  the mapped position
-    """
-    i = bisect.bisect_right(srcmap.positions, position)
-    if i:
-        original_name = srcmap.file_names[i - 1]
-        return SourceLocation(
-            original_name,
-            srcmap.originals_dict[original_name],
-            min(position + srcmap.offsets[i - 1], srcmap.positions[i] + srcmap.offsets[i]))
-    raise ValueError
+        original_name, positions, offsets, [original_name] * L, {original_name: original_text}).\
+        validate()
 
 
 def make_preprocessor(tokenizer: Tokenizer) -> PreprocessorFunc:
@@ -352,6 +422,9 @@ def gen_find_include_func(rx: Union[str, Any],
     :param rx: A regular expression (either as string or compiled
         regular expression) to catch the names of the includes in
         a document. The expression should catch
+    :param comment_rx: The regular expression for comments. (This
+        should always either be NEVER_MATCH_PATTERN or exactly the
+        same as the comment-regular rexpression defined in the grammar!)
     """
     if isinstance(rx, str):  rx = re.compile(rx)
     if isinstance(comment_rx, str):  comment_rx = re.compile(comment_rx)
@@ -361,13 +434,13 @@ def gen_find_include_func(rx: Union[str, Any],
         m = rx.search(text, begin)
         if m:
             begin = m.start()
-            name = m.group('name')
-            file_name = derive_file_name(name)
+            file_name = derive_file_name(m.group('name'))
             return IncludeInfo(begin, m.end() - begin, file_name)
         else:
             return IncludeInfo(-1, 0, '')
 
     def find_comment(text: str, begin: int) -> Tuple[int, int]:
+        nonlocal rx
         m = comment_rx.search(text, begin)
         return m.span() if m else (-1, -2)
 
@@ -410,7 +483,7 @@ class ReadIncludeOnce(ReadIncludeClass):
 def generate_include_map(original_name: str,
                          original_text: str,
                          find_next_include: FindIncludeFunc,
-                         include_reader: ReadIncludeClass=ReadIncludeClass) \
+                         include_reader: IncludeReaderFactory = ReadIncludeClass) \
                          -> Tuple[SourceMap, str]:
     file_names: set = set()
 
@@ -476,6 +549,7 @@ def generate_include_map(original_name: str,
 
 
 def srcmap_includes(position: int, inclmap: SourceMap) -> SourceLocation:
+    import bisect
     i = bisect.bisect_right(inclmap.positions, position)
     if i:
         source_name = inclmap.file_names[i - 1]
@@ -489,8 +563,18 @@ def srcmap_includes(position: int, inclmap: SourceMap) -> SourceLocation:
 def preprocess_includes(original_text: Optional[str],
                         original_name: str,
                         find_next_include: FindIncludeFunc,
-                        include_reader: ReadIncludeClass=ReadIncludeClass) \
+                        include_reader: IncludeReaderFactory=ReadIncludeClass) \
                         -> PreprocessorResult:
+    """Preprocesses include statements in a file.
+
+    :param original_text: The original source file (if already read from disk)
+    :param original_name: The file-name of the original source
+    :param find_next_include: The function to find the next include-statement
+    :param include_reader: A factory that returns a function that retrieves the
+        content from an included file.
+    :return: the result of the preprocessing: (original document,
+        processed document, source mapping, (possibly empty) list of errors)
+    """
     if not original_text:
         with open(original_name, 'r', encoding='utf-8') as f:
             original_text = f.read()

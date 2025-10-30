@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,6 @@
 from __future__ import annotations
 
 __all__ = ('__version__', '__version_info__')
-__version__ = '1.7.2'
+__version__ = '1.9.2'  # make sure that this is the same as in pyproject.toml !
 __version_info__ = tuple(int(part) for part in __version__.split('.'))
 

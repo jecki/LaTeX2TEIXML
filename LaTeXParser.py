@@ -50,12 +50,12 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar
     Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, INFINITE, ERR, \
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
-    last_value, matching_bracket, optional_last_value, MERGE_TREETOPS
+    last_value, matching_bracket, optional_last_value, MERGE_TREETOPS, RX_NEVER_MATCH
 from DHParser.pipeline import PseudoJunction, create_junction, create_parser_junction
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer
-from DHParser.toolkit import is_filename, load_if_file, cpu_count, RX_NEVER_MATCH, \
+from DHParser.toolkit import is_filename, load_if_file, cpu_count, \
     ThreadLocalSingletonFactory, expand_table, abbreviate_middle
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
 from DHParser.transform import is_empty, remove_if, TransformationDict, TransformerFunc, \
@@ -114,7 +114,12 @@ preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory)
 #######################################################################
 
 class LaTeXGrammar(Grammar):
-    r"""Parser for a LaTeX source file.
+    r"""Parser for a LaTeX document.
+
+    Instantiate this class and then call the instance with the
+    source code as argument in order to use the parser, e.g.:
+        parser = LaTeX()
+        syntax_tree = parser(source_code)
     """
     _block_environment = Forward()
     _inline_math_text = Forward()
@@ -125,7 +130,7 @@ class LaTeXGrammar(Grammar):
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "c95d62eac7c2203f0be132b64b81cded"
+    source_hash__ = "378e14ffc17e8f51fe2c19e58022d0ae"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
@@ -175,7 +180,12 @@ class LaTeXGrammar(Grammar):
     SPECIAL = RegExp('[$&_/\\\\\\\\]')
     QUOTEMARK = RegExp('"[`\']?|``?|\'\'?')
     LEERZEICHEN = RegExp('\\\\\\s+')
-    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n                  |(?:\'[AEIOUaeioun])|(?:\'\\{\\\\?[AEIOUaeioun]\\})\n                  |(?:\'\'[AEIOUaeioun])|(?:\'\'\\{\\\\?[AEIOUaeioun]\\})\n                  |(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n                  |(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n                  |(?:~[n])|(?:~\\{[n]\\}))')
+    UMLAUT = RegExp('(?x)\\\\(?:(?:"[AEIOUaeiou])|(?:"\\{[AEIOUaeiou]\\})\n'
+                         '|(?:\'[AEIOUaeioun])|(?:\'\\{\\\\?[AEIOUaeioun]\\})\n'
+                         '|(?:\'\'[AEIOUaeioun])|(?:\'\'\\{\\\\?[AEIOUaeioun]\\})\n'
+                         '|(?:`[AEIOUaeiou])|(?:`\\{[AEIOUaeiou]\\})\n'
+                         '|(?:[\\^][AEIOUCaeioucg])|(?:[\\^]\\{\\\\?[AEIOUCaeioucgj]\\})\n'
+                         '|(?:~[n])|(?:~\\{[n]\\}))')
     ESCAPED = RegExp('\\\\(?:(?:[#%$&_/{} \\n])|(?:~\\{\\s*\\}))')
     TXTCOMMAND = RegExp('\\\\text\\w+')
     CMDNAME = Series(RegExp('\\\\@?(?:(?![\\d_])\\w)+'), dwsp__)
@@ -271,7 +281,8 @@ class LaTeXGrammar(Grammar):
     full_width = Text("*")
     tabular = Series(Drop(Text("\\begin{tabular")), Option(full_width), Series(Drop(Text("}")), dwsp__), Option(cfg_unit), tabular_config, ZeroOrMore(Alternative(tabular_row, _WSPC)), Drop(Text("\\end{tabular")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=6)
     no_numbering = Text("*")
-    _block_math = RegExp('(?:[^\\\\]*[\\\\]?(?!end\\{(?:eqnarray|equation|displaymath|aligned|align)\\*?\\}|\\])\\s*)*')
+    _block_math = RegExp('(?:[^\\\\]*[\\\\]?(?!end\\{(?:eqnarray|equation|displaymath|aligned|align)\\*?'
+       '\\}|\\])\\s*)*')
     align = Series(Drop(Text("\\begin{align")), Option(Drop(Text("ed"))), Option(no_numbering), Series(Drop(Text("}")), dwsp__), _block_math, Drop(Text("\\end{align")), Option(Drop(Text("ed"))), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=4)
     eqnarray = Series(Drop(Text("\\begin{eqnarray")), Option(no_numbering), Series(Drop(Text("}")), dwsp__), _block_math, Drop(Text("\\end{eqnarray")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=3)
     equation = Series(Drop(Text("\\begin{equation")), Option(no_numbering), Series(Drop(Text("}")), dwsp__), _block_math, Drop(Text("\\end{equation")), Option(Drop(Text("*"))), Series(Drop(Text("}")), dwsp__), mandatory=3)
@@ -316,9 +327,23 @@ class LaTeXGrammar(Grammar):
     _block_environment.set(Series(Lookahead(_has_block_start), Alternative(_known_environment, generic_block)))
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = latexdoc
-        
+    
 parsing: PseudoJunction = create_parser_junction(LaTeXGrammar)
 get_grammar = parsing.factory # for backwards compatibility, only
+
+try:
+    assert RE_INCLUDE == NEVER_MATCH_PATTERN or \
+        RE_COMMENT in (LaTeXGrammar.COMMENT__, NEVER_MATCH_PATTERN), \
+        "Please adjust the pre-processor-variable RE_COMMENT in file LaTeXParser.py so that " \
+        "it either is the NEVER_MATCH_PATTERN or has the same value as the COMMENT__-attribute " \
+        "of the grammar class LaTeXGrammar! " \
+        'Currently, RE_COMMENT reads "%s" while COMMENT__ is "%s". ' \
+        % (RE_COMMENT, LaTeXGrammar.COMMENT__) + \
+        "\n\nIf RE_COMMENT == NEVER_MATCH_PATTERN then includes will deliberately be " \
+        "processed, otherwise RE_COMMENT==LaTeXGrammar.COMMENT__ allows the " \
+        "preprocessor to ignore comments."
+except (AttributeError, NameError):
+    pass
 
 
 #######################################################################

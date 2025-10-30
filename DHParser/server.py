@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@
 
 """
 Module `server` contains an asynchronous tcp-server that receives compilation
-requests, runs custom compilation functions in a multiprocessing.Pool.
+requests, runs custom compilation functions in a Process- or InterpreterExecutor.
 
 This allows to start a DHParser-compilation environment just once and save the
 startup time of DHParser for each subsequent compilation. In particular, with
@@ -28,7 +28,7 @@ sacrifice startup-speed for running-speed.
 
 It is up to the compilation function to either return the result of the
 compilation in serialized form, or just save the compilation results on the
-file system an merely return an success or failure message. Module `server`
+file system and merely return a success or failure message. Module `server`
 does not define any of these message. This is completely up to the clients
 of module `server`, i.e. the compilation-modules, to decide.
 
@@ -54,6 +54,10 @@ from __future__ import annotations
 
 import asyncio
 from concurrent.futures import Future, Executor, ThreadPoolExecutor, ProcessPoolExecutor
+try:
+    from concurrent.futures import InterpreterPoolExecutor
+except ImportError:
+    InterpreterPoolExecutor = ProcessPoolExecutor
 from concurrent.futures.process import BrokenProcessPool
 try:
     from concurrent.futures.thread import BrokenThreadPool
@@ -63,26 +67,23 @@ except ImportError:
         pass
 from datetime import datetime
 from functools import partial
-import inspect
 import io
 import json
-from multiprocessing import Process, Value, Array, Manager
+from multiprocessing import Process, Value, Array
 import os
-import subprocess
 import sys
 import threading
 from threading import Thread
 import time
-import traceback
 from typing import Callable, Coroutine, Awaitable, Optional, Union, Dict, List, Tuple, Sequence, \
     Set, Any, cast, Type, TypeVar
 
 from DHParser.configuration import access_thread_locals, get_config_value
 from DHParser.nodetree import DHParser_JSONEncoder
 from DHParser.log import create_log, append_log, is_logging, log_dir
-from DHParser.toolkit import re, re_find, JSON_Type, JSON_Dict, JSONstr, JSONnull, \
+from DHParser.toolkit import re, JSON_Type, JSON_Dict, JSONstr, JSONnull, \
     json_encode_string, json_rpc, json_dumps, pp_json, pp_json_str, identify_python, \
-    normalize_docstring, md5, is_html_name, TypeAlias
+    normalize_docstring, md5, is_html_name, TypeAlias, PickMultiCoreExecutor
 from DHParser.versionnumber import __version__
 
 
@@ -113,6 +114,8 @@ __all__ = ('RPC_Table',
            'asyncio_run',
            'asyncio_connect',
            'split_header',
+           'StreamReaderProxy',
+           'StreamWriterProxy',
            'ExecutionEnvironment',
            'Connection',
            'connection_cb_dummy',
@@ -252,6 +255,7 @@ def GMT_timestamp() -> str:
 def _func_info(name: str, func: Callable, html: bool) -> List[str]:
     """Internal function to extract signature and docstring from
     a function."""
+    import inspect
     info = []
     if not name:  name = func.__name__
     info.append(name + str(inspect.signature(func)))
@@ -316,7 +320,7 @@ def http_response(html: Union[str, bytes], mime_type: str = 'text/html') -> byte
 def incomplete_header(data: BytesType) -> bool:
     """Returns `True` if data appears to represent an incomplete header."""
     return b'Content-Length'.startswith(data) or \
-           (data.startswith(b'Content-Length') and not re_find(data, RE_DATA_START))
+           (data.startswith(b'Content-Length') and not re.search(RE_DATA_START, data))
 
 
 def split_header(data: BytesType) -> Tuple[BytesType, BytesType, BytesType]:
@@ -329,7 +333,7 @@ def split_header(data: BytesType) -> Tuple[BytesType, BytesType, BytesType]:
     m = RX_CONTENT_LENGTH.match(data, i, i + 100) if i >= 0 else None
     if m:
         content_length = int(m.group(1))
-        m2 = re_find(data, RE_DATA_START)
+        m2 = re.search(RE_DATA_START, data)
         if m2:
             header_size = m2.end()
             if len(data) >= header_size + content_length:
@@ -381,6 +385,10 @@ def gen_task_id() -> int:
     return value
 
 
+MultiCoreExecutor = TypeVar('MultiCoreExecutor',
+                            ProcessPoolExecutor, InterpreterPoolExecutor)
+
+
 class ExecutionEnvironment:
     """Class ExecutionEnvironment provides methods for executing server tasks
     in separate processes, threads, as asynchronous task or as simple function.
@@ -391,8 +399,6 @@ class ExecutionEnvironment:
         synchronously and thread-safe.
     :ivar submit_pool_lock:  A threading.Lock to ensure that submissions to
         the submit_pool will be thread_safe
-    :ivar manager: a multiprocessing.SyncManager-object that can be used share
-        data across different processes.
     :ivar loop:  The asynchronous event loop for running coroutines
     :ivar log_file:  The name of the log-file to which error messages are
         written if an executor raises a Broken-Error.
@@ -401,10 +407,9 @@ class ExecutionEnvironment:
         yields an error.
     """
     def __init__(self, event_loop: asyncio.AbstractEventLoop):
-        self._process_executor = None                  # type: Optional[ProcessPoolExecutor]
+        self._process_executor = None                  # type: Optional[MultiCoreExecutor]
         self._thread_executor = None                   # type: Optional[ThreadPoolExecutor]
-        self._submit_pool = None                       # type: Optional[ProcessPoolExecutor]
-        self._manager = None                           # type: Optional[Manager]
+        self._submit_pool = None                       # type: Optional[MultiCoreExecutor]
         self.submit_pool_lock = threading.Lock()       # type: threading.Lock
         self.loop = event_loop                         # type: asyncio.AbstractEventLoop
         self.log_file = ''                             # type: str
@@ -418,7 +423,7 @@ class ExecutionEnvironment:
         if self._process_executor is None:
             with self.submit_pool_lock:
                 if self._process_executor is None:
-                    self._process_executor = ProcessPoolExecutor()
+                    self._process_executor = PickMultiCoreExecutor()
         return self._process_executor
 
     @property
@@ -434,14 +439,8 @@ class ExecutionEnvironment:
         if self._submit_pool is None:
             with self.submit_pool_lock:
                 if self._submit_pool is None:
-                    self._submit_pool = ProcessPoolExecutor()
+                    self._submit_pool = PickMultiCoreExecutor()
         return self._submit_pool
-
-    @property
-    def manager(self):
-        if self._manager is None:
-            self._manager = Manager()
-        return self._manager
 
     async def execute(self, executor: Optional[Executor],
                       method: Callable,
@@ -454,6 +453,8 @@ class ExecutionEnvironment:
         zero, i.e. no error. If `executor` is `None` the method will be called
         directly instead of deferring it to an executor.
         """
+        import traceback
+
         if self._closed:
             return None, (-32000,
                           "Server Error: Execution environment has already been shut down! "
@@ -514,7 +515,7 @@ class ExecutionEnvironment:
         return result, rpc_error
 
     def submit_as_process(self, func, *args) -> Future:
-        """Submits a long running function to the secondary process-pool.
+        """Submits a long-running function to the secondary process-pool.
         Other than `execute()` this works synchronously and thread-safe.
         """
         # if self.submit_pool is None:
@@ -538,8 +539,6 @@ class ExecutionEnvironment:
         if self._submit_pool is not None:
             self._submit_pool.shutdown(wait=wait)
             self._submit_pool = None
-        if self._manager is not None:
-            self._manager.shutdown()
 
 
 #######################################################################
@@ -582,7 +581,7 @@ async def asyncio_connect(
             else:
                 delay = retry_timeout  # exit while loop
         except OSError as error:
-            # workaround for strange erratic OSError (MacOS only?)
+            # workaround for strange erratic OSError (macOS only?)
             OSError_countdown -= 1
             if OSError_countdown < 0:
                 save_error = error
@@ -679,10 +678,10 @@ async def read_full_block(reader: StreamReaderType) -> Tuple[int, bytes, bytes]:
         m = RX_CONTENT_LENGTH.match(data, i, i + 100) if i >= 0 else None
     if m:
         content_length = int(m.group(1))
-        m2 = re_find(data, RE_DATA_START)
+        m2 = re.search(RE_DATA_START, data)
         while not m2 and not reader.at_eof():
             data += await reader.read()
-            m2 = re_find(data, RE_DATA_START)
+            m2 = re.search(RE_DATA_START, data)
         if m2:
             header_size = m2.end()
             missing = header_size + content_length - len(data)
@@ -780,7 +779,7 @@ class Connection:
                 and errors received from a language server client as result of
                 commands initiated by the server.
         pending_responses:  A dictionary of jsonrpc-/task-id's to lists of
-                JSON-objects that have been fetched from the the response queue
+                JSON-objects that have been fetched from the response queue
                 but not yet been collected by the calling task.
         lsp_initialized: A string-flag indicating that the connection to a language
                 sever via json-rpc has been established.
@@ -878,8 +877,8 @@ class Connection:
     # LSP-initialization support
 
     def verify_initialization(self, method: str, strict: bool = True) -> RPC_Error_Type:
-        """Implements the LSP-initialization logic and returns an rpc-error if
-        either initialization went wrong or an rpc-method other than 'initialize'
+        """Implements the LSP-initialization logic and returns a rpc-error if
+        either initialization went wrong or a rpc-method other than 'initialize'
         was called on an uninitialized language server.
         """
         if method == 'initialize':
@@ -1448,7 +1447,7 @@ class Server:
             if m:
                 # TODO: use urllib to parse parameters
                 func_name, argument = (m.group(1).decode().strip('/').split('/', 1) + [None])[:2]
-                # really bad hack to determine mime-type of response
+                # really poor hack to determine mime-type of response
                 mime = 'text/html'
                 if argument:
                     if argument[-4:].lower() == '.css':  mime = 'text/css'
@@ -1656,7 +1655,7 @@ class Server:
                     m = RX_CONTENT_LENGTH.match(data, i, i + 100) if i >= 0 else None
                     if m:
                         content_length = int(m.group(1))
-                        m2 = re_find(data, RE_DATA_START)
+                        m2 = re.search(RE_DATA_START, data)
                         if m2:
                             k = m2.end()
                             if len(data) > k + content_length:
@@ -1840,45 +1839,6 @@ class Server:
                 self.exec.shutdown()
                 self.exec = None
 
-    def serve_py35(self, host: str = USE_DEFAULT_HOST, port: int = USE_DEFAULT_PORT, loop=None):
-        host, port = substitute_default_host_and_port(host, port)
-        assert port >= 0
-        self.stop_response = "DHParser server at {}:{} stopped!".format(host, port)
-        self.host.value = host.encode()
-        self.port.value = port
-        if loop is None:
-            self.loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(self.loop)
-        else:
-            self.loop = loop
-        assert self.loop is not None
-        try:
-            self.exec = ExecutionEnvironment(self.loop)
-            self.exec.log_file = self.log_file
-            self.server = cast(
-                asyncio.base_events.Server,
-                self.loop.run_until_complete(
-                    asyncio.start_server(self.handle, host, port, loop=self.loop)))
-            try:
-                self.stage.value = SERVER_ONLINE
-                # self.server_messages.put(SERVER_ONLINE)
-                self.loop.run_forever()
-            finally:
-                self.server.close()
-                try:
-                    self.loop.run_until_complete(self.server.wait_closed())
-                finally:
-                    try:
-                        self.loop.run_until_complete(self.loop.shutdown_asyncgens())
-                    finally:
-                        asyncio.set_event_loop(None)
-                        self.loop.close()
-                        self.loop = None
-        finally:
-            if self.exec:
-                self.exec.shutdown()
-                self.exec = None
-
     def run_tcp_server(self, host: str = USE_DEFAULT_HOST, port: int = USE_DEFAULT_PORT, loop=None):
         """
         Starts a DHParser-server that listens on a tcp port. This function will
@@ -1891,10 +1851,7 @@ class Server:
         if self.echo_log:
             print("Server logging is on.")
         try:
-            if sys.version_info >= (3, 7):
-                asyncio_run(self.serve(host, port))
-            else:
-                self.serve_py35(host, port, loop)
+            asyncio_run(self.serve(host, port))
         except KeyboardInterrupt:
             print("KeyboardInterrupt")
         except asyncio.CancelledError as e:
@@ -2005,7 +1962,7 @@ def spawn_tcp_server(host: str = USE_DEFAULT_HOST,
         argument and returns a string response.
     :param Concurrent: The concurrent class, either mutliprocessing.Process or
         threading.Tread for running the server.
-    :return: the `multiprocessing.Proccess`-object of the already started
+    :return: the `multiprocessing.Process`-object of the already started
         server-processs.
     """
     if isinstance(parameters, tuple) or isinstance(parameters, list):
@@ -2038,7 +1995,7 @@ def spawn_stream_server(reader: StreamReaderType,
                         parameters: Union[Tuple, Dict, Callable] = echo_requests,
                         Concurrent: ConcurrentType = Thread) -> ConcurrentType:
     """
-    Starts a DHParser-Server that communitcates via streams in a separate
+    Starts a DHParser-Server that communicates via streams in a separate
     process or thread.
 
     USE THIS ONLY FOR TESTING!
@@ -2104,6 +2061,8 @@ def detach_server(host: str = USE_DEFAULT_HOST,
     Start DHParser-Server in a separate process and return. The process remains
     active even after the parent process is closed. Useful for writing test code.
     """
+    import subprocess
+
     async def wait_for_connection(host, port):
         _, writer = await asyncio_connect(host, port)  # wait until server online
         writer.close()

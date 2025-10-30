@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,29 @@
 
 """
 Module "configuration.py" defines the default configuration for DHParser.
+
+The best way to change the configuration or to add custom configurations
+for your own project is to place a [DSL-name]config.ini-file in the main-directory
+of your DSL-project that is the directory where your parsing and
+compilation-scripts reside. This configuration can be overwritten by
+a configuration-file with the same name in the current working-directory
+if different configurations for different workspaces are needed.
+
 The configuration values can be read and changed while running via the
-get_config_value() and set_config_value()-functions.
+get_config_value() and set_config_value()-functions. However, the functions
+only affect the configuration values for the current thread. Changes will
+not be visible to any spawned threads or processes.
 
-The presets can also be overwritten before(!) spawning any parsing processes by
-overwriting the values in the CONFIG_PRESET dictionary.
+In order to change the configuration values for spawned processes or threads,
+the presets can also be overwritten before(!) spawning any parsing processes
+with:
 
-The recommended way to use a different configuration in any custom code using
+    access_presets()
+    set_preset_value and get_preset_value()
+    finalize_presets()
+
+Unless configuration-files are used (see above), the recommended way to use
+a different configuration in any custom code using
 DHParser is to use the second method, i.e. to overwrite the values for which
 this is desired in the CONFIG_PRESET dictionary right after the start of the
 program and before any DHParser-function is invoked.
@@ -32,12 +48,13 @@ program and before any DHParser-function is invoked.
 from __future__ import annotations
 
 import sys
-import threading
-from typing import Dict, Any
+from typing import Dict, Any, Iterable, List
 
-__all__ = ('ALLOWED_PRESET_VALUES',
+__all__ = ('CONFIG_PRESET',
+           'ALLOWED_PRESET_VALUES',
            'validate_value',
            'access_presets',
+           'is_accessing_presets',
            'finalize_presets',
            'get_preset_value',
            'get_preset_values',
@@ -49,6 +66,8 @@ __all__ = ('ALLOWED_PRESET_VALUES',
            'get_config_value',
            'get_config_values',
            'set_config_value',
+           'add_config_values',
+           'dump_config_data',
            'NEVER_MATCH_PATTERN')
 
 
@@ -68,7 +87,18 @@ ALLOWED_PRESET_VALUES = dict()  # Dict[str, Union[Set, Tuple[int, int]]
 # dictionary that maps config variables to a set or range of allowed values
 
 
-access_lock = threading.Lock()
+access_lock = None  # = threading.Lock()
+
+
+def get_access_lock():  # -> threading.Lock()
+    """Return a global threading.Lock, create it upon first usage."""
+    global access_lock
+    if access_lock is None:
+        import threading
+        lock = threading.Lock()
+        if access_lock is None:
+            access_lock = lock
+    return access_lock
 
 
 def validate_value(key: str, value: Any):
@@ -80,20 +110,58 @@ def validate_value(key: str, value: Any):
     if allowed:
         if isinstance(allowed, tuple):
             if not isinstance(value, (int, float)):
-                raise TypeError('Value %s is not an int or float as required!' % str(value))
+                raise TypeError(f'Value "{value}" is not an int or float as required '
+                                f'for "{key}"!')
             elif not allowed[0] <= value <= allowed[1]:
-                raise ValueError('Value %s lies not within the range from %s to %s (included)!'
-                                 % (str(value), str(allowed[0]), str(allowed[1])))
+                raise ValueError(f'Value "{value}" for "{key}" does not lie within the '
+                                 f'range from {allowed[0]} to {allowed[1]} (included)!')
         else:
-            if value not in allowed:
-                raise ValueError('Value %s is not one of the allowed values: %s'
-                                 % (str(value), str(allowed)))
+            if not isinstance(value, str) and isinstance(value, Iterable):
+                for item in value:
+                    if item not in allowed:
+                        raise ValueError(f'Item "{item}" for "{key}" is not one of the '
+                                         f'allowed values {str(sorted(list(allowed)))[1:-1]}!')
+            elif value not in allowed:
+                raise ValueError(f'Value "{value}" for "{key}" is not one of '
+                                 f'the allowed values {str(sorted(list(allowed)))[1:-1]}!')
 
 
-def get_syncfile_path(pid: int) -> str:
+def get_forkserver_pid():
+    import multiprocessing, os
+    process = multiprocessing.current_process()
+    if process.daemon or getattr(process, '_inheriting', False):
+        forkserver_pid = os.getppid()
+    else:
+        import concurrent.futures
+        with concurrent.futures.ProcessPoolExecutor(1) as ex:
+            forkserver_pid = ex.submit(os.getppid).result()
+    return forkserver_pid
+
+
+def os_getpid(mp_method = None):
+    import os
+    if sys.version_info < (3, 14, 0) \
+            or CONFIG_PRESET['multicore_pool'] == 'ProcessPool':
+        # TODO chose this path also, if this has not been called inside an InterpreterPool!!!
+        import multiprocessing
+        if mp_method is None:
+            mp_method = multiprocessing.get_start_method()
+        if mp_method == "forkserver":
+            return get_forkserver_pid()
+    return os.getpid()
+
+
+def get_syncfile_path(mp_method: str) -> str:
     import os
     import tempfile
-    return os.path.join(tempfile.gettempdir(), 'DHParser_%i.cfg' % pid)
+    syncfile_path = CONFIG_PRESET['syncfile_path']
+    if not syncfile_path:
+        for getpid in (os.getpid, os.getppid, os_getpid):
+            pid = getpid()
+            syncfile_path = os.path.join(tempfile.gettempdir(), f'DHParser_{pid}.cfg')
+            if os.path.exists(syncfile_path):
+                break
+    return syncfile_path
 
 
 def access_presets():
@@ -104,20 +172,17 @@ def access_presets():
     changed preset-values to spawned processes. For an explanation why,
     see: https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods
     """
-    global ACCESSING_PRESETS
+    global ACCESSING_PRESETS, CONFIG_PRESET
     if ACCESSING_PRESETS:
         raise AssertionError('Presets are already being accessed! '
                              'Calls to access_presets() cannot be nested.')
     ACCESSING_PRESETS = True
     import multiprocessing
-    global CONFIG_PRESET
-    if not CONFIG_PRESET['syncfile_path'] \
-            and multiprocessing.get_start_method() != 'fork':
+    mp_method = multiprocessing.get_start_method()
+    if mp_method != 'fork' or CONFIG_PRESET['multicore_pool'] == 'InterpreterPool':
         import os
         import pickle
-        syncfile_path = get_syncfile_path(os.getppid())  # assume this is a spawned process
-        if not os.path.exists(syncfile_path):
-            syncfile_path = get_syncfile_path(os.getpid())  # assume this is the root process
+        syncfile_path = get_syncfile_path(mp_method)
         f = None
         try:
             f = open(syncfile_path, 'rb')
@@ -132,6 +197,12 @@ def access_presets():
         finally:
             if f is not None:
                 f.close()
+
+
+def is_accessing_presets() -> bool:
+    """Checks if presets are currently open for changes."""
+    global ACCESSING_PRESETS
+    return ACCESSING_PRESETS
 
 
 def remove_cfg_tempfile(filename: str):
@@ -150,17 +221,18 @@ def finalize_presets(fail_on_error: bool=False):
         raise AssertionError('Presets are not being accessed and therefore cannot be finalized!')
     if PRESETS_CHANGED:
         import multiprocessing
-        if multiprocessing.get_start_method() != 'fork':
+        mp_method = multiprocessing.get_start_method()
+        if mp_method != 'fork' or CONFIG_PRESET['multicore_pool'] == 'InterpreterPool':
             import atexit
             import os
             import pickle
-            syncfile_path = get_syncfile_path(os.getpid())
-            existing_syncfile = CONFIG_PRESET['syncfile_path']
+            syncfile_path = get_syncfile_path(mp_method)
             if fail_on_error:
-                assert ((not existing_syncfile or existing_syncfile == syncfile_path)
-                        and (not os.path.exists((get_syncfile_path(os.getppid()))))), \
-                    "finalize_presets() can only be called from the main process!"
+                    if not os.path.exists(syncfile_path):
+                        raise AssertionError(
+                            "finalize_presets() can only be called from the main process!")
             with open(syncfile_path, 'wb') as f:
+                existing_syncfile = CONFIG_PRESET['syncfile_path']
                 CONFIG_PRESET['syncfile_path'] = syncfile_path
                 if existing_syncfile != syncfile_path:
                     atexit.register(remove_cfg_tempfile, syncfile_path)
@@ -192,16 +264,51 @@ def set_preset_value(key: str, value: Any, allow_new_key: bool=False):
         elif oldkey != key:
             print(f'Deprecation Warning: Key {oldkey} has been renamed to {key}!')
     validate_value(key, value)
+    if key == 'multicore_pool':
+        raise AssertionError('Preset of "multicore_pool" can only be changed with a '
+                              'configuration-file, but not at runtime!')
     CONFIG_PRESET[key] = value
+    set_config_value(key, value)
     PRESETS_CHANGED = True
 
 
-def read_local_config(ini_filename: str) -> str:
-    """Reads a local config file and updates the presets
-    accordingly. If the file is not found at the given path,
-    the same base name will be tried in the current working
-    directory, then in the applications config-directory and,
-    ultimately, in the calling script's directory.
+def ingest_config_data(config, sources=''):
+    """Ingests configuration-data from a Python-STL
+    configparser.ConfigParser-object."""
+    errors = []
+    access_presets()
+    for section in config.sections():
+        try:
+            if section.lower() == "dhparser":
+                for variable, value in config[section].items():
+                    set_preset_value(f"{variable}", eval(value))
+            else:
+                for variable, value in config[section].items():
+                    set_preset_value(f"{section}.{variable}", eval(value),
+                                     allow_new_key=True)
+        except ValueError as e:
+            errors.append(' '.join(e.args))
+    finalize_presets()
+    if errors:
+        sources = f' files: {sources}'
+        raise ValueError(f"\n\nErrors found in configuration{sources}:\n\n"
+                         + '\n'.join(errors))
+
+
+def read_local_config(ini_filename: str) -> List[str]:
+    """Reads a local config file(s) and updates the presets
+    accordingly. All config-files with the same basename
+    (i.e. name without path) as
+    "ini_filename" will subsequently be read from these
+    directories and be processed in the same order, which
+    means config-values in files processed later will
+    overwrite config-values from earlier processed files:
+
+    1. script-directory
+    2. exact path of "ini_filename"
+    3. User's config-file directory, e.g. ~/.config/basename/
+    4. current working directory
+
     This configuration file must be in the .ini-file format
     so that it can be parsed with "configparser" from the
     Python standard library. Any key,value-pair under the
@@ -216,7 +323,7 @@ def read_local_config(ini_filename: str) -> str:
 
     :param ini_filename: the file path and name of the configuration
         file.
-    :returns:  the file path of the actually read .ini-file
+    :returns:  the file paths of the actually read .ini-files
         or the empty string if no .ini-file with the given
         name could be found either at the given path, in
         the current working directory or in the calling
@@ -224,37 +331,47 @@ def read_local_config(ini_filename: str) -> str:
     """
     import configparser
     import os
-    config = configparser.RawConfigParser()
-    config.optionxform = lambda optionstr: optionstr
+    # collect config files
+    cfg_files = []
     basename = os.path.basename(ini_filename)
-    if not os.path.exists(ini_filename):
-        # try cfg-file in current working directory next
-        ini_filename = basename
-    if not os.path.exists(ini_filename):
-        # try cfg-file in the applications' config-directory
-        dirname = os.path.splitext(basename)[0]
-        cfg_filename = os.path.join(os.path.expanduser('~'), '.config', dirname, 'config.ini')
-        if os.path.exists(cfg_filename):
-            ini_filename = cfg_filename
-        else:
-            ini_filename = os.path.join(os.path.expanduser('~'), '.config', dirname, basename)
-    if not os.path.exists(ini_filename):
-        # try cfg-file in script-directory next
-        script_path = os.path.abspath(sys.modules['__main__'].__file__ or '.')
-        ini_filename = os.path.join(os.path.dirname(script_path), basename)
-    if os.path.exists(ini_filename) and config.read(ini_filename):
-        access_presets()
-        for section in config.sections():
-            if section.lower() == "dhparser":
-                for variable, value in config[section].items():
-                    set_preset_value(f"{variable}", eval(value))
-            else:
-                for variable, value in config[section].items():
-                    set_preset_value(f"{section}.{variable}", eval(value),
-                                     allow_new_key=True)
-        finalize_presets()
-        return ini_filename
-    return ''
+    # first, add path in the script-directory
+    script_path = os.path.abspath(getattr(sys.modules['__main__'], '__file__', '') or '.')
+    cfg_filename = os.path.join(os.path.dirname(script_path), basename)
+    if os.path.isfile(cfg_filename): cfg_files.append(cfg_filename)
+    # then, add given path
+    if ini_filename not in cfg_files and os.path.isfile(ini_filename):
+        cfg_files.append(ini_filename)
+    # then, add cfg-file from the user's config directory
+    appname = os.path.splitext(basename)[0]
+    cfg_filename = os.path.join(os.path.expanduser('~'), '.config', appname, 'config.ini')
+    if os.path.isfile(cfg_filename):
+        if cfg_filename not in cfg_files:
+            cfg_files.append(cfg_filename)
+    else:
+        cfg_filename = os.path.join(os.path.expanduser('~'), '.config', appname, basename)
+        if cfg_filename not in cfg_files and os.path.isfile(cfg_filename):
+            cfg_files.append(cfg_filename)
+    # finally, add cfg-file from the current working directory
+    if basename not in cfg_files and os.path.isfile(basename):
+        cfg_files.append(basename)
+
+    # Now, read and process all config files in this order
+    config = configparser.ConfigParser()
+    config.optionxform = lambda optionstr: optionstr
+    successfully_read = config.read(cfg_files, encoding='utf-8')
+    if successfully_read:
+        ingest_config_data(config, ', '.join(cfg_files))
+    return successfully_read
+
+
+def read_config_string(ini_string: str):
+    """Reads configuration data in the .ini-file format from
+    a string. See :py:func:`read_local_config` for more details."""
+    import configparser
+    config = configparser.ConfigParser()
+    config.optionxform = lambda optionstr: optionstr
+    config.read_string(ini_string)
+    ingest_config_data(config)
 
 
 class NoDefault:
@@ -290,7 +407,8 @@ def access_thread_locals() -> Any:
     """
     global THREAD_LOCALS
     if THREAD_LOCALS is None:
-        THREAD_LOCALS = threading.local()
+        import threading
+        THREAD_LOCALS = threading.local()  # TODO: Use ContextVars, here!!!
     return THREAD_LOCALS
 
 
@@ -313,29 +431,42 @@ def get_config_value(key: str, default: Any = NO_DEFAULT) -> Any:
         exists for the key.
     :return:     the value
     """
-    with access_lock:
+    with get_access_lock():
         cfg = _config_dict()
         try:
             return cfg[key]
         except KeyError:
             access_presets()
-            value = get_preset_value(key, default)
+            # value = get_preset_value(key, default)
+            for k, v in CONFIG_PRESET.items():
+                if k not in cfg:
+                    cfg[k] = v
             finalize_presets()
-            cfg[key] = value
+            if default is NO_DEFAULT:
+                value = cfg[key]
+            else:
+                value = cfg.get(key, default)
             return value
 
 
-def get_config_values(key_pattern: str) -> Dict:
+def get_config_values(key_pattern: str = "*", *additional_patterns) -> Dict:
     """Returns a dictionary of all configuration entries that match
     `key_pattern`."""
     access_presets()
     presets = get_preset_values(key_pattern)
+    for pattern in additional_patterns:
+        presets.update(get_preset_values(pattern))
     finalize_presets()
     import fnmatch
-    with access_lock:
+    with get_access_lock():
         cfg = _config_dict()
-        cfg_values = {key: value for key, value in cfg.items()
-                      if fnmatch.fnmatchcase(key, key_pattern)}
+        cfg_values = dict()
+        for pattern in (key_pattern, *additional_patterns):
+            if pattern == "*":
+                cfg_values.update(cfg)
+            else:
+                cfg_values.update({key: value for key, value in cfg.items()
+                                   if fnmatch.fnmatchcase(key, key_pattern)})
         presets.update(cfg_values)
         cfg.update(presets)
     return presets
@@ -346,23 +477,75 @@ def set_config_value(key: str, value: Any, allow_new_key: bool = False):
     Changes a configuration value thread-safely. The configuration
     value will be set only for the current thread. In order to
     set configuration values for any new thread, add the key and value
-    to CONFIG_PRESET, before any thread accessing config values is started.
+    to CONFIG_PRESET, before any thread accessing config-values is started.
     :param key:    the key (an immutable, usually a string)
     :param value:  the value
     """
-    with access_lock:
+    with get_access_lock():
         cfg = _config_dict()
         if not allow_new_key:
             oldkey = key
             if key not in CONFIG_PRESET:  key = RENAMED_KEYS.get(key, key)
             if key not in CONFIG_PRESET:
-                raise ValueError(
-                    '"%s" is not a valid config variable. Use "allow_new_key=True" to '
-                    'add new variables or choose one of %s' % (key, list(cfg.keys())))
+                if key not in cfg:
+                    raise ValueError(
+                        '"%s" is not a valid config variable. Use "allow_new_key=True" to '
+                        'add new variables or choose one of %s' % (key, list(cfg.keys())))
             elif oldkey != key:
                 print(f'Deprecation Warning: Key {oldkey} has been renamed to {key}!')
         validate_value(key, value)
         cfg[key] = value
+
+
+def add_config_values(configuration: dict):
+    """
+    Adds (or overwrites) new configuration values.
+    :param configuration: additional configuration values
+    """
+    with get_access_lock():
+        cfg = _config_dict()
+        cfg.update(configuration)
+
+
+def dump_config_data(*key_patterns, use_headings: bool = True) -> str:
+    """Returns the configuration variables the name of which matches one of the
+    key_patterns config.ini-string."""
+    if key_patterns:
+        data = get_config_values(key_patterns[0], *key_patterns[1:])
+        if data:
+            results = []
+            last_prefix = None
+            for k, v in data.items():
+                i = k.find('.')
+                prefix = k[:i + 1]
+                name = k[i + 1:] if use_headings else k
+                if prefix != last_prefix:
+                    results.append('')
+                    if use_headings:
+                        results.append(f'[{prefix[:-1]}]' if prefix else "[DHParser]")
+                    last_prefix = prefix
+                results.append(f'{name} = {repr(v)}')
+            if not results[0]:  del results[0]
+            results.append('')
+            return '\n'.join(results)
+    return ''
+
+
+########################################################################
+#
+# system configuration
+#
+########################################################################
+
+# Defines which kind of multicore parallelization shall be used:
+# Either "ProcessPool" or "InterpreterPool". The latter is only available
+# when Python-version is greater or equal 3.14. If "InterpreterPool"
+# is specified but the Python version is smaller than 3.14, "ProcessPool"
+# will automatically be used as a fallback option.
+# Default value: "InterpreterPool"
+ALLOWED_PRESET_VALUES['multicore_pool'] = frozenset({'ProcessPool',
+                                                     'InterpreterPool'})
+CONFIG_PRESET['multicore_pool'] = "InterpreterPool"
 
 
 ########################################################################
@@ -418,8 +601,9 @@ CONFIG_PRESET['left_recursion'] = True
 # and breaks the pending infinite loop. Since this situation usually
 # is the result of a poorly designed inner parser, a warning can
 # be emitted.
-# Default value: True
-CONFIG_PRESET['infinite_loop_warning'] = True
+# Default value: False
+CONFIG_PRESET['infinite_loop_warning'] = False
+
 
 ########################################################################
 #
@@ -441,22 +625,27 @@ CONFIG_PRESET['infinite_loop_warning'] = True
 # 'json'         - output in JSON-format. This is probably the least
 #                  readable representation, but useful for serialization, for
 #                  example, to return syntax trees from remote procedure calls.
-# 'dict.json'    - a different, and often more readable flavor of json, where
-#                  dicts are used whenever possible. Please be aware, that this
+# 'dict.json'    - a different, and often more readable flavor of JSON, where
+#                  dicts are used whenever possible. Please be aware that this
 #                  goes beyond the JSON-sepcification which does not know
 #                  ordered dicts! This could result in the misrepresentation
 #                  of data by JSON parsers that are not aware of the order
 #                  of entries in dictionaries. (e.g. Python < 3.6)
+# 'ndst'         - nodetree-syntax-tree: a JSON-variant following the
+#                  unist-Specification (https://github.com/syntax-tree/unist).
+# 'xast'         - a JSON-Variant for XML-syntax-trees following the
+#                  xast-Specification (https://github.com/syntax-tree/xast).
 # Default values: "compact" for concrete syntax trees and "XML" for abstract
 #                 syntax trees and "sxpr" (read "S-Expression") for any other
 #                 kind of tree.
-_serializations = frozenset({'XML', 'HTML', 'json', 'indented', 'tree',
-                             'S-expression', 'sxpr', 'SXML', 'SXML1', 'SXML2'})
-CONFIG_PRESET['CST_serialization'] = 'sxpr'
-CONFIG_PRESET['AST_serialization'] = 'sxpr'
+_serializations = frozenset({'XML', 'HTML', 'json', 'dict.json', 'indented', 'tree',
+                             'S-expression', 'sxpr', 'SXML', 'SXML1', 'SXML2',
+                             'xast', 'ndst'})
+CONFIG_PRESET['CST_serialization'] = ''
+CONFIG_PRESET['AST_serialization'] = ''
 CONFIG_PRESET['default_serialization'] = 'sxpr'
-ALLOWED_PRESET_VALUES['CST_serialization'] = _serializations
-ALLOWED_PRESET_VALUES['AST_serialization'] = _serializations
+ALLOWED_PRESET_VALUES['CST_serialization'] = _serializations | {''}
+ALLOWED_PRESET_VALUES['AST_serialization'] = _serializations | {''}
 ALLOWED_PRESET_VALUES['default_serialization'] = _serializations
 
 # Defines the maximum line length for flattened S-expressions.
@@ -532,7 +721,7 @@ CONFIG_PRESET['static_analysis'] = "early"
 # Default value: 'True'
 CONFIG_PRESET['reorder_definitions'] = True
 
-# DHParser.ebnf.EBNFCompiler class adds the the EBNF-grammar to the
+# DHParser.ebnf.EBNFCompiler class adds the EBNF-grammar to the
 # docstring of the generated Grammar-class
 # Default value: False
 CONFIG_PRESET['add_grammar_source_to_parser_docstring'] = False
@@ -557,7 +746,7 @@ CONFIG_PRESET['default_literalws'] = "none"
 
 
 # Default value for the brand of EBNF that DHParser accepts
-# 'fixed'       - Allows to use suffix syntax (?, +, *) as well as classic
+# 'fixed', 'dhparser' - Allows to use suffix syntax (?, +, *) as well as classic
 #       EBNF-syntax ([], {}). The delimiters are fixed before first use to
 #       the DHParser-standard and will only be read once from
 #       configuration-value "delimiter_set" upon first usage.
@@ -585,9 +774,10 @@ CONFIG_PRESET['default_literalws'] = "none"
 # 'peg-like' - like regex-like, but uses / instead of | for the
 #       alternative-parser. Does not allow regular expressions between, i.e.
 #       / ... / within the EBNF-code!
-# Default value: "fixed"
-CONFIG_PRESET['syntax_variant'] = 'fixed'
+# Default value: "dhparser"
+CONFIG_PRESET['syntax_variant'] = 'dhparser'
 ALLOWED_PRESET_VALUES['syntax_variant'] = frozenset({
+    'dhparser',
     'fixed',
     'classic',
     'strict',
@@ -612,6 +802,21 @@ CONFIG_PRESET['delimiter_set'] = {
     # RE_LEADOUT:               ^    ^
     'CH_LEADIN':  '0x'
 }
+
+# Switches different kinds of optimization of the EBNF-compiler on.
+# Optimaztion is done by substituting compound parsers by SmartRE-parsers
+# when this is possible. Theoretically, this is everywhere where
+# no recursion occurs. In practice this is done only in (some of the)
+# cases where no (non-disposable) symbols are referred.
+# Default value: empty frozen set
+ALLOWED_PRESET_VALUES['optimizations'] = frozenset({
+    'literal',
+    'lookahead',
+    'alternative',
+    'rearrange_alternative',  # this is also implied by 'alternative'
+    'sequence'})
+CONFIG_PRESET['optimizations'] = frozenset()
+    # {'literal', 'lookahead', 'alternative', 'sequence'})
 
 
 ########################################################################
@@ -673,7 +878,8 @@ CONFIG_PRESET['compiled_EBNF_log'] = ''
 
 # Defines the kind of threading that `toolkit.instantiate_executor()`
 # will allow. Possible values are:
-# 'multitprocessing" - Full multiprocessing will be allowed.
+# 'multitcore' - Full multicore parallel execution will be allowed.
+# 'multiprocessing' - DEPRECATED alias for 'multicore'
 # 'multithreading' -   A ThreadPoolExecutor will be substituted for any
 #         ProcessPoolExecutor.
 # 'singlethread' -     A SingleThreadExecutor will be substituted for
@@ -681,7 +887,10 @@ CONFIG_PRESET['compiled_EBNF_log'] = ''
 # 'commandline' -      If any of the above is specified on the command
 #         line with two leading minus-signs, e.g. '--singlethread'
 #
+ALLOWED_PRESET_VALUES['debug_parallel_execution'] = frozenset({
+    'multicore', 'multiprocessing', 'multithreading', 'singlethread', 'commandline'})
 CONFIG_PRESET['debug_parallel_execution'] = 'commandline'
+
 
 ########################################################################
 #
@@ -737,10 +946,17 @@ CONFIG_PRESET['test_parallelization'] = True
 # Default value: True
 CONFIG_PRESET['test_suppress_lookahead_failures'] = True
 
+# Skips the preprocessor stage when running test. This can be helpful
+# a) when running tests on sub-parsers, in case that the preprocessor
+# cannot deal with snippets which do not represent full documents or
+# b) when you'd like to keep preprocessor matters out of the tests.
+# 'test_skip_preprocessor' is best 
+# Default value: False
+CONFIG_PRESET['test_skip_preprocessor'] = False
 
 ########################################################################
 #
-# decprecation warnings
+# deprecation warnings
 #
 ########################################################################
 

@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,7 +63,8 @@ The most notable difference to ordinary DHParser-projects is that
 the DHParser.ebnf-module contains two :py:class:`~parse.Grammar`-classes, one
 for parsing code that strictly follows DHParser's EBNF-syntax
 (:py:class:`ConfigurableEBNFGrammar`) and another one that is able to
-parse many different brands of EBNF-syntax (:py:class:`HeuristicEBNFGrammar`)
+parse many different brands of EBNF-syntax
+(:py:class:`DHParser.ebnf_flavors.heuristic.HeuristicEBNFGrammar`)
 at the cost of parsing speed. When parsing or compiling an EBNF-grammar with
 any of the high-level functions into Python-code, the faster "configurable"
 EBNF-grammar is tried first, and, if that fails with particular errors which
@@ -131,11 +132,20 @@ from a grammar, step by step::
     >>> CST = ebnf_parser(arithmetic_ebnf)
     >>> AST = ebnf_transformer(CST)   # CST should be considered invalid after that
     >>> ebnf_compiler.set_grammar_name("Arithmetic")
+    >>> from DHParser.configuration import get_config_value, set_config_value
+    >>> save = get_config_value('optimizations')
+    >>> set_config_value('optimizations', frozenset())
     >>> python_src = ebnf_compiler(AST)
+    >>> set_config_value('optimizations', save)
     >>> assert not AST.errors
-    >>> print(python_src)
+    >>> print(python_src[:python_src.find("\\ntry:")])
     class ArithmeticGrammar(Grammar):
-        r"""Parser for an Arithmetic source file.
+        r"""Parser for an Arithmetic document.
+    <BLANKLINE>
+        Instantiate this class and then call the instance with the
+        source code as argument in order to use the parser, e.g.:
+            parser = Arithmetic()
+            syntax_tree = parser(source_code)
         """
         expression = Forward()
         disposable__ = re.compile('$.')
@@ -222,10 +232,8 @@ from __future__ import annotations
 
 import copy
 from functools import partial
-import keyword
 import os
 import sys
-from typing import Callable, Dict, List, Set, FrozenSet, Tuple, Union, Optional
 
 if sys.version_info >= (3, 6, 0):
     OrderedDict = dict
@@ -241,7 +249,7 @@ from DHParser.compile import CompilerError, Compiler, CompilationResult, compile
 from DHParser.configuration import access_thread_locals, get_config_value, \
     NEVER_MATCH_PATTERN, ALLOWED_PRESET_VALUES
 from DHParser.error import Error, AMBIGUOUS_ERROR_HANDLING, WARNING, REDECLARED_TOKEN_WARNING,\
-    REDEFINED_DIRECTIVE, UNUSED_ERROR_HANDLING_WARNING, \
+    REDEFINED_DIRECTIVE, UNUSED_ERROR_HANDLING_WARNING, NOTICE, \
     DIRECTIVE_FOR_NONEXISTANT_SYMBOL, UNDEFINED_SYMBOL_IN_TRANSTABLE_WARNING, \
     UNCONNECTED_SYMBOL_WARNING, REORDERING_OF_ALTERNATIVES_REQUIRED, BAD_ORDER_OF_ALTERNATIVES, \
     EMPTY_GRAMMAR_ERROR, MALFORMED_REGULAR_EXPRESSION, PEG_EXPRESSION_IN_DIRECTIVE_WO_BRACKETS, \
@@ -251,14 +259,17 @@ from DHParser.error import Error, AMBIGUOUS_ERROR_HANDLING, WARNING, REDECLARED_
 from DHParser.parse import Parser, Grammar, mixin_comment, mixin_nonempty, Forward, RegExp, SmartRE, \
     Drop, DropFrom, Lookahead, NegativeLookahead, Alternative, Series, Option, ZeroOrMore, OneOrMore, \
     Text, Capture, Retrieve, Pop, optional_last_value, GrammarError, Whitespace, Always, Never, \
-    Synonym, INFINITE, matching_bracket, ParseFunc, update_scanner, CombinedParser, parser_names
+    Synonym, matching_bracket, ParseFunc, update_scanner, CombinedParser, parser_names, \
+    RX_NAMED_GROUPS, NO_TREE_REDUCTION, FLATTEN, MERGE_TREETOPS, MERGE_LEAVES
 from DHParser.preprocess import PreprocessorFunc, PreprocessorResult, gen_find_include_func, \
     preprocess_includes, make_preprocessor, chain_preprocessors
-from DHParser.nodetree import Node, RootNode, Path, WHITESPACE_PTYPE, TOKEN_PTYPE, ZOMBIE_TAG, \
-    flatten_sxpr
-from DHParser.toolkit import load_if_file, escape_ctrl_chars, md5, \
-    sane_parser_name, re, expand_table, unrepr, compile_python_object, \
-    ThreadLocalSingletonFactory, TypeAlias
+from DHParser.nodetree import Node, RootNode, Path, WHITESPACE_PTYPE, KEEP_COMMENTS_PTYPE, \
+    TOKEN_PTYPE, ZOMBIE_TAG, flatten_sxpr, parse_sxpr
+from DHParser.toolkit import load_if_file, wrap_str_literal, escape_ctrl_chars, md5, \
+    sane_parser_name, re, expand_table, unrepr, compile_python_object, deprecated, \
+    ThreadLocalSingletonFactory, Any, Iterable, Sequence, Set, AbstractSet, Union, Dict, List, \
+    Tuple, FrozenSet, MutableSet, Optional, Type, Callable, Container, TypeAlias, \
+    matching_brackets, INFINITE, LazyRE, static
 from DHParser.transform import TransformerFunc, transformer, remove_brackets, change_name, \
     reduce_single_child, replace_by_single_child, is_empty, remove_children, add_error, \
     remove_tokens, remove_anonymous_tokens, flatten, forbid, assert_content, remove_children_if, \
@@ -275,14 +286,12 @@ __all__ = ('DHPARSER_IMPORTS',
            'parse_ebnf',
            'transform_ebnf',
            'compile_ebnf_ast',
-           'HeuristicEBNFGrammar',
            'ConfigurableEBNFGrammar',
            'EBNFTransform',
            'EBNFCompilerError',
            'EBNFDirectives',
            'WHITESPACE_TYPES',
            'EBNFCompiler',
-           'grammar_changed',
            'compile_ebnf')
 
 
@@ -301,7 +310,7 @@ def EBNFTokenizer(original_text) -> Tuple[str, List[Error]]:
 
 
 def preprocessor_factory() -> PreprocessorFunc:
-    find_next_include = gen_find_include_func(RE_INCLUDE, HeuristicEBNFGrammar.comment_rx__)
+    find_next_include = gen_find_include_func(RE_INCLUDE, ConfigurableEBNFGrammar.comment_rx__)
     include_prep = partial(preprocess_includes, find_next_include=find_next_include)
     EBNFPreprocessor = make_preprocessor(EBNFTokenizer)
     return chain_preprocessors(include_prep, EBNFPreprocessor)
@@ -320,474 +329,6 @@ def preprocess_ebnf(ebnf: str, source_name="source") -> PreprocessorResult:
 # EBNF parsing
 #
 ########################################################################
-
-
-class HeuristicEBNFGrammar(Grammar):
-    r"""Parser for an EBNF source file that heuristically detects the
-    used syntactical variant of EBNF on the fly.
-
-    This grammar is tuned for flexibility, that is, it supports as many
-    different flavors of EBNF as possible. However, this flexibility
-    comes at the cost of some ambiguities. In particular:
-
-       1. the alternative OR-operator / could be mistaken for the start
-          of a regular expression and vice versa, and
-       2. character ranges [a-z] can be mistaken for optional blocks
-          and vice versa
-
-    A strategy to avoid these ambiguities is to do all of the following:
-
-        - replace the free_char-parser by a never matching parser
-        - if this is done, it is safe to replace the char_range_heuristics-
-          parser by an always matching parser
-        - replace the regex_heuristics by an always matching parser
-
-    Ambiguities can also be avoided by NOT using all the syntactic variants
-    made possible by this EBNF-grammar within one and the same EBNF-document.
-
-    EBNF-definition of the Grammar::
-
-        @ comment    = /(?!#x[A-Fa-f0-9])#.*(?:\n|$)|\/\*(?:.|\n)*?\*\/|\(\*(?:.|\n)*?\*\)/
-            # comments can be either C-Style: /* ... */
-            # or pascal/modula/oberon-style: (* ... *)
-            # or python-style: # ... \n, excluding, however, character markers: #x20
-        @ whitespace = /\s*/                            # whitespace includes linefeed
-        @ literalws  = right                            # trailing whitespace of literals will be ignored tacitly
-        @ hide       = is_mdef, component, pure_elem, countable, no_range, FOLLOW_UP,
-                       MOD_SYM, MOD_SEP, ANY_SUFFIX, EOF
-        @ drop       = whitespace, MOD_SYM, EOF, no_range        # do not include these even in the concrete syntax tree
-        @ RNG_BRACE_filter = matching_bracket()         # filter or transform content of RNG_BRACE on retrieve
-
-        # re-entry-rules for resuming after parsing-error
-
-        @ definition_resume = /\n\s*(?=@|\w+\w*\s*=)/
-        @ directive_resume  = /\n\s*(?=@|\w+\w*\s*=)/
-
-        # specialized error messages for certain cases
-
-        @ definition_error  = /,/, 'Delimiter "," not expected in definition!\nEither this was meant to '
-                                   'be a directive and the directive symbol @ is missing\nor the error is '
-                                   'due to inconsistent use of the comma as a delimiter\nfor the elements '
-                                   'of a sequence.'
-
-
-        #: top-level
-
-        syntax     = ~ { definition | directive | macrodef } EOF
-        definition = [modifier] symbol §:DEF~ [ :OR~ ] expression [ MOD_SYM~ hide ]
-                     :ENDL~ & FOLLOW_UP  # [:OR~] to support v. Rossum's syntax
-          modifier = (drop | [hide]) MOD_SEP   # node LF after modifier allowed!
-          is_def   = [ MOD_SEP symbol ] :DEF | MOD_SEP is_mdef
-          _is_def  = [ MOD_SEP symbol ] _DEF | MOD_SEP is_mdef
-          MOD_SEP  = / *: */
-
-        directive  = "@" §symbol "=" component { "," component } & FOLLOW_UP
-          # component  = (regexp | literals | procedure | symbol !DEF)
-          component  = regexp | literals | procedure | symbol !_DEF !_is_def
-                     | &`$` !is_mdef § placeholder !is_def
-                     | "(" expression ")"  | RAISE_EXPR_WO_BRACKETS expression
-          literals   = { literal }+                       # string chaining, only allowed in directives!
-          procedure  = SYM_REGEX "()"                     # procedure name, only allowed in directives!
-
-        macrodef   =  [modifier] "$" name~ ["(" §placeholder { "," placeholder }  ")"]
-                     :DEF~ [ OR~ ] macrobody [ MOD_SYM~ hide ] :ENDL~ & FOLLOW_UP
-          macrobody  = expression
-          is_mdef    = "$" name ["(" placeholder { "," placeholder }  ")"] ~:DEF
-
-        FOLLOW_UP  = `@` | `$` | modifier | symbol | EOF
-
-
-        #: components
-
-        expression = sequence { :OR~ sequence }
-        sequence   = ["§"] ( interleave | lookaround )  # "§" means all following terms mandatory
-                     { !`@` !(symbol :DEF) :AND~ ["§"] ( interleave | lookaround ) }
-        interleave = difference { "°" ["§"] difference }
-        lookaround = flowmarker § part
-        difference = term [!`->` "-" § part]
-        term       = (oneormore | counted | repetition | option | pure_elem) [ MOD_SYM~ drop ]
-        part       = (oneormore | pure_elem) [ MOD_SYM~ drop ]
-
-
-        #: tree-reduction-markers aka "AST-hints"
-
-        drop       = "DROP" | "Drop" | "drop" | "SKIP" | "Skip" | "skip"
-        hide       = "HIDE" | "Hide" | "hide" | "DISPOSE" | "Dispose" | "dispose"
-
-
-        #: elements
-
-        countable  = option | oneormore | element
-        pure_elem  = element § !ANY_SUFFIX              # element strictly without a suffix
-        element    = [retrieveop] symbol !is_def        # negative lookahead to be sure it's not a definition
-                   | literal
-                   | plaintext
-                   | char_ranges
-                   | regexp
-                   | char_range
-                   | character ~
-                   | any_char
-                   | whitespace
-                   | group
-                   | macro !is_def
-                   | placeholder !is_def
-                   | parser                             # a user-defined parser
-
-
-        ANY_SUFFIX = /[?*+]/
-
-
-        #: flow-operators
-
-        flowmarker = "!"  | "&"                         # '!' negative lookahead, '&' positive lookahead
-                   | "<-!" | "<-&"                      # '<-!' negative lookbehind, '<-&' positive lookbehind
-        retrieveop = "::" | ":?" | ":"                  # '::' pop, ':?' optional pop, ':' retrieve
-
-
-        #: groups
-
-        group      = "(" no_range §expression ")"
-        oneormore  = "{" no_range expression "}+" | element "+"
-        repetition = "{" no_range §expression "}" | element "*" no_range
-        option     = !char_range "[" §expression "]" | element "?"
-        counted    = countable range | countable :TIMES~ multiplier | multiplier :TIMES~ §countable
-
-        range      = RNG_BRACE~ multiplier [ :RNG_DELIM~ multiplier ] ::RNG_BRACE~
-        no_range   = !multiplier | &multiplier :TIMES
-        multiplier = /[1-9]\d*/~
-
-
-        #: leaf-elements
-
-        parser     = "@" name "(" [argument] ")"        # a user defined parser
-          argument = literal | name~
-
-        symbol     = SYM_REGEX ~                        # e.g. expression, term, parameter_list
-        literal    = /"(?:(?<!\\)\\"|[^"])*?"/~         # e.g. "(", '+', 'while'
-                   | /'(?:(?<!\\)\\'|[^'])*?'/~         # whitespace following literals will be ignored tacitly.
-                   | /’(?:(?<!\\)\\’|[^’])*?’/~
-        plaintext  = /`(?:(?<!\\)\\`|[^`])*?`/~         # like literal but does not eat whitespace
-                   | /´(?:(?<!\\)\\´|[^´])*?´/~
-        regexp     = :RE_LEADIN RE_CORE :RE_LEADOUT ~   # e.g. /\w+/, ~/#.*(?:\n|$)/~
-        # regexp     = /\/(?:(?<!\\)\\(?:\/)|[^\/])*?\//~     # e.g. /\w+/, ~/#.*(?:\n|$)/~
-
-        char_range = `[` &char_range_heuristics [`^`] { range_desc }+ "]"
-        char_ranges = RE_LEADIN range_chain { `|` range_chain } RE_LEADOUT ~
-          range_chain = `[` [`^`] { range_desc }+ `]`
-          range_desc = (character | free_char) [ [`-`] (character | free_char) ]
-
-        character  = :CH_LEADIN HEXCODE
-        free_char  = /[^\n\[\]\\]/ | /\\[nrtfv`´'"(){}\[\]\/\\]/
-        any_char   = "."
-        whitespace = /~/~                               # insignificant whitespace
-
-
-        #: macros
-
-        macro       = "$" name "(" no_range expression { "," no_range expression } ")"
-        placeholder = "$" name !`(` ~
-
-        name        = SYM_REGEX
-
-
-        #: delimiters
-
-        EOF = !/./ [:?ENDL] [:?DEF] [:?OR] [:?AND]      # [:?DEF], [:?OR], ... clear stack by eating stored value
-                   [:?RNG_DELIM] [:?BRACE_SIGN] [:?CH_LEADIN] [:?TIMES] [:?RE_LEADIN] [:?RE_LEADOUT]
-
-        DEF        = _DEF
-        _DEF       = `=` | `:=` | `::=` | `<-` | /:\n/ | `: `  # with `: `, retrieve markers mustn't be followed by a blank!
-        OR         = `|` | `/` !regex_heuristics
-        AND        =  `,` | ``
-        ENDL       = `;` | ``
-
-        RNG_BRACE  = :BRACE_SIGN
-        BRACE_SIGN = `{` | `(`
-        RNG_DELIM  = `,`
-        TIMES      = `*`
-
-        RE_LEADIN  = `/` &regex_heuristics | `^/`
-        RE_LEADOUT = `/`
-
-        CH_LEADIN  = `0x` | `#x` | `\x` | `\u` | `\U`
-
-        MOD_SYM   = `->`
-
-        #: heuristics
-
-        char_range_heuristics  = ! ( /[\n]/ | more_than_one_blank
-                                   | ~ literal_heuristics
-                                   | ~ [`::`|`:?`|`:`] STRICT_SYM_REGEX /\s*\]/ )
-                                 & ({ range_desc }+ `]`)
-          STRICT_SYM_REGEX     = /(?!\d)\w+/
-        more_than_one_blank    = /[^ \]]*[ ][^ \]]*[ ]/
-        literal_heuristics     = /~?\s*"(?:[\\]\]|[^\]]|[^\\]\[[^"]*)*"/
-                               | /~?\s*'(?:[\\]\]|[^\]]|[^\\]\[[^']*)*'/
-                               | /~?\s*`(?:[\\]\]|[^\]]|[^\\]\[[^`]*)*`/
-                               | /~?\s*´(?:[\\]\]|[^\]]|[^\\]\[[^´]*)*´/
-                               | /~?\s*\/(?:[\\]\]|[^\]]|[^\\]\[[^\/]*)*\//
-        regex_heuristics       = ! ( / +`[^`]*` +\//
-                                   | / +´[^´]*´ +\//
-                                   | / +'[^']*' +\//
-                                   | / +"[^"]*" +\//
-                                   | / +\w+ +\// )
-                                 ( /[^\/\n*?+\\]*[*?+\\][^\/\n]*\//
-                                 | /[^\w]+\//
-                                 | /[^ ]/ )
-
-        #: basic-regexes
-
-        RE_CORE    = /(?:(?<!\\)\\(?:\/)|[^\/])*/       # core of a regular expression, i.e. the dots in /.../
-        SYM_REGEX  = /(?!\d)\w(?:-?\w)*/                # regular expression for symbols
-        HEXCODE    = /(?:[A-Fa-f1-9]|0(?!x)){1,8}/
-
-
-        #: error-markers
-
-        RAISE_EXPR_WO_BRACKETS = ``
-    """
-    countable = Forward()
-    element = Forward()
-    expression = Forward()
-    source_hash__ = "ec18718eb3b0857b7831545a28098fe0"
-    disposable__ = re.compile(
-        '(?:$.)|(?:FOLLOW_UP$|is_mdef$|MOD_SYM$|countable$|EOF$|pure_elem$|MOD_SEP$|component$|ANY_SUFFIX$|no_range$)')
-    static_analysis_pending__ = []  # type: List[bool]
-    parser_initialization__ = ["upon instantiation"]
-    error_messages__ = {'definition': [(re.compile(r','),
-                                        'Delimiter "," not expected in definition!\\nEither this was meant to be a directive and the directive symbol @ is missing\\nor the error is due to inconsistent use of the comma as a delimiter\\nfor the elements of a sequence.')]}
-    COMMENT__ = r'(?!#x[A-Fa-f0-9])#.*(?:\n|$)|\/\*(?:.|\n)*?\*\/|\(\*(?:.|\n)*?\*\)'
-    comment_rx__ = re.compile(COMMENT__)
-    WHITESPACE__ = r'\s*'
-    WSP_RE__ = mixin_comment(whitespace=WHITESPACE__, comment=COMMENT__)
-    wsp__ = Whitespace(WSP_RE__)
-    dwsp__ = Drop(Whitespace(WSP_RE__))
-    RAISE_EXPR_WO_BRACKETS = Text("")
-    HEXCODE = RegExp('(?:[A-Fa-f1-9]|0(?!x)){1,8}')
-    SYM_REGEX = RegExp('(?!\\d)\\w(?:-?\\w)*')
-    RE_CORE = RegExp('(?:(?<!\\\\)\\\\(?:/)|[^/])*')
-    regex_heuristics = Series(NegativeLookahead(
-        Alternative(RegExp(' +`[^`]*` +/'), RegExp(' +´[^´]*´ +/'), RegExp(" +'[^']*' +/"),
-                    RegExp(' +"[^"]*" +/'), RegExp(' +\\w+ +/'))),
-                              Alternative(RegExp('[^/\\n*?+\\\\]*[*?+\\\\][^/\\n]*/'),
-                                          RegExp('[^\\w]+/'), RegExp('[^ ]')))
-    literal_heuristics = Alternative(RegExp('~?\\s*"(?:[\\\\]\\]|[^\\]]|[^\\\\]\\[[^"]*)*"'),
-                                     RegExp("~?\\s*'(?:[\\\\]\\]|[^\\]]|[^\\\\]\\[[^']*)*'"),
-                                     RegExp('~?\\s*`(?:[\\\\]\\]|[^\\]]|[^\\\\]\\[[^`]*)*`'),
-                                     RegExp('~?\\s*´(?:[\\\\]\\]|[^\\]]|[^\\\\]\\[[^´]*)*´'),
-                                     RegExp('~?\\s*/(?:[\\\\]\\]|[^\\]]|[^\\\\]\\[[^/]*)*/'))
-    more_than_one_blank = RegExp('[^ \\]]*[ ][^ \\]]*[ ]')
-    STRICT_SYM_REGEX = RegExp('(?!\\d)\\w+')
-    CH_LEADIN = Capture(Alternative(Text("0x"), Text("#x"), Text("\\x"), Text("\\u"), Text("\\U")),
-                        zero_length_warning=False)
-    MOD_SYM = Drop(Text("->"))
-    character = Series(Retrieve(CH_LEADIN), HEXCODE)
-    RE_LEADOUT = Capture(Text("/"), zero_length_warning=True)
-    RE_LEADIN = Capture(Alternative(Series(Text("/"), Lookahead(regex_heuristics)), Text("^/")),
-                        zero_length_warning=True)
-    TIMES = Capture(Text("*"), zero_length_warning=False)
-    RNG_DELIM = Capture(Text(","), zero_length_warning=False)
-    BRACE_SIGN = Capture(Alternative(Text("{"), Text("(")), zero_length_warning=False)
-    RNG_BRACE = Capture(Retrieve(BRACE_SIGN), zero_length_warning=True)
-    ENDL = Capture(Alternative(Text(";"), Text("")), zero_length_warning=False)
-    AND = Capture(Alternative(Text(","), Text("")), zero_length_warning=False)
-    OR = Capture(Alternative(Text("|"), Series(Text("/"), NegativeLookahead(regex_heuristics))),
-                 zero_length_warning=True)
-    _DEF = Alternative(Text("="), Text(":="), Text("::="), Text("<-"), RegExp(':\\n'), Text(": "))
-    DEF = Capture(Synonym(_DEF), zero_length_warning=False)
-    EOF = Drop(
-        Series(NegativeLookahead(RegExp('.')), Option(Pop(ENDL, match_func=optional_last_value)),
-               Option(Pop(DEF, match_func=optional_last_value)),
-               Option(Pop(OR, match_func=optional_last_value)),
-               Option(Pop(AND, match_func=optional_last_value)),
-               Option(Pop(RNG_DELIM, match_func=optional_last_value)),
-               Option(Pop(BRACE_SIGN, match_func=optional_last_value)),
-               Option(Pop(CH_LEADIN, match_func=optional_last_value)),
-               Option(Pop(TIMES, match_func=optional_last_value)),
-               Option(Pop(RE_LEADIN, match_func=optional_last_value)),
-               Option(Pop(RE_LEADOUT, match_func=optional_last_value))))
-    name = Synonym(SYM_REGEX)
-    placeholder = Series(Series(Text("$"), dwsp__), name, NegativeLookahead(Text("(")), dwsp__)
-    multiplier = Series(RegExp('[1-9]\\d*'), dwsp__)
-    whitespace = Series(RegExp('~'), dwsp__)
-    any_char = Series(Text("."), dwsp__)
-    free_char = Alternative(RegExp('[^\\n\\[\\]\\\\]'), RegExp('\\\\[nrtfv`´\'"(){}\\[\\]/\\\\]'))
-    range_desc = Series(Alternative(character, free_char),
-                        Option(Series(Option(Text("-")), Alternative(character, free_char))))
-    char_range_heuristics = Series(NegativeLookahead(
-        Alternative(RegExp('[\\n]'), more_than_one_blank, Series(dwsp__, literal_heuristics),
-                    Series(dwsp__, Option(Alternative(Text("::"), Text(":?"), Text(":"))),
-                           STRICT_SYM_REGEX, RegExp('\\s*\\]')))),
-                                   Lookahead(Series(OneOrMore(range_desc), Text("]"))))
-    range_chain = Series(Text("["), Option(Text("^")), OneOrMore(range_desc), Text("]"))
-    char_ranges = Series(RE_LEADIN, range_chain, ZeroOrMore(Series(Text("|"), range_chain)),
-                         RE_LEADOUT, dwsp__)
-    char_range = Series(Text("["), Lookahead(char_range_heuristics), Option(Text("^")),
-                        OneOrMore(range_desc), Series(Text("]"), dwsp__))
-    regexp = Series(Retrieve(RE_LEADIN), RE_CORE, Retrieve(RE_LEADOUT), dwsp__)
-    plaintext = Alternative(Series(RegExp('`(?:(?<!\\\\)\\\\`|[^`])*?`'), dwsp__),
-                            Series(RegExp('´(?:(?<!\\\\)\\\\´|[^´])*?´'), dwsp__))
-    literal = Alternative(Series(RegExp('"(?:(?<!\\\\)\\\\"|[^"])*?"'), dwsp__),
-                          Series(RegExp("'(?:(?<!\\\\)\\\\'|[^'])*?'"), dwsp__),
-                          Series(RegExp('’(?:(?<!\\\\)\\\\’|[^’])*?’'), dwsp__))
-    symbol = Series(SYM_REGEX, dwsp__)
-    argument = Alternative(literal, Series(name, dwsp__))
-    parser = Series(Series(Text("@"), dwsp__), name, Series(Text("("), dwsp__), Option(argument),
-                    Series(Text(")"), dwsp__))
-    no_range = Drop(
-        Alternative(NegativeLookahead(multiplier), Series(Lookahead(multiplier), Retrieve(TIMES))))
-    macro = Series(Series(Text("$"), dwsp__), name, Series(Text("("), dwsp__), no_range, expression,
-                   ZeroOrMore(Series(Series(Text(","), dwsp__), no_range, expression)),
-                   Series(Text(")"), dwsp__))
-    range = Series(RNG_BRACE, dwsp__, multiplier,
-                   Option(Series(Retrieve(RNG_DELIM), dwsp__, multiplier)),
-                   Pop(RNG_BRACE, match_func=matching_bracket), dwsp__)
-    counted = Alternative(Series(countable, range),
-                          Series(countable, Retrieve(TIMES), dwsp__, multiplier),
-                          Series(multiplier, Retrieve(TIMES), dwsp__, countable, mandatory=3))
-    option = Alternative(
-        Series(NegativeLookahead(char_range), Series(Text("["), dwsp__), expression,
-               Series(Text("]"), dwsp__), mandatory=2), Series(element, Series(Text("?"), dwsp__)))
-    repetition = Alternative(
-        Series(Series(Text("{"), dwsp__), no_range, expression, Series(Text("}"), dwsp__),
-               mandatory=2), Series(element, Series(Text("*"), dwsp__), no_range))
-    oneormore = Alternative(
-        Series(Series(Text("{"), dwsp__), no_range, expression, Series(Text("}+"), dwsp__)),
-        Series(element, Series(Text("+"), dwsp__)))
-    group = Series(Series(Text("("), dwsp__), no_range, expression, Series(Text(")"), dwsp__),
-                   mandatory=2)
-    retrieveop = Alternative(Series(Text("::"), dwsp__), Series(Text(":?"), dwsp__),
-                             Series(Text(":"), dwsp__))
-    flowmarker = Alternative(Series(Text("!"), dwsp__), Series(Text("&"), dwsp__),
-                             Series(Text("<-!"), dwsp__), Series(Text("<-&"), dwsp__))
-    ANY_SUFFIX = RegExp('[?*+]')
-    is_mdef = Series(Series(Text("$"), dwsp__), name, Option(
-        Series(Series(Text("("), dwsp__), placeholder,
-               ZeroOrMore(Series(Series(Text(","), dwsp__), placeholder)),
-               Series(Text(")"), dwsp__))), dwsp__, Retrieve(DEF))
-    pure_elem = Series(element, NegativeLookahead(ANY_SUFFIX), mandatory=1)
-    MOD_SEP = RegExp(' *: *')
-    hide = Alternative(Series(Text("HIDE"), dwsp__), Series(Text("Hide"), dwsp__),
-                       Series(Text("hide"), dwsp__), Series(Text("DISPOSE"), dwsp__),
-                       Series(Text("Dispose"), dwsp__), Series(Text("dispose"), dwsp__))
-    drop = Alternative(Series(Text("DROP"), dwsp__), Series(Text("Drop"), dwsp__),
-                       Series(Text("drop"), dwsp__), Series(Text("SKIP"), dwsp__),
-                       Series(Text("Skip"), dwsp__), Series(Text("skip"), dwsp__))
-    part = Series(Alternative(oneormore, pure_elem), Option(Series(MOD_SYM, dwsp__, drop)))
-    term = Series(Alternative(oneormore, counted, repetition, option, pure_elem),
-                  Option(Series(MOD_SYM, dwsp__, drop)))
-    difference = Series(term, Option(
-        Series(NegativeLookahead(Text("->")), Series(Text("-"), dwsp__), part, mandatory=2)))
-    lookaround = Series(flowmarker, part, mandatory=1)
-    interleave = Series(difference, ZeroOrMore(
-        Series(Series(Text("°"), dwsp__), Option(Series(Text("§"), dwsp__)), difference)))
-    sequence = Series(Option(Series(Text("§"), dwsp__)), Alternative(interleave, lookaround),
-                      ZeroOrMore(Series(NegativeLookahead(Text("@")),
-                                        NegativeLookahead(Series(symbol, Retrieve(DEF))),
-                                        Retrieve(AND), dwsp__, Option(Series(Text("§"), dwsp__)),
-                                        Alternative(interleave, lookaround))))
-    modifier = Series(Alternative(drop, Option(hide)), MOD_SEP)
-    FOLLOW_UP = Alternative(Text("@"), Text("$"), modifier, symbol, EOF)
-    is_def = Alternative(Series(Option(Series(MOD_SEP, symbol)), Retrieve(DEF)),
-                         Series(MOD_SEP, is_mdef))
-    macrobody = Synonym(expression)
-    definition = Series(Option(modifier), symbol, Retrieve(DEF), dwsp__,
-                        Option(Series(Retrieve(OR), dwsp__)), expression,
-                        Option(Series(MOD_SYM, dwsp__, hide)), Retrieve(ENDL), dwsp__,
-                        Lookahead(FOLLOW_UP), mandatory=2)
-    procedure = Series(SYM_REGEX, Series(Text("()"), dwsp__))
-    literals = OneOrMore(literal)
-    macrodef = Series(Option(modifier), Series(Text("$"), dwsp__), name, dwsp__, Option(
-        Series(Series(Text("("), dwsp__), placeholder,
-               ZeroOrMore(Series(Series(Text(","), dwsp__), placeholder)),
-               Series(Text(")"), dwsp__), mandatory=1)), Retrieve(DEF), dwsp__,
-                      Option(Series(OR, dwsp__)), macrobody, Option(Series(MOD_SYM, dwsp__, hide)),
-                      Retrieve(ENDL), dwsp__, Lookahead(FOLLOW_UP))
-    _is_def = Alternative(Series(Option(Series(MOD_SEP, symbol)), _DEF), Series(MOD_SEP, is_mdef))
-    component = Alternative(regexp, literals, procedure,
-                            Series(symbol, NegativeLookahead(_DEF), NegativeLookahead(_is_def)),
-                            Series(Lookahead(Text("$")), NegativeLookahead(is_mdef), placeholder,
-                                   NegativeLookahead(is_def), mandatory=2),
-                            Series(Series(Text("("), dwsp__), expression,
-                                   Series(Text(")"), dwsp__)),
-                            Series(RAISE_EXPR_WO_BRACKETS, expression))
-    directive = Series(Series(Text("@"), dwsp__), symbol, Series(Text("="), dwsp__), component,
-                       ZeroOrMore(Series(Series(Text(","), dwsp__), component)),
-                       Lookahead(FOLLOW_UP), mandatory=1)
-    element.set(Alternative(Series(Option(retrieveop), symbol, NegativeLookahead(is_def)), literal,
-                            plaintext, char_ranges, regexp, char_range, Series(character, dwsp__),
-                            any_char, whitespace, group, Series(macro, NegativeLookahead(is_def)),
-                            Series(placeholder, NegativeLookahead(is_def)), parser))
-    countable.set(Alternative(option, oneormore, element))
-    expression.set(Series(sequence, ZeroOrMore(Series(Retrieve(OR), dwsp__, sequence))))
-    syntax = Series(dwsp__, ZeroOrMore(Alternative(definition, directive, macrodef)), EOF)
-    resume_rules__ = {'definition': [re.compile(r'\n\s*(?=@|\w+\w*\s*=)')],
-                      'directive': [re.compile(r'\n\s*(?=@|\w+\w*\s*=)')]}
-    root__ = syntax
-
-    def __init__(self, root: Optional[Parser] = None, static_analysis: Optional[bool] = None) -> None:
-        Grammar.__init__(self, root, static_analysis)
-        self.free_char_parsefunc__ = self.free_char._parse
-        self.char_range_heuristics_parsefunc__ = self.char_range_heuristics._parse
-        self.regex_heuristics_parserfunc__ = self.regex_heuristics._parse
-        self.mode__ = 'fixed'
-
-    @property
-    def mode(self) -> str:
-        def which(p: Parser) -> str:
-            if p._parse_proxy.__qualname__ == 'Never._parse':
-                return 'never'
-            elif p._parse_proxy.__qualname__ == 'Always._parse':
-                return 'always'
-            else:
-                return 'custom'
-        signature = (
-            which(self.free_char),
-            which(self.regex_heuristics),
-            which(self.char_range_heuristics)
-        )
-        if signature == ('custom', 'custom', 'custom'):
-            return 'heuristic'
-        elif signature == ('never', 'always', 'always'):
-            return 'strict'  # or 'classic'
-        elif signature == ('custom', 'never', 'always'):
-            return 'peg-like'
-        elif signature == ('custom', 'always', 'always'):
-            return 'regex-like'
-        else:
-            return "undefined"
-
-    @mode.setter
-    def mode(self, mode: str):
-        if mode == self.mode:
-            return
-
-        def set_parsefunc(p: Parser, f: ParseFunc):
-            method = f.__get__(p, type(p))  # bind function f to parser p
-            p._parse_proxy = method
-
-        always = Always._parse
-        never = Never._parse
-
-        if mode == 'heuristic':
-            set_parsefunc(self.free_char, self.free_char_parsefunc__)
-            set_parsefunc(self.regex_heuristics, self.regex_heuristics_parserfunc__)
-            set_parsefunc(self.char_range_heuristics, self.char_range_heuristics_parsefunc__)
-        elif mode in ('strict', 'classic'):
-            set_parsefunc(self.free_char, never)
-            set_parsefunc(self.regex_heuristics, always)
-            set_parsefunc(self.char_range_heuristics, always)
-        elif mode == 'peg-like':
-            set_parsefunc(self.free_char, self.free_char_parsefunc__)
-            set_parsefunc(self.regex_heuristics, never)
-            set_parsefunc(self.char_range_heuristics, always)
-        elif mode == 'regex-like':
-            set_parsefunc(self.free_char, self.free_char_parsefunc__)
-            set_parsefunc(self.regex_heuristics, always)
-            set_parsefunc(self.char_range_heuristics, always)
-        else:
-            raise ValueError('Mode must be one of: ' + ', '.join(
-                ALLOWED_PRESET_VALUES['syntax_variant']))
 
 
 class ConfigurableEBNFGrammar(Grammar):
@@ -905,7 +446,7 @@ class ConfigurableEBNFGrammar(Grammar):
 
         range      = RNG_OPEN~ multiplier [ RNG_DELIM~ multiplier ] RNG_CLOSE~
         no_range   = !multiplier | &multiplier TIMES   # should that be &(multiplier TIMES)??
-        multiplier = /[1-9]\d*/~
+        multiplier = /\d+/~
 
 
         #: leaf-elements
@@ -976,15 +517,15 @@ class ConfigurableEBNFGrammar(Grammar):
     countable = Forward()
     element = Forward()
     expression = Forward()
-    source_hash__ = "dcc1a4c37c097b00a142af4be0b9a49f"
+    source_hash__ = "ce3d1cc534e8f0e1da4c557ee8ae87cd"
     disposable__ = re.compile(
-        '(?:$.)|(?:MOD_SEP$|ANY_SUFFIX$|EOF$|countable$|component$|FOLLOW_UP$|pure_elem$|is_mdef$|MOD_SYM$|no_range$)')
+        '(?:countable$|MOD_SYM$|FOLLOW_UP$|no_range$|ANY_SUFFIX$|EOF$|MOD_SEP$|pure_elem$|is_mdef$|component$)')
     static_analysis_pending__ = []  # type: List[bool]
     parser_initialization__ = ["upon instantiation"]
     error_messages__ = {'definition': [(re.compile(r','),
                                         'Delimiter "," not expected in definition!\\nEither this was meant to be a directive and the directive symbol @ is missing\\nor the error is due to inconsistent use of the comma as a delimiter\\nfor the elements of a sequence.')]}
-    COMMENT__ = r'(?!#x[A-Fa-f0-9])#.*(?:\n|$)|\/\*(?:.|\n)*?\*\/|\(\*(?:.|\n)*?\*\)'
-    comment_rx__ = re.compile(COMMENT__)
+    COMMENT__ = r'(?!#x[A-Fa-f0-9])#.*(?:\n|$)|/\*(?:.|\n)*?\*/|\(\*(?:.|\n)*?\*\)'
+    comment_rx__ = LazyRE(COMMENT__)
     WHITESPACE__ = r'\s*'
     WSP_RE__ = mixin_comment(whitespace=WHITESPACE__, comment=COMMENT__)
     wsp__ = Whitespace(WSP_RE__)
@@ -1005,113 +546,101 @@ class ConfigurableEBNFGrammar(Grammar):
     AND = Text("")
     OR = Text("|")
     DEF = Text("=")
-    EOF = Drop(NegativeLookahead(RegExp('.')))
+    EOF = Drop(SmartRE(f'(?!.)', '!/./'))
     name = Synonym(SYM_REGEX)
     placeholder = Series(Series(Text("$"), dwsp__), name, NegativeLookahead(Text("(")), dwsp__)
-    multiplier = Series(RegExp('[1-9]\\d*'), dwsp__)
-    whitespace = Series(RegExp('~'), dwsp__)
+    multiplier = SmartRE(f'(\\d+)(?:{WSP_RE__})', '/\\d+/ ~')
+    whitespace = SmartRE(f'(~)(?:{WSP_RE__})', '/~/ ~')
     any_char = Series(Text("."), dwsp__)
-    free_char = Alternative(RegExp('[^\\n\\[\\]\\\\]'), RegExp('\\\\[nrtfv`´\'"(){}\\[\\]/\\\\]'))
-    character = Series(Alternative(CH_LEADIN, Text("\\x"), Text("\\u"), Text("\\U")), HEXCODE)
-    range_desc = Series(Alternative(character, free_char),
-                        Option(Series(Text("-"), Alternative(character, free_char))))
+    free_char = SmartRE(f'([^\\n\\[\\]\\\\]|\\\\[nrtfv`´\'"(){{}}\\[\\]/\\\\])',
+                        '/[^\\n\\[\\]\\\\]/|/\\\\[nrtfv`´\'"(){}\\[\\]\\/\\\\]/')
+    character = Series(
+        Alternative(CH_LEADIN, Text("%x"), Text("U+"), Text("u+"), Text("\\x"), Text("\\u"), Text("\\U")), HEXCODE)
+    range_desc = Series(Alternative(character, free_char), Option(Series(Text("-"), Alternative(character, free_char))))
     range_chain = Series(Text("["), Option(Text("^")), OneOrMore(range_desc), Text("]"))
-    char_ranges = Series(RE_LEADIN, range_chain, ZeroOrMore(Series(Text("|"), range_chain)),
-                         RE_LEADOUT, dwsp__)
+    char_ranges = Series(RE_LEADIN, range_chain, ZeroOrMore(Series(Text("|"), range_chain)), RE_LEADOUT, dwsp__)
     restricted_range_desc = Series(character, Option(Series(Text("-"), character)))
-    char_range = Series(Text("["), Option(Text("^")), OneOrMore(restricted_range_desc),
-                        Series(Text("]"), dwsp__))
+    char_range = Series(Text("["), Option(Text("^")), OneOrMore(restricted_range_desc), Series(Text("]"), dwsp__))
     regexp = Series(RE_LEADIN, RE_CORE, RE_LEADOUT, dwsp__)
-    plaintext = Alternative(Series(RegExp('`(?:(?<!\\\\)\\\\`|[^`])*?`'), dwsp__),
-                            Series(RegExp('´(?:(?<!\\\\)\\\\´|[^´])*?´'), dwsp__))
-    literal = Alternative(Series(RegExp('"(?:(?<!\\\\)\\\\"|[^"])*?"'), dwsp__),
-                          Series(RegExp("'(?:(?<!\\\\)\\\\'|[^'])*?'"), dwsp__),
-                          Series(RegExp('’(?:(?<!\\\\)\\\\’|[^’])*?’'), dwsp__))
+    plaintext = SmartRE(
+        f'(?:(`(?:(?<!\\\\)(?:\\\\\\\\)*\\\\`|[^`])*?`)(?:{WSP_RE__}))|(?:(´(?:(?<!\\\\)(?:\\\\\\\\)*\\\\´|[^´])*?´)(?:{WSP_RE__}))',
+        '/`(?:(?<!\\\\)(?:\\\\\\\\)*\\\\`|[^`])*?`/ ~|/´(?:(?<!\\\\)(?:\\\\\\\\)*\\\\´|[^´])*?´/ ~')
+    literal = SmartRE(
+        f'(?:("(?:(?<!\\\\)(?:\\\\\\\\)*\\\\"|[^"])*?")(?:{WSP_RE__}))|(?:(\'(?:(?<!\\\\)(?:\\\\\\\\)*\\\\\'|[^\'])*?\')(?:{WSP_RE__}))|(?:(’(?:(?<!\\\\)(?:\\\\\\\\)*\\\\’|[^’])*?’)(?:{WSP_RE__}))',
+        '/"(?:(?<!\\\\)(?:\\\\\\\\)*\\\\"|[^"])*?"/ ~|/\'(?:(?<!\\\\)(?:\\\\\\\\)*\\\\\'|[^\'])*?\'/ ~|/’(?:(?<!\\\\)(?:\\\\\\\\)*\\\\’|[^’])*?’/ ~')
     symbol = Series(SYM_REGEX, dwsp__)
     argument = Alternative(literal, Series(name, dwsp__))
     parser = Series(Series(Text("@"), dwsp__), name, Series(Text("("), dwsp__), Option(argument),
                     Series(Text(")"), dwsp__), mandatory=3)
-    no_range = Drop(
-        Alternative(NegativeLookahead(multiplier), Series(Lookahead(multiplier), TIMES)))
+    no_range = Drop(Alternative(NegativeLookahead(multiplier), Series(Lookahead(multiplier), TIMES)))
     macro = Series(Series(Text("$"), dwsp__), name, Series(Text("("), dwsp__), no_range, expression,
-                   ZeroOrMore(Series(Series(Text(","), dwsp__), no_range, expression)),
-                   Series(Text(")"), dwsp__))
-    range = Series(RNG_OPEN, dwsp__, multiplier, Option(Series(RNG_DELIM, dwsp__, multiplier)),
-                   RNG_CLOSE, dwsp__)
+                   ZeroOrMore(Series(Series(Text(","), dwsp__), no_range, expression)), Series(Text(")"), dwsp__))
+    range = Series(RNG_OPEN, dwsp__, multiplier, Option(Series(RNG_DELIM, dwsp__, multiplier)), RNG_CLOSE, dwsp__)
     counted = Alternative(Series(countable, range), Series(countable, TIMES, dwsp__, multiplier),
                           Series(multiplier, TIMES, dwsp__, countable, mandatory=3))
     option = Alternative(
-        Series(NegativeLookahead(char_range), Series(Text("["), dwsp__), expression,
-               Series(Text("]"), dwsp__), mandatory=2), Series(element, Series(Text("?"), dwsp__)))
+        Series(NegativeLookahead(char_range), Series(Text("["), dwsp__), expression, Series(Text("]"), dwsp__),
+               mandatory=2), Series(element, Series(Text("?"), dwsp__)))
     repetition = Alternative(
-        Series(Series(Text("{"), dwsp__), no_range, expression, Series(Text("}"), dwsp__),
-               mandatory=2), Series(element, Series(Text("*"), dwsp__), no_range))
-    oneormore = Alternative(
-        Series(Series(Text("{"), dwsp__), no_range, expression, Series(Text("}+"), dwsp__)),
-        Series(element, Series(Text("+"), dwsp__)))
-    group = Series(Series(Text("("), dwsp__), no_range, expression, Series(Text(")"), dwsp__),
-                   mandatory=2)
-    retrieveop = Alternative(Series(Text("::"), dwsp__), Series(Text(":?"), dwsp__),
-                             Series(Text(":"), dwsp__))
-    flowmarker = Alternative(Series(Text("!"), dwsp__), Series(Text("&"), dwsp__),
-                             Series(Text("<-!"), dwsp__), Series(Text("<-&"), dwsp__))
+        Series(Series(Text("{"), dwsp__), no_range, expression, Series(Text("}"), dwsp__), mandatory=2),
+        Series(element, Series(Text("*"), dwsp__), no_range))
+    oneormore = Alternative(Series(Series(Text("{"), dwsp__), no_range, expression, Series(Text("}+"), dwsp__)),
+                            Series(element, Series(Text("+"), dwsp__)))
+    group = Series(Series(Text("("), dwsp__), no_range, expression, Series(Text(")"), dwsp__), mandatory=2)
+    retrieveop = SmartRE(f'(?P<:Text>::)(?:{WSP_RE__})|(?P<:Text>:\\?)(?:{WSP_RE__})|(?P<:Text>:)(?:{WSP_RE__})',
+                         '"::"|":?"|":"')
+    flowmarker = SmartRE(
+        f'(?P<:Text>!)(?:{WSP_RE__})|(?P<:Text>\\&)(?:{WSP_RE__})|(?P<:Text><\\-!)(?:{WSP_RE__})|(?P<:Text><\\-\\&)(?:{WSP_RE__})',
+        '"!"|"&"|"<-!"|"<-&"')
     ANY_SUFFIX = RegExp('[?*+]')
     is_mdef = Series(Series(Text("$"), dwsp__), name, Option(
-        Series(Series(Text("("), dwsp__), placeholder,
-               ZeroOrMore(Series(Series(Text(","), dwsp__), placeholder)),
+        Series(Series(Text("("), dwsp__), placeholder, ZeroOrMore(Series(Series(Text(","), dwsp__), placeholder)),
                Series(Text(")"), dwsp__))), dwsp__, DEF)
     pure_elem = Series(element, NegativeLookahead(ANY_SUFFIX), mandatory=1)
     MOD_SEP = RegExp(' *: *')
-    hide = Alternative(Series(Text("HIDE"), dwsp__), Series(Text("Hide"), dwsp__),
-                       Series(Text("hide"), dwsp__), Series(Text("DISPOSE"), dwsp__),
-                       Series(Text("Dispose"), dwsp__), Series(Text("dispose"), dwsp__))
-    drop = Alternative(Series(Text("DROP"), dwsp__), Series(Text("Drop"), dwsp__),
-                       Series(Text("drop"), dwsp__), Series(Text("SKIP"), dwsp__),
-                       Series(Text("Skip"), dwsp__), Series(Text("skip"), dwsp__))
+    hide = SmartRE(
+        f'(?P<:Text>HIDE)(?:{WSP_RE__})|(?P<:Text>Hide)(?:{WSP_RE__})|(?P<:Text>hide)(?:{WSP_RE__})|(?P<:Text>DISPOSE)(?:{WSP_RE__})|(?P<:Text>Dispose)(?:{WSP_RE__})|(?P<:Text>dispose)(?:{WSP_RE__})',
+        '"HIDE"|"Hide"|"hide"|"DISPOSE"|"Dispose"|"dispose"')
+    drop = SmartRE(
+        f'(?P<:Text>DROP)(?:{WSP_RE__})|(?P<:Text>Drop)(?:{WSP_RE__})|(?P<:Text>drop)(?:{WSP_RE__})|(?P<:Text>SKIP)(?:{WSP_RE__})|(?P<:Text>Skip)(?:{WSP_RE__})|(?P<:Text>skip)(?:{WSP_RE__})',
+        '"DROP"|"Drop"|"drop"|"SKIP"|"Skip"|"skip"')
     part = Series(Alternative(oneormore, pure_elem), Option(Series(MOD_SYM, dwsp__, drop)))
-    term = Series(Alternative(oneormore, counted, repetition, option, pure_elem),
-                  Option(Series(MOD_SYM, dwsp__, drop)))
-    difference = Series(term, Option(
-        Series(NegativeLookahead(Text("->")), Series(Text("-"), dwsp__), part, mandatory=2)))
+    term = Series(Alternative(oneormore, counted, repetition, option, pure_elem), Option(Series(MOD_SYM, dwsp__, drop)))
+    difference = Series(term,
+                        Option(Series(NegativeLookahead(Text("->")), Series(Text("-"), dwsp__), part, mandatory=2)))
     lookaround = Series(flowmarker, part, mandatory=1)
-    interleave = Series(difference, ZeroOrMore(
-        Series(Series(Text("°"), dwsp__), Option(Series(Text("§"), dwsp__)), difference)))
-    sequence = Series(Option(Series(Text("§"), dwsp__)), Alternative(interleave, lookaround),
-                      ZeroOrMore(Series(AND, dwsp__, Option(Series(Text("§"), dwsp__)),
-                                        Alternative(interleave, lookaround))))
+    interleave = Series(difference,
+                        ZeroOrMore(Series(Series(Text("°"), dwsp__), Option(Series(Text("§"), dwsp__)), difference)))
+    sequence = Series(Option(Series(Text("§"), dwsp__)), Alternative(interleave, lookaround), ZeroOrMore(
+        Series(AND, dwsp__, Option(Series(Text("§"), dwsp__)), Alternative(interleave, lookaround))))
     modifier = Series(Alternative(drop, Option(hide)), MOD_SEP)
     FOLLOW_UP = Alternative(Text("@"), Text("$"), modifier, symbol, EOF)
     is_def = Alternative(Series(Option(Series(MOD_SEP, symbol)), DEF), Series(MOD_SEP, is_mdef))
     macrobody = Synonym(expression)
-    definition = Series(Option(modifier), symbol, DEF, dwsp__, Option(Series(OR, dwsp__)),
-                        expression, Option(Series(MOD_SYM, dwsp__, hide)), ENDL, dwsp__,
-                        Lookahead(FOLLOW_UP), mandatory=2)
+    definition = Series(Option(modifier), symbol, DEF, dwsp__, Option(Series(OR, dwsp__)), expression,
+                        Option(Series(MOD_SYM, dwsp__, hide)), ENDL, dwsp__, Lookahead(FOLLOW_UP), mandatory=2)
     procedure = Series(SYM_REGEX, Series(Text("()"), dwsp__))
     literals = OneOrMore(literal)
     component = Alternative(regexp, literals, procedure, Series(symbol, NegativeLookahead(is_def)),
                             Series(Lookahead(Text("$")), NegativeLookahead(is_mdef), placeholder,
                                    NegativeLookahead(is_def), mandatory=2),
-                            Series(Series(Text("("), dwsp__), expression,
-                                   Series(Text(")"), dwsp__)),
+                            Series(Series(Text("("), dwsp__), expression, Series(Text(")"), dwsp__)),
                             Series(RAISE_EXPR_WO_BRACKETS, expression))
     directive = Series(Series(Text("@"), dwsp__), symbol, Series(Text("="), dwsp__), component,
-                       ZeroOrMore(Series(Series(Text(","), dwsp__), component)),
-                       Lookahead(FOLLOW_UP), mandatory=1)
+                       ZeroOrMore(Series(Series(Text(","), dwsp__), component)), Lookahead(FOLLOW_UP), mandatory=1)
     macrodef = Series(Option(modifier), Series(Text("$"), dwsp__), name, dwsp__, Option(
-        Series(Series(Text("("), dwsp__), placeholder,
-               ZeroOrMore(Series(Series(Text(","), dwsp__), placeholder)),
-               Series(Text(")"), dwsp__), mandatory=1)), DEF, dwsp__, Option(Series(OR, dwsp__)),
-                      macrobody, Option(Series(MOD_SYM, dwsp__, hide)), ENDL, dwsp__,
-                      Lookahead(FOLLOW_UP))
-    element.set(Alternative(Series(Option(retrieveop), symbol, NegativeLookahead(is_def)), literal,
-                            plaintext, char_ranges, Series(character, dwsp__), regexp, char_range,
-                            any_char, whitespace, group, Series(macro, NegativeLookahead(is_def)),
-                            Series(placeholder, NegativeLookahead(is_def)), parser))
+        Series(Series(Text("("), dwsp__), placeholder, ZeroOrMore(Series(Series(Text(","), dwsp__), placeholder)),
+               Series(Text(")"), dwsp__), mandatory=1)), DEF, dwsp__, Option(Series(OR, dwsp__)), macrobody,
+                      Option(Series(MOD_SYM, dwsp__, hide)), ENDL, dwsp__, Lookahead(FOLLOW_UP))
+    element.set(
+        Alternative(Series(Option(retrieveop), symbol, NegativeLookahead(is_def)), literal, plaintext, char_ranges,
+                    Series(character, dwsp__), regexp, char_range, any_char, whitespace, group,
+                    Series(macro, NegativeLookahead(is_def)), Series(placeholder, NegativeLookahead(is_def)), parser))
     countable.set(Alternative(option, oneormore, element))
     expression.set(Series(sequence, ZeroOrMore(Series(OR, dwsp__, sequence))))
     syntax = Series(dwsp__, ZeroOrMore(Alternative(definition, directive, macrodef)), EOF)
-    resume_rules__ = {'definition': [re.compile(r'\n\s*(?=@|\w+\w*\s*=)')],
-                      'directive': [re.compile(r'\n\s*(?=@|\w+\w*\s*=)')]}
+    resume_rules__ = {'definition': [LazyRE(r'\n\s*(?=@|\w+\w*\s*=)')],
+                      'directive': [LazyRE(r'\n\s*(?=@|\w+\w*\s*=)')]}
     root__ = syntax
 
     def __init__(self, root: Optional[Parser] = None, static_analysis: Optional[bool] = None) -> None:
@@ -1119,6 +648,7 @@ class ConfigurableEBNFGrammar(Grammar):
         self.mode__ = 'fixed'
 
 
+@deprecated(f"grammar_changed() has been moved from DHParser.ebnf to DHParser.dsl. Please, update your imports.")
 def grammar_changed(grammar_class, grammar_source: str) -> bool:
     """
     Returns ``True`` if ``grammar_class`` does not reflect the latest
@@ -1153,35 +683,41 @@ def grammar_changed(grammar_class, grammar_source: str) -> bool:
         return chksum != grammar_class.source_hash__
 
 
-def get_ebnf_grammar() -> Union[HeuristicEBNFGrammar, ConfigurableEBNFGrammar]:
+def get_ebnf_grammar() -> Grammar:
     """Returns a thread-local EBNF-Grammar-object for parsing EBNF sources."""
     THREAD_LOCALS = access_thread_locals()
     mode = get_config_value('syntax_variant')
     try:
         grammar = THREAD_LOCALS.ebnf_grammar_singleton
-        if mode in ('fixed', 'configurable'):
+        if mode in ('dhparser', 'fixed', 'configurable'):
             if not isinstance(grammar, ConfigurableEBNFGrammar):
                 raise AttributeError
         else:
+            from DHParser.ebnf_flavors.heuristic import HeuristicEBNFGrammar
             if not isinstance(grammar, HeuristicEBNFGrammar):
                 raise AttributeError
     except AttributeError:
-        if mode in ('fixed', 'configurable'):
+        if mode in ('dhparser', 'fixed', 'configurable'):
             grammar = ConfigurableEBNFGrammar(static_analysis=False)
-            if mode == "fixed":
+            if mode in ('fixed', 'dhparser'):
                 # configure grammar once
                 update_scanner(grammar, get_config_value('delimiter_set'))
             grammar.mode__ = mode
             THREAD_LOCALS.ebnf_grammar_singleton = grammar
         else:
+            from DHParser.ebnf_flavors.heuristic import HeuristicEBNFGrammar
             grammar = HeuristicEBNFGrammar(static_analysis=False)
-
             grammar.mode__ = mode
             THREAD_LOCALS.ebnf_grammar_singleton = grammar
-    if mode == 'configurable' or (mode == 'fixed' and grammar.mode__ != 'fixed'):
+    if mode == 'configurable' or (mode in ('fixed', 'dhparser')
+                                  and grammar.mode__ not in ('fixed', 'dhparser')):
         # configure grammar on each request of the grammar object
         update_scanner(grammar, get_config_value('delimiter_set'))
     grammar.mode__ = mode
+    # We assume our EBNF-Grammars are well tested and never need the following
+    # which would only slow compiling EBNF-code down.
+    grammar.history_tracking__ = False
+    grammar.resume_notices__ = False
     return grammar
 
 
@@ -1198,6 +734,120 @@ def parse_ebnf(ebnf: str) -> Node:
 ########################################################################
 
 
+LEAF_PARSER_NODES = {'plaintext', 'regexp', 'char_ranges', 'char_range',
+                     'character', 'any_char'}
+
+
+def get_globals(path: Path) -> Dict[str, Any]:
+    root = path[0]
+    globals = root.get_attr('globals', None)
+    if globals is None:
+        globals = {'optimizations': get_config_value('optimizations')}
+        for item in root.children:
+            if item.name == 'directive' and item[0].content == "literalws":
+                globals['literalws'] = item[1].content
+                break
+        else:
+            globals['literalws'] = get_config_value('default_literalws')
+        root.attr['globals'] = globals
+    return globals
+
+
+def cleanup_globals(path: Path):
+    if path[0].has_attr('globals'):
+        del path[0].attr['globals']
+
+
+def rearrange_expression(path: Path):
+    r"""Rearrenges expressions with alternatives of literals or
+    regexps with adjacent whitespace so as to append the whitespace
+    to the epxression rather than the individual alternatives. This
+    reduces the number of parsers and in particular parser calls
+    for each alternative.
+
+    It also serves as a staring point for
+    further SmartRE-based optimizations in the compilation stage
+
+    Example::
+
+    >>> from DHParser.configuration import get_config_value, set_config_value
+    >>> save = get_config_value('optimizations')
+    >>> set_config_value('optimizations', 'rearrange_alternative')
+    >>> ast_txt = '''(syntax
+    ...   (directive (symbol "literalws") (symbol "right"))
+    ...   (definition (symbol "Test")
+    ...     (expression
+    ...       (literal '"a"')
+    ...       (sequence (regexp "\\d+") (whitespace "~"))
+    ...       (sequence
+    ...         (char_ranges
+    ...           (RE_LEADIN "/")
+    ...           (range_chain
+    ...             (:Text "^")
+    ...             (range_desc (free_char "a"))
+    ...             (range_desc (free_char "b"))
+    ...             (range_desc (free_char "c")))
+    ...           (RE_LEADOUT "/"))
+    ...         (whitespace "~")))))'''
+    >>> ast = parse_sxpr(ast_txt)
+    >>> expression_path = ast.pick_path('expression')
+    >>> rearrange_expression(expression_path)
+    >>> print(expression_path[-1].as_sxpr())
+    (sequence
+      (expression
+        (literal `(literalws "none") '"a"')
+        (regexp "\d+")
+        (char_ranges
+          (RE_LEADIN "/")
+          (range_chain
+            (:Text "^")
+            (range_desc
+              (free_char "a"))
+            (range_desc
+              (free_char "b"))
+            (range_desc
+              (free_char "c")))
+          (RE_LEADOUT "/")))
+      (whitespace "~"))
+    >>> set_config_value('optimizations', save)
+
+    """
+    node = path[-1]
+    if node.name != "expression":
+        return   # expression node has already been replaced...
+    globals = get_globals(path)
+    optimizations = globals['optimizations']
+    if not any(opt in optimizations for opt in ('rearrange_anternative', 'alternative')):
+        return
+    lws = globals['literalws']
+    if lws not in ('left', 'right', 'both'):
+        return
+    left = lws in ('left', 'both')
+    right = lws in ('both', 'right')
+
+    children = []
+    for nd in node.children:
+        if nd.name == "literal":
+            children.append(Node("literal", nd.content).with_attr(literalws = 'none'))
+        elif nd.name == "sequence":
+            a = 1 if left and nd[0].name == "whitespace" else 0
+            b = -1 if right and nd[-1].name == "whitespace" else None
+            if a or b:
+                clipped = nd[a:b]
+                children.append(clipped[0] if len(clipped) == 1
+                                else Node("sequence", clipped))
+            else:
+                break
+        else:
+            break
+    else:
+        expression = Node("expression", tuple(children))
+        children = [Node("whitespace", "~"), expression] if left else [expression]
+        if right:  children.append(Node("whitespace", "~"))
+        node.name = "sequence"
+        node.result = tuple(children)
+
+
 def pythonize_identifier(path: Path):
     r"""A mekshift solution to allow identifiers with dashes:
     replace minus with underscore"""
@@ -1209,8 +859,9 @@ EBNF_AST_transformation_table = {
     # AST Transformations for EBNF-grammar
     "<":
         [remove_children_if(all_of(not_one_of('regexp', "RAISE_EXPR_WO_BRACKETS"), is_empty))],
-    "syntax":
-        [],
+    ">>>":
+        [cleanup_globals],
+    "syntax": [],
     "directive":
         [flatten, remove_tokens('@', '=', ',', '(', ')'),
          remove_children("RAISE_EXPR_WO_BRACKETS")],
@@ -1229,9 +880,10 @@ EBNF_AST_transformation_table = {
     "expression":
         [apply_if(replace_by_single_child, neg(has_parent("directive"))),
          # the restriction above is required to distinguish regex-find-semantics
-         # from regex-parser semantics in skip and resume-directives
+         # from regex-parser semantics in @skip and @resume-directives
          flatten, remove_children('OR'),
-         remove_tokens('|')],  # remove_tokens('|') is only for backwards-compatibility
+         remove_tokens('|'),  # remove_tokens('|') is only for backwards-compatibility
+         rearrange_expression],
     "sequence":
         [replace_by_single_child, flatten, remove_children('AND')],
     "interleave":
@@ -1277,7 +929,7 @@ EBNF_AST_transformation_table = {
         [reduce_single_child],
     "SYM_REGEX": [pythonize_identifier],
     "RAISE_EXPR_WO_BRACKETS":
-        [add_error("PEG Expressions in directives must be enclosed in barckets (...)",
+        [add_error("PEG Expressions in directives must be enclosed in brackets (...)",
                    PEG_EXPRESSION_IN_DIRECTIVE_WO_BRACKETS)],
     "EOF, DEF, OR, AND, ENDL, BRACE_SIGN, RNG_BRACE, RNG_DELIM, RNG_OPEN, "
     "RNG_CLOSE, TIMES, RE_LEADIN, RE_CORE, RE_LEADOUT, CH_LEADIN":
@@ -1288,9 +940,9 @@ EBNF_AST_transformation_table = {
 
 
 def EBNFTransform() -> TransformerFunc:
-    return partial(transformer,
-                   transformation_table=EBNF_AST_transformation_table.copy(),
-                   src_stage='CST', dst_stage='AST')
+    return static(partial(transformer,
+                  transformation_table=EBNF_AST_transformation_table.copy(),
+                  src_stage='CST', dst_stage='AST'))
 
 
 def get_ebnf_transformer() -> TransformerFunc:
@@ -1325,7 +977,7 @@ import collections
 from functools import partial
 import os
 import sys
-from typing import Tuple, List, Union, Any, Optional, Callable, cast
+from typing import Tuple, List, Set, Union, Any, Optional, Callable, cast
 
 try:
     import regex as re
@@ -1347,10 +999,11 @@ except (ImportError, ModuleNotFoundError):
         if dhparserdir not in sys.path:  sys.path.insert(0, dhparserdir)
 
 from DHParser.compile import Compiler, compile_source, Junction, full_compile
-from DHParser.configuration import set_config_value, get_config_value, access_thread_locals, \\
-    access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN
+from DHParser.configuration import set_config_value, add_config_values, get_config_value, \\
+    access_thread_locals, access_presets, finalize_presets, set_preset_value, \\
+    get_preset_value, read_local_config, CONFIG_PRESET, NEVER_MATCH_PATTERN, ALLOWED_PRESET_VALUES
 from DHParser import dsl
-from DHParser.dsl import recompile_grammar, never_cancel
+from DHParser.dsl import recompile_grammar
 from DHParser.ebnf import grammar_changed
 from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors, NOTICE, \\
     WARNING, ERROR, FATAL
@@ -1361,14 +1014,14 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, DropFro
     Option, NegativeLookbehind, OneOrMore, RegExp, SmartRE, Retrieve, Series, Capture, TreeReduction, \\
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, IgnoreCase, \\
     LateBindingUnary, mixin_comment, last_value, matching_bracket, optional_last_value, \\
-    PARSER_PLACEHOLDER, UninitializedError
+    PARSER_PLACEHOLDER, RX_NEVER_MATCH, UninitializedError
 from DHParser.pipeline import end_points, full_pipeline, create_parser_junction, \\
-    create_preprocess_junction, create_junction, PseudoJunction 
+    create_preprocess_junction, create_junction, PseudoJunction, PipelineResult
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \\
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors
 from DHParser.stringview import StringView
-from DHParser.toolkit import is_filename, load_if_file, cpu_count, RX_NEVER_MATCH, \\
-    ThreadLocalSingletonFactory, expand_table
+from DHParser.toolkit import is_filename, load_if_file, cpu_count, \\
+    ThreadLocalSingletonFactory, expand_table, static, CancelQuery
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
 from DHParser.transform import is_empty, remove_if, TransformationDict, TransformerFunc, \\
     transformation_factory, remove_children_if, move_fringes, normalize_whitespace, \\
@@ -1389,7 +1042,7 @@ from DHParser import parse as parse_namespace__
 
 PREPROCESSOR_FACTORY = '''
 
-# To capture includes, replace the NEVER_MATCH_PATTERN 
+# To capture includes, replace the NEVER_MATCH_PATTERN
 # by a pattern with group "name" here, e.g. r'\\input{{(?P<name>.*)}}'
 RE_INCLUDE = NEVER_MATCH_PATTERN
 RE_COMMENT = {COMMENT__}  # THIS MUST ALWAYS BE THE SAME AS {NAME}Grammar.COMMENT__ !!!
@@ -1406,14 +1059,14 @@ preprocessing: PseudoJunction = create_preprocess_junction(
 
 
 CUSTOM_PARSER_EXAMPLE = '''
-# Examples for custom parsers. Use these as role models for your own 
+# Examples for custom parsers. Use these as role models for your own
 # Python-implemented parsing-functions
 
 # 1. Plain parsing function (denoted as "@pCustom(parse_word)" is the grammar)
 
 def parse_word(s: StringView) -> Optional[Node]:
     m = s.match(r'\\w+')
-    if m: 
+    if m:
         return Node('word', s[:m.end()])
     return None
 
@@ -1425,9 +1078,23 @@ def parse_word(s: StringView) -> Optional[Node]:
 '''
 
 
-GRAMMAR_FACTORY = '''    
+GRAMMAR_FACTORY = r'''
 parsing: PseudoJunction = create_parser_junction({NAME}Grammar)
 get_grammar = parsing.factory # for backwards compatibility, only
+
+try:
+    assert RE_INCLUDE == NEVER_MATCH_PATTERN or \
+        RE_COMMENT in ({NAME}Grammar.COMMENT__, NEVER_MATCH_PATTERN), \
+        "Please adjust the pre-processor-variable RE_COMMENT in file {NAME}Parser.py so that " \
+        "it either is the NEVER_MATCH_PATTERN or has the same value as the COMMENT__-attribute " \
+        "of the grammar class {NAME}Grammar! " \
+        'Currently, RE_COMMENT reads "%s" while COMMENT__ is "%s". ' \
+        % (RE_COMMENT, {NAME}Grammar.COMMENT__) + \
+        "\n\nIf RE_COMMENT == NEVER_MATCH_PATTERN then includes will deliberately be " \
+        "processed, otherwise RE_COMMENT=={NAME}Grammar.COMMENT__ allows the " \
+        "preprocessor to ignore comments."
+except (AttributeError, NameError):
+    pass
 '''
 
 
@@ -1437,8 +1104,11 @@ TRANSFORMER_FACTORY = '''
 #     {NAME}_AST_transformation_table, "CST", "AST", "transtable")
 
 def {NAME}Transformer() -> TransformerFunc:
-    return partial(transformer, transformation_table={NAME}_AST_transformation_table.copy(),
-                   src_stage='CST', dst_stage='AST')
+    return static(partial(
+        transformer, 
+        transformation_table={NAME}_AST_transformation_table.copy(),
+        src_stage='CST', 
+        dst_stage='AST'))
 
 ASTTransformation: Junction = Junction(
     'CST', ThreadLocalSingletonFactory({NAME}Transformer), 'AST')
@@ -1480,10 +1150,26 @@ VALID_DIRECTIVES = {
     '[tree_]reduction': 'Reduction level for simplifying the tree while parsing.'
                         'Possible levels: none, flatten, merge_treetops, merge',
     '$SYMBOL_filer': 'Function that transforms captured values of the given symbol on retrieval',
-    '$SYMBOL_error': 'Pair of regular expression an custom error message if regex matches',
+    '$SYMBOL_error': 'Pair of regular expression and custom error message if regex matches',
     '$SYMBOL_skip': 'List of regexes or functions to find reentry point after an error',
-    '$SYMBOL_resume': 'List or regexes or functions to find reentry point for parent parser'
+    '$SYMBOL_resume': 'List or regexes or functions to find reentry point for parent parser',
+    'optimizations': 'Optimization level: none, some, all',
+    'flavor': 'EBNF-flavor: dhparser, heuristic'
 }
+
+
+REDUCTION = {'none': NO_TREE_REDUCTION,
+            'flatten': FLATTEN,
+            'merge_treetops': MERGE_TREETOPS,
+            'merge': MERGE_LEAVES,
+            'merge_leaves': MERGE_LEAVES}
+REDUCTION_VALUES = {key for key in REDUCTION.keys()} | {str(value) for value in REDUCTION.values()}
+
+
+def literalws_set_from_value(lws: str) -> MutableSet[str]:
+    if set(lws.split(' ')) == {'left', 'right'}:
+        return {'left', 'right'}
+    return {'left', 'right'} if lws == 'both' else (set() if lws == 'none' else {lws})
 
 
 class EBNFDirectives:
@@ -1530,6 +1216,11 @@ class EBNFDirectives:
             be dropped during the parsing process, already.
     :ivar reduction: The reduction level (0-3) for early tree-reduction
             during the parsing stage.
+    :ivar optimizations:  Turns on optimizing parser by substituting
+            SmartRE-parsers for compound parsers when possible.
+            (see "optimizations" in DHParser.config.py).
+            An empty set means all optimizations are turned off.
+    :ivar flavor:  Selects the EBNF-flavor (or "syntax-variant") to be used.
     :ivar \_super\_ws: Cache for the "super whitespace" which
             is a regular expression that merges whitespace and
             comments. This property should only be accessed after
@@ -1537,22 +1228,25 @@ class EBNFDirectives:
             with the values parsed from the EBNF source.
     """
     __slots__ = ['whitespace', 'comment', 'literalws', 'tokens', 'filter', 'error', 'skip',
-                 'resume', 'disposable', 'drop', 'reduction', '_super_ws']
+                 'resume', 'disposable', 'drop', 'reduction', 'optimizations', 'flavor',
+                 '_super_ws']
 
     REPEATABLE_DIRECTIVES = {'tokens', 'preprocessor_tokens', 'disposable', 'drop'}
 
     def __init__(self):
         self.whitespace = WHITESPACE_TYPES['linefeed']  # type: str
         self.comment = ''         # type: str
-        self.literalws = {get_config_value('default_literalws')}  # type: Set[str]
-        self.tokens = set()       # type: Set[str]
+        self.literalws: MutableSet[str] = literalws_set_from_value(get_config_value('default_literalws'))
+        self.tokens = set()       # type: MutableSet[str]
         self.filter = dict()      # type: Dict[str, str]
         self.error = dict()       # type: Dict[str, List[Tuple[ReprType, ReprType]]]
         self.skip = dict()        # type: Dict[str, List[Union[unrepr, str]]]
         self.resume = dict()      # type: Dict[str, List[Union[unrepr, str]]]
         self.disposable = get_config_value('default_disposable_regexp')  # type: str
-        self.drop = set()         # type: Set[str]
-        self.reduction = 1        # type: int
+        self.drop = set()         # type: MutableSet[str]
+        self.reduction = FLATTEN  # type: int
+        self.optimizations = get_config_value('optimizations')  # type: FrozenSet[str]
+        self.flavor = get_config_value('syntax_variant')  # type: str
         self._super_ws = None     # type: Optional[str]
 
     def __getitem__(self, key):
@@ -1577,13 +1271,50 @@ class EBNFDirectives:
         else:
             self.disposable = '(?:%s)|(?:%s)' % (self.disposable, pattern)
 
-    def add_to_disposable_symbols(self, symbols: Union[str, Container[str]]):
+    def add_to_disposable_symbols(self, symbols: Union[str, Iterable[str]]):
         symbols = {symbols} if isinstance(symbols, str) else set(symbols)
         for s in frozenset(symbols):
             if re.match(self.disposable, s):  symbols.remove(s)
         if symbols:
             pattern = '$|'.join(symbols) + '$'
-            self.disposable = '(?:%s)|(?:%s)' % (self.disposable, pattern)
+            if self.disposable != NEVER_MATCH_PATTERN:
+                self.disposable = f'(?:{self.disposable})|(?:{pattern})'
+            else:
+                self.disposable = f'(?:{pattern})'
+
+
+def get_regex_group(rxp, expect_group: bool = True) -> Tuple[str, str]:
+    mb = matching_brackets(rxp, "(", ")", is_regex=True)
+    if (0, len(rxp) - 1) not in mb:
+        if expect_group:
+            raise AssertionError(f"Regex group exptected, not {rxp}")
+        else:
+            return '', ''
+    group_type = rxp[1:3]
+    if group_type == "?P":
+        m = RX_NAMED_GROUPS.match(rxp)
+        assert m, f"Malformed named group in: {rxp}"
+        return (("(" if m.group(1) == ":RegExp" else m.group(0)),
+                rxp[len(m.group(0)):-1])
+    elif group_type == "?:":
+        return "", rxp[3:-1]
+    elif group_type in ('?=', '?!'):
+        return "", rxp
+    else:
+        assert not rxp[1:2] == "?", f"Unexpected group-type: {rxp}"
+        return "(", rxp[1:-1]
+
+
+def neutralize_unnamed_groups(rxp: str) -> str:
+    r"""Replaces unnamed groups by non-catching groups, i.e. (\w+) -> (?:w+)"""
+    a = 0
+    al = []
+    for b, _ in matching_brackets(rxp, "(", ")", is_regex=True):
+        if rxp[b + 1] != "?":
+            al.append(rxp[a:b + 1])
+            a = b + 1
+    al.append(rxp[a:len(rxp)])
+    return '?:'.join(al)
 
 
 class EBNFCompilerError(CompilerError):
@@ -1763,27 +1494,27 @@ class EBNFCompiler(Compiler):
     def reset(self):
         super().reset()
         self.python_src = ''                   # type: str
-        self.re_flags = set()                  # type: Set[str]
+        self.re_flags = set()                  # type: MutableSet[str]
         self.rules = OrderedDict()             # type: OrderedDict[str, List[Node]]
         self.referred_symbols_cache = dict()   # type: Dict[str, FrozenSet[str]]
         self.directly_referred_cache = dict()  # type: Dict[str, FrozenSet[str]]
-        self.referred_otherwise = set()        # type: Set[str]
+        self.referred_otherwise = set()        # type: MutableSet[str]
         self.current_symbols = []              # type: List[Node]
         self.cache_literal_symbols = None      # type: Optional[Dict[str, str]]
         self.symbols = {}                      # type: Dict[str, List[Node]]
-        self.py_symbols = set()                # type: Set[str]
+        self.py_symbols = set()                # type: MutableSet[str]
         self.variables = {}                    # type: Dict[str, List[Node]]
-        self.forward = set()                   # type: Set[str]
+        self.forward = set()                   # type: MutableSet[str]
         self.definitions = {}                  # type: Dict[str, str]
         self.macros = {}                       # type: Dict[str, Tuple[Node, List[str], Node]]
         self.macro_stack = []                  # type: List[str]
-        self.required_keywords = set()         # type: Set[str]
+        self.required_keywords = set()         # type: MutableSet[str]
         self.deferred_tasks = []               # type: List[Callable]
         self.root_symbol = ""                  # type: str
         self.directives = EBNFDirectives()     # type: EBNFDirectives
         self.defined_directives = dict()       # type: Dict[str, List[Node]]
-        self.consumed_custom_errors = set()    # type: Set[str]
-        self.consumed_skip_rules = set()       # type: Set[str]
+        self.consumed_custom_errors = set()    # type: MutableSet[str]
+        self.consumed_skip_rules = set()       # type: MutableSet[str]
         self.P = {p: p for p in parser_names}  # type: Dict[str, str]
 
 
@@ -1834,6 +1565,9 @@ class EBNFCompiler(Compiler):
         tt_name = self.grammar_name + '_AST_transformation_table'
         transtable = [tt_name + ' = {',
                       '    # AST Transformations for the ' + self.grammar_name + '-grammar',
+                      '    # Special rules:',
+                      '    # "<<<": [],  # called once before the tree-traversal starts',
+                      '    # ">>>": [],  # called once after the tree-traversal has finished',
                       '    # "<": [],  # called for each node before calling its specific rules',
                       '    # "*": [],  # fallback for nodes that do not appear in this table',
                       '    # ">": [],   # called for each node after calling its specific rules']
@@ -1886,24 +1620,27 @@ class EBNFCompiler(Compiler):
         compiler += [COMPILER_FACTORY.format(NAME=self.grammar_name)]
         return '\n'.join(compiler)
 
-    def verify_transformation_table(self, transtable):
-        """
-        Checks for symbols that occur in the transformation-table but have
-        never been defined in the grammar. Usually, this kind of
-        inconsistency results from an error like a typo in the transformation
-        table.
-        """
-        assert self._dirty_flag
-        table_entries = set(expand_table(transtable).keys()) - {'*', '<', '>', '~'}
-        symbols = set(self.rules.keys()) | set(self.macros.keys())
-        symbols.add('ZOMBIE__')
-        messages = []
-        for entry in table_entries:
-            if entry not in symbols and not entry[:1] == ":":
-                messages.append(Error(('Symbol "%s" is not defined in grammar %s but appears in '
-                                       'the transformation table!') % (entry, self.grammar_name),
-                                      0, UNDEFINED_SYMBOL_IN_TRANSTABLE_WARNING))
-        return messages
+    # def verify_transformation_table(self, transtable):
+    #     """
+    #     Checks for symbols that occur in the transformation-table but have
+    #     never been defined in the grammar. Usually, this kind of
+    #     inconsistency results from an error like a typo in the transformation
+    #     table.
+    #     """
+    #     assert self._dirty_flag
+    #     table_entries = set(expand_table(transtable).keys()) - {'*', '<', '>', '~', '<<<', '>>>'}
+    #     symbols = set(self.rules.keys()) | set(self.macros.keys())
+    #     symbols.add('ZOMBIE__')
+    #     if self.directives.comment:
+    #         symbols.add('comment__')
+    #     messages = []
+    #     # # commented out, because warning is confusing for beginners
+    #     # for entry in table_entries:
+    #     #     if entry not in symbols and not entry[:1] == ":":
+    #     #         messages.append(Error(('Symbol "%s" is not defined in grammar %s but appears in '
+    #     #                                'the transformation table!') % (entry, self.grammar_name),
+    #     #                               0, UNDEFINED_SYMBOL_IN_TRANSTABLE_WARNING))
+    #     return messages
 
     # def verify_compiler(self, compiler):
     #     """
@@ -1913,7 +1650,7 @@ class EBNFCompiler(Compiler):
     #     """
     #     pass  # TODO: add verification code here
 
-    def check_rx(self, node: Node, rx: str) -> str:
+    def check_rx(self, node: Node, rx: str, smartRE: bool = False) -> str:
         """
         Checks whether the string `rx` represents a valid regular
         expression. Makes sure that multi-line regular expressions are
@@ -1921,16 +1658,19 @@ class EBNFCompiler(Compiler):
         """
         # TODO: Support atomic grouping: https://stackoverflow.com/questions/13577372/
         #       do-python-regular-expressions-have-an-equivalent-to-rubys-atomic-grouping
+        rx = rx.replace(r'\/', '/')
         flags = self.re_flags | {'x'} if rx.find('\n') >= 0 else self.re_flags
         if flags:
+            if 'i' in flags:
+                rx = rx.replace('(?P<:Text>', '(?P<:IgnoreCase>')
             rx = "(?%s)%s" % ("".join(flags), rx)
         try:
-            re.compile(rx)
+            test_rx = RX_NAMED_GROUPS.sub('(', rx) if smartRE else rx
+            re.compile(test_rx)
         except Exception as re_error:
             self.tree.new_error(node, "malformed regular expression %s: %s" %
                                 (repr(rx), str(re_error)), MALFORMED_REGULAR_EXPRESSION)
         return rx
-
 
     def extract_regex(self, node: Node) -> str:
         """Extracts regular expression string from regexp-Node."""
@@ -1943,6 +1683,10 @@ class EBNFCompiler(Compiler):
             assert node.name == "regexp"""
         value = self.check_rx(node, value)
         return value
+
+
+    def find_smartRE_method(self, node: Node) -> Callable:
+        return getattr(self, 'smartRE_' + node.name)
 
 
     def make_search_rule(self, node: Node, nd: Node, kind: str) -> ReprType:
@@ -2021,7 +1765,7 @@ class EBNFCompiler(Compiler):
             return self.referred_symbols_cache[symbol]
         except KeyError:
             pass
-        collected = set()  # type: Set[str]
+        collected = set()  # type: MutableSet[str]
 
         def gather(sym: str):
             for s in self.directly_referred(sym):
@@ -2040,7 +1784,7 @@ class EBNFCompiler(Compiler):
         sym is not recursive, the returned tuple (of paths) will be empty.
         This method exists only for debugging (so far...)."""
         path = []  # type: List[str]
-        recursive_paths = set()  # type: Set[Tuple[str, ...]]
+        recursive_paths = set()  # type: MutableSet[Tuple[str, ...]]
 
         def gather(sym: str):
             nonlocal path, recursive_paths
@@ -2059,7 +1803,7 @@ class EBNFCompiler(Compiler):
     @cython.locals(N=cython.int, top=cython.int, pointer=cython.int,
                    i=cython.int, k=cython.int, j=cython.int)
     def optimize_definitions_order(self, definitions: List[Tuple[str, str]]):
-        """Reorders the definitions so as to minimize the number of Forward
+        """Reorders the definitions to minimize the number of Forward
         declarations. Forward declarations remain inevitable only where
         recursion is involved.
         """
@@ -2179,7 +1923,7 @@ class EBNFCompiler(Compiler):
         if (DROP_WSPC in self.directives.drop or DROP_NO_COMMENTS in self.directives.drop
                 or DROP_STRINGS in self.directives.drop):
             if DROP_NO_COMMENTS in self.directives.drop:
-                drop_wspc_tmpl = 'Drop(Whitespace(%s, keep_comments=True))'
+                drop_wspc_tmpl = 'Drop(Whitespace(%s, keep_comments=True))'  # TODO: turn keep-comments into a global option
             else:
                 drop_wspc_tmpl = 'Drop(Whitespace(%s))'
             definitions.append((EBNFCompiler.DROP_WHITESPACE_PARSER_KEYWORD,
@@ -2262,9 +2006,12 @@ class EBNFCompiler(Compiler):
         show_source = get_config_value('add_grammar_source_to_parser_docstring')
         declarations = ['class ' + self.grammar_name
                         + 'Grammar(Grammar):',
-                        'r"""Parser for ' + article + self.grammar_name
-                        + ' source file'
-                        + ('. Grammar:' if self.grammar_source and show_source else '.')]
+                        'r"""Parser for ' + article + self.grammar_name + ' document.\n\n'
+                        + '    Instantiate this class and then call the instance with the\n'
+                        + '    source code as argument in order to use the parser, e.g.:\n'
+                        + f'        parser = {self.grammar_name}()\n'
+                        + f'        syntax_tree = parser(source_code)'
+                        + ('\n\n    Grammar:' if self.grammar_source and show_source else '')]
         definitions.append(('parser_initialization__', '["upon instantiation"]'))
         definitions.append(('static_analysis_pending__', '[True]'))
         definitions.append(('disposable__',
@@ -2301,6 +2048,10 @@ class EBNFCompiler(Compiler):
                              | set(['$' + k for k in self.macros])
         for symbol, usages in self.symbols.items():
             if symbol not in symbols_and_macros:
+                if symbol[:1] != "$" and ("$" + symbol) in symbols_and_macros:
+                    macrohint = f' Use "${symbol}" to refer to the macro with that name.'
+                else:
+                    macrohint = ""
                 for usage in usages:
                     passage = self.tree.source[usage.pos:usage.pos + len(symbol) + 1]
                     if passage == symbol + '(':
@@ -2311,8 +2062,11 @@ class EBNFCompiler(Compiler):
                             passage += "...)"
                         hint = f' If  {passage}  was meant as a custom parser call, ' \
                                f'then "@" should be added in front of it.'
+                    elif macrohint:
+                        hint = macrohint
                     else:
                         hint = ''
+
                     self.tree.new_error(
                         usage, f'Missing definition for symbol "{symbol}"!' + hint,
                         UNDEFINED_SYMBOL)
@@ -2384,6 +2138,7 @@ class EBNFCompiler(Compiler):
 
 
     def on_syntax(self, node: Node) -> str:
+        self.directives.optimizations = get_config_value('optimizations')  # use possibly updated optimizations
         # drop the wrapping sequence node
         if len(node.children) == 1 and node.children[0].anonymous:
             node = node.children[0]
@@ -2409,7 +2164,7 @@ class EBNFCompiler(Compiler):
             elif nd.name == 'macrodef':
                 if nd.get('placeholder', None):
                     macrodefs.append(nd)
-                else:  # macros without arguments must be read first, later, because of early substitution
+                else:  # macros without arguments must be read first, because of early substitution
                     macrosyms.append(nd)
             else:
                 assert nd.name == 'definition', nd.as_sxpr()
@@ -2436,7 +2191,8 @@ class EBNFCompiler(Compiler):
         python_src = self.assemble_parser(list(self.definitions.items()), root_symbol)
         if get_config_value('static_analysis') == 'early' and not \
                 any((e.code >= FATAL or e.code in
-                     (MALFORMED_REGULAR_EXPRESSION, SYMBOL_NAME_IS_PYTHON_KEYWORD))
+                     (MALFORMED_REGULAR_EXPRESSION, SYMBOL_NAME_IS_PYTHON_KEYWORD,
+                      BAD_ORDER_OF_ALTERNATIVES))
                     for e in self.tree.errors):
             errors = []
             # circumvent name-errors for external symbols
@@ -2448,7 +2204,6 @@ class EBNFCompiler(Compiler):
             try:
                 grammar_class = compile_python_object(
                     probe_src, (self.grammar_name or "DSL") + "Grammar")
-                # print(probe_src)
                 errors = grammar_class().static_analysis_errors__
                 python_src = python_src.replace(
                     'static_analysis_pending__ = [True]',
@@ -2457,7 +2212,7 @@ class EBNFCompiler(Compiler):
                 try:
                     if ne.name not in self.symbols:
                         # undefined symbols in the grammar have already been caught and reported
-                        raise(ne)
+                        raise ne
                 except AttributeError:
                     pass  # In Python3.7/3.8/3.9 NameError does not have a name attribute
             except GrammarError as ge:
@@ -2474,7 +2229,7 @@ class EBNFCompiler(Compiler):
                 se.msg += f' "{src_lines[se.lineno - 1]}" '
                 raise se
             for sym, parser, err in errors:
-                psym = parser.symbol.pname
+                psym = parser.symbol
                 for dic, key in [(self.rules, sym), (self.rules, psym), (self.macros, psym)]:
                     symdef_node = dic.get(key, [None])[0]
                     if symdef_node:  break
@@ -2487,6 +2242,8 @@ class EBNFCompiler(Compiler):
 
     def on_definition(self, node: Node) -> Tuple[str, str]:
         # process modifiers
+        import keyword
+
         drop_flag = False
         if node[0].name == "modifier":
             assert node[1].name == "symbol"
@@ -2531,6 +2288,7 @@ class EBNFCompiler(Compiler):
                 SYMBOL_NAME_IS_PYTHON_KEYWORD)
 
         # process definition
+        save_path = self.path.copy()
         try:
             self.current_symbols = [node]
             self.rules[rule] = self.current_symbols
@@ -2553,6 +2311,7 @@ class EBNFCompiler(Compiler):
                                     + flatten_sxpr(defn.as_sxpr()), STRUCTURAL_ERROR_IN_AST)
                 defn = "Malformed AST"
         except TypeError as error:
+            self.path = save_path
             from traceback import extract_tb, format_list
             trace = ''.join(format_list((extract_tb(error.__traceback__))))
             errmsg = "%s (TypeError: %s;\n%s)\n%s" \
@@ -2572,12 +2331,6 @@ class EBNFCompiler(Compiler):
         nd.result = "".join(parts)
         nd.name = "literal"
 
-    # def add_to_disposable_regexp(self, pattern):
-    #     if self.directives.disposable == NEVER_MATCH_PATTERN:
-    #         self.directives.disposable = pattern
-    #     else:
-    #         old_pattern = self.directives.disposable
-    #         self.directives.disposable = '(?:%s)|(?:%s)' % (old_pattern, pattern)
 
     def on_directive(self, node: Node) -> str:
         for child in node.children:
@@ -2602,8 +2355,11 @@ class EBNFCompiler(Compiler):
             if len(node.children) > n + 1:
                 self.tree.new_error(node, 'Directive "@%s" can have at most %i values.' % (key, n))
 
-        if key in {'comment', 'whitespace'}:
+        if key in {'comment', 'comment_keep', 'whitespace'}:
             check_argnum()
+            if key == 'comment_keep':
+                key = 'comment'
+                self.directives.drop.add(DROP_NO_COMMENTS)
             if node.children[1].name == "symbol":
                 value = node.children[1].content
                 if key == 'whitespace' and value in WHITESPACE_TYPES:
@@ -2688,15 +2444,13 @@ class EBNFCompiler(Compiler):
         elif key in ('reduction', 'tree_reduction'):
             check_argnum(1)
             arg = node.children[1].content
-            if arg not in ('none', 'flatten', 'merge_treetops', 'merge', 'merge_leaves',
-                           '0', '1', '2', '3'):
+            if arg not in REDUCTION_VALUES:
                 self.tree.new_error(node, 'Wrong value "%s" for Directive "%s". ' % (arg, key) +
                                     'Choose from: 0-4 or none, flatten, merge_treetop, merge.')
             elif arg.isdigit():
                 self.directives.reduction = int(arg)
             else:
-                level = {'none': 0, 'flatten': 1, 'merge_treetops': 2,
-                         'merge': 3, 'merge_leaves': 3}[arg]
+                level = REDUCTION[arg]
                 self.directives.reduction = level
 
         elif key == 'ignorecase':
@@ -2711,8 +2465,7 @@ class EBNFCompiler(Compiler):
                     or ('none' in values and len(values) > 1)):
                 self.tree.new_error(node, 'Directive "literalws" allows only `left`, `right`, '
                                     '`both` or `none`, not `%s`' % ", ".join(values))
-            wsp = {'left', 'right'} if 'both' in values \
-                else set() if 'none' in values else values
+            wsp = {'left', 'right'} if 'both' in values else set() if 'none' in values else values
             self.directives.literalws = wsp
 
         elif key in ('tokens', 'preprocessor_tokens'):
@@ -2723,6 +2476,32 @@ class EBNFCompiler(Compiler):
                                     % str(redeclared) + 'Later declaration will be ignored',
                                     code=REDECLARED_TOKEN_WARNING)
             self.directives.tokens |= tokens - redeclared
+
+        elif key == "optimizations":
+            values = frozenset(child.content.strip().lower() for child in node.children[1:])
+            allowed = ALLOWED_PRESET_VALUES['optimizations']
+            if len(values) == 1:
+                val = tuple(values)[0].lower()
+                if val == 'none':  values = frozenset()
+                elif val == 'some':  values = frozenset({'rearrange_alternative'})
+                elif val == 'all': values = allowed
+            if any(v not in allowed for v in values):
+                self.tree.new_error(
+                    node, f'Directive "optimizations" allows only "none", "some", "all" '
+                          f'or any subset of {set(allowed)} as values, not {values} .')
+            self.directives.optimizations = values
+
+        elif key == "flavor":
+            check_argnum(1)
+            arg = node[1].content
+            allowed = ALLOWED_PRESET_VALUES['syntax_variant']
+            if arg not in allowed:
+                self.tree.new_error(
+                    node, f'Directive "flavor" allows only {set(allowed)}, not {arg} .')
+            else:
+                self.directives.flavor = arg
+            # no further action needed, because this directive has already been interpreted
+            # earlier in the pipeline
 
         elif key.endswith('_filter'):
             check_argnum()
@@ -2852,11 +2631,11 @@ class EBNFCompiler(Compiler):
         drop_regexp = drop_clause + f'{self.P["RegExp"]}('
         drop_text = drop_clause + f'{self.P["Text"]}('
         if (parser_class == self.P["Series"] and node.name not in self.directives.drop
-            and len(arguments) <= 2
             and DROP_REGEXP in self.directives.drop and self.path[-2].name == "definition"
+            and len([arg for arg in arguments
+                     if arg not in EBNFCompiler.COMMENT_OR_WHITESPACE]) == 1
             and all((arg.startswith(drop_regexp) or arg.startswith(drop_text)
-                     or arg in EBNFCompiler.COMMENT_OR_WHITESPACE) for arg in arguments)
-                and any(arg in EBNFCompiler.COMMENT_OR_WHITESPACE for arg in arguments)):
+                     or arg in EBNFCompiler.COMMENT_OR_WHITESPACE) for arg in arguments)):
             arguments = [arg.replace(drop_clause, '').replace('))', ')') for arg in arguments]
         return parser_class + '(' + ', '.join(arguments) + ')'
 
@@ -2910,14 +2689,26 @@ class EBNFCompiler(Compiler):
         assert macro_name == _
         return code
 
+    def smartRE_placeholder(self, node) -> Tuple[str, str]:
+        code = self.on_macro(node)
+        if node.name == 'placeholder':
+            return '(?:ERROR)', 'ERROR while expanding placeholder'
+        rxp, rep_str = self.compile(node, self.find_smartRE_method)
+        if code.startswith(self.P["Drop"]):
+            if rxp[:1] == '(' and rxp[1:3] != "?:":
+                m = RX_NAMED_GROUPS.match(rxp)
+                rxp = '(?:' + (rxp[len(m.group(0)):] if m else rxp[1:])
+        return rxp, rep_str
 
     def on_placeholder(self, node) -> str:
         return self.on_macro(node)
 
-    def on_expression(self, node) -> str:
-        # The following algorithm reorders literal alternatives, so that earlier alternatives
-        # does not pre-empt later alternatives, e.g. 'ID' | 'IDREF' will be reordered as
-        # 'IDREF' | 'ID'
+
+    def reorder_alternatives(self, node):
+        """The following algorithm reorders literal alternatives, so that earlier alternatives
+        do not pre-empt later alternatives, e.g. 'ID' | 'IDREF' will be reordered as
+        'IDREF' | 'ID'"""
+        assert node.name == "expression"
 
         def move_items(l: List, a: int, b: int):
             """Moves all items in the interval [a:b[ one position forward and moves the
@@ -2926,7 +2717,7 @@ class EBNFCompiler(Compiler):
                 a, b = b, a
             last = l[b]
             for i in range(b, a, -1):
-                l[i] = l[i-1]
+                l[i] = l[i - 1]
             l[a] = last
 
         def literal_content(nd: Node) -> Optional[str]:
@@ -2950,8 +2741,8 @@ class EBNFCompiler(Compiler):
             if content is not None:
                 literals.append([i, content])
 
-        move = []          # type: List[Tuple[int, int]]
-        snapshots = set()  # type: Set[Tuple[int, ...]]
+        move = []  # type: List[Tuple[int, int]]
+        snapshots = set()  # type: MutableSet[Tuple[int, ...]]
         start_over = True  # type: bool
         while start_over:
             start_over = False
@@ -2967,7 +2758,7 @@ class EBNFCompiler(Compiler):
                             literals[n][0] += 1
                         self.tree.new_error(
                             node, 'Alternative "%s" should not precede "%s" where it occurs '
-                            'at the beginning! Reorder to avoid warning.' % (earlier, later),
+                                  'at the beginning! Reorder to avoid warning.' % (earlier, later),
                             REORDERING_OF_ALTERNATIVES_REQUIRED)
                         start_over = True
                         break
@@ -2991,6 +2782,74 @@ class EBNFCompiler(Compiler):
                 move_items(children, mv[0], mv[1])
             node.result = tuple(children)
 
+    def requires_group(self, node, rxp) -> bool:
+        is_plain_text= node.name == 'plaintext' \
+            or (node.name == 'literal'
+                and (node.get_attr('literalws', '') == 'none'
+                     or (not node.has_attr('literalws')
+                         and not self.directives.literalws)))
+        b = len(rxp) - 1
+        is_group = (0, b) in matching_brackets(rxp, "(", ")", is_regex=True)
+        is_range = (0, b) in matching_brackets(rxp, "[", "]", is_regex=True)
+        return not (is_plain_text or is_group or is_range)
+
+    def fix_group(self, node, stripped_re: str) -> str:
+        rg = self.requires_group(node, stripped_re) and stripped_re.find('|') >= 0
+        return ''.join(["(?:", stripped_re, ")"]) if rg else stripped_re
+
+    def group_rxps(self, rxps: List[Tuple[Node, str]]) -> List[Tuple[str, List[str]]]:
+        packages = []
+        for nd, rxp in rxps:
+            group_type, stripped_re = get_regex_group(rxp)
+            rx = self.fix_group(nd, stripped_re)
+            if not packages:
+                packages.append((group_type, [rx]))
+            elif group_type == packages[-1][0]:
+                packages[-1][1].append(rx)
+            else:
+                packages.append((group_type, [rx]))
+        return packages
+
+
+    def smartRE_expression(self, node: Node) -> Tuple[str, str]:
+        """:raises: AttributeError, ValueError"""
+        self.reorder_alternatives(node)
+        rxps, rep_strs = [], []
+        optional_nd = None
+        for nd in node.children:
+            rxp, repr_str = self.compile(nd, self.find_smartRE_method)
+            rxps.append((nd, rxp))
+            rep_strs.append(repr_str)
+        groups = self.group_rxps(rxps)
+        packages = [g[0] + '|'.join(rx for rx in g[1]) + (")" if g[0] else "") for g in groups]
+        if len(packages) == 1:
+            expr = packages[0]
+            if (0, len(expr) - 1) not in matching_brackets(expr, "(", ")", is_regex=True):
+                expr = ''.join(["(?:", expr, ")"])
+        else:
+            expr = ''.join(["(?:", "|".join(packages), ")"])
+        return expr, '|'.join(rep_strs)
+
+
+    def on_expression(self, node) -> str:
+        self.reorder_alternatives(node)
+        for nd in node.children[:-1]:
+            if nd.name in ('option', 'repetition'):
+                self.tree.new_error(nd, 'Only the very last alternative may be optional!',
+                                    BAD_ORDER_OF_ALTERNATIVES)
+        if 'alternative' in self.directives.optimizations:
+            save_path = self.path.copy()
+            try:
+                pattern, content = self.smartRE_expression(node)
+                if self.directives.reduction > REDUCTION['none']:
+                    if pattern[:3] == "(?:":  pattern = pattern[3:-1]
+                    pattern = self.check_rx(node, pattern, smartRE=True)
+                    return f"{self.P['SmartRE']}(f{repr(pattern)}, {repr(content)})"
+                else:
+                    self.tree.new_error(
+                        node, 'Cannot optimize alternatives if @reduction is none', NOTICE)
+            except (AttributeError, ValueError):
+                self.path = save_path
         if len(node.children) == 1:
             # can only occur inside directives, because here expressions are not
             # necessarily replaced by their single child. (See AST-Transformation)
@@ -3060,7 +2919,58 @@ class EBNFCompiler(Compiler):
         return tuple(filtered_children), custom_args
 
 
+    def smartRE_sequence(self, node) -> Tuple[str, str]:
+        if any(nd.name == TOKEN_PTYPE and nd.content == "§" for nd in node.children):
+            raise ValueError('Cannot optimize sequences with mandatory marker!')
+        rxps, rep_strs = [], []
+        undrop = len(self.path) >= 2 and self.path[-2].name == "definition" \
+                 and node.name not in self.directives.drop \
+                 and len([child for child in node.children if child.name != "whitespace"]) == 1 \
+                 and all(child.name in ('regexp', 'literal', 'plaintext', 'whitespace',
+                                        'char_range', 'char_ranges', 'character', 'any_char',
+                                        'range_chain') for child in node.children)
+        for nd in node.children:
+            rxp, repr_str = self.compile(nd, self.find_smartRE_method)
+            if undrop and nd.name != "whitespace" and rxp[:3] == "(?:":  rxp = "(" + rxp[3:]
+            rxps.append(rxp)
+            rep_strs.append(repr_str)
+        if self.directives.reduction >= REDUCTION['merge_leaves'] \
+                or (self.directives.reduction >= REDUCTION['merge_treetops']
+                    and not any(re.match(r'\(?P<[^:]', r) for r in rxps)):
+            last_group, last_re = get_regex_group(rxps[0])
+            for i in range(1, len(rxps)):
+                this_group, stripped_re = get_regex_group(rxps[i])
+                if this_group == last_group and not re.match(r'\(?P<[^:]', this_group):
+                    if get_regex_group(rxps[i - 1], expect_group=False)[0] == last_group:
+                        last_rx = self.fix_group(node[i - 1], last_re)
+                        rxps[i - 1] = last_group + last_rx
+                    else:
+                        rxps[i - 1] = rxps[i - 1][:-1]
+                    rxps[i] = self.fix_group(node[i], stripped_re)
+                    if this_group or i < len(rxps) - 1:  rxps[i] += ')'
+                last_group, last_re = this_group, stripped_re
+        expr = ''.join(rxps)
+        if get_regex_group(expr, expect_group=False) == ('', ''):
+            expr = ''.join(["(?:", *rxps, ")"])
+        return expr, ' '.join(rep_strs)
+
+
     def on_sequence(self, node) -> str:
+        if 'sequence' in self.directives.optimizations \
+                and any(child.name not in ('plaintext', 'literal', ':Whitespace')
+                        for child in node.children):
+            save_path = self.path.copy()
+            try:
+                pattern, content = self.smartRE_sequence(node)
+                if self.directives.reduction > REDUCTION['none']:
+                    if pattern[:3] == "(?:":  pattern = pattern[3:-1]
+                    pattern = self.check_rx(node, pattern, smartRE=True)
+                    return f"{self.P['SmartRE']}(f{repr(pattern)}, {repr(content)})"
+                else:
+                    self.tree.new_error(
+                        node, 'Cannot optimize sequence if @reduction is none', NOTICE)
+            except (AttributeError, ValueError):
+                self.path = save_path
         filtered_result, custom_args = self._error_customization(node)
         mock_node = Node(node.name, filtered_result)
         return self.non_terminal(mock_node, 'Series', custom_args)
@@ -3106,10 +3016,25 @@ class EBNFCompiler(Compiler):
         return self.non_terminal(mock_node, 'Interleave', custom_args)
 
 
+    def smartRE_lookaround(self, node) -> Tuple[str]:
+        if len(node.children) != 2:
+            raise ValueError("Wrong number of arguments for lookaround operator!")
+        prefix = node.children[0].content
+        if prefix not in ('&', '!'):
+            raise ValueError(f'Can only optimize lookhead operators, but not "{prefix}".')
+        arg, rep_str = self.compile(node.children[1], self.find_smartRE_method)
+        arg = RX_NAMED_GROUPS.sub('(?:', arg)
+        arg = neutralize_unnamed_groups(arg)
+        opening = "(?=" if prefix == "&" else "(?!"
+        if arg[0:3] == "(?:":
+            assert arg[-1] == ")"
+            arg = opening + arg[3:]
+        else:
+            arg = ''.join([opening, arg, ")"])
+        return arg, prefix + rep_str
+
+
     def on_lookaround(self, node: Node) -> str:
-        # assert node.children
-        # assert len(node.children) == 2, self.node.as_sxpr()
-        # assert node.children[0].name == 'flowmarker'
         if not node.children or len(node.children) != 2 \
                 or node.children[0].name != 'flowmarker':
             tree_dump = flatten_sxpr(node.as_sxpr())
@@ -3118,9 +3043,18 @@ class EBNFCompiler(Compiler):
                 + tree_dump, STRUCTURAL_ERROR_IN_AST)
             return 'Structural Error in AST: ' + tree_dump
         prefix = node.children[0].content
-        # arg_node = node.children[1]
-        node.result = node.children[1:]
         assert prefix in {'&', '!', '<-&', '<-!'}
+
+        if prefix in ('&', '!') and 'lookahead' in self.directives.optimizations \
+                and node.children[1].name not in ('literal', 'plaintext'):
+            save_path = self.path.copy()
+            try:
+                pattern, content = self.smartRE_lookaround(node)
+                pattern = self.check_rx(node, pattern, smartRE=True)
+                return f"{self.P['SmartRE']}(f{repr(pattern)}, {repr(content)})"
+            except (AttributeError, ValueError):
+                self.path = save_path
+        node.result = node.children[1:]
 
         parser_class = self.PREFIX_TABLE[prefix]
         result = self.non_terminal(node, parser_class)
@@ -3185,6 +3119,15 @@ class EBNFCompiler(Compiler):
         return self.non_terminal(node, parser_class, custom_args)
 
 
+    def smartRE_option(self, node) -> Tuple[str, str]:
+        rxp, rep_str = self.compile(node.children[0], self.find_smartRE_method)
+        if rxp[:3] == '(?:':
+            stripped_re = rxp[3:-1]
+            if not self.requires_group(node.children[0], stripped_re):
+                rxp = stripped_re
+        return ''.join(['(?:', rxp, '?)']), ''.join(['[', rep_str, ']'])
+
+
     def on_option(self, node) -> str:
         return self.non_terminal(node, 'Option')
 
@@ -3195,6 +3138,14 @@ class EBNFCompiler(Compiler):
 
     def on_oneormore(self, node) -> str:
         return self.non_terminal(node, 'OneOrMore')
+
+
+    def smartRE_group(self, node) -> Tuple[str,str]:
+        assert len(node.children) == 1, node.as_sxpr()
+        rxp, rep_str = self.compile(node.children[0], self.find_smartRE_method)
+        if get_regex_group(rxp, expect_group=False) == ('', ''):
+            rxp = ''.join(["(?:", rxp, ")"])
+        return rxp, rep_str
 
 
     def on_group(self, node) -> str:
@@ -3209,13 +3160,17 @@ class EBNFCompiler(Compiler):
         assert all(child.name == 'multiplier' for child in node.children)
         if len(node.children) == 2:
             r = (int(node.children[0].content), int(node.children[1].content))
+            if r[1] == 0: self.tree.new_error(node, "Range must not be (0, 0)")
             if r[0] > r[1]:
                 self.tree.new_error(
-                    node, "Upper bound %i of range is greater than lower bound %i!" % r)
+                    node, "Lower bound %i of range is greater than upper bound %i!" % r)
                 return r[1], r[0]
             return r
         else:
             assert len(node.children) == 1
+            m = int(node.children[0].content)
+            if m <= 0:
+                self.tree.new_error(node, "Range must not be (0, 0)")
             return int(node.children[0].content), int(node.children[0].content)
 
 
@@ -3256,7 +3211,16 @@ class EBNFCompiler(Compiler):
                 r = (0, INFINITE)
             else:
                 r = (m, m)
+            if m <= 0: self.tree.new_error(node, "Multiplier must not be zero!")
         return what, r
+
+
+    def smartRE_counted(self, node) -> Tuple[str, str]:
+        what, r = self.extract_counted(node)
+        if r == (0, 1):
+            node.name = "option"
+            return self.compile(node, self.find_smartRE_method)
+        raise ValueError('counted-parser can be compiled to smartRE onl if repetions == (0, 1)')
 
 
     def on_counted(self, node) -> str:
@@ -3266,6 +3230,8 @@ class EBNFCompiler(Compiler):
         mock_node = Node(node.name, (what,))
         return self.non_terminal(mock_node, 'Counted', ['repetitions=' + rstr])
 
+
+    # TODO: implement smartRE_symbol()
 
     def on_symbol(self, node: Node) -> str:     # called only for symbols on the right hand side!
         symbol = node.content  # ; assert result == cast(str, node.result)
@@ -3290,14 +3256,6 @@ class EBNFCompiler(Compiler):
 
     def drop_on(self, category):
         return category in self.directives.drop and self.path[-2].name != "definition"
-        # # exclude the cases like:
-        # # number = "1"
-        # # number = "1" | "2" | "3"
-        # return category in self.directives.drop and \
-        #     (self.path[-2].name != "definition"
-        #      and (self.path[-2].name != "expression" or self.path[-3].name != "definition"
-        #           or
-        #           (any(child.name != 'literal' for child in self.path[-2].children))))
 
 
     def TEXT_PARSER(self, text, drop):
@@ -3308,6 +3266,15 @@ class EBNFCompiler(Compiler):
 
     def REGEXP_PARSER(self, pattern, drop):
         REClass = "SmartRE" if pattern.find('(?P<') >= 0 else "RegExp"
+        pattern = repr(pattern)
+        if pattern.find('(?x)') >= 0:
+            m = re.search(r'\\n[ \t]*', pattern)
+            indent = len(m.group(0)) - 2
+            pattern = re.sub(r'\\n[ \t]*', '\\\\n\n', pattern)
+            parts = pattern.split('\n')
+            pattern = wrap_str_literal(parts, offset = len(REClass) + 1 + indent)
+        else:
+            pattern = wrap_str_literal(pattern, 80, len(REClass) + 1)
         return f'{self.P["Drop"]}({self.P[REClass]}({pattern}))' if drop \
             else f'{self.P[REClass]}({pattern})'
 
@@ -3326,20 +3293,89 @@ class EBNFCompiler(Compiler):
         return self.on_literal(node)
 
 
-    def on_literal(self, node: Node) -> str:
-        content = escape_ctrl_chars(node.content)
-        if (content[:1] + content[-1:]) == '’’':
-            content = "'" + re.sub(r"(?<!\\)'", r"\'", content[1:-1]) + "'"
-        center = self.TEXT_PARSER(content, self.drop_on(DROP_STRINGS))
+    def prepare_literal(self, node: Node) -> Tuple[str, str, str]:
+        """Returns content, left_Whitespace, right_whitspace for a literal-node."""
+        assert node.name == "literal"
         force = DROP_STRINGS in self.directives.drop
-        left = self.WSPC_PARSER(force) if 'left' in self.directives.literalws else ''
-        right = self.WSPC_PARSER(force) if 'right' in self.directives.literalws else ''
+        lws = literalws_set_from_value(node.attr['literalws']) if node.has_attr('literalws') \
+            else self.directives.literalws
+        left = self.WSPC_PARSER(force) if 'left' in lws else ''
+        right = self.WSPC_PARSER(force) if 'right' in lws else ''
+        # content = escape_ctrl_chars(node.content)
+        content = node.content
+        if (content[:1] + content[-1:]) == "’’":
+            content = '"' + content[1:-1].replace('"', r'\"') + '"'
+        return content, left, right
+
+    def whitespace_rx(self, ws: str) -> str:
+        # TODO: doctests required
+        """Returns a regular expression for whitespace, possibly including comments"""
+        if ws:
+            # ws_rx = self.directives.super_ws
+            ws_rx = '{WSP_RE__}'
+            if ws in (self.DROP_WHITESPACE_PARSER_KEYWORD, ""):
+                if DROP_NO_COMMENTS in self.directives.drop:
+                    return f'(?P<{KEEP_COMMENTS_PTYPE}>{ws_rx})'
+                else:
+                    return f'(?:{ws_rx})'
+            else:
+                assert ws == self.WHITESPACE_PARSER_KEYWORD, str(ws)
+                return f'(?P<{WHITESPACE_PTYPE}>{ws_rx})'
+        return ""
+
+    def text_rx(self, content: str, drop_category):
+        if self.drop_on(drop_category):
+            center_rx = f'(?:{re.escape(content)})'
+        else:
+            center_rx = f'(?P<{TOKEN_PTYPE}>{re.escape(content)})'
+        return center_rx
+
+    def literal_rx(self, content: str, left: str, right: str, escape_braces=False) -> str:
+        """Returns a regular expression string to parse a literal. This
+        can be used to optimize the parsing of literals with adjacent
+        whitespace by defining a :py:class:`~parse:SmartRe`-parser with
+        a regular expression."""
+        # TODO: doctests required
+
+        left_rx = self.whitespace_rx(left)
+        right_rx = self.whitespace_rx(right)
+        center_rx = self.text_rx(content, DROP_STRINGS)
+        if escape_braces:
+            center_rx = center_rx.replace('{', '{{').replace('}', '}}')
+        return ''.join([left_rx, center_rx, right_rx])
+
+    def smartRE_literal(self, node: Node) -> Tuple[str, str]:
+        """Returns unescaped regex-pattern and readable repr_str-represenation for a literal,
+        possibly combined with adjacent whitespace containing comments.
+        """
+        content, left, right = self.prepare_literal(node)
+        pattern = self.literal_rx(content[1:-1], left, right, escape_braces=True)
+        if left or right:
+            pattern = ''.join(["(?:", pattern, ")"])
+        return pattern, content
+
+    def on_literal(self, node: Node) -> str:
+        # TODO: Tests
+        content, left, right = self.prepare_literal(node)
+        if 'literal' in self.directives.optimizations and (left and right):
+            q = content[0]
+            literal = self.literal_rx(content[1:-1], left, right, escape_braces=True)
+            rxp = ''.join(['fr', q, literal, q])
+            rxp = wrap_str_literal(rxp, 80, 12 if self.drop_on(DROP_STRINGS) else 7)
+            content = escape_ctrl_chars(content)
+            content = ''.join([q, '\\', content[:-1], '\\', content[-1], q])
+            return f"{self.P['SmartRE']}({rxp}, {content})"
+        content = escape_ctrl_chars(content)
+        center = self.TEXT_PARSER(content, self.drop_on(DROP_STRINGS))
         if left or right:
             args = ", ".join(item for item in (left, center, right) if item)
             return f'{self.P["Series"]}({args})'
-            # return 'Series(' + ", ".join(item for item in (left, center, right) if item) + ')'
         return center
 
+
+    def smartRE_plaintext(self, node: Node) -> Tuple[str, str]:
+        pattern = self.text_rx(node.content[1:-1], DROP_BACKTICKED)
+        return pattern.replace('{', '{{').replace('}', '}}'), node.content
 
     def on_plaintext(self, node: Node) -> str:
         tk = escape_ctrl_chars(node.content)
@@ -3347,50 +3383,80 @@ class EBNFCompiler(Compiler):
         if rpl:
             tk = rpl + tk[1:-1] + rpl
         else:
-            tk = rpl + tk.replace('"', '\\"')[1:-1] + rpl
+            tk = rpl + tk.replace('"', r'\"')[1:-1] + rpl
         return self.TEXT_PARSER(tk, self.drop_on(DROP_BACKTICKED))
 
 
+    def smartRE_regexp(self, node: Node) -> Tuple[str, str]:
+        arg = node.content
+        if arg.find('(?P<') < 0:
+            arg = neutralize_unnamed_groups(arg)
+        pattern = f'(?:{arg})' if self.drop_on(DROP_REGEXP) else f'({arg})'
+        return pattern.replace('{', '{{').replace('}', '}}'), f'/{arg}/'
+
     def on_regexp(self, node: Node) -> str:
-        rx = node.content
+        arg = node.content
         try:
-            arg = repr(self.check_rx(node, rx.replace(r'\/', '/')))
+            arg = self.check_rx(node, arg, smartRE=True)
         except AttributeError as error:
             from traceback import extract_tb, format_list
             trace = ''.join(format_list(extract_tb(error.__traceback__)))
             errmsg = "%s (AttributeError: %s;\n%s)\n%s" \
                      % (EBNFCompiler.AST_ERROR, str(error), trace, node.as_sxpr())
             self.tree.new_error(node, errmsg)
-            return '"' + errmsg + '"'
+            arg = '"' + errmsg + '"'
         return self.REGEXP_PARSER(arg, self.drop_on(DROP_REGEXP))
 
+
+    def smartRE_char_ranges(self, node) -> Tuple[str, str]:
+        arg =  "|".join('[' + child.content + ']'
+                        for child in node.children if child.name == "range_chain")
+        pattern = f'(?:{arg})' if self.drop_on(DROP_REGEXP) else f'({arg})'
+        return pattern.replace('{', '{{').replace('}', '}}'), f'/{arg}/'
+
     def on_char_ranges(self, node) -> str:
-        # TODO: Add alternative char_ranges handling here
         node.result = "|".join('[' + child.content + ']'
-                for child in node.children if child.name == "range_chain")
+                               for child in node.children
+                               if child.name == "range_chain")
         return self.on_regexp(node)
 
-    def on_char_range(self, node) -> str:
-        # TODO: Add alternative char_ranges handling here
+
+    def smartRE_char_range(self, node) -> Tuple[str, str]:
         if 'range_desc' in node:
             node = self.fallback_compiler(node)
         else:
             # old grammar, can be removed soon
             node = self.on_range_desc(node)
-        re_str = re.sub(r"(?<!\\)'", r'\'', node.content)
-        re_str = re.sub(r"(?<!\\)]", r'\]', re_str)
-        return f"{self.P['RegExp']}('[{re_str}]')"
+        arg = re.sub(r"(?<!\\)'", r'\'', node.content)
+        group = '(?:' if self.drop_on(DROP_REGEXP) else '('
+        re_str = ''.join([group, '[', re.sub(r"(?<!\\)]", r'\]', arg), '])'])
+        return re_str.replace('{', '{{').replace('}', '}}'), f'/[{arg}]/'
+
+    def on_char_range(self, node) -> str:
+        re_str, _ = self.smartRE_char_range(node)
+        re_str = re_str[re_str.find('['): -1]
+        return f"{self.P['RegExp']}('{re_str}')"
+
 
     def on_range_chain(self, node) -> Node:
         raise NotImplementedError
 
+
     def on_range_desc(self, node) -> Node:
-        for child in node.children:
-            if child.name == 'character':
-                child.result = self.extract_character(child)
-            elif child.name == 'free_char':
-                child.result = self.extract_free_char(child)
+        if not node.has_attr('processed'):
+            for child in node.children:
+                if child.name == 'character':
+                    child.result = self.extract_character(child)
+                elif child.name == 'free_char':
+                    child.result = self.extract_free_char(child)
+            node.attr['processed'] = "1"
         return node
+
+
+    def extract_free_char(self, node: Node) -> str:
+        assert len(node.content) == 1 or (node.content[0:1] == '\\' and len(node.content) == 2), node.content
+        bytestr = node.content.encode('unicode-escape')
+        return bytestr.decode()
 
     def extract_character(self, node: Node) -> str:
         hexcode = node.content
@@ -3404,23 +3470,31 @@ class EBNFCompiler(Compiler):
         return code
 
 
+    def smartRE_character(self, node: Node) -> Tuple[str, str]:
+        arg = f'[{self.extract_character(node)}]'
+        pattern = f'(?:{arg})' if self.drop_on(DROP_REGEXP) else f'({arg})'
+        return pattern.replace('{', '{{').replace('}', '}}'), f'/{arg}/'
+
     def on_character(self, node: Node) -> str:
         return f"{self.P['RegExp']}('[{self.extract_character(node)}]')"
         # return "RegExp('%s')" % self.extract_character(node)
 
 
-    def extract_free_char(self, node: Node) -> str:
-        assert len(node.content) == 1 or (node.content[0:1] == '\\' and len(node.content) == 2), node.content
-        bytestr = node.content.encode('unicode-escape')
-        return bytestr.decode()
-
+    def smartRE_any_char(self, node: Node) -> Tuple[str, str]:
+        arg = r'.|\n'
+        pattern = f'(?:{arg})' if self.drop_on(DROP_REGEXP) else f'(?P<:AnyChar>{arg})'
+        return pattern, '/./'
 
     def on_any_char(self, node: Node) -> str:
         return f'{self.P["AnyChar"]}()'
 
 
+    def smartRE_whitespace(self, node: Node) -> Tuple[str, str]:
+        return self.whitespace_rx(self.WSPC_PARSER()), '~'
+
     def on_whitespace(self, node: Node) -> str:
         return self.WSPC_PARSER()
+
 
     def on_parser(self, node: Node) -> str:
         assert 1 <= len(node.children) <= 2, node.as_sxpr()

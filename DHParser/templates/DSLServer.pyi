@@ -231,7 +231,7 @@ class DSLLanguageServerProtocol:
             if os.path.isdir(entry):
                 for file in os.listdir(entry):
                     file_path = os.path.join(entry, file)
-                    if os.path.isfile(file_path):
+                    if file[0:1] != '.' and os.path.isfile(file_path):
                         file_names.append(file_path)
                 break  # allow at most one directory
             else:
@@ -265,13 +265,8 @@ def run_server(host, port, log_path=None):
     global KNOWN_HOST, KNOWN_PORT
     global scriptpath, servername
 
-    from multiprocessing import set_start_method
-    # 'forkserver' or 'spawn' required to avoid broken process pools
-    if sys.platform.lower().startswith('linux') :  set_start_method('forkserver')
-    else:  set_start_method('spawn')
-
     try:
-        grammar_src = os.path.abspath(__file__).replace('Server.py', '.ebnf')
+        grammar_src = os.path.abspath(os.path.realpath(__file__)).replace('Server.py', '.ebnf')
     except NameError:
         grammar_src = ''
     if scriptpath and scriptpath not in sys.path:
@@ -283,6 +278,21 @@ def run_server(host, port, log_path=None):
         if i >= 0:
             dhparserdir = scriptdir[:i + 10]  # 10 = len("/DHParser/")
             if dhparserdir not in sys.path:  sys.path.insert(0, dhparserdir)
+
+    from DHParser.configuration import CONFIG_PRESET, read_local_config
+    if sys.version_info >= (3, 14, 0):
+        CONFIG_PRESET['multicore_pool'] = 'InterpreterPool'
+    read_local_config(os.path.join(scriptdir, 'DSLConfig.ini'))
+
+    if sys.version_info < (3, 14, 0) or CONFIG_PRESET['multicore_pool'] != "InterpreterPool":
+        from multiprocessing import set_start_method, get_start_method
+        # 'forkserver' or 'spawn' required to avoid broken process pools
+        if sys.platform.lower().startswith('linux') :
+            if get_start_method(allow_none=True) != 'forkserver':
+                set_start_method('forkserver', force=True)
+        else:
+            if get_start_method(allow_none=True) != 'spawn':
+                set_start_method('spawn', force=True)
 
     from DHParser.dsl import recompile_grammar
     if grammar_src and not recompile_grammar(grammar_src, force=False,

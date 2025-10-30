@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ the string representations of the error objects. For example::
         else:
             print("There have been warnings, but no errors.")
 
-The central class of module DHParser's ``error``  is the ``Error``-class.
+The central class of module DHParser.error is the ``Error``-class.
 The easiest way to create an error object is by instantiating
 the Error class with an error message and a source position::
 
@@ -42,8 +42,13 @@ the Error class with an error message and a source position::
     >>> print(error)
     Error (1000): Something went wrong
 
-However, in order to report errors, usually at least a line and
-column-number
+Without a line and column where the error occurred, error-messages are
+not very useful. In particular, it is required that the line and
+column-locations are those of the original source-file before any
+preprocessing (like inserting included files or stripping front-matter
+or meta-data sections). For this purpose module error also provides
+"source-mapping" facilities, in particular the types functions
+:py:func:`add_source_locations`, py:
 
 """
 
@@ -52,19 +57,18 @@ from __future__ import annotations
 from collections import namedtuple
 import functools
 import os
-from typing import Iterable, Iterator, Union, List, Sequence, Callable
+from typing import Iterable, Iterator, Union, Dict, List, Sequence, Callable
 
+from DHParser.stringview import StringView
 from DHParser.toolkit import linebreaks, line_col, is_filename, TypeAlias
 
 
-__all__ = ('SourceMap',
-           'SourceLocation',
-           'SourceMapFunc',
-           'ErrorCode',
+__all__ = ('ErrorCode',
            'Error',
            'is_fatal',
            'is_error',
            'is_warning',
+           'error_category',
            'has_errors',
            'only_errors',
            'add_source_locations',
@@ -89,6 +93,7 @@ __all__ = ('SourceMap',
            'REDUNDANT_PARSER_WARNING',
            'UNUSED_MACRO_ARGUMENTS_WARNING',
            'REORDERING_OF_ALTERNATIVES_REQUIRED',
+           'PARSER_STOPPED_BEFORE_END_WARNING',
            'MANDATORY_CONTINUATION',
            'MANDATORY_CONTINUATION_AT_EOF',
            'MANDATORY_CONTINUATION_AT_EOF_NON_ROOT',
@@ -131,56 +136,8 @@ __all__ = ('SourceMap',
            'TREE_PROCESSING_CRASH',
            'COMPILER_CRASH',
            'AST_TRANSFORM_CRASH',
-           'RECURSION_DEPTH_LIMIT_HIT')
-
-
-#######################################################################
-#
-#  source mapping
-#
-#######################################################################
-
-
-# class SourceMap(NamedTuple):
-#     original_name: str           # nome or path or uri of the original source file
-#     positions: List[int]        # a list of locations
-#     offsets: List[int]          # the corresponding offsets to be added from these locations onward
-#     file_names: List[str]       # list of file_names to which the source locations relate
-#     originals_dict: Dict[str, Union[str, StringView]]  # File names => (included) source texts
-
-# SourceMap = NamedTuple('SourceMap',
-#     [('original_name', str),
-#      ('positions', List[int]),
-#      ('offsets', List[int]),
-#      ('file_names', List[str]),
-#      ('originals_dict', Dict[str, Union[str, StringView]])])
-# SourceMap.__module__ = __name__
-
-SourceMap = namedtuple('SourceMap',
-    ['original_name',  ## type: str
-     'positions',      ## type: List[int]
-     'offsets',        ## type: List[int]
-     'file_names',     ## type: List[str]
-     'originals_dict', ## type: Dict[str, Union[str, StringView]]
-    ], module=__name__)
-
-# class SourceLocation(NamedTuple):
-#     original_name: str          # the file name (or path or uri) of the source code
-#     original_text: Union[str, StringView]  # the source code itself
-#     pos: int                  # a position within the code
-
-# SourceLocation = NamedTuple('SourceLocation',
-#     [('original_name', str),
-#      ('original_text', Union[str, StringView]),
-#      ('pos', int)])
-
-SourceLocation = namedtuple('SourceLocation',
-    ['original_name',  ## type: str
-     'original_text',  ## type: Union[str, StringView]
-     'pos',            ## type: int
-    ], module=__name__)
-
-SourceMapFunc: TypeAlias = Union[Callable[[int], SourceLocation], functools.partial]
+           'RECURSION_DEPTH_LIMIT_HIT',
+           'CANCELED')
 
 
 #######################################################################
@@ -225,6 +182,7 @@ REDUNDANT_PARSER_WARNING                 = ErrorCode(680)
 UNUSED_MACRO_ARGUMENTS_WARNING           = ErrorCode(690)
 
 REORDERING_OF_ALTERNATIVES_REQUIRED      = ErrorCode(710)
+PARSER_STOPPED_BEFORE_END_WARNING        = ErrorCode(720)
 
 # error codes
 
@@ -280,6 +238,7 @@ COMPILER_CRASH                           = ErrorCode(10200)
 AST_TRANSFORM_CRASH                      = ErrorCode(10300)
 RECURSION_DEPTH_LIMIT_HIT                = ErrorCode(10400)
 STRUCTURAL_ERROR_IN_AST                  = ErrorCode(10500)
+CANCELED                                 = ErrorCode(10600)
 
 
 #######################################################################
@@ -368,12 +327,14 @@ class Error:
         return msg
 
     def __eq__(self, other):
-        return self._normalize_msg(self.message) == self._normalize_msg(other.message) \
-            and self.code == other.code \
-            and self._pos == other._pos  # and self.length == other.length
+        # return self._normalize_msg(self.message) == self._normalize_msg(other.message) \
+        #     and self.code == other.code \
+        #     and self._pos == other._pos  # and self.length == other.length
+        return self.code == other.code and self._pos == other._pos
 
     def __hash__(self):
-        return hash((self._normalize_msg(self.message), self.code, self._pos))
+        return hash((self.code, self._pos))
+        # return hash((self._normalize_msg(self.message), self.code, self._pos))
 
     def __str__(self):
         if self.orig_doc and self.orig_doc != 'UNKNOWN_FILE':
@@ -483,16 +444,20 @@ def is_fatal(code: Union[Error, int]) -> bool:
     return code >= FATAL
 
 
-# def Warning(message: str, pos, code: ErrorCode = WARNING,
-#             orig_pos: int = -1, line: int = -1, column: int = -1) -> Error:
-#     """
-#     Syntactic sugar for creating Error-objects that contain only a warning.
-#     Raises a ValueError if `code`` is not within the range for warnings.
-#     """
-#     if not is_warning(code):
-#         raise ValueError("Tried to create a warning with a error code {}. "
-#                          "Warning codes must be smaller than {}".format(code, ERROR))
-#     return Error(message, pos, code, orig_pos, line, column)
+def error_category(code: Union[Error, int]) -> str:
+    """Returns the category of the error, which is one of "no errors",
+    "notices", "warnings", "errors", "fatal errors"."""
+    if isinstance(code, Error):  code = code.code
+    if code < NOTICE:
+        return "no errors"
+    elif code < WARNING:
+        return "notices"
+    elif code < ERROR:
+        return "warnings"
+    elif code < FATAL:
+        return "errors"
+    else:
+        return "fatal errors"
 
 
 def has_errors(messages: Iterable[Error], level: ErrorCode = ERROR) -> bool:
@@ -521,8 +486,14 @@ def only_errors(messages: Iterable[Error], level: ErrorCode = ERROR) -> Iterator
 #
 #######################################################################
 
+# See preprocess.py for the real definitions of SourceLocation and
+# SourceMapFunc! The alias-definitions only serve to avoid a mutual
+# import-dependency between preprocess.py and error.py
+SourceLocationAlias = namedtuple('SourceLocationAlias', ['original_name', 'original_text', 'pos'], module=__name__)
+SourceMapFuncAlias: TypeAlias = Union[Callable[[int], SourceLocationAlias], functools.partial]
 
-def add_source_locations(errors: List[Error], source_mapping: SourceMapFunc):
+
+def add_source_locations(errors: List[Error], source_mapping: SourceMapFuncAlias):
     """Adds (or adjusts) line and column numbers of error messages inplace.
 
     Args:
@@ -566,3 +537,4 @@ def canonical_error_strings(errors: List[Error]) -> List[str]:
     else:
         error_strings = []
     return error_strings
+
