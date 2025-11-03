@@ -14,11 +14,6 @@ import sys
 from typing import Tuple, List, Union, Any, Optional, Callable, cast
 
 try:
-    import regex as re
-except ImportError:
-    import re
-
-try:
     scriptdir = os.path.dirname(os.path.realpath(__file__))
 except NameError:
     scriptdir = ''
@@ -55,7 +50,7 @@ from DHParser.pipeline import PseudoJunction, create_junction, create_parser_jun
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer
-from DHParser.toolkit import is_filename, load_if_file, cpu_count, \
+from DHParser.toolkit import re, is_filename, load_if_file, cpu_count, \
     ThreadLocalSingletonFactory, expand_table, abbreviate_middle
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
 from DHParser.transform import is_empty, remove_if, TransformationDict, TransformerFunc, \
