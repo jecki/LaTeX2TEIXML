@@ -490,7 +490,7 @@ LaTeX_AST_transformation_table = {
     "inline_math": [reduce_single_child],
     "_command": replace_by_single_child,
     "_known_command": replace_by_single_child,
-    "citet, citep": [reduce_single_child],
+    "citet, citep": [],
     "footnote": [],
     "includegraphics": [],
     "caption": [],
@@ -612,15 +612,18 @@ class LaTeXCompiler(Compiler):
             config = node.pick('config')
             block = node.pick('block')
             bibkey = block.content
+            node.attr['bibkey'] = bibkey
             if config is not None:
                 assert len(node.children) == 2
                 block.result = self.get_author_year(bibkey)
                 node.result = (block, Node('text', ', '), config)
+                node.attr['page'] = config
             else:
                 node.result = self.get_author_year(bibkey)
         else:
             bibkey = node.content
             node.result = self.get_author_year(bibkey)
+        return node
 
     def on_citet(self, node):
         self.arange_citation(node)

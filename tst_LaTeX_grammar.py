@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""tst_LaTeX_grammar.py - runs the unit tests for the LaTeX-grammar
+"""tst_LaTeX_grammar.py - runs the unit tests for the LaTeX-Grammar
 """
 
 import os
