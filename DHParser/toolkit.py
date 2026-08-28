@@ -1339,7 +1339,7 @@ def has_fenced_code(text_or_file: str, info_strings=('ebnf', 'test')) -> bool:
     return False
 
 
-def md5(*txt):
+def md5(*txt) -> str:
     """
     Returns the md5-checksum for `txt`. This can be used to test if
     some piece of text, for example, a grammar source file, has changed.

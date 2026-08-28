@@ -13,6 +13,8 @@ import os
 import sys
 from typing import Tuple, List, Union, Any, Optional, Callable, cast
 
+import cython
+
 try:
     scriptdir = os.path.dirname(os.path.realpath(__file__))
 except NameError:
@@ -20,7 +22,7 @@ except NameError:
 if scriptdir and scriptdir not in sys.path: sys.path.append(scriptdir)
 
 try:
-    from DHParser import versionnumber
+    from DHParser import versionnumber, ParsingResult
 except (ImportError, ModuleNotFoundError):
     i = scriptdir.rfind("/DHParser/")
     if i >= 0:
@@ -40,7 +42,7 @@ from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors
     WARNING, ERROR, FATAL
 from DHParser.log import start_logging, suspend_logging, resume_logging
 from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, Path, flatten_sxpr, \
-    add_class
+    add_class, ZOMBIE_TAG
 from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar, Parser, \
     Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, INFINITE, ERR, \
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
@@ -51,7 +53,7 @@ from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, Preprocessor
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer
 from DHParser.toolkit import re, is_filename, load_if_file, cpu_count, \
-    ThreadLocalSingletonFactory, expand_table, abbreviate_middle
+    ThreadLocalSingletonFactory, expand_table, abbreviate_middle, md5
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
 from DHParser.transform import is_empty, remove_if, TransformationDict, TransformerFunc, \
     transformation_factory, remove_children_if, move_fringes, normalize_whitespace, \
@@ -100,6 +102,60 @@ def preprocessor_factory() -> PreprocessorFunc:
 
 
 preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory))
+
+
+########################################################################
+#
+# CUSTOM PARSERS
+#
+########################################################################
+
+
+class Include(Parser):
+    def _parse(self, location: cython.int) -> ParsingResult:
+        end = self.grammar.text__.find('}', location)
+
+        # read include file
+        source_name = self.grammar.text__[location:end]
+        try:
+            with open(source_name, 'r', encoding='utf-8') as f:
+                source = f.read()
+        except FileNotFoundError as e:
+            node = Node(ZOMBIE_TAG, str(e))
+            self.grammar.tree__.new_error(node, f'Included file "{source_name}" not found')
+            return node, end
+        except IOError as e:
+            node = Node(ZOMBIE_TAG, str(e))
+            self.grammar.tree__.new_error(node, f'IOError while including file "{source_name}": {e}')
+            return node, end
+        source_hash = md5(source).encode()
+
+        # check for up to date precompiled version of the file's AST
+        ast_name = source_name + '.pickledAST'
+        err_msg = ''
+        import pickle
+        try:
+            with open(ast_name, 'rb'):
+                hash = f.read(32)
+                if hash == source_hash:
+                    AST = pickle.load(f)
+                    # TODO: transfer errors and strip root object
+                    return AST, end  # load precompiled AST
+        except FileNotFoundError:
+            pass
+        except IOError as e:
+            err_msg = f'IOError while loading "{ast_name}": {e}'
+
+        # compile include file
+        if not has_attr(self.grammar, 'include_parser'):
+            self.grammar.include_parser = self.grammar.__class__()
+        AST = self.grammar.include_parser(source)
+
+        # TODO: save compiled version
+
+        # TODO: transfer errors and pickle root object
+
+        return AST, end
 
 
 #######################################################################
