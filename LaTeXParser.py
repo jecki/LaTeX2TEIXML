@@ -39,7 +39,7 @@ from DHParser import dsl
 from DHParser.dsl import recompile_grammar, never_cancel
 from DHParser.ebnf import grammar_changed
 from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors, NOTICE, \
-    WARNING, ERROR, FATAL
+    WARNING, ERROR, FATAL, add_source_locations
 from DHParser.log import start_logging, suspend_logging, resume_logging
 from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, Path, flatten_sxpr, \
     add_class, ZOMBIE_TAG
@@ -51,7 +51,7 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar
 from DHParser.pipeline import PseudoJunction, create_junction, create_parser_junction
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
-    Tokenizer
+    Tokenizer, gen_neutral_srcmap_func
 from DHParser.toolkit import re, is_filename, load_if_file, cpu_count, \
     ThreadLocalSingletonFactory, expand_table, abbreviate_middle, md5
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
@@ -110,6 +110,12 @@ preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory)
 #
 ########################################################################
 
+def transfer_errors(src: RootNode, dst: RootNode, location):
+    for error in src.errors_sorted:
+        error._pos += location
+        dst.errors.append(error)
+
+
 
 class Include(Parser):
     def _parse(self, location: cython.int) -> ParsingResult:
@@ -149,11 +155,12 @@ class Include(Parser):
         # compile include file
         if not has_attr(self.grammar, 'include_parser'):
             self.grammar.include_parser = self.grammar.__class__()
-        AST = self.grammar.include_parser(source)
+        AST = self.grammar.include_parser(
+            source, gen_neutral_srcmap_func(source, source_name))
 
-        # TODO: save compiled version
+        # TODO: save (picke) compiled version
 
-        # TODO: transfer errors and pickle root object
+        # TODO: transfer errors and strip root object
 
         return AST, end
 
