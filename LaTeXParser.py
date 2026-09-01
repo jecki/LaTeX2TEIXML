@@ -115,6 +115,11 @@ def transfer_errors(src: RootNode, dst: RootNode, location):
         error._pos += location
         dst.errors.append(error)
 
+def strip_root(root_node: RootNode) -> Node:
+    tree = Node(root_node.name, root_node.result).with_attr(root_node.attr)
+    for nd in tree.walk_tree():
+        nd._pos = -1
+    return tree
 
 
 class Include(Parser):
@@ -136,31 +141,44 @@ class Include(Parser):
             return node, end
         source_hash = md5(source).encode()
 
-        # check for up to date precompiled version of the file's AST
+        # check for "up to date" precompiled version of the file's AST
+        # load and return prcompiled AST, if its hash value is the same
+        # as that of the source file
         ast_name = source_name + '.pickledAST'
-        err_msg = ''
+        err_msgs = []
         import pickle
         try:
             with open(ast_name, 'rb'):
                 hash = f.read(32)
                 if hash == source_hash:
                     AST = pickle.load(f)
-                    # TODO: transfer errors and strip root object
+                    transfer_errors(AST, self.grammar.tree__, location)
+                    AST = strip_root(AST)
                     return AST, end  # load precompiled AST
         except FileNotFoundError:
             pass
         except IOError as e:
-            err_msg = f'IOError while loading "{ast_name}": {e}'
+            err_msgs.append(f'IOError while loading "{ast_name}": {e}')
 
         # compile include file
         if not has_attr(self.grammar, 'include_parser'):
             self.grammar.include_parser = self.grammar.__class__()
-        AST = self.grammar.include_parser(
+        CST = self.grammar.include_parser(
             source, gen_neutral_srcmap_func(source, source_name))
+        if not has_attr(self.grammar, 'include_transformer'):
+            self.grammar.include_transformer = ASTTransformation.factory()
+        AST = self.grammar.include_transformer(CST)
 
-        # TODO: save (picke) compiled version
+        # save compiled AST, prepend a 32-bytes hash value of the source
+        try:
+            with open(ast_name, 'wb') as f:
+                f.write(source_hash)
+                pickle.dump(AST, f)
+        except IOError as e:
+            err_msgs.append(f'IOError while saving "{ast_name}": {e}')
 
-        # TODO: transfer errors and strip root object
+        transfer_errors(AST, self.grammar.tree__, location)
+        AST = strip_root(AST)
 
         return AST, end
 
