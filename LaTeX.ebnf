@@ -25,6 +25,9 @@ document       = [_WSPC] "\begin{document}"
                  "\end{document}" [_WSPC] EOF
 frontpages     = sequence
 
+snippet        = Chapters | Sections | SubSections | SubSubSections  # LaTeX includes
+               | Paragraphs | SubParagraphs | sequence
+
 
 #######################################################################
 #
@@ -131,7 +134,7 @@ tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbi
 #### paragraphs and sequences of paragraphs ####
 
 block_of_paragraphs = "{" [sequence] §"}"
-sequence            = [_WSPC] { (paragraph | _block_environment) [_PARSEP|S] }+
+sequence            = [_WSPC] { (paragraph | _block_environment) [_PARSEP|S] }+  # TODO: Add include, here
 paragraph           = { !blockcmd _text_element [S] }+
 _text_element       = _line_element | LINEFEED
 _line_element       = text | _inline_environment | _command | block

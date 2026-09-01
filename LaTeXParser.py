@@ -162,7 +162,7 @@ class Include(Parser):
 
         # compile include file
         if not has_attr(self.grammar, 'include_parser'):
-            self.grammar.include_parser = self.grammar.__class__()
+            self.grammar.include_parser = self.grammar.__class__() # TODO: what about recursive includes?
         CST = self.grammar.include_parser(
             source, gen_neutral_srcmap_func(source, source_name))
         if not has_attr(self.grammar, 'include_transformer'):
