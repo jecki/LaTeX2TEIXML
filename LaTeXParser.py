@@ -29,9 +29,7 @@ except (ImportError, ModuleNotFoundError):
         dhparserdir = scriptdir[:i + 10]  # 10 = len("/DHParser/")
         if dhparserdir not in sys.path:  sys.path.insert(0, dhparserdir)
 
-import DHParser
-
-from DHParser.compile import Compiler, compile_source, Junction, full_compile
+from DHParser.compile import Compiler, compile_source, Junction
 from DHParser.configuration import set_config_value, get_config_value, access_thread_locals, \
     access_presets, finalize_presets, set_preset_value, get_preset_value, NEVER_MATCH_PATTERN, \
     ALLOWED_PRESET_VALUES
@@ -48,7 +46,7 @@ from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
     last_value, matching_bracket, optional_last_value, MERGE_TREETOPS, RX_NEVER_MATCH
-from DHParser.pipeline import PseudoJunction, create_junction, create_parser_junction
+from DHParser.pipeline import PseudoJunction, create_junction, create_parser_junction, full_pipeline
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, PreprocessorResult, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer, gen_neutral_srcmap_func
@@ -124,10 +122,14 @@ def strip_root(root_node: RootNode) -> Node:
 
 class Include(Parser):
     def _parse(self, location: cython.int) -> ParsingResult:
-        end = self.grammar.text__.find('}', location)
+        if self.grammar.text__[location:location + 9] != r'\include{':
+            return None, location
+
+        end = self.grammar.text__.find('}', location) + 1
+        assert end > location
 
         # read include file
-        source_name = self.grammar.text__[location:end]
+        source_name = self.grammar.text__[location + 9:end]
         try:
             with open(source_name, 'r', encoding='utf-8') as f:
                 source = f.read()
@@ -148,7 +150,7 @@ class Include(Parser):
         err_msgs = []
         import pickle
         try:
-            with open(ast_name, 'rb'):
+            with open(ast_name, 'rb') as f:
                 hash = f.read(32)
                 if hash == source_hash:
                     AST = pickle.load(f)
@@ -162,9 +164,14 @@ class Include(Parser):
 
         # compile include file
         if not has_attr(self.grammar, 'include_parser'):
-            self.grammar.include_parser = self.grammar.__class__() # TODO: what about recursive includes?
+            self.grammar.include_parser = self.grammar.__class__()
+            # just make sure this also works recursively!
+            assert not has_attr(self.grammar, 'include_parser')
+            assert not has_attr(self.grammar, 'include_transformer')
         CST = self.grammar.include_parser(
-            source, gen_neutral_srcmap_func(source, source_name))
+            document = source,
+            start_parser = "snippet",
+            source_mapping = gen_neutral_srcmap_func(source, source_name))
         if not has_attr(self.grammar, 'include_transformer'):
             self.grammar.include_transformer = ASTTransformation.factory()
         AST = self.grammar.include_transformer(CST)
@@ -779,11 +786,11 @@ serializations = expand_table(dict([('*', ['xml'])]))
 #######################################################################
 
 def compile_src(source: str, target: str = "LaTeXML".lower()) -> Tuple[Any, List[Error]]:
-    """Compiles the source to a single targte and returns the result of the compilation
+    """Compiles the source to a single target and returns the result of the compilation
     as well as a (possibly empty) list or errors or warnings that have occurred in the
     process.
     """
-    full_compilation_result = full_compile(
+    full_compilation_result = full_pipeline(
         source, preprocessing.factory, parsing.factory, junctions, set([target]))
     return full_compilation_result[target]
 
