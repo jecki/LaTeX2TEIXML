@@ -795,7 +795,9 @@ def has_attr(path: Path, attr: str="", value: Optional[str] = None) -> bool:
         raise ValueError('Function DHParser.transform.has_attr() expects a path, not a node! '
                          'Use method node.has_attr() to check whether a node has attributes '
                          'or has a particular attribute or a particular attribute value?')
+    assert isinstance(path, List), f"Object {path} is not a list of nodes! Did you write has_attr when meant hasattr?"
     node = path[-1]
+    assert isinstance(path, Node), f"Object {path} is not a list of nodes! Did you write has_attr when meant hasattr?"
     if not attr:
         return node.has_attr()
     if value is None:

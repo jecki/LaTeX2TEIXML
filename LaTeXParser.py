@@ -64,7 +64,8 @@ from DHParser.transform import is_empty, remove_if, TransformationDict, Transfor
     replace_content_with, forbid, assert_content, remove_infix_operator, add_error, error_on, \
     left_associative, lean_left, node_maker, has_descendant, neg, has_ancestor, insert, \
     positions_of, replace_child_names, add_attributes, delimit_children, merge_connected, \
-    has_attr, has_parent, has_children, has_child, apply_unless, apply_ifelse, traverse
+    has_attr, has_parent, has_children, has_child, apply_unless, apply_ifelse, traverse, \
+    BLOCK_CHILDREN, replace_by_children
 from DHParser import parse as parse_namespace__
 
 import DHParser.versionnumber
@@ -81,7 +82,7 @@ if DHParser.versionnumber.__version_info__ < (1, 7, 0):
 #######################################################################
 
 
-RE_INCLUDE = r'\\(?:input|include)\{(?P<name>.*)\}'
+RE_INCLUDE = r'\\(?:input)\{(?P<name>.*)\}'   # RE_INCLUDE = r'\\(?:input|include)\{(?P<name>.*)\}'
 RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
 
 
@@ -129,16 +130,16 @@ class Include(Parser):
         assert end > location
 
         # read include file
-        source_name = self.grammar.text__[location + 9:end]
+        source_name = self.grammar.text__[location + 9:end - 1]
         try:
             with open(source_name, 'r', encoding='utf-8') as f:
                 source = f.read()
         except FileNotFoundError as e:
-            node = Node(ZOMBIE_TAG, str(e))
+            node = Node(ZOMBIE_TAG, str(e)).with_pos(location)
             self.grammar.tree__.new_error(node, f'Included file "{source_name}" not found')
             return node, end
         except IOError as e:
-            node = Node(ZOMBIE_TAG, str(e))
+            node = Node(ZOMBIE_TAG, str(e)).with_pos(location)
             self.grammar.tree__.new_error(node, f'IOError while including file "{source_name}": {e}')
             return node, end
         source_hash = md5(source).encode()
@@ -163,18 +164,18 @@ class Include(Parser):
             err_msgs.append(f'IOError while loading "{ast_name}": {e}')
 
         # compile include file
-        if not has_attr(self.grammar, 'include_parser'):
-            self.grammar.include_parser = self.grammar.__class__()
+        if not hasattr(self.grammar, 'include_parser__'):
+            self.grammar.include_parser__ = self.grammar.__class__()
             # just make sure this also works recursively!
-            assert not has_attr(self.grammar, 'include_parser')
-            assert not has_attr(self.grammar, 'include_transformer')
-        CST = self.grammar.include_parser(
+            assert not hasattr(self.grammar.include_parser__, 'include_parser__')
+            assert not hasattr(self.grammar.include_parser__, 'include_transformer__')
+        CST = self.grammar.include_parser__(
             document = source,
             start_parser = "snippet",
             source_mapping = gen_neutral_srcmap_func(source, source_name))
-        if not has_attr(self.grammar, 'include_transformer'):
-            self.grammar.include_transformer = ASTTransformation.factory()
-        AST = self.grammar.include_transformer(CST)
+        if not hasattr(self.grammar, 'include_transformer__'):
+            self.grammar.include_transformer__ = ASTTransformation.factory()
+        AST = self.grammar.include_transformer__(CST)
 
         # save compiled AST, prepend a 32-bytes hash value of the source
         try:
@@ -208,12 +209,10 @@ class LaTeXGrammar(Grammar):
     _inline_math_text = Forward()
     _text_element = Forward()
     block = Forward()
-    block_of_paragraphs = Forward()
-    item = Forward()
     paragraph = Forward()
     param_block = Forward()
     tabular_config = Forward()
-    source_hash__ = "378e14ffc17e8f51fe2c19e58022d0ae"
+    source_hash__ = "f7a6b77fbaf465bd08c78c546f0b4d96"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
@@ -240,7 +239,6 @@ class LaTeXGrammar(Grammar):
     LFF = Alternative(Series(NEW_LINE, Option(_WSPC)), EOF)
     _LETTERS = RegExp('\\w+')
     CHARS = RegExp('[^\\\\%$&\\{\\}\\[\\]\\s\\n\'`"]+')
-    LINE = RegExp('[^\\\\%$&\\{\\}\\[\\]\\n\'`"]+')
     _TEXT_NOPAR = RegExp('(?:[^\\\\%$&\\{\\}\\[\\]\\(\\)\\n]+(?:\\n(?![ \\t]*\\n))?)+')
     _TEXT = RegExp('(?:[^\\\\%$&\\{\\}\\[\\]\\n\'`"]+(?:\\n(?![ \\t]*\\n))?)+')
     _TAG = RegExp('[\\w=?.:\\-%&\\[\\] /]+')
@@ -296,7 +294,9 @@ class LaTeXGrammar(Grammar):
     cfg_text = Series(ZeroOrMore(Alternative(text, CMDNAME, SPECIAL, block)), dwsp__)
     config = Series(Series(Drop(Text("[")), dwsp__), Alternative(Series(parameters, Lookahead(Series(Drop(Text("]")), dwsp__))), cfg_text), Series(Drop(Text("]")), dwsp__), mandatory=1)
     _block_content = Series(Option(Alternative(_PARSEP, S)), ZeroOrMore(Series(Alternative(_block_environment, _text_element, paragraph), Option(Alternative(_PARSEP, S)))))
-    hide_from_toc = Series(Text("*"), dwsp__)
+    sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(Custom(Include()), paragraph, _block_environment), Option(Alternative(_PARSEP, S)))))
+    block_of_paragraphs = Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2)
+    item = Series(Series(Drop(Text("\\item")), dwsp__), Option(config), sequence, mandatory=2)
     setlength = Series(Series(Drop(Text("\\setlength")), dwsp__), block, block)
     _pth = OneOrMore(Alternative(_PATH, ESCAPED))
     target = Series(_pth, ZeroOrMore(Series(NegativeLookbehind(Drop(RegExp('s?ptth'))), _COLON, _pth)), Option(Series(Alternative(Series(Option(_DROP_BACKSLASH), _HASH), Series(NegativeLookbehind(Drop(RegExp('s?ptth'))), _COLON)), _TAG)))
@@ -327,7 +327,7 @@ class LaTeXGrammar(Grammar):
     _command = Alternative(_known_command, text_command, assignment, generic_command)
     _inline_math_text_bracket = RegExp('(?:[^\\\\]*(?:(?![\\\\][)])[\\\\])?)*')
     _inline_math_core = RegExp('[^$\\\\{}]+')
-    sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(paragraph, _block_environment), Option(Alternative(_PARSEP, S)))))
+    SubParagraph = Series(Series(Drop(Text("\\subparagraph")), dwsp__), heading, Option(sequence))
     _im_bracket = Series(Drop(Text("\\(")), _inline_math_text_bracket, Drop(Text("\\)")), mandatory=1)
     _im_dollar = Series(Drop(Text("$")), _inline_math_text, Alternative(Drop(Text("$")), Lookahead(Drop(Text("}")))), mandatory=1)
     inline_math = Alternative(_im_dollar, _im_bracket)
@@ -339,10 +339,10 @@ class LaTeXGrammar(Grammar):
     _known_inline_env = Synonym(inline_math)
     _inline_environment = Alternative(_known_inline_env, generic_inline_env)
     _line_element = Alternative(text, _inline_environment, _command, block)
-    SubParagraph = Series(Series(Drop(Text("\\subparagraph")), dwsp__), heading, Option(sequence))
     SubParagraphs = OneOrMore(Series(Option(_WSPC), SubParagraph))
     Paragraph = Series(Series(Drop(Text("\\paragraph")), dwsp__), heading, ZeroOrMore(Alternative(sequence, SubParagraphs)))
     Paragraphs = OneOrMore(Series(Option(_WSPC), Paragraph))
+    hide_from_toc = Series(Text("*"), dwsp__)
     tabcmd = Series(RegExp("\\\\[><'`'+-]"), dwsp__)
     tabrow = Series(Option(tabcmd), ZeroOrMore(Alternative(Series(_line_element, Option(Alternative(S, _PARSEP))), tabcmd)), Alternative(Series(Series(Drop(Text("\\\\")), dwsp__), Option(config), Option(_PARSEP)), Lookahead(Drop(Text("\\end{tabbing}")))))
     settab = Series(Series(Drop(Text("\\=")), dwsp__), Option(config))
@@ -399,14 +399,13 @@ class LaTeXGrammar(Grammar):
     Chapter = Series(Drop(Text("\\chapter")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Sections, Paragraphs)))
     Chapters = OneOrMore(Series(Option(_WSPC), Chapter))
     document = Series(Option(_WSPC), Series(Drop(Text("\\begin{document}")), dwsp__), frontpages, Alternative(Chapters, Sections), Option(Bibliography), Option(Index), Option(_WSPC), Series(Drop(Text("\\end{document}")), dwsp__), Option(_WSPC), EOF, mandatory=2)
+    snippet = Alternative(Chapters, Sections, SubSections, SubSubSections, Paragraphs, SubParagraphs, sequence)
     param_block.set(Series(Series(Drop(Text("{")), dwsp__), Option(parameters), Series(Drop(Text("}")), dwsp__)))
     block.set(Series(Series(Drop(Text("{")), dwsp__), _block_content, Drop(Text("}")), mandatory=2))
     _inline_math_text.set(ZeroOrMore(Alternative(_inline_math_core, Series(_BACKSLASH, Option(Alternative(_LBRACE, _RBRACE, _DOLLAR))), Series(_LBRACE, _inline_math_text, _RBRACE))))
     _text_element.set(Alternative(_line_element, LINEFEED))
     paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), _text_element, Option(S))))
-    block_of_paragraphs.set(Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2))
     tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(Option(cfg_left_seq), cfg_celltype, Option(cfg_unit), Option(cfg_right_seq)), cfg_separator, cfg_colsep, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
-    item.set(Series(Series(Drop(Text("\\item")), dwsp__), Option(config), sequence, mandatory=2))
     _block_environment.set(Series(Lookahead(_has_block_start), Alternative(_known_environment, generic_block)))
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = latexdoc
@@ -533,6 +532,7 @@ LaTeX_AST_transformation_table = {
     "<": [flatten, remove_children_if(is_expendable)],
     "latexdoc": [],
     "document": [],
+    "snippet": [BLOCK_CHILDREN, replace_by_children],
     "pdfinfo": [],
     "_TEXT_NOPAR": [apply_unless(normalize_whitespace, has_children)],
     "info_assoc": [change_name('association'), replace_by_single_child],
@@ -790,8 +790,13 @@ def compile_src(source: str, target: str = "LaTeXML".lower()) -> Tuple[Any, List
     as well as a (possibly empty) list or errors or warnings that have occurred in the
     process.
     """
+    curr_dir = os.getcwd()
+    if is_filename(source):
+        os.chdir(os.path.dirname(os.path.abspath(source)))
+        source = os.path.basename(source)
     full_compilation_result = full_pipeline(
         source, preprocessing.factory, parsing.factory, junctions, set([target]))
+    os.chdir(curr_dir)
     return full_compilation_result[target]
 
 
@@ -801,13 +806,18 @@ def process_file(source: str, out_dir: str = '') -> str:
     written to a file with the same name as `result_filename` with an
     appended "_ERRORS.txt" or "_WARNINGS.txt" in place of the name's
     extension. Returns the name of the error-messages file or an empty
-    string, if no errors or warnings occurred.
+    string if no errors or warnings occurred.
     """
     global serializations
     serializations = get_config_value('LaTeXParser_serializations', serializations)
-    return dsl.process_file(source, out_dir, preprocessing.factory, parsing.factory,
-                            junctions, targets, serializations)
-
+    curr_dir = os.getcwd()
+    if is_filename(source):
+        os.chdir(os.path.dirname(os.path.abspath(source)))
+        source = os.path.basename(source)
+    result = dsl.process_file(source, out_dir, preprocessing.factory, parsing.factory,
+                             junctions, targets, serializations)
+    os.chdir(curr_dir)
+    return result
 
 def _process_file(args: Tuple[str, str]) -> str:
     return process_file(*args)
