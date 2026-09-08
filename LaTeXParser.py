@@ -75,43 +75,19 @@ if DHParser.versionnumber.__version_info__ < (1, 7, 0):
           f'Please install a more recent version of DHParser to avoid unexpected errors!')
 
 
-#######################################################################
-#
-# PREPROCESSOR SECTION - Can be edited. Changes will be preserved.
-#
-#######################################################################
-
-
-RE_INCLUDE = r'\\(?:input)\{(?P<name>.*)\}'   # RE_INCLUDE = r'\\(?:input|include)\{(?P<name>.*)\}'
-RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
-
-
-def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
-    return original_text, []
-
-
-def preprocessor_factory() -> PreprocessorFunc:
-    # below, the second parameter
-    find_next_include = gen_find_include_func(
-        RE_INCLUDE, RE_COMMENT,
-        lambda s: s if s[-4:] == '.tex' else s + '.tex')
-    include_prep = partial(preprocess_includes, find_next_include=find_next_include)
-    tokenizing_prep = make_preprocessor(LaTeXTokenizer)
-    return chain_preprocessors(include_prep, tokenizing_prep)
-
-
-preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory))
-
 
 ########################################################################
 #
-# CUSTOM PARSERS
+# INCLUDE HANDLING
 #
 ########################################################################
+
+RE_INCLUDE = r'\\(?:include)\{(?P<name>.*)\}'
+
 
 def transfer_errors(src: RootNode, dst: RootNode, location):
     for error in src.errors_sorted:
-        error._pos += location
+        error._pos = location
         dst.errors.append(error)
 
 def strip_root(root_node: RootNode) -> Node:
@@ -189,6 +165,52 @@ class Include(Parser):
         AST = strip_root(AST)
 
         return AST, end
+
+
+#######################################################################
+#
+# PREPROCESSOR SECTION - Can be edited. Changes will be preserved.
+#
+#######################################################################
+
+
+RE_INPUT = r'\\(?:input)\{(?P<name>.*)\}'
+RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
+
+
+
+# def _process_file(args: Tuple[str, str]) -> str:
+#     return process_file(*args)
+#
+#
+# def batch_process(file_names: List[str], out_dir: str,
+#                   *, submit_func: Callable = None,
+#                   log_func: Callable = None,
+#                   cancel_func: Callable = never_cancel) -> List[str]:
+#     """Compiles all files listed in file_names and writes the results and/or
+#     error messages to the directory `our_dir`. Returns a list of error
+#     messages files.
+#     """
+#     return dsl.batch_process(file_names, out_dir, _process_file,
+#         submit_func=submit_func, log_func=log_func, cancel_func=cancel_func)
+
+
+def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
+    return original_text, []
+
+
+def preprocessor_factory() -> PreprocessorFunc:
+    # below, the second parameter
+    find_next_include = gen_find_include_func(
+        RE_INPUT, RE_COMMENT,
+        lambda s: s if s[-4:] == '.tex' else s + '.tex')
+    include_prep = partial(preprocess_includes, find_next_include=find_next_include)
+    tokenizing_prep = make_preprocessor(LaTeXTokenizer)
+    return chain_preprocessors(include_prep, tokenizing_prep)
+
+
+preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory))
+
 
 
 #######################################################################
@@ -414,7 +436,7 @@ parsing: PseudoJunction = create_parser_junction(LaTeXGrammar)
 get_grammar = parsing.factory # for backwards compatibility, only
 
 try:
-    assert RE_INCLUDE == NEVER_MATCH_PATTERN or \
+    assert RE_INPUT == NEVER_MATCH_PATTERN or \
         RE_COMMENT in (LaTeXGrammar.COMMENT__, NEVER_MATCH_PATTERN), \
         "Please adjust the pre-processor-variable RE_COMMENT in file LaTeXParser.py so that " \
         "it either is the NEVER_MATCH_PATTERN or has the same value as the COMMENT__-attribute " \
@@ -533,6 +555,21 @@ LaTeX_AST_transformation_table = {
     "latexdoc": [],
     "document": [],
     "snippet": [BLOCK_CHILDREN, replace_by_children],
+    # chapter-nesting-errors may escape the attention of the parser when includes are used.
+    # Therefore, chapter-nesting is here enforced, again.
+    "Chapters": [apply_unless(add_error(f'Chapters must be child of document!'),
+                              lambda path: len(path) <= 1 or path[-2].name in ('document', 'snippet'))],
+    "Sections": [apply_unless(add_error(f'Sections must be child of document or Chapter!'),
+                              lambda path: len(path) <= 1 or path[-2].name in ("Chapter", 'document', 'snippet'))],
+    "SebSections": [apply_unless(add_error(f'SubSections must be child of Section!'),
+                              lambda path: len(path) <= 1 or path[-2].name in ('Section', 'snippet'))],
+    "SubSubSections": [apply_unless(add_error(f'SubSubSections must be child of SubSection!'),
+                              lambda path: len(path) <= 1 or path[-2].name in ('SubSection', 'snippet'))],
+    "Paragraphs": [apply_unless(add_error(f'Paragraphs must be child of document, Chapter, Section, SubSecion or SubSubSection!'),
+                              lambda path: len(path) <= 1 or path[-2].name in ("Chapter", 'document', 'Section', 'SubSection', 'SubSubSection', 'snippet'))],
+    "SubParagraphs": [apply_unless(add_error(f'SubParagraphs must be child of Paragraph!'),
+                                 lambda path: len(path) <= 1 or path[-2].name in ('Paragraph', 'snippet'))],
+    "Chapter, Section, SubSection, SubSubSection, Paragraph, SubParagraph": [],
     "pdfinfo": [],
     "_TEXT_NOPAR": [apply_unless(normalize_whitespace, has_children)],
     "info_assoc": [change_name('association'), replace_by_single_child],
@@ -542,8 +579,6 @@ LaTeX_AST_transformation_table = {
     "association": [replace_by_single_child],
     "key": reduce_single_child,
     "frontpages": reduce_single_child,
-    "Chapters, Sections, SubSections, SubSubSections, Paragraphs, SubParagraphs": [],
-    "Chapter, Section, SubSection, SubSubSection, Paragraph, SubParagraph": [],
     "hide_from_toc, no_numbering": [replace_content_with('')],
     "heading": reduce_single_child,
     "Bibliography": [],
