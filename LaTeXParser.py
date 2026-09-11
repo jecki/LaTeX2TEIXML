@@ -148,7 +148,7 @@ def IncludesPrecompiler(original_text) -> Tuple[str, List[Error]]:
             ext = ".tex"
             include += ext
         include_path = pathlib.Path(include)
-        precomp_path = pathlib.Path(name + '.pickledAST')
+        precomp_path = pathlib.Path(include + '.pickledAST')
         if not include_path.is_file():
             continue
         if not precomp_path.is_file():
@@ -164,6 +164,7 @@ def IncludesPrecompiler(original_text) -> Tuple[str, List[Error]]:
 
 def preprocessor_factory() -> PreprocessorFunc:
     # below, the second parameter
+    _ = RE_INPUT
     find_next_include = gen_find_include_func(
         RE_INPUT, RE_COMMENT,
         lambda s: s if s[-4:] == '.tex' else s + '.tex')
