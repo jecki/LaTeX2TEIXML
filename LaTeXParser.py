@@ -10,10 +10,9 @@
 import collections
 from functools import partial
 import os
+import pathlib
 import sys
 from typing import Tuple, List, Union, Any, Optional, Callable, cast
-
-import cython
 
 try:
     scriptdir = os.path.dirname(os.path.realpath(__file__))
@@ -76,14 +75,112 @@ if DHParser.versionnumber.__version_info__ < (1, 7, 0):
 
 
 
+#######################################################################
+#
+# PREPROCESSOR SECTION - Can be edited. Changes will be preserved.
+#
+#######################################################################
+
+
+RE_INPUT = r'\\(?:input)\{(?P<name>.*)\}'
+RE_INCLUDE = r'\\(?:include)\{(?P<name>.*)\}'
+RX_INCLUDE = re.compile(RE_INCLUDE)
+RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
+
+
+def precompile_early(args: Tuple[str, str]) -> str:
+    source_name = args[0]
+    try:
+        with open(source_name, 'r', encoding='utf-8') as f:
+            source = f.read()
+    except FileNotFoundError:
+        return f'Included file "{source_name}" not found'
+    except IOError:
+        return f'IOError while including file "{source_name}"'
+    source_hash = md5(source).encode()
+    ast_name = source_name + '.pickledAST'
+    err_msgs = []
+    import pickle
+    try:
+        with open(ast_name, 'rb') as f:
+            hash = f.read(32)
+            if hash == source_hash:
+                return "precompiled file is up to date"
+    except (FileNotFoundError, IOError):
+        pass
+        # compile include file
+    parser = parsing.factory()
+    CST = parser(
+        document = source,
+        start_parser = "snippet",
+        source_mapping = gen_neutral_srcmap_func(source, source_name))
+    transformer = ASTTransformation.factory()
+    AST = transformer(CST)
+
+    # save compiled AST, prepend a 32-bytes hash value of the source
+    try:
+        with open(ast_name, 'wb') as f:
+            f.write(source_hash)
+            pickle.dump(AST, f)
+    except IOError as e:
+        return f'IOError while saving "{ast_name}": {e}'
+    return ""
+
+
+def batch_precompile(file_names: List[str], out_dir: str,
+                     *, submit_func: Callable = None,
+                     log_func: Callable = None,
+                     cancel_query: Callable = never_cancel) -> List[str]:
+    """Compiles all files listed in file_names and writes the results and/or
+    error messages to the directory `our_dir`. Returns a list of error
+    messages files.
+    """
+    return dsl.batch_process(file_names, out_dir, precompile_early,
+        submit_func=submit_func, log_func=log_func, cancel_query=cancel_query)
+
+
+def IncludesPrecompiler(original_text) -> Tuple[str, List[Error]]:
+    precompile_list = []
+    for m in RX_INCLUDE.finditer(original_text):
+        include = m.group('name')
+        name, ext = os.path.splitext(include)
+        if not ext:
+            ext = ".tex"
+            include += ext
+        include_path = pathlib.Path(include)
+        precomp_path = pathlib.Path(name + '.pickledAST')
+        if not include_path.is_file():
+            continue
+        if not precomp_path.is_file():
+            precompile_list.append(include)
+            continue
+        include_time = include_path.stat().st_mtime
+        precomp_time = precomp_path.stat().st_mtime
+        if include_time > precomp_time:
+            precompile_list.append(include)
+    batch_precompile(precompile_list, '.')
+    return original_text, []
+
+
+def preprocessor_factory() -> PreprocessorFunc:
+    # below, the second parameter
+    find_next_include = gen_find_include_func(
+        RE_INPUT, RE_COMMENT,
+        lambda s: s if s[-4:] == '.tex' else s + '.tex')
+    include_prep = partial(preprocess_includes, find_next_include=find_next_include)
+    tokenizing_prep = make_preprocessor(IncludesPrecompiler)
+    return chain_preprocessors(include_prep, tokenizing_prep)
+
+
+preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory))
+
+
+
 ########################################################################
 #
 # INCLUDE HANDLING
 #
 ########################################################################
-
-RE_INCLUDE = r'\\(?:include)\{(?P<name>.*)\}'
-
 
 def transfer_errors(src: RootNode, dst: RootNode, location):
     for error in src.errors_sorted:
@@ -98,7 +195,7 @@ def strip_root(root_node: RootNode) -> Node:
 
 
 class Include(Parser):
-    def _parse(self, location: cython.int) -> ParsingResult:
+    def _parse(self, location: int) -> ParsingResult:
         if self.grammar.text__[location:location + 9] != r'\include{':
             return None, location
 
@@ -121,7 +218,7 @@ class Include(Parser):
         source_hash = md5(source).encode()
 
         # check for "up to date" precompiled version of the file's AST
-        # load and return prcompiled AST, if its hash value is the same
+        # load and return precompiled AST, if its hash value is the same
         # as that of the source file
         ast_name = source_name + '.pickledAST'
         err_msgs = []
@@ -165,52 +262,6 @@ class Include(Parser):
         AST = strip_root(AST)
 
         return AST, end
-
-
-#######################################################################
-#
-# PREPROCESSOR SECTION - Can be edited. Changes will be preserved.
-#
-#######################################################################
-
-
-RE_INPUT = r'\\(?:input)\{(?P<name>.*)\}'
-RE_COMMENT = r'%.*'  # must always be the same as Grammar.COMMENT__!z
-
-
-
-# def _process_file(args: Tuple[str, str]) -> str:
-#     return process_file(*args)
-#
-#
-# def batch_process(file_names: List[str], out_dir: str,
-#                   *, submit_func: Callable = None,
-#                   log_func: Callable = None,
-#                   cancel_func: Callable = never_cancel) -> List[str]:
-#     """Compiles all files listed in file_names and writes the results and/or
-#     error messages to the directory `our_dir`. Returns a list of error
-#     messages files.
-#     """
-#     return dsl.batch_process(file_names, out_dir, _process_file,
-#         submit_func=submit_func, log_func=log_func, cancel_func=cancel_func)
-
-
-def LaTeXTokenizer(original_text) -> Tuple[str, List[Error]]:
-    return original_text, []
-
-
-def preprocessor_factory() -> PreprocessorFunc:
-    # below, the second parameter
-    find_next_include = gen_find_include_func(
-        RE_INPUT, RE_COMMENT,
-        lambda s: s if s[-4:] == '.tex' else s + '.tex')
-    include_prep = partial(preprocess_includes, find_next_include=find_next_include)
-    tokenizing_prep = make_preprocessor(LaTeXTokenizer)
-    return chain_preprocessors(include_prep, tokenizing_prep)
-
-
-preprocessing = PseudoJunction(ThreadLocalSingletonFactory(preprocessor_factory))
-
 
 
 #######################################################################
@@ -861,13 +912,13 @@ def _process_file(args: Tuple[str, str]) -> str:
 def batch_process(file_names: List[str], out_dir: str,
                   *, submit_func: Callable = None,
                   log_func: Callable = None,
-                  cancel_func: Callable = never_cancel) -> List[str]:
+                  cancel_query: Callable = never_cancel) -> List[str]:
     """Compiles all files listed in file_names and writes the results and/or
     error messages to the directory `our_dir`. Returns a list of error
     messages files.
     """
     return dsl.batch_process(file_names, out_dir, _process_file,
-        submit_func=submit_func, log_func=log_func, cancel_func=cancel_func)
+        submit_func=submit_func, log_func=log_func, cancel_query=cancel_query)
 
 
 def main(called_from_app=False) -> bool:
