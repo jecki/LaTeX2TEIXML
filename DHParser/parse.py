@@ -2035,7 +2035,8 @@ class Grammar:
                 result, location = parser(location)
             except ParserError as pe:
                 result, location = pe.node, L
-                for k in self.variables__:  del self.variables__[k]
+                for k in tuple(self.variables__.keys()):
+                    del self.variables__[k]
             except CancelError as ce:
                 result = Node(EMPTY_NODE.name, '').with_pos(0)
                 self.tree__.new_error(

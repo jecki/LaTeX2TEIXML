@@ -294,7 +294,7 @@ class LaTeXGrammar(Grammar):
     param_block = Forward()
     sequence = Forward()
     tabular_config = Forward()
-    source_hash__ = "0963c385d74235843ace011790d9802e"
+    source_hash__ = "ac2e8d9b2fec2683d66d58bb59b8a1f5"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
@@ -381,7 +381,7 @@ class LaTeXGrammar(Grammar):
     text = Series(OneOrMore(Alternative(_TEXT, special)), ZeroOrMore(Series(S, OneOrMore(Alternative(_TEXT, special)))))
     cfg_text = Series(ZeroOrMore(Alternative(text, CMDNAME, SPECIAL, block)), dwsp__)
     config = Series(Series(Drop(Text("[")), dwsp__), Alternative(Series(parameters, Lookahead(Series(Drop(Text("]")), dwsp__))), cfg_text), Series(Drop(Text("]")), dwsp__), mandatory=1)
-    _block_content = Series(Option(Alternative(_PARSEP, S)), ZeroOrMore(Series(Alternative(_block_environment, _text_element, paragraph), Option(Alternative(_PARSEP, S)))))
+    _block_content = Series(Option(Alternative(_PARSEP, S)), ZeroOrMore(Series(Alternative(Custom(Include()), _block_environment, _text_element, paragraph), Option(Alternative(_PARSEP, S)))))
     hide_from_toc = Series(Text("*"), dwsp__)
     macro_body = Option(sequence)
     macro_param = Alternative(Series(_LSQUARE, Series(Drop(Text("#")), dwsp__), _NUMBER, _RSQUARE), Series(_LANGULAR, Series(Drop(Text("#")), dwsp__), _NUMBER, _RANGULAR), Series(Series(Drop(Text("#")), dwsp__), _NUMBER))
@@ -424,7 +424,7 @@ class LaTeXGrammar(Grammar):
     begin_environment = Series(Drop(RegExp('\\\\begin{')), NegativeLookahead(_env_name), NAME, Drop(RegExp('}')), mandatory=2)
     _end_inline_env = Synonym(end_environment)
     _begin_inline_env = Alternative(Series(NegativeLookbehind(_LB), begin_environment), Series(begin_environment, NegativeLookahead(LFF)))
-    generic_inline_env = Series(_begin_inline_env, dwsp__, paragraph, NegativeLookahead(_PARSEP), _end_inline_env, mandatory=4)
+    generic_inline_env = Series(_begin_inline_env, dwsp__, ZeroOrMore(Series(Alternative(paragraph, Series(Custom(Include()), Option(S))), NegativeLookahead(_PARSEP))), _end_inline_env, mandatory=3)
     _known_inline_env = Synonym(inline_math)
     _inline_environment = Alternative(_known_inline_env, generic_inline_env)
     _line_element = Alternative(text, _inline_environment, _command, block)
@@ -494,7 +494,7 @@ class LaTeXGrammar(Grammar):
     block.set(Series(Series(Drop(Text("{")), dwsp__), _block_content, Drop(Text("}")), mandatory=2))
     _inline_math_text.set(ZeroOrMore(Alternative(_inline_math_core, Series(_BACKSLASH, Option(Alternative(_LBRACE, _RBRACE, _DOLLAR))), Series(_LBRACE, _inline_math_text, _RBRACE))))
     _text_element.set(Alternative(_line_element, LINEFEED))
-    paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), _text_element, Option(S))))
+    paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), NegativeLookahead(_INCLUDE), _text_element, Option(S))))
     sequence.set(Synonym(_sequence))
     block_of_paragraphs.set(Series(Series(Drop(Text("{")), dwsp__), Option(sequence), Series(Drop(Text("}")), dwsp__), mandatory=2))
     tabular_config.set(Series(Series(Drop(Text("{")), dwsp__), OneOrMore(Alternative(Series(Option(cfg_left_seq), cfg_celltype, Option(cfg_unit), Option(cfg_right_seq)), cfg_separator, cfg_colsep, Drop(RegExp(' +')))), Series(Drop(Text("}")), dwsp__), mandatory=2))
@@ -532,6 +532,7 @@ def streamline_whitespace(context):
     # if context[-2].name == TOKEN_PTYPE:
     #     return
     node = context[-1]
+    if not node.name in ['WSPC', ':Whitespace', 'S']:  return
     assert node.name in ['WSPC', ':Whitespace', 'S']
     s = node.content
     if s.find('%') >= 0:

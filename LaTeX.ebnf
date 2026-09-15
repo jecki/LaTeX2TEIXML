@@ -135,9 +135,9 @@ tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbi
 
 block_of_paragraphs = "{" [sequence] §"}"
 sequence            = _sequence
-_sequence           = [_WSPC] { (@Include() | paragraph | _block_environment) [_PARSEP|S] }+
+_sequence           = [_WSPC] { (@Include() | paragraph | _block_environment ) [_PARSEP|S] }+
 _frontsequence      = [_WSPC] { !_INCLUDE (paragraph | _block_environment) [_PARSEP|S] }+
-paragraph           = { !blockcmd _text_element [S] }+
+paragraph           = { !blockcmd !_INCLUDE _text_element [S] }+
 _text_element       = _line_element | LINEFEED
 _line_element       = text | _inline_environment | _command | block
 
@@ -146,7 +146,7 @@ _line_element       = text | _inline_environment | _command | block
 
 _inline_environment = _known_inline_env | generic_inline_env
 _known_inline_env   = inline_math
-generic_inline_env  = _begin_inline_env ~ paragraph !_PARSEP §_end_inline_env
+generic_inline_env  = _begin_inline_env ~ { (paragraph | @Include() [S]) !_PARSEP } §_end_inline_env
 _begin_inline_env   = (<-!_LB begin_environment) | (begin_environment !LFF)
 _end_inline_env     = end_environment
                       ## (<-!_LB end_environment)   | (end_environment !LFF)  # ambiguity with generic_block when EOF
@@ -211,7 +211,7 @@ macro_body          = [sequence]
 #######################################################################
 
 block          = "{" _block_content §`}`
-_block_content = [_PARSEP|S] { (_block_environment | _text_element | paragraph) [_PARSEP|S] }
+_block_content = [_PARSEP|S] { (@Include() | _block_environment | _text_element | paragraph) [_PARSEP|S] }
 # text           = {CHARS|special}+ { S {CHARS|special}+ }
 # text           = {LINE|special}+ { S {LINE|special}+ }
 text           = {_TEXT|special}+ { S  {_TEXT|special}+ }
