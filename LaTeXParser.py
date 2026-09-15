@@ -108,7 +108,8 @@ def precompile_early(args: Tuple[str, str]) -> str:
                 return "precompiled file is up to date"
     except (FileNotFoundError, IOError):
         pass
-        # compile include file
+    # compile include file
+    print(f'compiling included file "{source_name}"')
     parser = parsing.factory()
     CST = parser(
         document = source,
@@ -228,6 +229,7 @@ class Include(Parser):
             with open(ast_name, 'rb') as f:
                 hash = f.read(32)
                 if hash == source_hash:
+                    print(f'loading precompiled AST from "{ast_name}"')
                     AST = pickle.load(f)
                     transfer_errors(AST, self.grammar.tree__, location)
                     AST = strip_root(AST)
@@ -243,6 +245,7 @@ class Include(Parser):
             # just make sure this also works recursively!
             assert not hasattr(self.grammar.include_parser__, 'include_parser__')
             assert not hasattr(self.grammar.include_parser__, 'include_transformer__')
+        print(f'compiling included file "{source_name}"')
         CST = self.grammar.include_parser__(
             document = source,
             start_parser = "snippet",
