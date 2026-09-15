@@ -70,7 +70,7 @@ heading        = block
 
 #### block environments ####
 
-_block_environment  = &_has_block_start (_known_environment | generic_block)
+_block_environment  = &_has_block_start (_known_environment | generic_block) [S]
   _has_block_start  = `\begin{` | `\[`
 _known_environment  = itemize | enumerate | description | figure | tabular | tabbing
                     | quotation | verbatim | math_block
@@ -111,7 +111,7 @@ tabular             = `\begin{tabular` [full_width] "}" [cfg_unit] tabular_confi
   full_width        = `*`
 tabular_row         = (multicolumn | tabular_cell) { "&" (multicolumn | tabular_cell) }
                       ("\\" ( hline | { cline } ) [_PARSEP] | &`\end{tabular}`)
-tabular_cell        = raisebox [S|_PARSEP] | { (_line_element | _block_environment) [S|_PARSEP] }
+tabular_cell        = raisebox [S|_PARSEP] | { (_line_element [S] | _block_environment) [_PARSEP] }
 raisebox            = "\raisebox" rb_offset [rb_up] [rb_down] block
   rb_offset         = "{" number UNIT ~ "}"
   rb_up             = "[" number UNIT ~ "]"
@@ -135,18 +135,18 @@ tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbi
 
 block_of_paragraphs = "{" [sequence] §"}"
 sequence            = _sequence
-_sequence           = [_WSPC] { (@Include() | paragraph | _block_environment ) [_PARSEP|S] }+
-_frontsequence      = [_WSPC] { !_INCLUDE (paragraph | _block_environment) [_PARSEP|S] }+
+_sequence           = [_WSPC] { (_include | paragraph | _block_environment ) [_PARSEP] }+
+_frontsequence      = [_WSPC] { !_INCLUDE (paragraph | _block_environment) [_PARSEP] }+
 paragraph           = { !blockcmd !_INCLUDE _text_element [S] }+
 _text_element       = _line_element | LINEFEED
 _line_element       = text | _inline_environment | _command | block
-
+_include            = @Include() [S]
 
 #### inline enivronments ####
 
 _inline_environment = _known_inline_env | generic_inline_env
 _known_inline_env   = inline_math
-generic_inline_env  = _begin_inline_env ~ { (paragraph | @Include() [S]) !_PARSEP } §_end_inline_env
+generic_inline_env  = _begin_inline_env ~ { (paragraph | _include) !_PARSEP } §_end_inline_env
 _begin_inline_env   = (<-!_LB begin_environment) | (begin_environment !LFF)
 _end_inline_env     = end_environment
                       ## (<-!_LB end_environment)   | (end_environment !LFF)  # ambiguity with generic_block when EOF
@@ -211,7 +211,7 @@ macro_body          = [sequence]
 #######################################################################
 
 block          = "{" _block_content §`}`
-_block_content = [_PARSEP|S] { (@Include() | _block_environment | _text_element | paragraph) [_PARSEP|S] }
+_block_content = [_PARSEP|S] { (_include | _block_environment | _text_element [S] | paragraph) [_PARSEP|S] }
 # text           = {CHARS|special}+ { S {CHARS|special}+ }
 # text           = {LINE|special}+ { S {LINE|special}+ }
 text           = {_TEXT|special}+ { S  {_TEXT|special}+ }
