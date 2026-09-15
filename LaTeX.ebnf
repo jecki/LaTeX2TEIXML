@@ -20,13 +20,13 @@ preamble       = { [_WSPC] (_command | !"\begin{document}" _block_environment) }
 
 document       = [_WSPC] "\begin{document}"
                  §frontpages
-                 (Chapters | Sections)
+                 (Chapters | Sections | &_INCLUDE _sequence)
                  [Bibliography] [Index] [_WSPC]
                  "\end{document}" [_WSPC] EOF
-frontpages     = sequence
+frontpages     = _frontsequence
 
-snippet        = Chapters | Sections | SubSections | SubSubSections   # included files
-               | Paragraphs | SubParagraphs | sequence
+snippet        = [sequence] [ Chapters | Sections | SubSections
+                            | SubSubSections | Paragraphs | SubParagraphs ] ~
 
 
 #######################################################################
@@ -134,7 +134,9 @@ tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbi
 #### paragraphs and sequences of paragraphs ####
 
 block_of_paragraphs = "{" [sequence] §"}"
-sequence            = [_WSPC] { (@Include() | paragraph | _block_environment) [_PARSEP|S] }+  # TODO: Add include, here
+sequence            = _sequence
+_sequence           = [_WSPC] { (@Include() | paragraph | _block_environment) [_PARSEP|S] }+
+_frontsequence      = [_WSPC] { !_INCLUDE (paragraph | _block_environment) [_PARSEP|S] }+
 paragraph           = { !blockcmd _text_element [S] }+
 _text_element       = _line_element | LINEFEED
 _line_element       = text | _inline_environment | _command | block
@@ -165,10 +167,11 @@ _command             = _known_command | text_command | assignment | generic_comm
 _known_command      = citet | citep | footnote | includegraphics | caption
                     | multicolumn | hline | cline | documentclass | pdfinfo
                     | hypersetup | label | ref | href | url | item | setlength
+                    | macrodef
 text_command        = TXTCOMMAND { block } | ESCAPED | BRACKETS
 assignment          = !no_command CMDNAME "=" (number [UNIT] | block | CHARS)
 generic_command     = !no_command CMDNAME [starred] { ~ (config | block) }
-                    | `{` CMDNAME _block_content §`}`
+                    | `{` !no_command CMDNAME _block_content §`}`
     starred         = "*"
 
 citet               = "\citet" [config] block
@@ -194,6 +197,13 @@ href                = "\href{" urlstring "}" block
   _pth              = { _PATH | ESCAPED }+
 setlength           = "\setlength" block block
 
+macrodef            = "\def" CMDNAME { macro_param ~ } "{" macro_body "}"
+macro_param         = _LSQUARE "#" _NUMBER _RSQUARE
+                    | _LANGULAR "#" _NUMBER _RANGULAR
+                    | "#" _NUMBER
+macro_body          = [sequence]
+
+
 #######################################################################
 #
 # text
@@ -209,7 +219,7 @@ text           = {_TEXT|special}+ { S  {_TEXT|special}+ }
                | /\\/ esc_char   # reserved for characters that may appear in
   esc_char     = /[,~$_^{}]/     # in the middle of a word but do not delimit words
 
-no_command     = "\begin{" | "\end{" | _DROP_BACKSLASH _structure_name &`{`
+no_command     = "\begin{" | "\end{" | _DROP_BACKSLASH _structure_name &`{` | _INCLUDE
 blockcmd       = _DROP_BACKSLASH ( ( "begin{" | "end{" ) _env_name "}"
                             | _structure_name & `{` | `[` | `]`
                             | _item_name )
@@ -265,6 +275,7 @@ WARN_Komma = ","
 
 CMDNAME    = /\\@?(?:(?![\d_])\w)+/~
 TXTCOMMAND = /\\text\w+/
+_INCLUDE   = /\\include\s*{/~
 ESCAPED    = /\\(?:(?:[#%$&_\/{} \n])|(?:~\{\s*\}))/
 UMLAUT     = /\\(?:(?:"[AEIOUaeiou])|(?:"\{[AEIOUaeiou]\})
                   |(?:'[AEIOUaeioun])|(?:'\{\\?[AEIOUaeioun]\})
@@ -293,6 +304,10 @@ _COLON     = `:`
 _DOLLAR    = `$`
 _LBRACE    = `{`
 _RBRACE    = `}`
+_LSQUARE   = `[`
+_RSQUARE   = `]`
+_LANGULAR  = `<`
+_RANGULAR  = `>`
 _TAG       = /[\w=?.:\-%&\[\] \/]+/
 
 _TEXT      = /(?:[^\\%$&\{\}\[\]\n'`"]+(?:\n(?![ \t]*\n))?)+/
@@ -301,6 +316,7 @@ _TEXT_NOPAR = /(?:[^\\%$&\{\}\[\]\(\)\n]+(?:\n(?![ \t]*\n))?)+/  # text without 
 CHARS      = /[^\\%$&\{\}\[\]\s\n'`"]+/        # some piece of text excluding whitespace,
                                             # linefeed and special characters
 _LETTERS   = /\w+/
+_NUMBER    = /[1-9][0-9]*/
 # LF         = NEW_LINE { COMMENT__ WHITESPACE__ } | EOF # linefeed but not an empty line
 LFF        = NEW_LINE [ _WSPC ] | EOF       # at least one linefeed
 S          = &/[% \t\n]/ !_GAP WSP_RE__     # significant whitespace
