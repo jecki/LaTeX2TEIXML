@@ -36,16 +36,27 @@ snippet        = [sequence] [ Chapters | Sections | SubSections
 #######################################################################
 
 Chapters       = { [_WSPC] Chapter }+
-Chapter        = `\chapter` [hide_from_toc] heading { sequence | Sections | Paragraphs }
+Chapter        = `\chapter` [hide_from_toc] heading
+                 { sequence | Sections | Paragraphs
+                 | &SubSections @Error('500:Bad structure - subsection directly below chapter') SubSections
+                 | &SubSubSections @Error('500:Bad structure - subsubsubsection directly below chapter') SubSubSections
+                 | &SubParagraphs @Error('500:Bad structure - subparagraph directly below chapter') SubParagraphs }
 
 Sections       = { [_WSPC] Section }+
-Section        = `\section` [hide_from_toc] heading { sequence | SubSections | Paragraphs }
+Section        = `\section` [hide_from_toc] heading
+                 { sequence | SubSections | Paragraphs
+                 | &SubSubSections @Error('500:Bad structure - subsubsubsection directly below section') SubSubSections
+                 | &SubParagraphs @Error('500:Bad structure - subparagraph directly below section') SubParagraphs }
 
 SubSections    = { [_WSPC] SubSection }+
-SubSection     = `\subsection` [hide_from_toc] heading { sequence | SubSubSections | Paragraphs }
+SubSection     = `\subsection` [hide_from_toc] heading
+                 { sequence | SubSubSections | Paragraphs
+                 | &SubParagraphs @Error('500:Bad structure - subparagraph directly below subsection') SubParagraphs }
 
 SubSubSections = { [_WSPC] SubSubSection }+
-SubSubSection  = `\subsubsection` [hide_from_toc] heading { sequence | Paragraphs }
+SubSubSection  = `\subsubsection` [hide_from_toc] heading
+                 { sequence | Paragraphs
+                 | &SubParagraphs @Error('500:Bad structure - subparagraph directly below subsubsubsection') SubParagraphs }
 
 hide_from_toc  = "*"
 
@@ -135,8 +146,8 @@ tabbing             = "\begin{tabbing}" tabdefs { tabrow | _WSPC } §"\end{tabbi
 
 block_of_paragraphs = "{" [sequence] §"}"
 sequence            = _sequence
-_sequence           = [_WSPC] { (_include | paragraph | _block_environment ) [_PARSEP] }+
-_frontsequence      = [_WSPC] { !_INCLUDE (paragraph | _block_environment) [_PARSEP] }+
+_sequence           = [_WSPC] { (_include | _block_environment | paragraph) [_PARSEP] }+
+_frontsequence      = [_WSPC] { !_INCLUDE (_block_environment | paragraph) [_PARSEP] }+
 paragraph           = { !blockcmd !_INCLUDE _text_element [S] }+
 _text_element       = _line_element | LINEFEED
 _line_element       = text | _inline_environment | _command | block
@@ -146,7 +157,7 @@ _include            = @Include() [S]
 
 _inline_environment = _known_inline_env | generic_inline_env
 _known_inline_env   = inline_math
-generic_inline_env  = _begin_inline_env ~ { (paragraph | _include) !_PARSEP } §_end_inline_env
+generic_inline_env  = _begin_inline_env ~ { paragraph | _include } !_PARSEP  §_end_inline_env
 _begin_inline_env   = (<-!_LB begin_environment) | (begin_environment !LFF)
 _end_inline_env     = end_environment
                       ## (<-!_LB end_environment)   | (end_environment !LFF)  # ambiguity with generic_block when EOF
@@ -156,8 +167,9 @@ end_environment     = /\\end{/ §::NAME /}/
 inline_math         = _im_dollar | _im_bracket
   _im_dollar        = `$` §_inline_math_text (`$`| &`}`)
   _im_bracket       = `\(` § _inline_math_text_bracket `\)`
-_inline_math_text   = { _inline_math_core | _BACKSLASH [_LBRACE|_RBRACE|_DOLLAR] | _LBRACE _inline_math_text _RBRACE }
+_inline_math_text   = { _inline_math_core | _BACKSLASH [_LBRACE|_RBRACE|_DOLLAR] | _LBRACE _nested_inline_math _RBRACE }
   _inline_math_core = /[^$\\{}]+/
+_nested_inline_math = { _im_dollar | _im_bracket | _inline_math_text }+
 _inline_math_text_bracket = /(?:[^\\]*(?:(?![\\][)])[\\])?)*/
 
 #### commands ####

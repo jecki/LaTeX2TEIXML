@@ -74,8 +74,8 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Runs all grammar-tests in "test_grammar/" '
         'or a given test - after (re-)creating the parser script if necessary.')
     parser.add_argument('files', nargs='*')
-    parser.add_argument('-n', '--nohistory', action='store_const', const='nohistory',
-                        help="Don't log parsing history of failed tests.")
+    parser.add_argument('-t', '--history', action='store_const', const='history',
+                        help="Log parsing history of all test tests, not only failed ones.")
     parser.add_argument('-d', '--debug', action='store_const', const='debug',
                         help='Deprecated argument.')
     parser.add_argument('-s', '--scripts', action='store_const', const='scripts',
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     elif not config_test_parallelization:
         print('Tests will be run in a single-thread, because test-multiprocessing '
               'has been turned off in configuration file.')
-    set_preset_value('history_tracking', not args.nohistory)
+    set_preset_value('history_tracking', bool(args.history))
     finalize_presets()
 
     if args.scripts:

@@ -308,6 +308,7 @@ class LaTeXGrammar(Grammar):
         syntax_tree = parser(source_code)
     """
     _block_environment = Forward()
+    _im_dollar = Forward()
     _inline_math_text = Forward()
     _text_element = Forward()
     block = Forward()
@@ -317,7 +318,7 @@ class LaTeXGrammar(Grammar):
     param_block = Forward()
     sequence = Forward()
     tabular_config = Forward()
-    source_hash__ = "427e3ff0749dbe32cc7aab53dee20cb9"
+    source_hash__ = "0a7905ca072df23b2b1b0441eec095d0"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
@@ -405,7 +406,7 @@ class LaTeXGrammar(Grammar):
     cfg_text = Series(ZeroOrMore(Alternative(text, CMDNAME, SPECIAL, block)), dwsp__)
     config = Series(Series(Drop(Text("[")), dwsp__), Alternative(Series(parameters, Lookahead(Series(Drop(Text("]")), dwsp__))), cfg_text), Series(Drop(Text("]")), dwsp__), mandatory=1)
     _include = Series(Custom(Include()), Option(S))
-    hide_from_toc = Series(Text("*"), dwsp__)
+    SubParagraph = Series(Series(Drop(Text("\\subparagraph")), dwsp__), heading, Option(sequence))
     macro_body = Option(sequence)
     macro_param = Alternative(Series(_LSQUARE, Series(Drop(Text("#")), dwsp__), _NUMBER, _RSQUARE), Series(_LANGULAR, Series(Drop(Text("#")), dwsp__), _NUMBER, _RANGULAR), Series(Series(Drop(Text("#")), dwsp__), _NUMBER))
     macrodef = Series(Series(Drop(Text("\\def")), dwsp__), CMDNAME, ZeroOrMore(Series(macro_param, dwsp__)), Series(Drop(Text("{")), dwsp__), macro_body, Series(Drop(Text("}")), dwsp__))
@@ -438,10 +439,11 @@ class LaTeXGrammar(Grammar):
     _known_command = Alternative(citet, citep, footnote, includegraphics, caption, multicolumn, hline, cline, documentclass, pdfinfo, hypersetup, label, ref, href, url, item, setlength, macrodef)
     generic_command = Alternative(Series(NegativeLookahead(no_command), CMDNAME, Option(starred), ZeroOrMore(Series(dwsp__, Alternative(config, block)))), Series(Drop(Text("{")), NegativeLookahead(no_command), CMDNAME, _block_content, Drop(Text("}")), mandatory=4))
     _inline_math_text_bracket = RegExp('(?:[^\\\\]*(?:(?![\\\\][)])[\\\\])?)*')
-    _inline_math_core = RegExp('[^$\\\\{}]+')
-    SubParagraph = Series(Series(Drop(Text("\\subparagraph")), dwsp__), heading, Option(sequence))
     _im_bracket = Series(Drop(Text("\\(")), _inline_math_text_bracket, Drop(Text("\\)")), mandatory=1)
-    _im_dollar = Series(Drop(Text("$")), _inline_math_text, Alternative(Drop(Text("$")), Lookahead(Drop(Text("}")))), mandatory=1)
+    _inline_math_core = RegExp('[^$\\\\{}]+')
+    SubParagraphs = OneOrMore(Series(Option(_WSPC), SubParagraph))
+    _nested_inline_math = OneOrMore(Alternative(_im_dollar, _im_bracket, _inline_math_text))
+    Paragraph = Series(Series(Drop(Text("\\paragraph")), dwsp__), heading, ZeroOrMore(Alternative(sequence, SubParagraphs)))
     inline_math = Alternative(_im_dollar, _im_bracket)
     end_environment = Series(Drop(RegExp('\\\\end{')), Pop(NAME), Drop(RegExp('}')), mandatory=1)
     begin_environment = Series(Drop(RegExp('\\\\begin{')), NegativeLookahead(_env_name), NAME, Drop(RegExp('}')), mandatory=2)
@@ -449,15 +451,15 @@ class LaTeXGrammar(Grammar):
     _begin_inline_env = Alternative(Series(NegativeLookbehind(_LB), begin_environment), Series(begin_environment, NegativeLookahead(LFF)))
     _command = Alternative(_known_command, text_command, assignment, generic_command)
     _known_inline_env = Synonym(inline_math)
-    generic_inline_env = Series(_begin_inline_env, dwsp__, ZeroOrMore(Series(Alternative(paragraph, _include), NegativeLookahead(_PARSEP))), _end_inline_env, mandatory=3)
+    generic_inline_env = Series(_begin_inline_env, dwsp__, ZeroOrMore(Alternative(paragraph, _include)), NegativeLookahead(_PARSEP), _end_inline_env, mandatory=4)
     _inline_environment = Alternative(_known_inline_env, generic_inline_env)
     _line_element = Alternative(text, _inline_environment, _command, block)
-    SubParagraphs = OneOrMore(Series(Option(_WSPC), SubParagraph))
-    Paragraph = Series(Series(Drop(Text("\\paragraph")), dwsp__), heading, ZeroOrMore(Alternative(sequence, SubParagraphs)))
-    _frontsequence = Series(Option(_WSPC), OneOrMore(Series(NegativeLookahead(_INCLUDE), Alternative(paragraph, _block_environment), Option(_PARSEP))))
-    _sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(_include, paragraph, _block_environment), Option(_PARSEP))))
     Paragraphs = OneOrMore(Series(Option(_WSPC), Paragraph))
-    SubSubSection = Series(Drop(Text("\\subsubsection")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Paragraphs)))
+    hide_from_toc = Series(Text("*"), dwsp__)
+    _frontsequence = Series(Option(_WSPC), OneOrMore(Series(NegativeLookahead(_INCLUDE), Alternative(_block_environment, paragraph), Option(_PARSEP))))
+    _sequence = Series(Option(_WSPC), OneOrMore(Series(Alternative(_include, _block_environment, paragraph), Option(_PARSEP))))
+    SubSubSection = Series(Drop(Text("\\subsubsection")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Paragraphs, Series(Lookahead(SubParagraphs), Custom(ERR('500:Bad structure - subparagraph directly below subsubsubsection')), SubParagraphs))))
+    SubSubSections = OneOrMore(Series(Option(_WSPC), SubSubSection))
     tabcmd = Series(RegExp("\\\\[><'`'+-]"), dwsp__)
     tabrow = Series(Option(tabcmd), ZeroOrMore(Alternative(Series(_line_element, Option(Alternative(S, _PARSEP))), tabcmd)), Alternative(Series(Series(Drop(Text("\\\\")), dwsp__), Option(config), Option(_PARSEP)), Lookahead(Drop(Text("\\end{tabbing}")))))
     settab = Series(Series(Drop(Text("\\=")), dwsp__), Option(config))
@@ -491,7 +493,7 @@ class LaTeXGrammar(Grammar):
     verbatim = Series(Series(Drop(Text("\\begin{verbatim}")), dwsp__), verbatim_text, Series(Drop(Text("\\end{verbatim}")), dwsp__), mandatory=2)
     quotation = Alternative(Series(Series(Drop(Text("\\begin{quotation}")), dwsp__), sequence, Series(Drop(Text("\\end{quotation}")), dwsp__), mandatory=2), Series(Series(Drop(Text("\\begin{quote}")), dwsp__), sequence, Series(Drop(Text("\\end{quote}")), dwsp__), mandatory=2))
     figure = Series(Series(Drop(Text("\\begin{figure}")), dwsp__), sequence, Series(Drop(Text("\\end{figure}")), dwsp__), mandatory=2)
-    SubSubSections = OneOrMore(Series(Option(_WSPC), SubSubSection))
+    SubSection = Series(Drop(Text("\\subsection")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, SubSubSections, Paragraphs, Series(Lookahead(SubParagraphs), Custom(ERR('500:Bad structure - subparagraph directly below subsection')), SubParagraphs))))
     _itemsequence = Series(Option(_WSPC), ZeroOrMore(Series(Alternative(item, _command), Option(_WSPC))))
     description = Series(Series(Drop(Text("\\begin{description}")), dwsp__), _itemsequence, Series(Drop(Text("\\end{description}")), dwsp__), mandatory=2)
     enumerate = Series(Series(Drop(Text("\\begin{enumerate}")), dwsp__), _itemsequence, Series(Drop(Text("\\end{enumerate}")), dwsp__), mandatory=2)
@@ -504,19 +506,19 @@ class LaTeXGrammar(Grammar):
     _known_environment = Alternative(itemize, enumerate, description, figure, tabular, tabbing, quotation, verbatim, math_block)
     _has_block_start = Drop(Alternative(Drop(Text("\\begin{")), Drop(Text("\\["))))
     preamble = OneOrMore(Series(Option(_WSPC), Alternative(_command, Series(NegativeLookahead(Series(Drop(Text("\\begin{document}")), dwsp__)), _block_environment))))
-    SubSection = Series(Drop(Text("\\subsection")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, SubSubSections, Paragraphs)))
+    SubSections = OneOrMore(Series(Option(_WSPC), SubSection))
     Index = Series(Option(_WSPC), Series(Drop(Text("\\printindex")), dwsp__))
     Bibliography = Series(Option(_WSPC), Series(Drop(Text("\\bibliography")), dwsp__), heading)
-    SubSections = OneOrMore(Series(Option(_WSPC), SubSection))
-    Section = Series(Drop(Text("\\section")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, SubSections, Paragraphs)))
+    Section = Series(Drop(Text("\\section")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, SubSections, Paragraphs, Series(Lookahead(SubSubSections), Custom(ERR('500:Bad structure - subsubsubsection directly below section')), SubSubSections), Series(Lookahead(SubParagraphs), Custom(ERR('500:Bad structure - subparagraph directly below section')), SubParagraphs))))
     Sections = OneOrMore(Series(Option(_WSPC), Section))
-    Chapter = Series(Drop(Text("\\chapter")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Sections, Paragraphs)))
+    Chapter = Series(Drop(Text("\\chapter")), Option(hide_from_toc), heading, ZeroOrMore(Alternative(sequence, Sections, Paragraphs, Series(Lookahead(SubSections), Custom(ERR('500:Bad structure - subsection directly below chapter')), SubSections), Series(Lookahead(SubSubSections), Custom(ERR('500:Bad structure - subsubsubsection directly below chapter')), SubSubSections), Series(Lookahead(SubParagraphs), Custom(ERR('500:Bad structure - subparagraph directly below chapter')), SubParagraphs))))
     Chapters = OneOrMore(Series(Option(_WSPC), Chapter))
     document = Series(Option(_WSPC), Series(Drop(Text("\\begin{document}")), dwsp__), frontpages, Alternative(Chapters, Sections, Series(Lookahead(_INCLUDE), _sequence)), Option(Bibliography), Option(Index), Option(_WSPC), Series(Drop(Text("\\end{document}")), dwsp__), Option(_WSPC), EOF, mandatory=2)
     snippet = Series(Option(sequence), Option(Alternative(Chapters, Sections, SubSections, SubSubSections, Paragraphs, SubParagraphs)), dwsp__)
     param_block.set(Series(Series(Drop(Text("{")), dwsp__), Option(parameters), Series(Drop(Text("}")), dwsp__)))
     block.set(Series(Series(Drop(Text("{")), dwsp__), _block_content, Drop(Text("}")), mandatory=2))
-    _inline_math_text.set(ZeroOrMore(Alternative(_inline_math_core, Series(_BACKSLASH, Option(Alternative(_LBRACE, _RBRACE, _DOLLAR))), Series(_LBRACE, _inline_math_text, _RBRACE))))
+    _inline_math_text.set(ZeroOrMore(Alternative(_inline_math_core, Series(_BACKSLASH, Option(Alternative(_LBRACE, _RBRACE, _DOLLAR))), Series(_LBRACE, _nested_inline_math, _RBRACE))))
+    _im_dollar.set(Series(Drop(Text("$")), _inline_math_text, Alternative(Drop(Text("$")), Lookahead(Drop(Text("}")))), mandatory=1))
     _text_element.set(Alternative(_line_element, LINEFEED))
     paragraph.set(OneOrMore(Series(NegativeLookahead(blockcmd), NegativeLookahead(_INCLUDE), _text_element, Option(S))))
     sequence.set(Synonym(_sequence))
@@ -659,28 +661,29 @@ LaTeX_AST_transformation_table = {
 
     # chapter-nesting-errors may escape the attention of the parser when includes are used.
     # Therefore, chapter-nesting is here enforced, again.
-    "Chapters": [apply_if(add_error(f'Chapters must be child of document!'),
+    "Chapters": [apply_if(add_error(f'Chapters must be child of document!', WARNING),
                           lambda path: any(n.name in ('Section', 'SubSection', 'SubSubSection',
                                                       'Paragraph', 'SubParagraph', 'Chapter')
                                            for n in path[:-1]))],
-    "Sections": [apply_if(add_error(f'Sections must be child of document or Chapter!'),
+    "Sections": [apply_if(add_error(f'Sections must be child of document or Chapter!', WARNING),
                           lambda path: any(n.name in ('SubSection', 'SubSubSection',
                                                       'Paragraph', 'SubParagraph', 'Section')
                                            for n in path[:-1]))],
-    "SubSections": [apply_if(add_error(f'SubSections must be child of Section!'),
+    "SubSections": [apply_if(add_error(f'SubSections must be child of Section!', WARNING),
                              any_of({lambda path: any(n.name in ('SubSection', 'SubSubSection',
                                                   'Paragraph', 'SubParagraph') for n in path[:-1]),
                                      lambda path: path[0].name == 'latexdoc' and
                                                   not any(n.name == 'Section' for n in path[:-1])}))],
-    "SubSubSections": [apply_if(add_error(f'SubSubSections must be child of SubSection!'),
+    "SubSubSections": [apply_if(add_error(f'SubSubSections must be child of SubSection!', WARNING),
                                 any_of({lambda path: any(n.name in ('SubSubSection', 'Paragraph', 'SubParagraph')
                                                  for n in path[:-1]),
                                         lambda path: path[0].name == 'latexdoc' and
                                                      not any(n.name == 'SubSection' for n in path[:-1])}))],
-    "Paragraphs": [apply_if(add_error(f'Paragraphs must be child of document, Chapter, Section, SubSecion or SubSubSection!'),
+    "Paragraphs": [apply_if(add_error(f'Paragraphs must be child of document, Chapter, Section, SubSecion or SubSubSection!',
+                                      WARNING),
                             lambda path: any(n.name in ('Paragraph', 'SubParagraph')
                                              for n in path[:-1]))],
-    "SubParagraphs": [apply_if(add_error(f'SubParagraphs must be child of Paragraph!'),
+    "SubParagraphs": [apply_if(add_error(f'SubParagraphs must be child of Paragraph!', WARNING),
                                any_of({lambda path: any(n.name == 'SubParagraph' for n in path[:-1]),
                                        lambda path: path[0].name == 'latexdoc' and
                                        not any(n.name == 'Paragraph' for n in path[:-1])}))],
