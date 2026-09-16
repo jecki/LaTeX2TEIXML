@@ -109,7 +109,7 @@ def precompile_early(args: Tuple[str, str, CancelQuery]) -> str:
     except (FileNotFoundError, IOError):
         pass
     # compile include file
-    print(f'compiling included file "{source_name}"')
+    print(f'Compiling included file {source_name}...')
     parser = parsing.factory()
     CST = parser(
         document = source,
@@ -125,6 +125,8 @@ def precompile_early(args: Tuple[str, str, CancelQuery]) -> str:
             pickle.dump(AST, f)
     except IOError as e:
         return f'IOError while saving "{ast_name}": {e}'
+
+    # print(f'Included file "{source_name}" has been compiled.')
     return ""
 
 
@@ -140,9 +142,9 @@ def batch_precompile(file_names: List[str], out_dir: str,
         submit_func=submit_func, log_func=log_func, cancel_query=cancel_query)
 
 
-def IncludesPrecompiler(original_text) -> Tuple[str, List[Error]]:
+def gather_stale_includes(tex_source) -> List[str]:
     precompile_list = []
-    for m in RX_INCLUDE.finditer(original_text):
+    for m in RX_INCLUDE.finditer(tex_source):
         include = m.group('name')
         name, ext = os.path.splitext(include)
         if not ext:
@@ -152,13 +154,31 @@ def IncludesPrecompiler(original_text) -> Tuple[str, List[Error]]:
         precomp_path = pathlib.Path(include + '.pickledAST')
         if not include_path.is_file():
             continue
+        try:
+            print(f'Looking for further includes in {include_path}')
+            with open(include_path, 'r', encoding='utf-8') as f:
+                included_tex_source = f.read()
+            recursive_list = gather_stale_includes(included_tex_source)
+            if recursive_list:
+                batch_precompile(recursive_list, '.')
+                precompile_list.append((include_path.stat().st_size, include))
+                continue
+        except (FileNotFoundError, IOError):
+            pass
         if not precomp_path.is_file():
-            precompile_list.append(include)
+            precompile_list.append((include_path.stat().st_size, include))
             continue
         include_time = include_path.stat().st_mtime
         precomp_time = precomp_path.stat().st_mtime
         if include_time > precomp_time:
-            precompile_list.append(include)
+            precompile_list.append((include_path.stat().st_size, include))
+    precompile_list.sort()
+    precompile_list.reverse()
+    return [name for size, name in precompile_list]
+
+
+def IncludesPrecompiler(original_text) -> Tuple[str, List[Error]]:
+    precompile_list = gather_stale_includes(original_text)
     batch_precompile(precompile_list, '.')
     return original_text, []
 
@@ -230,6 +250,9 @@ class Include(Parser):
         try:
             with open(ast_name, 'rb') as f:
                 hash = f.read(32)
+                # TODO: Big Bug: It is not ensured that required updates for recursively nested includes are compiled.
+                #       However, this bug will never be triggered as it is taken care the batch-precompilation during
+                #       the preprocessing-phase.
                 if hash == source_hash:
                     print(f'loading precompiled AST from "{ast_name}"')
                     AST = pickle.load(f)
@@ -633,6 +656,7 @@ LaTeX_AST_transformation_table = {
     "latexdoc": [],
     "document": [],
     "snippet": [BLOCK_CHILDREN, replace_by_children],
+
     # chapter-nesting-errors may escape the attention of the parser when includes are used.
     # Therefore, chapter-nesting is here enforced, again.
     "Chapters": [apply_if(add_error(f'Chapters must be child of document!'),
@@ -646,18 +670,22 @@ LaTeX_AST_transformation_table = {
     "SubSections": [apply_if(add_error(f'SubSections must be child of Section!'),
                              any_of({lambda path: any(n.name in ('SubSection', 'SubSubSection',
                                                   'Paragraph', 'SubParagraph') for n in path[:-1]),
-                                     lambda path: not any(n.name == 'Section' for n in path[:-1])}))],
+                                     lambda path: path[0].name == 'latexdoc' and
+                                                  not any(n.name == 'Section' for n in path[:-1])}))],
     "SubSubSections": [apply_if(add_error(f'SubSubSections must be child of SubSection!'),
                                 any_of({lambda path: any(n.name in ('SubSubSection', 'Paragraph', 'SubParagraph')
                                                  for n in path[:-1]),
-                                        lambda path: not any(n.name == 'SubSection' for n in path[:-1])}))],
+                                        lambda path: path[0].name == 'latexdoc' and
+                                                     not any(n.name == 'SubSection' for n in path[:-1])}))],
     "Paragraphs": [apply_if(add_error(f'Paragraphs must be child of document, Chapter, Section, SubSecion or SubSubSection!'),
                             lambda path: any(n.name in ('Paragraph', 'SubParagraph')
                                              for n in path[:-1]))],
     "SubParagraphs": [apply_if(add_error(f'SubParagraphs must be child of Paragraph!'),
                                any_of({lambda path: any(n.name == 'SubParagraph' for n in path[:-1]),
-                                       lambda path: not any(n.name == 'Paragraph' for n in path[:-1])}))],
+                                       lambda path: path[0].name == 'latexdoc' and
+                                       not any(n.name == 'Paragraph' for n in path[:-1])}))],
     "Chapter, Section, SubSection, SubSubSection, Paragraph, SubParagraph": [],
+
     "pdfinfo": [],
     "_TEXT_NOPAR": [apply_unless(normalize_whitespace, has_children)],
     "info_assoc": [change_name('association'), replace_by_single_child],
