@@ -43,18 +43,26 @@ from DHParser.compile import compile_source, process_tree, CompilerFactory
 from DHParser.configuration import get_config_value
 from DHParser.error import Error, has_errors, is_fatal, FATAL, CANCELED
 from DHParser.nodetree import RootNode, Node
-from DHParser.parse import Grammar, ParserFactory, Parser
+from DHParser.parse_base import Parser
+from DHParser.parse_grammar import Grammar, ParserFactory
 from DHParser.preprocess import PreprocessorFactory, PreprocessorFunc, Tokenizer, \
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     DeriveFileNameFunc, PreprocessorResult
 from DHParser.toolkit import ThreadLocalSingletonFactory, deprecation_warning, deprecated, \
     get_annotations, CancelQuery
 from DHParser.trace import resume_notices_on, set_tracer, trace_history
-from DHParser.transform import TransformerFunc, TransformerFactory, transformer, TransformationDict
+from DHParser.transform import TransformerFunc, TransformerFactory, transformer, \
+    TransformationDict
 
 __all__ = ('Junction',
            'PipelineResult',
            'end_points',
+           'connection',
+           'as_paths',
+           'PIPE_CHARS',
+           'pp_paths',
+           'PipeTree',
+           'as_graph',
            'extract_data',
            'run_pipeline',
            'full_pipeline',
@@ -84,13 +92,135 @@ PipelineResult = Dict[str, Tuple[Union[RootNode, Any], List[Error]]]
 def end_points(junctions: Iterable[Junction]) -> Set[str]:
     """Returns all "final" destination stages, i.e. destinations
     that are not a source of another junction."""
-    sources = { j.src for j in junctions }
+    try:
+        sources = { j.src for j in junctions }
+    except AttributeError:
+        # accept old-style tripples as well
+        junctions = [Junction(*t) for t in junctions]
+        sources = { j.src for j in junctions }
     return {j.dst for j in junctions if j.dst not in sources}
+
+
+def connection(junctions: Iterable[Junction], target: str, origin: str = "CST") -> List[Junction]:
+    """Returns the junctions that connect the target with its origin.
+    In case there is no such connection, a value error will be raised."""
+    result = []
+    junctions = set(junctions)
+    while target != origin:
+        for j in junctions:
+            if j.dst == target:
+                result.append(j)
+                target = j.src
+                break
+        else:
+            raise ValueError(f'No connection from {origin} to {target}!')
+        junctions.remove(j)
+    result.reverse()
+    return result
+
+
+def as_paths(junctions: Set[Junction]) -> Dict[str, List[str]]:
+    """Returns a dictionary that maps each end point to the path from the start
+    (usually "CST") to that end point."""
+    srcs = {j.src for j in junctions}
+    dsts = {j.dst for j in junctions}
+    endpoints = dsts - srcs
+    start = (srcs - dsts).pop()
+    dst_src = { j.dst: j.src for j in junctions }
+    paths = { d: [d, dst_src[d]] for d in endpoints }
+    repeat = True
+    while repeat:
+        repeat = False
+        for endpoint, path in paths.items():
+            if path[-1] != start:
+                path.append(dst_src[path[-1]])
+                repeat = True
+    for path in paths.values():
+        path.reverse()
+    return paths
+
+
+PIPE_CHARS = ' ┊┆|│├─└┃┣┗━'  # {' ', '│', '├', '└', '─'}
+
+
+def pp_paths(paths: Union[Dict[str, List[str]], Set[Junction]],
+             vertical = '│ ', bifurcation = '├─') -> str:
+    if isinstance(paths, (Set, frozenset)):
+        paths = as_paths(paths)
+    paths = list(paths.values())
+    paths.sort(reverse=True)
+    paths.sort(key=len, reverse=True)
+    l = []
+    for path in paths:
+        k = 0
+        i = 0
+        while k < len(path) and i < len(l):
+            if l[i][:1] in PIPE_CHARS or path[k] != l[i]:
+                if i > 0 and l[i - 1][:1] not in PIPE_CHARS:
+                    l[i] = (bifurcation + l[i]) if l[i][:1] not in PIPE_CHARS else (vertical + l[i])
+                else:
+                    l[i] = vertical + l[i]
+                i += 1
+            else:
+                k += 1
+                i += 1
+        while k < len(path):
+            l.append(path[k])
+            k += 1
+    return '\n'.join(l)
+
+
+class PipeTree(NamedTuple):
+    src: str
+    desc: List[PipeTree]
+    depth: int
+
+    def __repr__(self):
+        return f"PipeTree({self.src}, {self.desc}, {self.depth})"
+
+    def __str__(self):
+        l = []
+        for ch in self.desc:
+            l.extend(["  " + cl for cl in str(ch).split('\n')])
+        return '\n'.join([self.src, *l])
+
+
+def as_graph(junctions: Iterable[Junction]) -> PipeTree:
+    """Returns the junctions as a directed graph."""
+    # TODO: unit-test sometimes fails!!!
+    jdict = dict()
+    for j in junctions:
+        if j.src not in jdict:
+            jdict[j.src] = {j}
+        else:
+            jdict[j.src].add(j)
+    srcs = {j.src for j in junctions}
+    dsts = {j.dst for j in junctions}
+    diff = srcs - dsts
+    if len(diff) > 1:
+        raise ValueError('More than one origin stage within the set of junctions: '
+                         + str(diff))
+    elif len(diff) < 1:
+        raise ValueError('No origin stage found in the set of junctions! (The '
+                         'connected junctions should form a tree, but there '
+                         'seems to be a cycle somewhere...)')
+    src = diff.pop()
+
+    def subtree(j: Junction) -> PipeTree:
+        if j.dst not in jdict:
+            return PipeTree(j.dst, [], 1)
+        else:
+            desc = [subtree(d) for d in jdict[j.dst]]
+            desc.sort(key=lambda x: x.src)
+            desc.sort(key=lambda x: x.depth)
+            return PipeTree(j.dst, desc, max(child.depth for child in desc) + 1)
+
+    return subtree(Junction(src, None, src))
 
 
 def extract_data(tree_or_data: Union[RootNode, Node, Any]) -> Any:
     """Retrieves the data from the given tree or just passes the data through
-    if argument ``tree_or_data`` is not of type RootNode."""
+    if the argument ``tree_or_data`` is not of type RootNode."""
     if isinstance(tree_or_data, RootNode):
         return tree_or_data.data
     return tree_or_data
@@ -212,8 +342,9 @@ def run_pipeline(junctions: Set[Junction],
                     errata[t] = errata[s]
                 else:
                     if not isinstance(tree, RootNode):
-                        raise ValueError(f'Object in stage "{s}" is not a tree but a {type(tree)}'
-                                         f' and, therefore, cannot be processed to {t}')
+                        raise ValueError(f'Object in stage "{s}" is not a tree (RootNode) '
+                                         f'but a {type(tree)} '
+                                         f'and, therefore, cannot be processed to {t}')
                     verify_stage(tree.stage, junction, 0)
                     transformation = junction[1]()
                     if hasattr(transformation, 'cancel_query'):
@@ -289,13 +420,17 @@ def _preprocessor_factory(prep_func: Union[PreprocessorFunc, Tokenizer],
     include_prep = partial(preprocess_includes, find_next_include=find_next_include)
     anno = get_annotations(prep_func)
     try:
-        if anno['return'] == PreprocessorResult:
-            assert func_type is None or func_type is PreprocessorFunc, \
+        ret_type = anno['return']
+        if ret_type is PreprocessorResult or ret_type == PreprocessorResult or \
+                str(ret_type) == 'PreprocessorResult':
+            assert func_type is None or func_type is PreprocessorFunc \
+                    or func_type == PreprocessorFunc or str(func_type) == "PreprocessorFunc", \
                 f"func_type={func_type} is incompatible with return type PreprocessorResult of " \
                 f"parameter prep_func when calling DHParser.pipeline.create_preprocess_junction()"
             prep = prep_func
         else:
-            assert func_type is None or func_type is Tokenizer, \
+            assert func_type is None or func_type is Tokenizer \
+                    or func_type == Tokenizer or str(func_type) == "Tokenizer", \
                 f"func_type={func_type} is incompatible with return type {anno['return']} of " \
                 f"parameter prep_func when calling DHParser.pipeline.create_preprocess_junction()"
             prep = make_preprocessor(prep_func)
@@ -303,7 +438,8 @@ def _preprocessor_factory(prep_func: Union[PreprocessorFunc, Tokenizer],
         assert func_type is not None, \
             "Please specify the kind of preprocessor by passing parameter func_type=Tokenizer " \
             "or func_type=PreprocessorFunc to DHParser.pipeline.create_preprocess_junction()"
-        prep = prep_func if func_type is PreprocessorFunc else make_preprocessor(prep_func)
+        prep = prep_func if func_type is PreprocessorFunc or func_type == PreprocessorFunc \
+            or str(func_type) == 'PreprocessorFunc' else make_preprocessor(prep_func)
     return chain_preprocessors(include_prep, prep)
 
 def same_name(name: str) -> str:
@@ -332,7 +468,7 @@ def create_preprocess_junction(prep_func: Union[PreprocessorFunc, Tokenizer],
 #                 *, complete_match=True):
 #     return parser_factory()(document, start_parser, complete_match=complete_match)
 
-def _parser_factory(raw_grammar) -> Grammar:
+def _parser_factory(raw_grammar, python_src='') -> Grammar:
     grammar = raw_grammar()
     if get_config_value('resume_notices'):
         resume_notices_on(grammar)
@@ -340,7 +476,7 @@ def _parser_factory(raw_grammar) -> Grammar:
         set_tracer(grammar, trace_history)
     try:
         if not grammar.__class__.python_src__:
-            grammar.__class__.python_src__ = getattr(_parser_factory, 'python_src__','')
+            grammar.__class__.python_src__ = python_src
     except AttributeError:
         pass
     return grammar
@@ -371,15 +507,13 @@ def create_parser_junction(grammar_class: type) -> PseudoJunction:
 #         result.stage = dst_stage
 #     return result
 
-def create_compiler_junction(compile_class: type,
+def create_compiler_junction(compile_class: CompilerFactory,
                              src_stage: str,
                              dst_stage: str) -> Junction:
     """Creates a thread-safe transformation function and function-factory from
     a :py:class:`compile.Compiler` or another callable class.
     """
     assert callable(compile_class)
-    # assert src_stage and src_stage.islower()
-    # assert dst_stage and dst_stage.islower()
     factory = ThreadLocalSingletonFactory(compile_class)
     # process = partial(process_template, src_stage=src_stage, dst_stage=dst_stage,
     #                   factory_function=factory)
@@ -393,8 +527,10 @@ def _make_transformer(src_stage, dst_stage, table) -> TransformerFunc:
                                 src_stage=src_stage, dst_stage=dst_stage))
 
 
-@deprecated("DHParser.pipeline.create_transtable_transition() is deprecated, "
-            "because it does not work with lambdas as transformer functions!")
+@deprecated("DHParser.pipeline.create_transtable_junction() is deprecated, "
+            "because it does not work with lambdas as transformer functions! "
+            "Please, use a hardcoded factory function that refers to the transtable "
+            "directly instead.")
 def create_transtable_junction(table: TransformationDict,
                                src_stage: str,
                                dst_stage: str) -> Junction:
@@ -404,14 +540,15 @@ def create_transtable_junction(table: TransformationDict,
     TODO: This does not work if table contains functions that cannot be pickled (i.e. lambda-functions)!
     """
     assert isinstance(table, dict)
-    assert src_stage and src_stage.islower()
-    assert dst_stage and dst_stage.islower()
     make_transformer = partial(_make_transformer, src_stage, dst_stage, table)
     factory = ThreadLocalSingletonFactory(make_transformer, uniqueID=id(table))
     return Junction(src_stage, factory, dst_stage)
 
 
-@deprecated('The name "create_transtable_transition()" is deprecated. Use "create_transtable_junction()" instead.')
+@deprecated("DHParser.pipeline.create_transtable_transition() is deprecated, "
+            "because it does not work with lambdas as transformer functions! "
+            "Please, use a hardcoded factory function that refers to the transtable "
+            "directly instead.")
 def create_transtable_transition(*args, **kwargs):
     return   create_transtable_junction(*args, **kwargs)
 
@@ -420,14 +557,18 @@ def create_transtable_transition(*args, **kwargs):
 
 def _make_evaluation(actions, supply_path_arg) -> Callable[[Node], Any]:
     def evaluate_with_path(node: Node) -> Any:
-        return node.evaluate(actions, [node])
+        return node.evaluate_path(actions, [node])
 
     def evaluate_without_path(node: Node) -> Any:
-        return node.evaluate(actions, path=[])
+        return node.evaluate(actions)
 
     return evaluate_with_path if supply_path_arg else evaluate_without_path
 
 
+@deprecated("DHParser.pipeline.create_evaluation_junction() is deprecated, "
+            "because it does not work with lambdas as transformer functions! "
+            "Please, use a hardcoded factory function that refers to the evaluation-table "
+            "directly instead.")
 def create_evaluation_junction(actions: Dict[str, Callable],
                                src_stage: str,
                                dst_stage: str,
@@ -436,8 +577,8 @@ def create_evaluation_junction(actions: Dict[str, Callable],
     an evaluation-table :py:meth:`nodetree.Node.evaluate`.
     """
     assert isinstance(actions, dict)
-    assert src_stage and src_stage.islower()
-    assert dst_stage and dst_stage.islower()
+    a = dir(actions)
+    n = actions.__class__
     make_evaluation = partial(
         _make_evaluation, actions=actions, supply_path_arg=supply_path_arg)
     factory = ThreadLocalSingletonFactory(make_evaluation, uniqueID=id(actions))
@@ -448,18 +589,26 @@ def create_evaluation_junction(actions: Dict[str, Callable],
 
 # generic tree-processing function
 
-def create_junction(tool: Union[dict, type],
+def create_junction(tool: CompilerFactory,
                     src_stage: str,
                     dst_stage: str,
-                    hint: str = '?') -> Junction:
+                    hint: str = '') -> Junction:
     """Generic stage-creation function for tree-transforming stages where a tree-transforming
-    stage is a stage which either reshapes a node-tree or transforms a nodetree into
+    stage is a stage that either reshapes a node-tree or transforms a nodetree into
     something else, but not a stage where something else (e.g. a text) is turned into
     a node-tree."""
-    if isinstance(tool, type):
+    if hint:
+        deprecation_warning("Parameter 'hint' of functsion DHParser.pipeline.create_junction() "
+                            "is deprecated and should not be used, any more!")
+
+    if callable(tool):
         return create_compiler_junction(tool, src_stage, dst_stage)
     else:
-        assert isinstance(tool, dict)
+        deprecation_warning("Parameter 'tool' DHParser.pipeline.create_junction() must be a "
+                            "CompilerFactory, i.e. a factory function or class that returns a "
+                            "transformation function or callable object. Dictionaries, and in"
+                            "particular transformation or evaluation tables are not supported, "
+                            "anymore. Please wrap your table into a factory function instead!")
         if any(isinstance(value, Sequence) for value in tool.values()) \
                 or hint == "transtable":
             return create_transtable_junction(tool, src_stage, dst_stage)

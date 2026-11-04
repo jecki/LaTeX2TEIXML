@@ -41,7 +41,7 @@ from DHParser.log import start_logging, suspend_logging, resume_logging
 from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, Path, flatten_sxpr, \
     add_class, ZOMBIE_TAG
 from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar, Parser, \
-    Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, INFINITE, ERR, \
+    Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, ERR, \
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
     ZeroOrMore, Forward, NegativeLookahead, Required, CombinedParser, Custom, mixin_comment, \
     last_value, matching_bracket, optional_last_value, MERGE_TREETOPS, RX_NEVER_MATCH
@@ -50,7 +50,7 @@ from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, Preprocessor
     gen_find_include_func, preprocess_includes, make_preprocessor, chain_preprocessors, \
     Tokenizer, gen_neutral_srcmap_func
 from DHParser.toolkit import re, is_filename, load_if_file, cpu_count, CancelQuery, \
-    ThreadLocalSingletonFactory, expand_table, abbreviate_middle, md5
+    ThreadLocalSingletonFactory, expand_table, abbreviate_middle, md5, INFINITE
 from DHParser.trace import set_tracer, resume_notices_on, trace_history
 from DHParser.transform import is_empty, remove_if, TransformationDict, TransformerFunc, \
     transformation_factory, remove_children_if, move_fringes, normalize_whitespace, \
@@ -299,12 +299,12 @@ class Include(Parser):
 #
 #######################################################################
 
-class LaTeXGrammar(Grammar):
-    r"""Parser for a LaTeX document.
+class LatexGrammar(Grammar):
+    r"""Parser for a Latex document.
 
-    Instantiate this class and then call the instance with the
-    source code as argument in order to use the parser, e.g.:
-        parser = LaTeX()
+    Instantiate this class and then call the instance with the source
+    code as the single argument in order to use the parser, e.g.:
+        parser = Latex()
         syntax_tree = parser(source_code)
     """
     _block_environment = Forward()
@@ -318,7 +318,7 @@ class LaTeXGrammar(Grammar):
     param_block = Forward()
     sequence = Forward()
     tabular_config = Forward()
-    source_hash__ = "0a7905ca072df23b2b1b0441eec095d0"
+    source_hash__ = "b9d63dabe089a88652f15cdb59ae3b3f"
     early_tree_reduction__ = CombinedParser.MERGE_TREETOPS
     disposable__ = re.compile('_\\w+')
     static_analysis_pending__ = []  # type: List[bool]
@@ -529,22 +529,24 @@ class LaTeXGrammar(Grammar):
     latexdoc = Series(preamble, document, mandatory=1)
     root__ = latexdoc
     
-parsing: PseudoJunction = create_parser_junction(LaTeXGrammar)
-get_grammar = parsing.factory # for backwards compatibility, only
+parsing: PseudoJunction = create_parser_junction(LatexGrammar)
+get_grammar = parsing.factory  # for backwards compatibility, only
+
 
 try:
     assert RE_INCLUDE == NEVER_MATCH_PATTERN or \
-        RE_COMMENT in (LaTeXGrammar.COMMENT__, NEVER_MATCH_PATTERN), \
-        "Please adjust the pre-processor-variable RE_COMMENT in file LaTeXParser.py so that " \
+        RE_COMMENT in (LatexGrammar.COMMENT__, NEVER_MATCH_PATTERN), \
+        "Please adjust the pre-processor-variable RE_COMMENT in file LatexParser.py so that " \
         "it either is the NEVER_MATCH_PATTERN or has the same value as the COMMENT__-attribute " \
-        "of the grammar class LaTeXGrammar! " \
+        "of the grammar class LatexGrammar! " \
         'Currently, RE_COMMENT reads "%s" while COMMENT__ is "%s". ' \
-        % (RE_COMMENT, LaTeXGrammar.COMMENT__) + \
+        % (RE_COMMENT, LatexGrammar.COMMENT__) + \
         "\n\nIf RE_COMMENT == NEVER_MATCH_PATTERN then includes will deliberately be " \
-        "processed, otherwise RE_COMMENT==LaTeXGrammar.COMMENT__ allows the " \
+        "processed, otherwise RE_COMMENT==LatexGrammar.COMMENT__ allows the " \
         "preprocessor to ignore comments."
 except (AttributeError, NameError):
     pass
+
 
 
 #######################################################################
@@ -655,7 +657,7 @@ def hr(context: List[Node]):
 LaTeX_AST_transformation_table = {
     # AST Transformations for the LaTeX-grammar
     "<": [flatten, remove_children_if(is_expendable)],
-    "latexdoc": [],
+    "latexdoc": [], # TODO: position values of snippets need to be updated!!!
     "document": [],
     "snippet": [BLOCK_CHILDREN, replace_by_children],
 

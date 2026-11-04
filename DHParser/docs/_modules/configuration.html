@@ -1,0 +1,1439 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>configuration &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/configuration';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for configuration</h1><div class="highlight"><pre>
+<span></span><span class="c1"># configuration.py - default configuration values for DHParser</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2016  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+<span class="sd">"""</span>
+<span class="sd">Module "configuration.py" defines the default configuration for DHParser.</span>
+
+<span class="sd">The best way to change the configuration or to add custom configurations</span>
+<span class="sd">for your own project is to place a [DSL-name]config.ini-file in the main-directory</span>
+<span class="sd">of your DSL-project that is the directory where your parsing and</span>
+<span class="sd">compilation-scripts reside. This configuration can be overwritten by</span>
+<span class="sd">a configuration-file with the same name in the current working-directory</span>
+<span class="sd">if different configurations for different workspaces are needed.</span>
+
+<span class="sd">The configuration values can be read and changed while running via the</span>
+<span class="sd">get_config_value() and set_config_value()-functions. However, the functions</span>
+<span class="sd">only affect the configuration values for the current thread. Changes will</span>
+<span class="sd">not be visible to any spawned threads or processes.</span>
+
+<span class="sd">In order to change the configuration values for spawned processes or threads,</span>
+<span class="sd">the presets can also be overwritten before(!) spawning any parsing processes</span>
+<span class="sd">with:</span>
+
+<span class="sd">    access_presets()</span>
+<span class="sd">    set_preset_value and get_preset_value()</span>
+<span class="sd">    finalize_presets()</span>
+
+<span class="sd">Unless configuration-files are used (see above), the recommended way to use</span>
+<span class="sd">a different configuration in any custom code using</span>
+<span class="sd">DHParser is to use the second method, i.e. to overwrite the values for which</span>
+<span class="sd">this is desired in the CONFIG_PRESET dictionary right after the start of the</span>
+<span class="sd">program and before any DHParser-function is invoked.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'CONFIG_PRESET'</span><span class="p">,</span>
+           <span class="s1">'ALLOWED_PRESET_VALUES'</span><span class="p">,</span>
+           <span class="s1">'validate_value'</span><span class="p">,</span>
+           <span class="s1">'access_presets'</span><span class="p">,</span>
+           <span class="s1">'is_accessing_presets'</span><span class="p">,</span>
+           <span class="s1">'finalize_presets'</span><span class="p">,</span>
+           <span class="s1">'get_preset_value'</span><span class="p">,</span>
+           <span class="s1">'get_preset_values'</span><span class="p">,</span>
+           <span class="s1">'set_preset_value'</span><span class="p">,</span>
+           <span class="s1">'read_local_config'</span><span class="p">,</span>
+           <span class="s1">'NO_DEFAULT'</span><span class="p">,</span>
+           <span class="s1">'THREAD_LOCALS'</span><span class="p">,</span>
+           <span class="s1">'access_thread_locals'</span><span class="p">,</span>
+           <span class="s1">'reset_config_dict'</span><span class="p">,</span>
+           <span class="s1">'get_config_value'</span><span class="p">,</span>
+           <span class="s1">'get_config_values'</span><span class="p">,</span>
+           <span class="s1">'set_config_value'</span><span class="p">,</span>
+           <span class="s1">'add_config_values'</span><span class="p">,</span>
+           <span class="s1">'dump_config_data'</span><span class="p">,</span>
+           <span class="s1">'NEVER_MATCH_PATTERN'</span><span class="p">)</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># multiprocessing-safe preset- and configuration-handling</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+
+<span class="n">CONFIG_PRESET</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'syncfile_path'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+<span class="n">ACCESSING_PRESETS</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">PRESETS_CHANGED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">THREAD_LOCALS</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">ALLOWED_PRESET_VALUES</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># Dict[str, Union[Set, Tuple[int, int]]</span>
+<span class="c1"># dictionary that maps config variables to a set or range of allowed values</span>
+
+
+<span class="n">access_lock</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># = threading.Lock()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_access_lock</span><span class="p">():</span>  <span class="c1"># -&gt; threading.Lock()</span>
+<span class="w">    </span><span class="sd">"""Return a global threading.Lock, create it upon first usage."""</span>
+    <span class="k">global</span> <span class="n">access_lock</span>
+    <span class="k">if</span> <span class="n">access_lock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">access_lock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">access_lock</span> <span class="o">=</span> <span class="n">lock</span>
+    <span class="k">return</span> <span class="n">access_lock</span>
+
+
+<div class="viewcode-block" id="validate_value">
+<a class="viewcode-back" href="../Reference.html#configuration.validate_value">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raises a Type- or ValueError, if the values of variable `key` are</span>
+<span class="sd">    restricted to a certain set or range and the value does not lie within</span>
+<span class="sd">    this set or range."""</span>
+    <span class="k">global</span> <span class="n">ALLOWED_PRESET_VALUES</span>
+    <span class="n">allowed</span> <span class="o">=</span> <span class="n">ALLOWED_PRESET_VALUES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">allowed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allowed</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Value "</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">" is not an int or float as required '</span>
+                                <span class="sa">f</span><span class="s1">'for "</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">"!'</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">allowed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">allowed</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Value "</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">" for "</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">" does not lie within the '</span>
+                                 <span class="sa">f</span><span class="s1">'range from </span><span class="si">{</span><span class="n">allowed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">allowed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1"> (included)!'</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Item "</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">" for "</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">" is not one of the '</span>
+                                         <span class="sa">f</span><span class="s1">'allowed values </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed</span><span class="p">)))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">!'</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Value "</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">" for "</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">" is not one of '</span>
+                                 <span class="sa">f</span><span class="s1">'the allowed values </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed</span><span class="p">)))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">!'</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_forkserver_pid</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">process</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">daemon</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="s1">'_inheriting'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">forkserver_pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getppid</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">forkserver_pid</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getppid</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">forkserver_pid</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_main_pid</span><span class="p">(</span><span class="n">mp_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Returns the pis of the main process, i.e. the process or interpreter that</span>
+<span class="sd">    has not been spawned by any other process."""</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="k">return</span> <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'main_pid'</span><span class="p">]</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_syncfile_path</span><span class="p">(</span><span class="n">mp_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+    <span class="c1"># syncfile_path = CONFIG_PRESET['syncfile_path']</span>
+    <span class="c1"># if not syncfile_path:</span>
+    <span class="c1">#     for getpid in (os.getpid, os.getppid, get_main_pid):</span>
+    <span class="c1">#         pid = getpid()</span>
+    <span class="c1">#         syncfile_path = os.path.join(tempfile.gettempdir(), f'DHParser_{pid}.cfg')</span>
+    <span class="c1">#         if os.path.exists(syncfile_path):</span>
+    <span class="c1">#             break</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">get_main_pid</span><span class="p">()</span>
+    <span class="n">syncfile_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">'DHParser_</span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s1">.cfg'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">syncfile_path</span>
+
+
+<div class="viewcode-block" id="access_presets">
+<a class="viewcode-back" href="../Reference.html#configuration.access_presets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">access_presets</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Allows read and write access to preset values via `get_preset_value()`</span>
+<span class="sd">    and `set_preset_value()`. Any call to `access_presets()` should be</span>
+<span class="sd">    matched by a call to `finalize_presets()` to ensure propagation of</span>
+<span class="sd">    changed preset-values to spawned processes. For an explanation why,</span>
+<span class="sd">    see: https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">ACCESSING_PRESETS</span><span class="p">,</span> <span class="n">CONFIG_PRESET</span>
+    <span class="k">if</span> <span class="n">ACCESSING_PRESETS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Presets are already being accessed! '</span>
+                             <span class="s1">'Calls to access_presets() cannot be nested.'</span><span class="p">)</span>
+    <span class="n">ACCESSING_PRESETS</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
+    <span class="n">mp_method</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">get_start_method</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">mp_method</span> <span class="o">!=</span> <span class="s1">'fork'</span> <span class="ow">or</span> <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'multicore_pool'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'InterpreterPool'</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+        <span class="n">syncfile_path</span> <span class="o">=</span> <span class="n">get_syncfile_path</span><span class="p">(</span><span class="n">mp_method</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">syncfile_path</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span>
+            <span class="n">preset</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preset</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="k">if</span>  <span class="n">preset</span><span class="p">[</span><span class="s1">'syncfile_path'</span><span class="p">]</span> <span class="o">!=</span> <span class="n">syncfile_path</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Conflicting syncfile paths </span><span class="si">%s</span><span class="s1"> != </span><span class="si">%s</span><span class="s1">'</span>
+                                     <span class="o">%</span> <span class="p">(</span><span class="n">preset</span><span class="p">[</span><span class="s1">'syncfile_path'</span><span class="p">],</span> <span class="n">syncfile_path</span><span class="p">))</span>
+            <span class="n">CONFIG_PRESET</span> <span class="o">=</span> <span class="n">preset</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="is_accessing_presets">
+<a class="viewcode-back" href="../Reference.html#configuration.is_accessing_presets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_accessing_presets</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Checks if presets are currently open for changes."""</span>
+    <span class="k">global</span> <span class="n">ACCESSING_PRESETS</span>
+    <span class="k">return</span> <span class="n">ACCESSING_PRESETS</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_cfg_tempfile</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="finalize_presets">
+<a class="viewcode-back" href="../Reference.html#configuration.finalize_presets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_presets</span><span class="p">(</span><span class="n">fail_on_error</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Finalizes changes of the presets of the configuration values.</span>
+<span class="sd">    This method should always be called after changing preset values to</span>
+<span class="sd">    make sure the changes will be visible to processes spawned later.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">ACCESSING_PRESETS</span><span class="p">,</span> <span class="n">PRESETS_CHANGED</span><span class="p">,</span> <span class="n">CONFIG_PRESET</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ACCESSING_PRESETS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Presets are not being accessed and therefore cannot be finalized!'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">PRESETS_CHANGED</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
+        <span class="n">mp_method</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">get_start_method</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mp_method</span> <span class="o">!=</span> <span class="s1">'fork'</span> <span class="ow">or</span> <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'multicore_pool'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'InterpreterPool'</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+            <span class="n">syncfile_path</span> <span class="o">=</span> <span class="n">get_syncfile_path</span><span class="p">(</span><span class="n">mp_method</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fail_on_error</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">syncfile_path</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
+                            <span class="s2">"finalize_presets() can only be called from the main process!"</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">syncfile_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">existing_syncfile</span> <span class="o">=</span> <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'syncfile_path'</span><span class="p">]</span>
+                <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'syncfile_path'</span><span class="p">]</span> <span class="o">=</span> <span class="n">syncfile_path</span>
+                <span class="k">if</span> <span class="n">existing_syncfile</span> <span class="o">!=</span> <span class="n">syncfile_path</span><span class="p">:</span>
+                    <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">remove_cfg_tempfile</span><span class="p">,</span> <span class="n">syncfile_path</span><span class="p">)</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">CONFIG_PRESET</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">PRESETS_CHANGED</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">ACCESSING_PRESETS</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="c1"># if THREAD_LOCALS is not None:</span>
+    <span class="c1">#     THREAD_LOCALS.config = {}  # reset THREAD_LOCALS</span>
+
+
+<span class="n">RENAMED_KEYS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'ast_serialization'</span><span class="p">:</span> <span class="s1">'AST_serialization'</span><span class="p">,</span>
+    <span class="s1">'cst_serialization'</span><span class="p">:</span> <span class="s1">'CST_serialization'</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_preset_value</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">allow_new_key</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">CONFIG_PRESET</span><span class="p">,</span> <span class="n">ACCESSING_PRESETS</span><span class="p">,</span> <span class="n">PRESETS_CHANGED</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ACCESSING_PRESETS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Presets must be made accessible with access_presets() first, '</span>
+                             <span class="s1">'before they can be set!'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_new_key</span><span class="p">:</span>
+        <span class="n">oldkey</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONFIG_PRESET</span><span class="p">:</span>  <span class="n">key</span> <span class="o">=</span> <span class="n">RENAMED_KEYS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONFIG_PRESET</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">'"</span><span class="si">%s</span><span class="s1">" is not a valid config variable. Use "allow_new_key=True" to add  '</span>
+                <span class="s1">' new variables or choose one of </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">CONFIG_PRESET</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+        <span class="k">elif</span> <span class="n">oldkey</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Deprecation Warning: Key </span><span class="si">{</span><span class="n">oldkey</span><span class="si">}</span><span class="s1"> has been renamed to </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">!'</span><span class="p">)</span>
+    <span class="n">validate_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">'multicore_pool'</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Preset of "multicore_pool" can only be changed with a '</span>
+                              <span class="s1">'configuration-file, but not at runtime!'</span><span class="p">)</span>
+    <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="n">set_config_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">PRESETS_CHANGED</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ingest_config_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Ingests configuration-data from a Python-STL</span>
+<span class="sd">    configparser.ConfigParser-object."""</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">access_presets</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"dhparser"</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">set_preset_value</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">set_preset_value</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">section</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="nb">eval</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                                     <span class="n">allow_new_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
+    <span class="n">finalize_presets</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">' files: </span><span class="si">{</span><span class="n">sources</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Errors found in configuration</span><span class="si">{</span><span class="n">sources</span><span class="si">}</span><span class="s2">:</span><span class="se">\n\n</span><span class="s2">"</span>
+                         <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="read_local_config">
+<a class="viewcode-back" href="../Reference.html#configuration.read_local_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_local_config</span><span class="p">(</span><span class="n">ini_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Reads a local config file(s) and updates the presets</span>
+<span class="sd">    accordingly. All config-files with the same basename</span>
+<span class="sd">    (i.e. name without path) as</span>
+<span class="sd">    "ini_filename" will subsequently be read from these</span>
+<span class="sd">    directories and be processed in the same order, which</span>
+<span class="sd">    means config-values in files processed later will</span>
+<span class="sd">    overwrite config-values from earlier processed files:</span>
+
+<span class="sd">    1. script-directory</span>
+<span class="sd">    2. exact path of "ini_filename"</span>
+<span class="sd">    3. User's config-file directory, e.g. ~/.config/basename/</span>
+<span class="sd">    4. current working directory</span>
+
+<span class="sd">    This configuration file must be in the .ini-file format</span>
+<span class="sd">    so that it can be parsed with "configparser" from the</span>
+<span class="sd">    Python standard library. Any key,value-pair under the</span>
+<span class="sd">    section "DHParser" will directly be transferred to the</span>
+<span class="sd">    configuration presets. For other sections, the section</span>
+<span class="sd">    name will be added as a qualifier to the key:</span>
+<span class="sd">    "section.key". Thus, only values under the "DHParser"</span>
+<span class="sd">    section modify the DHParser-configuration while</span>
+<span class="sd">    configuration parameters unter other sections are</span>
+<span class="sd">    free to be evaluated by the calling script and cannot</span>
+<span class="sd">    interfere with DHParser's configuration.</span>
+
+<span class="sd">    :param ini_filename: the file path and name of the configuration</span>
+<span class="sd">        file.</span>
+<span class="sd">    :returns:  the file paths of the actually read .ini-files</span>
+<span class="sd">        or the empty string if no .ini-file with the given</span>
+<span class="sd">        name could be found either at the given path, in</span>
+<span class="sd">        the current working directory or in the calling</span>
+<span class="sd">        script's path.</span>
+<span class="sd">    """</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="c1"># collect config files</span>
+    <span class="n">cfg_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ini_filename</span><span class="p">)</span>
+    <span class="c1"># first, add path in the script-directory</span>
+    <span class="n">script_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">'__main__'</span><span class="p">],</span> <span class="s1">'__file__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">'.'</span><span class="p">)</span>
+    <span class="n">cfg_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">script_path</span><span class="p">),</span> <span class="n">basename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">):</span> <span class="n">cfg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">)</span>
+    <span class="c1"># then, add given path</span>
+    <span class="k">if</span> <span class="n">ini_filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg_files</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ini_filename</span><span class="p">):</span>
+        <span class="n">cfg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ini_filename</span><span class="p">)</span>
+    <span class="c1"># then, add cfg-file from the user's config directory</span>
+    <span class="n">appname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">basename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cfg_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">'~'</span><span class="p">),</span> <span class="s1">'.config'</span><span class="p">,</span> <span class="n">appname</span><span class="p">,</span> <span class="s1">'config.ini'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cfg_filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg_files</span><span class="p">:</span>
+            <span class="n">cfg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cfg_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">'~'</span><span class="p">),</span> <span class="s1">'.config'</span><span class="p">,</span> <span class="n">appname</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg_filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg_files</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">):</span>
+            <span class="n">cfg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">)</span>
+    <span class="c1"># finally, add cfg-file from the current working directory</span>
+    <span class="k">if</span> <span class="n">basename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg_files</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">basename</span><span class="p">):</span>
+        <span class="n">cfg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
+
+    <span class="c1"># Now, read and process all config files in this order</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">optionxform</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">optionstr</span><span class="p">:</span> <span class="n">optionstr</span>
+    <span class="n">successfully_read</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfg_files</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">successfully_read</span><span class="p">:</span>
+        <span class="n">ingest_config_data</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg_files</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">successfully_read</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">read_config_string</span><span class="p">(</span><span class="n">ini_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Reads configuration data in the .ini-file format from</span>
+<span class="sd">    a string. See :py:func:`read_local_config` for more details."""</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">optionxform</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">optionstr</span><span class="p">:</span> <span class="n">optionstr</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">ini_string</span><span class="p">)</span>
+    <span class="n">ingest_config_data</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NoDefault</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="n">NO_DEFAULT</span> <span class="o">=</span> <span class="n">NoDefault</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_preset_value</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">NO_DEFAULT</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">CONFIG_PRESET</span><span class="p">,</span> <span class="n">ACCESSING_PRESETS</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ACCESSING_PRESETS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Presets must be made accessible with access_presets() first, '</span>
+                             <span class="s1">'before they can be read!'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">NO_DEFAULT</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>  <span class="c1"># may raise a KeyError</span>
+    <span class="k">return</span> <span class="n">CONFIG_PRESET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_preset_values">
+<a class="viewcode-back" href="../Reference.html#configuration.get_preset_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_preset_values</span><span class="p">(</span><span class="n">key_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a dictionary of all presets that match `key_pattern`."""</span>
+    <span class="k">global</span> <span class="n">CONFIG_PRESET</span><span class="p">,</span> <span class="n">ACCESSING_PRESETS</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ACCESSING_PRESETS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Presets must be made accessible with access_presets() first, '</span>
+                             <span class="s1">'before they can be read!'</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">CONFIG_PRESET</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatchcase</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key_pattern</span><span class="p">)}</span></div>
+
+
+
+<div class="viewcode-block" id="access_thread_locals">
+<a class="viewcode-back" href="../Reference.html#configuration.access_thread_locals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">access_thread_locals</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Intitializes (if not done yet) and returns the thread local variable</span>
+<span class="sd">    store. (Call this function before using THREAD_LOCALS.</span>
+<span class="sd">    Direct usage of THREAD_LOCALS is DEPRECATED!)</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">THREAD_LOCALS</span>
+    <span class="k">if</span> <span class="n">THREAD_LOCALS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+        <span class="n">THREAD_LOCALS</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>  <span class="c1"># TODO: Use ContextVars, here!!!</span>
+    <span class="k">return</span> <span class="n">THREAD_LOCALS</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_config_dict</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">THREAD_LOCALS</span>
+    <span class="n">THREAD_LOCALS</span> <span class="o">=</span> <span class="n">access_thread_locals</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">THREAD_LOCALS</span><span class="o">.</span><span class="n">config</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">THREAD_LOCALS</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">THREAD_LOCALS</span><span class="o">.</span><span class="n">config</span>
+    <span class="k">return</span> <span class="n">cfg</span>
+
+
+<div class="viewcode-block" id="reset_config_dict">
+<a class="viewcode-back" href="../Reference.html#configuration.reset_config_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_config_dict</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Empties the configuration dictionary so that it will be reloaded</span>
+<span class="sd">    from the presets the next time it will be accessed. Use with care!"""</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_dict</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_config_value">
+<a class="viewcode-back" href="../Reference.html#configuration.get_config_value">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_config_value</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">NO_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Retrieves a configuration value thread-safely.</span>
+
+<span class="sd">    :param key:  the key (an immutable, usually a string)</span>
+<span class="sd">    :param default: a default value that is returned if no config-value</span>
+<span class="sd">        exists for the key.</span>
+<span class="sd">    :return:     the value</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">get_access_lock</span><span class="p">():</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_dict</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">access_presets</span><span class="p">()</span>
+            <span class="c1"># value = get_preset_value(key, default)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">CONFIG_PRESET</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="n">finalize_presets</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">NO_DEFAULT</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+
+
+
+<div class="viewcode-block" id="get_config_values">
+<a class="viewcode-back" href="../Reference.html#configuration.get_config_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_config_values</span><span class="p">(</span><span class="n">key_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"*"</span><span class="p">,</span> <span class="o">*</span><span class="n">additional_patterns</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a dictionary of all configuration entries that match</span>
+<span class="sd">    `key_pattern`."""</span>
+    <span class="n">access_presets</span><span class="p">()</span>
+    <span class="n">presets_copy</span> <span class="o">=</span> <span class="n">get_preset_values</span><span class="p">(</span><span class="n">key_pattern</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">additional_patterns</span><span class="p">:</span>
+        <span class="n">presets_copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">get_preset_values</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+    <span class="n">finalize_presets</span><span class="p">()</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
+    <span class="k">with</span> <span class="n">get_access_lock</span><span class="p">():</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_dict</span><span class="p">()</span>
+        <span class="n">cfg_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="p">(</span><span class="n">key_pattern</span><span class="p">,</span> <span class="o">*</span><span class="n">additional_patterns</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pattern</span> <span class="o">==</span> <span class="s2">"*"</span><span class="p">:</span>
+                <span class="n">cfg_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cfg_values</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                   <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatchcase</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key_pattern</span><span class="p">)})</span>
+        <span class="n">presets_copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cfg_values</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">presets_copy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">presets_copy</span></div>
+
+
+
+<div class="viewcode-block" id="set_config_value">
+<a class="viewcode-back" href="../Reference.html#configuration.set_config_value">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_config_value</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">allow_new_key</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Changes a configuration value thread-safely. The configuration</span>
+<span class="sd">    value will be set only for the current thread. In order to</span>
+<span class="sd">    set configuration values for any new thread, add the key and value</span>
+<span class="sd">    to CONFIG_PRESET, before any thread accessing config-values is started.</span>
+<span class="sd">    :param key:    the key (an immutable, usually a string)</span>
+<span class="sd">    :param value:  the value</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">get_access_lock</span><span class="p">():</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_new_key</span><span class="p">:</span>
+            <span class="n">oldkey</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONFIG_PRESET</span><span class="p">:</span>  <span class="n">key</span> <span class="o">=</span> <span class="n">RENAMED_KEYS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONFIG_PRESET</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s1">'"</span><span class="si">%s</span><span class="s1">" is not a valid config variable. Use "allow_new_key=True" to '</span>
+                        <span class="s1">'add new variables or choose one of </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+            <span class="k">elif</span> <span class="n">oldkey</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Deprecation Warning: Key </span><span class="si">{</span><span class="n">oldkey</span><span class="si">}</span><span class="s1"> has been renamed to </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">!'</span><span class="p">)</span>
+        <span class="n">validate_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+
+<div class="viewcode-block" id="add_config_values">
+<a class="viewcode-back" href="../Reference.html#configuration.add_config_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_config_values</span><span class="p">(</span><span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Adds (or overwrites) new configuration values.</span>
+<span class="sd">    :param configuration: additional configuration values</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">get_access_lock</span><span class="p">():</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">_config_dict</span><span class="p">()</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dump_config_data">
+<a class="viewcode-back" href="../Reference.html#configuration.dump_config_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dump_config_data</span><span class="p">(</span><span class="o">*</span><span class="n">key_patterns</span><span class="p">,</span> <span class="n">use_headings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns the configuration variables the name of which matches one of the</span>
+<span class="sd">    key_patterns config.ini-string."""</span>
+    <span class="k">if</span> <span class="n">key_patterns</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">get_config_values</span><span class="p">(</span><span class="n">key_patterns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="n">key_patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">last_prefix</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">k</span><span class="p">[:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">use_headings</span> <span class="k">else</span> <span class="n">k</span>
+                <span class="k">if</span> <span class="n">prefix</span> <span class="o">!=</span> <span class="n">last_prefix</span><span class="p">:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">use_headings</span><span class="p">:</span>
+                        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">prefix</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">]'</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">"[DHParser]"</span><span class="p">)</span>
+                    <span class="n">last_prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>  <span class="k">del</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">''</span></div>
+
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># system configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Defines which kind of multicore parallelization shall be used:</span>
+<span class="c1"># Either "ProcessPool" or "InterpreterPool". The latter is only available</span>
+<span class="c1"># when Python-version is greater or equal 3.14. If "InterpreterPool"</span>
+<span class="c1"># is specified but the Python version is smaller than 3.14, "ProcessPool"</span>
+<span class="c1"># will automatically be used as a fallback option.</span>
+<span class="c1"># Default value: "InterpreterPool"</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'multicore_pool'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">'ProcessPool'</span><span class="p">,</span>
+                                                     <span class="s1">'InterpreterPool'</span><span class="p">})</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'multicore_pool'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"ProcessPool"</span>
+
+<span class="c1"># PID of the main programm that is passed on to all spawned tasks, i.e.</span>
+<span class="c1"># threads, processes, interpreters (only Python 3.14 and above)</span>
+<span class="c1"># If the value is 0, the current task is still the main</span>
+<span class="c1"># process and the pid can be determined by calling os.getpid()</span>
+<span class="c1"># Default value: 0</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'main_pid'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># parser configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># The parser configuration is read when a Grammar-object is instantiated.</span>
+<span class="c1"># Changes to the configuration value that take place after the</span>
+<span class="c1"># instantiation of the Grammar-object will not be reflected in the</span>
+<span class="c1"># Grammar-object. After instantiation, the fields of the Grammar-object</span>
+<span class="c1"># that reflect the configuration parameters must be manipulated directly</span>
+<span class="c1"># to change the configuration of a Grammar-object.</span>
+
+<span class="c1"># Maximum allowed number of retries after errors where the parser</span>
+<span class="c1"># would exit before the complete document has been parsed. Should</span>
+<span class="c1"># not be set too high, because automatic retry works poorly.</span>
+<span class="c1"># This value does not affect the @resume-directive.</span>
+<span class="c1"># Default value: 1</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'max_parser_dropouts'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># The "search window" for finding a reentry-point after a syntax error was</span>
+<span class="c1"># encountered during parsing. The value of `reentry_search_window` is the</span>
+<span class="c1"># maximum number of characters lying ahead of the point of failure, where</span>
+<span class="c1"># a suitable reentry point will be searched. A value smaller than zero</span>
+<span class="c1"># means that the complete remaining text will be searched. A value of zero</span>
+<span class="c1"># effectively turns of resuming after error.</span>
+<span class="c1"># Default value: 10000</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'reentry_search_window'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50000</span>
+
+<span class="c1"># Turns on tracking of the parsing history. As this slows down parsing,</span>
+<span class="c1"># it should only be turned on for debugging.</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'history_tracking'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Turns on resume notices that add information about where the parsing</span>
+<span class="c1"># process resumes after an error has been encountered</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'resume_notices'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Warn about pending infinite loops which would occur if a repeating</span>
+<span class="c1"># parser like "zero or more" calls another parser that matches but</span>
+<span class="c1"># does not move the location pointer forward, i.e. { /(?=.)|$/ }.</span>
+<span class="c1"># Theoretically, this parser would be called at the same place again</span>
+<span class="c1"># and again forever. In practice, DHParser recognizes this situation</span>
+<span class="c1"># and breaks the pending infinite loop. Since this situation usually</span>
+<span class="c1"># is the result of a poorly designed inner parser, a warning can</span>
+<span class="c1"># be emitted.</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'infinite_loop_warning'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># nodetree configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Defines the output format for the serialization of syntax trees.</span>
+<span class="c1"># Possible values are:</span>
+<span class="c1"># 'XML'          - output as XML</span>
+<span class="c1"># 'HTML'         - like XML but enclosed in the body of a minimal</span>
+<span class="c1">#                  HTML-page.</span>
+<span class="c1"># 'S-expression' - output as S-expression, i.e. a list-like format</span>
+<span class="c1"># 'SXML'         - a variant of S-expression differing in how attributes are</span>
+<span class="c1">#                  rendered, e.g. (@ attr "value") instead of `(attr "value")</span>
+<span class="c1"># 'tree'         - compact tree output, i.e. children a represented on</span>
+<span class="c1">#                  indented lines with no opening or closing tags, brackets</span>
+<span class="c1">#                  etc. 'indented' can be used as a synonym for 'tree'</span>
+<span class="c1"># 'json'         - output in JSON-format. This is probably the least</span>
+<span class="c1">#                  readable representation, but useful for serialization, for</span>
+<span class="c1">#                  example, to return syntax trees from remote procedure calls.</span>
+<span class="c1"># 'dict.json'    - a different, and often more readable flavor of JSON, where</span>
+<span class="c1">#                  dicts are used whenever possible. Please be aware that this</span>
+<span class="c1">#                  goes beyond the JSON-sepcification which does not know</span>
+<span class="c1">#                  ordered dicts! This could result in the misrepresentation</span>
+<span class="c1">#                  of data by JSON parsers that are not aware of the order</span>
+<span class="c1">#                  of entries in dictionaries. (e.g. Python &lt; 3.6)</span>
+<span class="c1"># 'ndst'         - nodetree-syntax-tree: a JSON-variant following the</span>
+<span class="c1">#                  unist-Specification (https://github.com/syntax-tree/unist).</span>
+<span class="c1"># 'xast'         - a JSON-Variant for XML-syntax-trees following the</span>
+<span class="c1">#                  xast-Specification (https://github.com/syntax-tree/xast).</span>
+<span class="c1"># Default values: "compact" for concrete syntax trees and "XML" for abstract</span>
+<span class="c1">#                 syntax trees and "sxpr" (read "S-Expression") for any other</span>
+<span class="c1">#                 kind of tree.</span>
+<span class="n">_serializations</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">'XML'</span><span class="p">,</span> <span class="s1">'HTML'</span><span class="p">,</span> <span class="s1">'json'</span><span class="p">,</span> <span class="s1">'dict.json'</span><span class="p">,</span> <span class="s1">'indented'</span><span class="p">,</span> <span class="s1">'tree'</span><span class="p">,</span>
+                             <span class="s1">'S-expression'</span><span class="p">,</span> <span class="s1">'sxpr'</span><span class="p">,</span> <span class="s1">'SXML'</span><span class="p">,</span> <span class="s1">'SXML1'</span><span class="p">,</span> <span class="s1">'SXML2'</span><span class="p">,</span>
+                             <span class="s1">'xast'</span><span class="p">,</span> <span class="s1">'ndst'</span><span class="p">})</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'CST_serialization'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'AST_serialization'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'default_serialization'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'sxpr'</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'CST_serialization'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_serializations</span> <span class="o">|</span> <span class="p">{</span><span class="s1">''</span><span class="p">}</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'AST_serialization'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_serializations</span> <span class="o">|</span> <span class="p">{</span><span class="s1">''</span><span class="p">}</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'default_serialization'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_serializations</span>
+
+<span class="c1"># Defines the maximum line length for flattened S-expressions.</span>
+<span class="c1"># Below this threshold S-expressions will be returned in flattened</span>
+<span class="c1"># form by DHParser.nodetree.serialize() and other functions</span>
+<span class="c1"># that use serialize(), like, for example, the reporting functions</span>
+<span class="c1"># in DHParser.testing.</span>
+<span class="c1"># Default value: 120</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'flatten_sxpr_threshold'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="c1"># Defines the maximum number of LINES before the "S-expression" serialization</span>
+<span class="c1"># will switch to a compact output where the closing brackets are placed on</span>
+<span class="c1"># the same line as the last line of the content.</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'compact_sxpr_threshold'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># How to treat illegal attribute values when serializing as XML,</span>
+<span class="c1"># e.g. attr="&lt;". Possible values are:</span>
+<span class="c1"># 'ignore' - faulty attribute values will be serialized nonetheless</span>
+<span class="c1"># 'fix'   - attribute values will be corrected, e.g. "&lt;" will be</span>
+<span class="c1">#           replaced by the respective entity and the like.</span>
+<span class="c1"># 'lxml'  - attributes values will be corrected and any non-ASCII</span>
+<span class="c1">#           character will be replaced by a question mark to ensure</span>
+<span class="c1">#           compatibility with the lxml library.</span>
+<span class="c1"># 'fail'  - an error will be raised, when an illegal attribute value</span>
+<span class="c1">#           is encountered while serializing a tree as XML. Illegal</span>
+<span class="c1">#           attribute values can still be set, though, since they</span>
+<span class="c1">#           concern only the XMl-serialization and not the</span>
+<span class="c1">#           S-expression or JSON serialization.</span>
+<span class="c1"># Default value = "fail"</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'xml_attribute_error_handling'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'fail'</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'xml_attribute_error_handling'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">'ignore'</span><span class="p">,</span> <span class="s1">'fix'</span><span class="p">,</span> <span class="s1">'lxml'</span><span class="p">,</span> <span class="s1">'fail'</span><span class="p">})</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># general compiler configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Defines which syntax tree should be logged during compilation:</span>
+<span class="c1"># The concrete syntax tree, the abstract syntax tree or both.</span>
+<span class="c1"># Possible values are {'AST'}, {'CST'} or {'AST', 'CST'}</span>
+<span class="c1"># Default value: empty set</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'log_syntax_trees'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+
+<span class="c1"># Forces re-compilation of grammar which means that the grammar will</span>
+<span class="c1"># always be recompiled when running tests not only when the checksum</span>
+<span class="c1"># of the grammar-file has changed.</span>
+<span class="c1"># Possible value: True, False</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'force_recompile_grammar'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># ebnf compiler configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Carries out static analysis on the parser tree before parsing starts</span>
+<span class="c1"># to ensure its correctness. EXPERIMENTAL! Possible values are:</span>
+<span class="c1"># 'early' - static analysis is carried out by DHParser.ebnf.EBNFCompiler,</span>
+<span class="c1">#           already. Any errors it revealed will be located in the EBNF</span>
+<span class="c1">#           source code. This naturally only works for parser that are</span>
+<span class="c1">#           generated from an EBNF syntax declaration.</span>
+<span class="c1"># 'late' -  static analysis is carried out when instantiating a Grammar</span>
+<span class="c1">#           (sub-)class. This works also for parser trees that are</span>
+<span class="c1">#           handwritten in Python using the parser classes from module</span>
+<span class="c1">#           `parse`. It slightly slows down instantiation of Grammar</span>
+<span class="c1">#           classes, though.</span>
+<span class="c1"># 'none' -  no static analysis at all.</span>
+<span class="c1"># Default value: "early"</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'static_analysis'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"early"</span>
+
+<span class="c1"># Allows to change the order of the definitions in an EBNF source</span>
+<span class="c1"># text to minimize the number of forward-declarations in the resulting</span>
+<span class="c1"># grammar class.</span>
+<span class="c1"># True  - reordering of definitions is allowed</span>
+<span class="c1"># False - definitions will not be reordered</span>
+<span class="c1"># Default value: 'True'</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'reorder_definitions'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># DHParser.ebnf.EBNFCompiler class adds the EBNF-grammar to the</span>
+<span class="c1"># docstring of the generated Grammar-class</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'add_grammar_source_to_parser_docstring'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Default value for the regular expression by which identifiers for</span>
+<span class="c1"># parsers that yield anonymous nodes are distinguished from identifiers</span>
+<span class="c1"># for parsers that yield named nodes. For example, the regular expression</span>
+<span class="c1"># r'_' catches names with a leading underscore. The default value is a</span>
+<span class="c1"># regular expression that matches no string whatsoever.</span>
+<span class="c1"># Default value: r'$.'  # never match.</span>
+<span class="n">NEVER_MATCH_PATTERN</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'$.'</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'default_disposable_regexp'</span><span class="p">]</span> <span class="o">=</span> <span class="n">NEVER_MATCH_PATTERN</span>
+
+
+<span class="c1"># Default value for implicit insignificant whitespace adjacent to literals.</span>
+<span class="c1"># Possible values are:</span>
+<span class="c1"># 'none': no implicit adjacent whitespace:   "text" = `text`</span>
+<span class="c1"># 'right': implicit whitespace to the right: "text" = `text`~</span>
+<span class="c1"># 'left': implicit whitespace to the left:   "text" = ~`text`</span>
+<span class="c1"># 'both': implicit whitespace on both sides: "text" = ~`text`~</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'default_literalws'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"none"</span>
+
+
+<span class="c1"># Default value for the brand of EBNF that DHParser accepts</span>
+<span class="c1"># 'fixed', 'dhparser' - Allows to use suffix syntax (?, +, *) as well as classic</span>
+<span class="c1">#       EBNF-syntax ([], {}). The delimiters are fixed before first use to</span>
+<span class="c1">#       the DHParser-standard and will only be read once from</span>
+<span class="c1">#       configuration-value "delimiter_set" upon first usage.</span>
+<span class="c1"># 'classic'     - relatively closest to the ISO-standard, i.e. uses [] and {}</span>
+<span class="c1">#       for optional and zero or more elements, respectively. Does not allow</span>
+<span class="c1">#       the ?, +, * suffixes (NOT YET IMPLEMENTED!). Allows the specification</span>
+<span class="c1">#       of character-ranges within square brackets only with the ordinal</span>
+<span class="c1">#       unicode numbers, not with the characters itself, i.e. [0x41-0x5A].</span>
+<span class="c1">#       Delimiters will be configured on first use.</span>
+<span class="c1"># 'strict'      - allows both classic and regex-like syntax to be mixed, but</span>
+<span class="c1">#       allows character ranges within square brackets with ordinal values,</span>
+<span class="c1">#       only. Uses | as delimiter for alternatives.</span>
+<span class="c1"># 'configurable' - like fixed, but the delimiter constants will be configured</span>
+<span class="c1">#       from the configuration-value 'delimiter_set' (see below) each</span>
+<span class="c1">#       time the grammar object is requested with DHParser.ebnf.get_ebnf_grammar()</span>
+<span class="c1">#       or DHParser.ebnf.parse_ebnf().</span>
+<span class="c1"># 'heuristic'   - the most liberal mode, allows about everything. However,</span>
+<span class="c1">#       because it employs heuristics to distinguish ambiguous cases, it</span>
+<span class="c1">#       may lead to unexpected errors and require the user to resolve the</span>
+<span class="c1">#       ambiguities</span>
+<span class="c1"># 'regex-like'  - similar to regular expression syntax, allows ?, +, *</span>
+<span class="c1">#       suffixes for optional, one or more repetitions, zero or more</span>
+<span class="c1">#       repetitions, but not {} or []. Allows character-ranges within</span>
+<span class="c1">#       square bracket in any form.</span>
+<span class="c1"># 'peg-like' - like regex-like, but uses / instead of | for the</span>
+<span class="c1">#       alternative-parser. Does not allow regular expressions between, i.e.</span>
+<span class="c1">#       / ... / within the EBNF-code!</span>
+<span class="c1"># Default value: "dhparser"</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'syntax_variant'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'dhparser'</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'syntax_variant'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span>
+    <span class="s1">'dhparser'</span><span class="p">,</span>
+    <span class="s1">'fixed'</span><span class="p">,</span>
+    <span class="s1">'classic'</span><span class="p">,</span>
+    <span class="s1">'strict'</span><span class="p">,</span>
+    <span class="s1">'configurable'</span><span class="p">,</span>
+    <span class="s1">'heuristic'</span><span class="p">,</span>
+    <span class="s1">'regex-like'</span><span class="p">,</span>
+    <span class="s1">'peg-like'</span><span class="p">})</span>
+
+<span class="c1"># Set of delimiters when using the 'configurable'-Grammar</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'delimiter_set'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'DEF'</span><span class="p">:</span>        <span class="s1">'='</span><span class="p">,</span>
+    <span class="s1">'OR'</span><span class="p">:</span>         <span class="s1">'|'</span><span class="p">,</span>
+    <span class="s1">'AND'</span><span class="p">:</span>        <span class="s1">''</span><span class="p">,</span>
+    <span class="s1">'ENDL'</span><span class="p">:</span>       <span class="s1">''</span><span class="p">,</span>
+    <span class="s1">'RNG_OPEN'</span><span class="p">:</span>   <span class="s1">'{'</span><span class="p">,</span>
+    <span class="s1">'RNG_CLOSE'</span><span class="p">:</span>  <span class="s1">'}'</span><span class="p">,</span>
+    <span class="s1">'RNG_DELIM'</span><span class="p">:</span>  <span class="s1">','</span><span class="p">,</span>
+    <span class="s1">'TIMES'</span><span class="p">:</span>      <span class="s1">'*'</span><span class="p">,</span>
+    <span class="s1">'RE_LEADIN'</span><span class="p">:</span>  <span class="s1">'/'</span><span class="p">,</span>
+    <span class="s1">'RE_LEADOUT'</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+    <span class="s1">'RE_CORE'</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'(?:(?&lt;!</span><span class="se">\\</span><span class="s1">)</span><span class="se">\\</span><span class="s1">(?:/)|[^/])*'</span><span class="p">,</span>
+    <span class="c1"># RE_LEADOUT:               ^    ^</span>
+    <span class="s1">'CH_LEADIN'</span><span class="p">:</span>  <span class="s1">'0x'</span>
+<span class="p">}</span>
+
+<span class="c1"># Switches different kinds of optimization of the EBNF-compiler on.</span>
+<span class="c1"># Optimaztion is done by substituting compound parsers by SmartRE-parsers</span>
+<span class="c1"># when this is possible. Theoretically, this is everywhere where</span>
+<span class="c1"># no recursion occurs. In practice this is done only in (some of the)</span>
+<span class="c1"># cases where no (non-disposable) symbols are referred.</span>
+<span class="c1"># Default value: empty frozen set</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span>
+    <span class="s1">'literal'</span><span class="p">,</span>
+    <span class="s1">'lookahead'</span><span class="p">,</span>
+    <span class="s1">'alternative'</span><span class="p">,</span>
+    <span class="s1">'rearrange_alternative'</span><span class="p">,</span>  <span class="c1"># this is also implied by 'alternative'</span>
+    <span class="s1">'sequence'</span><span class="p">})</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">()</span>
+    <span class="c1"># {'literal', 'lookahead', 'alternative', 'sequence'})</span>
+
+
+<span class="c1"># Chooses the left-recursion-handling. This guides only the choice of the Forward class</span>
+<span class="c1"># when grammars are compiled into parsers. It does not affect already compiled parsers.</span>
+<span class="c1"># To change the behaviour of compiled classes, you have to replace "Forward" by</span>
+<span class="c1"># "SimpleForwardRecrusive" or vice versa.</span>
+<span class="c1"># Possible Values are:</span>
+<span class="c1"># "none" - No left-recursion-handling. May lead to infinite loops while parsing!</span>
+<span class="c1">#     (Presentely, not supported, anyway. Use 'simple' instead.)</span>
+<span class="c1"># "classic" - Left-recursion check on Forward references. Covers direct and</span>
+<span class="c1">#     indirect left recursion but yields wrong parsing results with intervowen</span>
+<span class="c1">#     left recursion! (This used to be the only left-recursion algorithm for DHParser</span>
+<span class="c1">#     versions &lt; 2.0)</span>
+<span class="c1"># "simple" - An algorithm similar to "classic" but simpler and more in the iterative</span>
+<span class="c1">#     style of typical seed and grow algorithms in the literature.</span>
+<span class="c1"># "forward" - DEPRECATED: Same as "simple",</span>
+<span class="c1"># "full" - Full left-recursion-handling.</span>
+<span class="c1"># Default value: "Full"</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'left_recursion'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">'none'</span><span class="p">,</span> <span class="s1">'classic'</span><span class="p">,</span> <span class="s1">'forward'</span><span class="p">,</span> <span class="s1">'simple'</span><span class="p">,</span> <span class="s1">'full'</span><span class="p">,</span>
+     <span class="s1">'None'</span><span class="p">,</span> <span class="s1">'classic'</span><span class="p">,</span> <span class="s1">'Forward'</span><span class="p">,</span> <span class="s1">'Simple'</span><span class="p">,</span> <span class="s1">'Full'</span><span class="p">})</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'left_recursion'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"full"</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># compiler command and server configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># If parser- or compiler-script is called with several input files</span>
+<span class="c1"># (batch-processing), the files will be processed in parallel via the</span>
+<span class="c1"># Python multiprocessing module</span>
+<span class="c1"># Default value: True</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'batch_processing_parallelization'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Maximum chunk size when using multiple processes for batch processing</span>
+<span class="c1"># see: file:///usr/share/doc/python/html/library/concurrent.futures.html#concurrent.futures.Executor.map</span>
+<span class="c1"># Higher values can lead to more efficient multiprocessing, but can</span>
+<span class="c1"># also increase the time until a process completes.</span>
+<span class="c1"># Values must be greater or equal one.</span>
+<span class="c1"># Default value: 4</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'batch_processing_max_chunk_size'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1"># Maximum allowed source size for remote procedure calls (including</span>
+<span class="c1"># parameters) in server.Server. The default value is rather large in</span>
+<span class="c1"># order to allow transmitting complete source texts as parameter.</span>
+<span class="c1"># Default value: 4 MB</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'max_rpc_size'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+
+<span class="c1"># Add a header to JSON-RPC requests of responses.</span>
+<span class="c1"># see: https://microsoft.github.io/language-server-protocol/specification#header-part</span>
+<span class="c1"># Default value: True</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'jsonrpc_header'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Default host name or IP-address for the compiler server. Should usually</span>
+<span class="c1"># be localhost (127.0.0.1)</span>
+<span class="c1"># Default value: 127.0.0.1.</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'server_default_host'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span>
+
+<span class="c1"># Default port number for the compiler server.</span>
+<span class="c1"># Default value: 8888</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'server_default_port'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8888</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># debugging support configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Turn on (costly) debugging functionality for any of the respective</span>
+<span class="c1"># modules or subsystems.</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'debug_compiler'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Makes DHParser.dsl.grammar_provider() write generated Python code to</span>
+<span class="c1"># the log-file (if logging is on) or to the console (if logging is off)</span>
+<span class="c1"># Default value: '' (empty string, i.e. no log)</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'compiled_EBNF_log'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+
+<span class="c1"># Defines the kind of threading that `toolkit.instantiate_executor()`</span>
+<span class="c1"># will allow. Possible values are:</span>
+<span class="c1"># 'multitcore' - Full multicore parallel execution will be allowed.</span>
+<span class="c1"># 'multiprocessing' - DEPRECATED alias for 'multicore'</span>
+<span class="c1"># 'multithreading' -   A ThreadPoolExecutor will be substituted for any</span>
+<span class="c1">#         ProcessPoolExecutor.</span>
+<span class="c1"># 'singlethread' -     A SingleThreadExecutor will be substituted for</span>
+<span class="c1">#         any ProcessPoolExecutor or ThreadPoolExecutor.</span>
+<span class="c1"># 'commandline' -      If any of the above is specified on the command</span>
+<span class="c1">#         line with two leading minus-signs, e.g. '--singlethread'</span>
+<span class="c1">#</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'debug_parallel_execution'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span>
+    <span class="s1">'multicore'</span><span class="p">,</span> <span class="s1">'multiprocessing'</span><span class="p">,</span> <span class="s1">'multithreading'</span><span class="p">,</span> <span class="s1">'singlethread'</span><span class="p">,</span> <span class="s1">'commandline'</span><span class="p">})</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'debug_parallel_execution'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'commandline'</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># logging support configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Log-directory. An empty string means that writing of log files is</span>
+<span class="c1"># turned off, no matter what value the other log-configuration</span>
+<span class="c1"># parameters have. The only exception is "echo logging" to the terminal!</span>
+<span class="c1"># Default value: '' (all logging is turned off)</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'log_dir'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+
+<span class="c1"># Log server traffic (requests and responses)</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'log_server'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Echo server log messages on the terminal. Works only with tcp-server,</span>
+<span class="c1"># will be ignored by streaming server.</span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'echo_server_log'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Maximum size (i.e.) number of parsing steps before the parsing ended</span>
+<span class="c1"># that are logged to the html-parsing-history-file</span>
+<span class="c1"># Default value: 10000</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'log_size_threshold'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10000</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># testing framework configuration</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Allows (coarse-grained) parallelization for running tests via the</span>
+<span class="c1"># Python multiprocessing module</span>
+<span class="c1"># Default value: True</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'test_parallelization'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Employs heuristics to allow lookahead-based parsers to pass unit-test</span>
+<span class="c1"># in case a reported error may only be due to the fact that the test</span>
+<span class="c1"># string a) either did include a substring for a lookahead check, the</span>
+<span class="c1"># was then left over when parsing stopped (which would usually result</span>
+<span class="c1"># in a "parser stopped before end"-error) or b) did not include a</span>
+<span class="c1"># substring expected by a lookahead check as this is not part of the</span>
+<span class="c1"># sequence that the tested parser should return in form of a concrete</span>
+<span class="c1"># syntax-tree. (This would otherwise result in a 'parser did not match'-</span>
+<span class="c1"># error.)</span>
+<span class="c1"># Beware that a) these heuristics can fail, so that certain</span>
+<span class="c1"># test-failures may fail to be reported and b) the abstract-syntax-trees</span>
+<span class="c1"># resulting from parsers that contain lookahead checks may have a</span>
+<span class="c1"># structure that would not occur outside the testing-environment.</span>
+<span class="c1"># Default value: True</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'test_suppress_lookahead_failures'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Skips the preprocessor stage when running test. This can be helpful</span>
+<span class="c1"># a) when running tests on sub-parsers, in case that the preprocessor</span>
+<span class="c1"># cannot deal with snippets which do not represent full documents or</span>
+<span class="c1"># b) when you'd like to keep preprocessor matters out of the tests.</span>
+<span class="c1"># 'test_skip_preprocessor' is best </span>
+<span class="c1"># Default value: False</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'test_skip_preprocessor'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="c1">########################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># deprecation warnings</span>
+<span class="c1">#</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Determines what happens when functions decorated as deprecated</span>
+<span class="c1"># are called. Possible values are:</span>
+<span class="c1"># "warn" - print a warning, the first time the deprecated function</span>
+<span class="c1">#          is called</span>
+<span class="c1"># "fail" - raise a DeprecationWarning, the first time the deprecated</span>
+<span class="c1">#          function is called</span>
+<span class="n">CONFIG_PRESET</span><span class="p">[</span><span class="s1">'deprecation_policy'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'warn'</span>
+<span class="n">ALLOWED_PRESET_VALUES</span><span class="p">[</span><span class="s1">'deprecation_policy'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">'warn'</span><span class="p">,</span> <span class="s1">'fail'</span><span class="p">})</span>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

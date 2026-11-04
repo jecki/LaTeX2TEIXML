@@ -63,6 +63,7 @@ __all__ = ('CONFIG_PRESET',
            'NO_DEFAULT',
            'THREAD_LOCALS',
            'access_thread_locals',
+           'reset_config_dict',
            'get_config_value',
            'get_config_values',
            'set_config_value',
@@ -78,7 +79,7 @@ __all__ = ('CONFIG_PRESET',
 ########################################################################
 
 
-CONFIG_PRESET = dict()  # type: Dict[str, Any]
+CONFIG_PRESET: Dict[str, Any] = dict()
 CONFIG_PRESET['syncfile_path'] = ''
 ACCESSING_PRESETS = False
 PRESETS_CHANGED = False
@@ -138,29 +139,25 @@ def get_forkserver_pid():
     return forkserver_pid
 
 
-def os_getpid(mp_method = None):
+def get_main_pid(mp_method = None):
+    """Returns the pis of the main process, i.e. the process or interpreter that
+    has not been spawned by any other process."""
     import os
-    if sys.version_info < (3, 14, 0) \
-            or CONFIG_PRESET['multicore_pool'] == 'ProcessPool':
-        # TODO chose this path also, if this has not been called inside an InterpreterPool!!!
-        import multiprocessing
-        if mp_method is None:
-            mp_method = multiprocessing.get_start_method()
-        if mp_method == "forkserver":
-            return get_forkserver_pid()
-    return os.getpid()
+    return CONFIG_PRESET['main_pid'] or os.getpid()
 
 
 def get_syncfile_path(mp_method: str) -> str:
     import os
     import tempfile
-    syncfile_path = CONFIG_PRESET['syncfile_path']
-    if not syncfile_path:
-        for getpid in (os.getpid, os.getppid, os_getpid):
-            pid = getpid()
-            syncfile_path = os.path.join(tempfile.gettempdir(), f'DHParser_{pid}.cfg')
-            if os.path.exists(syncfile_path):
-                break
+    # syncfile_path = CONFIG_PRESET['syncfile_path']
+    # if not syncfile_path:
+    #     for getpid in (os.getpid, os.getppid, get_main_pid):
+    #         pid = getpid()
+    #         syncfile_path = os.path.join(tempfile.gettempdir(), f'DHParser_{pid}.cfg')
+    #         if os.path.exists(syncfile_path):
+    #             break
+    pid = get_main_pid()
+    syncfile_path = os.path.join(tempfile.gettempdir(), f'DHParser_{pid}.cfg')
     return syncfile_path
 
 
@@ -423,6 +420,13 @@ def _config_dict():
     return cfg
 
 
+def reset_config_dict():
+    """Empties the configuration dictionary so that it will be reloaded
+    from the presets the next time it will be accessed. Use with care!"""
+    cfg = _config_dict()
+    cfg.clear()
+
+
 def get_config_value(key: str, default: Any = NO_DEFAULT) -> Any:
     """Retrieves a configuration value thread-safely.
 
@@ -453,9 +457,9 @@ def get_config_values(key_pattern: str = "*", *additional_patterns) -> Dict:
     """Returns a dictionary of all configuration entries that match
     `key_pattern`."""
     access_presets()
-    presets = get_preset_values(key_pattern)
+    presets_copy = get_preset_values(key_pattern)
     for pattern in additional_patterns:
-        presets.update(get_preset_values(pattern))
+        presets_copy.update(get_preset_values(pattern))
     finalize_presets()
     import fnmatch
     with get_access_lock():
@@ -467,9 +471,9 @@ def get_config_values(key_pattern: str = "*", *additional_patterns) -> Dict:
             else:
                 cfg_values.update({key: value for key, value in cfg.items()
                                    if fnmatch.fnmatchcase(key, key_pattern)})
-        presets.update(cfg_values)
-        cfg.update(presets)
-    return presets
+        presets_copy.update(cfg_values)
+        cfg.update(presets_copy)
+    return presets_copy
 
 
 def set_config_value(key: str, value: Any, allow_new_key: bool = False):
@@ -545,8 +549,14 @@ def dump_config_data(*key_patterns, use_headings: bool = True) -> str:
 # Default value: "InterpreterPool"
 ALLOWED_PRESET_VALUES['multicore_pool'] = frozenset({'ProcessPool',
                                                      'InterpreterPool'})
-CONFIG_PRESET['multicore_pool'] = "InterpreterPool"
+CONFIG_PRESET['multicore_pool'] = "ProcessPool"
 
+# PID of the main programm that is passed on to all spawned tasks, i.e.
+# threads, processes, interpreters (only Python 3.14 and above)
+# If the value is 0, the current task is still the main
+# process and the pid can be determined by calling os.getpid()
+# Default value: 0
+CONFIG_PRESET['main_pid'] = 0
 
 ########################################################################
 #
@@ -586,12 +596,6 @@ CONFIG_PRESET['history_tracking'] = False
 # process resumes after an error has been encountered
 # Default value: False
 CONFIG_PRESET['resume_notices'] = False
-
-# Turns on the left-recursion-handling algorithm. This allows the use
-# of left-recursion in grammars, which otherwise would run a recursive
-# descent parser into an infinite-loop.
-# Default value: True
-CONFIG_PRESET['left_recursion'] = True
 
 # Warn about pending infinite loops which would occur if a repeating
 # parser like "zero or more" calls another parser that matches but
@@ -691,7 +695,12 @@ ALLOWED_PRESET_VALUES['xml_attribute_error_handling'] = frozenset({'ignore', 'fi
 # Default value: empty set
 CONFIG_PRESET['log_syntax_trees'] = frozenset()
 
-
+# Forces re-compilation of grammar which means that the grammar will
+# always be recompiled when running tests not only when the checksum
+# of the grammar-file has changed.
+# Possible value: True, False
+# Default value: False
+CONFIG_PRESET['force_recompile_grammar'] = False
 ########################################################################
 #
 # ebnf compiler configuration
@@ -817,6 +826,28 @@ ALLOWED_PRESET_VALUES['optimizations'] = frozenset({
     'sequence'})
 CONFIG_PRESET['optimizations'] = frozenset()
     # {'literal', 'lookahead', 'alternative', 'sequence'})
+
+
+# Chooses the left-recursion-handling. This guides only the choice of the Forward class
+# when grammars are compiled into parsers. It does not affect already compiled parsers.
+# To change the behaviour of compiled classes, you have to replace "Forward" by
+# "SimpleForwardRecrusive" or vice versa.
+# Possible Values are:
+# "none" - No left-recursion-handling. May lead to infinite loops while parsing!
+#     (Presentely, not supported, anyway. Use 'simple' instead.)
+# "classic" - Left-recursion check on Forward references. Covers direct and
+#     indirect left recursion but yields wrong parsing results with intervowen
+#     left recursion! (This used to be the only left-recursion algorithm for DHParser
+#     versions < 2.0)
+# "simple" - An algorithm similar to "classic" but simpler and more in the iterative
+#     style of typical seed and grow algorithms in the literature.
+# "forward" - DEPRECATED: Same as "simple",
+# "full" - Full left-recursion-handling.
+# Default value: "Full"
+ALLOWED_PRESET_VALUES['left_recursion'] = frozenset(
+    {'none', 'classic', 'forward', 'simple', 'full',
+     'None', 'classic', 'Forward', 'Simple', 'Full'})
+CONFIG_PRESET['left_recursion'] = "full"
 
 
 ########################################################################
@@ -954,6 +985,7 @@ CONFIG_PRESET['test_suppress_lookahead_failures'] = True
 # Default value: False
 CONFIG_PRESET['test_skip_preprocessor'] = False
 
+
 ########################################################################
 #
 # deprecation warnings
@@ -962,7 +994,7 @@ CONFIG_PRESET['test_skip_preprocessor'] = False
 
 # Determines what happens when functions decorated as deprecated
 # are called. Possible values are:
-# "warn" - print ar warning, the first time the deprecated function
+# "warn" - print a warning, the first time the deprecated function
 #          is called
 # "fail" - raise a DeprecationWarning, the first time the deprecated
 #          function is called

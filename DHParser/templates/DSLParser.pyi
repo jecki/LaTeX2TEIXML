@@ -10,7 +10,8 @@ from DHParser import ALLOWED_PRESET_VALUES
 
 # # change the names of the source and destination stages. Source
 # # ("{NAME}") in this example must be the name of some earlier stage, though.
-# postprocessing: Junction = create_junction(PostProcessing, "{NAME}", "refined")
+# postprocessing: Junction = Junction(
+#     "{NAME}", ThreadLocalSingletonFactory(PostProcessing), "refined")
 #
 # DON'T FORGET TO ADD ALL POSTPROCESSING-JUNCTIONS TO THE GLOBAL
 # "junctions"-set IN SECTION "Processing-Pipeline" BELOW!
@@ -50,7 +51,7 @@ serializations = expand_table(dict([('*', [get_config_value('default_serializati
 #######################################################################
 
 def pipeline(source: str,
-             target: str = "{NAME}",
+             target: Union[str, Set[str]] = "{NAME}",
              start_parser: str = "root_parser__",
              *, cancel_query: Optional[CancelQuery] = None) -> PipelineResult:
     """Runs the source code through the processing pipeline. If
@@ -59,7 +60,10 @@ def pipeline(source: str,
     explanation of the other parameters.
     """
     global targets
-    target_set = set([target]) if target else targets
+    if target:
+        target_set = set([target]) if isinstance(target, str) else target
+    else:
+        target_set = targets
     return full_pipeline(
         source, preprocessing.factory, parsing.factory, junctions, target_set,
         start_parser, cancel_query = cancel_query)
@@ -180,8 +184,15 @@ def main(called_from_app=False) -> bool:
               'because grammar was not found at: ' + grammar_path)
 
     from argparse import ArgumentParser
-    parser = ArgumentParser(description="Parses a {NAME}-file and shows its syntax-tree.")
-    parser.add_argument('files', nargs='*' if called_from_app else '+')
+    a = "an" if "{NAME}"[0:1] in "AEIOUaeiou" else "a"
+    parser = ArgumentParser(description="Parses " + a + " {NAME} file and shows its syntax-tree."
+                            " If several filenames are provided or an output directory is "
+                            "specified with --out, the results will be written to the disk!"
+                            " To directly process content, use a pipe | e.g. "
+                            ' echo "..." | {NAME}Parser.py.')
+    parser.add_argument('files', nargs='*')
+    parser.add_argument('-p', '--parse', nargs=1, default=[],
+                        help='Processes the given snippet directly (instead of a file).')
     parser.add_argument('-d', '--debug', action='store_const', const='debug',
                         help='Write debug information to LOGS subdirectory')
     parser.add_argument('-o', '--out', nargs=1, default=['out'],
@@ -203,6 +214,21 @@ def main(called_from_app=False) -> bool:
 
     args = parser.parse_args()
     file_names, out, log_dir = args.files, args.out[0], ''
+    piped_data = get_piped_data()
+    if piped_data: file_names.insert(0, '\ufeff' + piped_data)
+    if args.parse: file_names.insert(0, '\ufeff' + args.parse[0])
+
+    if not file_names and not called_from_app:
+        print("missing argument: files")
+        sys.exit(1)
+    if len(file_names) > 1:
+        if piped_data:
+            print("Cannot process piped data and snippet or files at the same time!")
+            sys.exit(1)
+        if args.parse:
+            print('Cannot process snippet and files at the same time! '
+                  '(Snippets that contain blanks need to be enclosed in quotes "..."')
+            sys.exit(1)
 
     read_local_config(os.path.join(scriptdir, '{NAME}Config.ini'))
 
@@ -246,7 +272,7 @@ def main(called_from_app=False) -> bool:
     if called_from_app and not file_names:  return False
 
     batch_processing = True
-    if len(file_names) == 1:
+    if len(file_names) <= 1:
         if os.path.isdir(file_names[0]):
             dir_name = file_names[0]
             echo('Processing all files in directory: ' + dir_name)

@@ -1,0 +1,985 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>error &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/error';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for error</h1><div class="highlight"><pre>
+<span></span><span class="c1"># error.py - error handling for DHParser</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2016  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+<span class="sd">"""</span>
+<span class="sd">Module ``error`` defines class Error and a few helpful functions that are</span>
+<span class="sd">needed for error reporting of DHParser. Usually, what is of interest are</span>
+<span class="sd">the string representations of the error objects. For example::</span>
+
+<span class="sd">    from DHParser import compile_source, has_errors</span>
+
+<span class="sd">    result, errors, ast = compile_source(source, preprocessor, grammar,</span>
+<span class="sd">                                         transformer, compiler)</span>
+<span class="sd">    if errors:</span>
+<span class="sd">        for error in errors:</span>
+<span class="sd">            print(error)</span>
+
+<span class="sd">        if has_errors(errors):</span>
+<span class="sd">            print("There have been fatal errors!")</span>
+<span class="sd">            sys.exit(1)</span>
+<span class="sd">        else:</span>
+<span class="sd">            print("There have been warnings, but no errors.")</span>
+
+<span class="sd">The central class of module DHParser.error is the ``Error``-class.</span>
+<span class="sd">The easiest way to create an error object is by instantiating</span>
+<span class="sd">the Error class with an error message and a source position::</span>
+
+<span class="sd">    &gt;&gt;&gt; error = Error('Something went wrong', 123)</span>
+<span class="sd">    &gt;&gt;&gt; print(error)</span>
+<span class="sd">    Error (1000): Something went wrong</span>
+
+<span class="sd">Without a line and column where the error occurred, error-messages are</span>
+<span class="sd">not very useful. In particular, it is required that the line and</span>
+<span class="sd">column-locations are those of the original source-file before any</span>
+<span class="sd">preprocessing (like inserting included files or stripping front-matter</span>
+<span class="sd">or meta-data sections). For this purpose module error also provides</span>
+<span class="sd">"source-mapping" facilities, in particular the types functions</span>
+<span class="sd">:py:func:`add_source_locations`, py:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Callable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.stringview</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">linebreaks</span><span class="p">,</span> <span class="n">line_col</span><span class="p">,</span> <span class="n">is_filename</span><span class="p">,</span> <span class="n">TypeAlias</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'ErrorCode'</span><span class="p">,</span>
+           <span class="s1">'Error'</span><span class="p">,</span>
+           <span class="s1">'is_fatal'</span><span class="p">,</span>
+           <span class="s1">'is_error'</span><span class="p">,</span>
+           <span class="s1">'is_warning'</span><span class="p">,</span>
+           <span class="s1">'error_category'</span><span class="p">,</span>
+           <span class="s1">'has_errors'</span><span class="p">,</span>
+           <span class="s1">'only_errors'</span><span class="p">,</span>
+           <span class="s1">'add_source_locations'</span><span class="p">,</span>
+           <span class="s1">'canonical_error_strings'</span><span class="p">,</span>
+           <span class="s1">'NO_ERROR'</span><span class="p">,</span>
+           <span class="s1">'NOTICE'</span><span class="p">,</span>
+           <span class="s1">'WARNING'</span><span class="p">,</span>
+           <span class="s1">'ERROR'</span><span class="p">,</span>
+           <span class="s1">'FATAL'</span><span class="p">,</span>
+           <span class="s1">'HIGHEST'</span><span class="p">,</span>
+           <span class="s1">'RESUME_NOTICE'</span><span class="p">,</span>
+           <span class="s1">'NAME_SHADOWED_BY_DROP_CLASS_NOTICE'</span><span class="p">,</span>
+           <span class="s1">'REDECLARED_TOKEN_WARNING'</span><span class="p">,</span>
+           <span class="s1">'UNUSED_ERROR_HANDLING_WARNING'</span><span class="p">,</span>
+           <span class="s1">'LEFT_RECURSION_WARNING'</span><span class="p">,</span>
+           <span class="s1">'INFINITE_LOOP_WARNING'</span><span class="p">,</span>
+           <span class="s1">'UNDEFINED_SYMBOL_IN_TRANSTABLE_WARNING'</span><span class="p">,</span>
+           <span class="s1">'CANNOT_VERIFY_TRANSTABLE_WARNING'</span><span class="p">,</span>
+           <span class="s1">'CAPTURE_DROPPED_CONTENT_WARNING'</span><span class="p">,</span>
+           <span class="s1">'ZERO_LENGTH_CAPTURE_POSSIBLE_WARNING'</span><span class="p">,</span>
+           <span class="s1">'OPTIONAL_REDUNDANTLY_NESTED_WARNING'</span><span class="p">,</span>
+           <span class="s1">'UNCONNECTED_SYMBOL_WARNING'</span><span class="p">,</span>
+           <span class="s1">'REDUNDANT_PARSER_WARNING'</span><span class="p">,</span>
+           <span class="s1">'UNUSED_MACRO_ARGUMENTS_WARNING'</span><span class="p">,</span>
+           <span class="s1">'REORDERING_OF_ALTERNATIVES_REQUIRED'</span><span class="p">,</span>
+           <span class="s1">'PARSER_STOPPED_BEFORE_END_WARNING'</span><span class="p">,</span>
+           <span class="s1">'AMBIGUOUS_RANGE_EXPRESSION_WARNING'</span><span class="p">,</span>
+           <span class="s1">'CLASS_NAME_SHADOWS_RULE_NAME_WARNING'</span><span class="p">,</span>
+           <span class="s1">'MANDATORY_CONTINUATION'</span><span class="p">,</span>
+           <span class="s1">'MANDATORY_CONTINUATION_AT_EOF'</span><span class="p">,</span>
+           <span class="s1">'MANDATORY_CONTINUATION_AT_EOF_NON_ROOT'</span><span class="p">,</span>
+           <span class="s1">'CAPTURE_STACK_NOT_EMPTY_NON_ROOT_ONLY'</span><span class="p">,</span>
+           <span class="s1">'AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT'</span><span class="p">,</span>
+           <span class="s1">'ERROR_WHILE_RECOVERING_FROM_ERROR'</span><span class="p">,</span>
+           <span class="s1">'PARSER_NEVER_TOUCHES_DOCUMENT'</span><span class="p">,</span>
+           <span class="s1">'PARSER_NEVER_TOUCHES_DOCUMENT'</span><span class="p">,</span>
+           <span class="s1">'PARSER_LOOKAHEAD_FAILURE_ONLY'</span><span class="p">,</span>
+           <span class="s1">'PARSER_STOPPED_BEFORE_END'</span><span class="p">,</span>
+           <span class="s1">'PARSER_STOPPED_ON_RETRY'</span><span class="p">,</span>
+           <span class="s1">'PARSER_LOOKAHEAD_MATCH_ONLY'</span><span class="p">,</span>
+           <span class="s1">'CUSTOM_PARSER_FAILURE'</span><span class="p">,</span>
+           <span class="s1">'UNDEFINED_SYMBOL'</span><span class="p">,</span>
+           <span class="s1">'WRONG_NUMBER_OF_ARGUMENTS'</span><span class="p">,</span>
+           <span class="s1">'UNKNOWN_MACRO_ARGUMENT'</span><span class="p">,</span>
+           <span class="s1">'UNDEFINED_MACRO'</span><span class="p">,</span>
+           <span class="s1">'RECURSIVE_MACRO_CALL'</span><span class="p">,</span>
+           <span class="s1">'CAPTURE_STACK_NOT_EMPTY'</span><span class="p">,</span>
+           <span class="s1">'CAPTURE_STACK_NOT_EMPTY_WARNING'</span><span class="p">,</span>
+           <span class="s1">'AUTOCAPTURED_SYMBOL_NOT_CLEARED'</span><span class="p">,</span>
+           <span class="s1">'MALFORMED_ERROR_STRING'</span><span class="p">,</span>
+           <span class="s1">'AMBIGUOUS_ERROR_HANDLING'</span><span class="p">,</span>
+           <span class="s1">'REDEFINED_DIRECTIVE'</span><span class="p">,</span>
+           <span class="s1">'UNDEFINED_RETRIEVE'</span><span class="p">,</span>
+           <span class="s1">'DIRECTIVE_FOR_NONEXISTANT_SYMBOL'</span><span class="p">,</span>
+           <span class="s1">'INAPPROPRIATE_SYMBOL_FOR_DIRECTIVE'</span><span class="p">,</span>
+           <span class="s1">'PEG_EXPRESSION_IN_DIRECTIVE_WO_BRACKETS'</span><span class="p">,</span>
+           <span class="s1">'CAPTURE_WITHOUT_PARSERNAME'</span><span class="p">,</span>
+           <span class="s1">'LOOKAHEAD_WITH_OPTIONAL_PARSER'</span><span class="p">,</span>
+           <span class="s1">'BADLY_NESTED_OPTIONAL_PARSER'</span><span class="p">,</span>
+           <span class="s1">'BAD_MANDATORY_SETUP'</span><span class="p">,</span>
+           <span class="s1">'DUPLICATE_PARSERS_IN_ALTERNATIVE'</span><span class="p">,</span>
+           <span class="s1">'SYMBOL_NAME_IS_PYTHON_KEYWORD'</span><span class="p">,</span>
+           <span class="s1">'BAD_ORDER_OF_ALTERNATIVES'</span><span class="p">,</span>
+           <span class="s1">'BAD_REPETITION_COUNT'</span><span class="p">,</span>
+           <span class="s1">'MALFORMED_REGULAR_EXPRESSION'</span><span class="p">,</span>
+           <span class="s1">'EMPTY_GRAMMAR_ERROR'</span><span class="p">,</span>
+           <span class="s1">'STRUCTURAL_ERROR_IN_AST'</span><span class="p">,</span>
+           <span class="s1">'TREE_PROCESSING_CRASH'</span><span class="p">,</span>
+           <span class="s1">'COMPILER_CRASH'</span><span class="p">,</span>
+           <span class="s1">'AST_TRANSFORM_CRASH'</span><span class="p">,</span>
+           <span class="s1">'RECURSION_DEPTH_LIMIT_HIT'</span><span class="p">,</span>
+           <span class="s1">'CANCELED'</span><span class="p">)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1">#  error codes</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="ErrorCode">
+<a class="viewcode-back" href="../Reference.html#error.ErrorCode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ErrorCode</span><span class="p">(</span><span class="nb">int</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<span class="c1"># error levels</span>
+
+<span class="n">NO_ERROR</span> <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">NOTICE</span>   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">WARNING</span>  <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">ERROR</span>    <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">FATAL</span>    <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">HIGHEST</span>  <span class="o">=</span> <span class="n">FATAL</span>
+
+<span class="c1"># notice codes</span>
+
+<span class="n">RESUME_NOTICE</span>                            <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">NAME_SHADOWED_BY_DROP_CLASS_NOTICE</span>       <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">55</span><span class="p">)</span>
+
+<span class="c1"># warning codes</span>
+
+<span class="n">REDECLARED_TOKEN_WARNING</span>                 <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">UNUSED_ERROR_HANDLING_WARNING</span>            <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">130</span><span class="p">)</span>
+<span class="n">LEFT_RECURSION_WARNING</span>                   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>  <span class="c1"># obsolete!</span>
+<span class="n">INFINITE_LOOP_WARNING</span>                    <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+
+<span class="n">UNDEFINED_SYMBOL_IN_TRANSTABLE_WARNING</span>   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">610</span><span class="p">)</span>
+<span class="n">CANNOT_VERIFY_TRANSTABLE_WARNING</span>         <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">620</span><span class="p">)</span>
+<span class="n">CAPTURE_DROPPED_CONTENT_WARNING</span>          <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">630</span><span class="p">)</span>
+<span class="n">CAPTURE_STACK_NOT_EMPTY_WARNING</span>          <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">640</span><span class="p">)</span>
+<span class="n">ZERO_LENGTH_CAPTURE_POSSIBLE_WARNING</span>     <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">650</span><span class="p">)</span>
+<span class="n">OPTIONAL_REDUNDANTLY_NESTED_WARNING</span>      <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">660</span><span class="p">)</span>
+<span class="n">UNCONNECTED_SYMBOL_WARNING</span>               <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">670</span><span class="p">)</span>
+<span class="n">REDUNDANT_PARSER_WARNING</span>                 <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">680</span><span class="p">)</span>
+<span class="n">UNUSED_MACRO_ARGUMENTS_WARNING</span>           <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">690</span><span class="p">)</span>
+
+<span class="n">REORDERING_OF_ALTERNATIVES_REQUIRED</span>      <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">710</span><span class="p">)</span>
+<span class="n">PARSER_STOPPED_BEFORE_END_WARNING</span>        <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">720</span><span class="p">)</span>
+<span class="n">AMBIGUOUS_RANGE_EXPRESSION_WARNING</span>       <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">730</span><span class="p">)</span>
+<span class="n">CLASS_NAME_SHADOWS_RULE_NAME_WARNING</span>     <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">740</span><span class="p">)</span>
+
+<span class="c1"># error codes</span>
+
+<span class="n">MANDATORY_CONTINUATION</span>                   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1010</span><span class="p">)</span>
+<span class="n">MANDATORY_CONTINUATION_AT_EOF</span>            <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1015</span><span class="p">)</span>
+<span class="n">MANDATORY_CONTINUATION_AT_EOF_NON_ROOT</span>   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1017</span><span class="p">)</span>
+<span class="n">PARSER_NEVER_TOUCHES_DOCUMENT</span>            <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1020</span><span class="p">)</span>
+<span class="n">PARSER_LOOKAHEAD_FAILURE_ONLY</span>            <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1030</span><span class="p">)</span>
+<span class="n">PARSER_STOPPED_BEFORE_END</span>                <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1040</span><span class="p">)</span>
+<span class="n">PARSER_STOPPED_ON_RETRY</span>                  <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1042</span><span class="p">)</span>
+<span class="n">PARSER_LOOKAHEAD_MATCH_ONLY</span>              <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1045</span><span class="p">)</span>
+<span class="n">CAPTURE_STACK_NOT_EMPTY</span>                  <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1050</span><span class="p">)</span>
+<span class="n">CAPTURE_STACK_NOT_EMPTY_NON_ROOT_ONLY</span>    <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1052</span><span class="p">)</span>
+<span class="n">AUTOCAPTURED_SYMBOL_NOT_CLEARED</span>          <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1055</span><span class="p">)</span>
+<span class="n">AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT</span> <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1057</span><span class="p">)</span>
+<span class="n">MALFORMED_ERROR_STRING</span>                   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1060</span><span class="p">)</span>
+<span class="n">AMBIGUOUS_ERROR_HANDLING</span>                 <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1070</span><span class="p">)</span>
+<span class="n">REDEFINED_DIRECTIVE</span>                      <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1080</span><span class="p">)</span>
+<span class="n">UNDEFINED_RETRIEVE</span>                       <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1090</span><span class="p">)</span>
+<span class="n">DIRECTIVE_FOR_NONEXISTANT_SYMBOL</span>         <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1100</span><span class="p">)</span>
+<span class="n">INAPPROPRIATE_SYMBOL_FOR_DIRECTIVE</span>       <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1110</span><span class="p">)</span>
+<span class="n">PEG_EXPRESSION_IN_DIRECTIVE_WO_BRACKETS</span>  <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1120</span><span class="p">)</span>
+<span class="n">CUSTOM_PARSER_FAILURE</span>                    <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1130</span><span class="p">)</span>
+<span class="n">UNDEFINED_SYMBOL</span>                         <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1140</span><span class="p">)</span>
+<span class="n">WRONG_NUMBER_OF_ARGUMENTS</span>                <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1160</span><span class="p">)</span>
+<span class="n">UNKNOWN_MACRO_ARGUMENT</span>                   <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1170</span><span class="p">)</span>
+<span class="n">UNDEFINED_MACRO</span>                          <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1180</span><span class="p">)</span>
+<span class="n">RECURSIVE_MACRO_CALL</span>                     <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1190</span><span class="p">)</span>
+
+<span class="n">ERROR_WHILE_RECOVERING_FROM_ERROR</span>        <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1301</span><span class="p">)</span>
+
+<span class="c1"># EBNF-specific and static analysis errors</span>
+
+<span class="n">CAPTURE_WITHOUT_PARSERNAME</span>               <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1510</span><span class="p">)</span>
+<span class="n">LOOKAHEAD_WITH_OPTIONAL_PARSER</span>           <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1520</span><span class="p">)</span>
+<span class="n">BADLY_NESTED_OPTIONAL_PARSER</span>             <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1530</span><span class="p">)</span>
+<span class="n">BAD_MANDATORY_SETUP</span>                      <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1550</span><span class="p">)</span>
+<span class="n">SYMBOL_NAME_IS_PYTHON_KEYWORD</span>            <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1555</span><span class="p">)</span>
+<span class="n">DUPLICATE_PARSERS_IN_ALTERNATIVE</span>         <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1560</span><span class="p">)</span>
+<span class="n">BAD_ORDER_OF_ALTERNATIVES</span>                <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1570</span><span class="p">)</span>
+<span class="n">BAD_REPETITION_COUNT</span>                     <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1580</span><span class="p">)</span>
+<span class="n">MALFORMED_REGULAR_EXPRESSION</span>             <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1585</span><span class="p">)</span>
+<span class="n">EMPTY_GRAMMAR_ERROR</span>                      <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1590</span><span class="p">)</span>
+
+<span class="c1"># Other Errors</span>
+
+<span class="n">PYTHON_ERROR_IN_TEST</span>                     <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">1710</span><span class="p">)</span>
+
+<span class="c1"># fatal errors</span>
+
+<span class="n">TREE_PROCESSING_CRASH</span>                    <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10100</span><span class="p">)</span>
+<span class="n">COMPILER_CRASH</span>                           <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10200</span><span class="p">)</span>
+<span class="n">AST_TRANSFORM_CRASH</span>                      <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10300</span><span class="p">)</span>
+<span class="n">RECURSION_DEPTH_LIMIT_HIT</span>                <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10400</span><span class="p">)</span>
+<span class="n">STRUCTURAL_ERROR_IN_AST</span>                  <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10500</span><span class="p">)</span>
+<span class="n">CANCELED</span>                                 <span class="o">=</span> <span class="n">ErrorCode</span><span class="p">(</span><span class="mi">10600</span><span class="p">)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1">#  class Error</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="Error">
+<a class="viewcode-back" href="../Reference.html#error.Error">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Error</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The Error class encapsulates the all information for a single</span>
+<span class="sd">    error.</span>
+
+<span class="sd">    :ivar message:  the error message as text string</span>
+<span class="sd">    :ivar pos:  the position where the error occurred in the preprocessed text</span>
+<span class="sd">    :ivar code:  the error-code, which also indicates the severity of the</span>
+<span class="sd">        error::</span>
+
+<span class="sd">               ========= ===========</span>
+<span class="sd">               code      severity</span>
+<span class="sd">               ========= ===========</span>
+<span class="sd">               0         no error</span>
+<span class="sd">               &lt; 100     notice</span>
+<span class="sd">               &lt; 1000    warning</span>
+<span class="sd">               &lt; 10000   error</span>
+<span class="sd">               &gt;= 10000  fatal error</span>
+<span class="sd">               ========= ===========</span>
+
+<span class="sd">        In cas of a fatal error (error code &gt;= 10000), no further compilation</span>
+<span class="sd">        stages will be processed, because it is assumed that the syntax tree</span>
+<span class="sd">        is too distorted for further processing.</span>
+
+<span class="sd">    :ivar orig_pos:  the position of the error in the original source file,</span>
+<span class="sd">        not in the preprocessed document. This is a write-once value!</span>
+<span class="sd">    :ivar orig_doc:  the name or path or url of the original source file to</span>
+<span class="sd">        which ``orig_pos`` is related. This is relevant, if the preprocessed</span>
+<span class="sd">        document has been plugged together from several source files.</span>
+<span class="sd">    :ivar line:  the line number where the error occurred in the original text.</span>
+<span class="sd">        Lines are counted from 1 onward.</span>
+<span class="sd">    :ivar column:  the column where the error occurred in the original text.</span>
+<span class="sd">        Columns are counted from 1 onward.</span>
+<span class="sd">    :ivar length:  the length in characters of the faulty passage (default is 1)</span>
+<span class="sd">    :ivar end_line:  the line number of the position after the last character</span>
+<span class="sd">        covered by the error in the original source.</span>
+<span class="sd">    :ivar end_column:  the column number of the position after the last character</span>
+<span class="sd">        covered by the error in the original source.</span>
+<span class="sd">    :ivar related: a sequence of related errors.</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'message'</span><span class="p">,</span> <span class="s1">'code'</span><span class="p">,</span> <span class="s1">'_pos'</span><span class="p">,</span> <span class="s1">'line'</span><span class="p">,</span> <span class="s1">'column'</span><span class="p">,</span> <span class="s1">'length'</span><span class="p">,</span>
+                 <span class="s1">'end_line'</span><span class="p">,</span> <span class="s1">'end_column'</span><span class="p">,</span> <span class="s1">'related'</span><span class="p">,</span> <span class="s1">'orig_pos'</span><span class="p">,</span> <span class="s1">'orig_doc'</span><span class="p">,</span>
+                 <span class="s1">'relatedUri'</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">,</span>
+                 <span class="n">line</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s1">'Error'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+                 <span class="n">orig_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">orig_doc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">ErrorCode</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">ErrorCode</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">code</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>    <span class="c1"># type: str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="n">pos</span>           <span class="c1"># type: int</span>
+        <span class="c1"># Add some logic to avoid double assignment of the same error code?</span>
+        <span class="c1"># Problem: Same code might legitimately be used by two different parsers/compilers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>          <span class="c1"># type: ErrorCode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_pos</span> <span class="o">=</span> <span class="n">orig_pos</span>  <span class="c1"># type: int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_doc</span> <span class="o">=</span> <span class="n">orig_doc</span>  <span class="c1"># type: str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">line</span>          <span class="c1"># type: int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">column</span>      <span class="c1"># type: int</span>
+        <span class="c1"># support for Language Server Protocol Diagnostics</span>
+        <span class="c1"># see: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">length</span>      <span class="c1"># type: int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_line</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>        <span class="c1"># type: int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_column</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># type: int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">related</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">related</span><span class="p">)</span>   <span class="c1"># type: Sequence['Error']</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""A hack to support recognition of duplicate error messages when using</span>
+<span class="sd">        produced as articaft by the seed and grow algorithm that catches</span>
+<span class="sd">        left-recursion in the parser. See :py:meth:`~parse.Forward.__call__`."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">RESUME_NOTICE</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'with '</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">msg</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c1"># return self._normalize_msg(self.message) == self._normalize_msg(other.message) \</span>
+        <span class="c1">#     and self.code == other.code \</span>
+        <span class="c1">#     and self._pos == other._pos  # and self.length == other.length</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">code</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_pos</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">))</span>
+        <span class="c1"># return hash((self._normalize_msg(self.message), self.code, self._pos))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_doc</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_doc</span> <span class="o">!=</span> <span class="s1">'UNKNOWN_FILE'</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_doc</span> <span class="o">+</span> <span class="s1">':'</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="n">prefix</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># prefix += "%i:%i: " % (max(self.line, 0), max(self.column, 0))</span>
+            <span class="n">prefix</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">: "</span>
+        <span class="c1"># return prefix + "%s (%i): %s" % (self.severity, self.code, self.message)</span>
+        <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">severity</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'Error("</span><span class="si">%s</span><span class="s1">", </span><span class="si">%s</span><span class="s1">, </span><span class="si">%i</span><span class="s1">, </span><span class="si">%i</span><span class="s1">, </span><span class="si">%i</span><span class="s1">, </span><span class="si">%i</span><span class="s1">)'</span> \
+               <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span>
+
+    <span class="nd">@pos</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># reset line and column values, because they might now not be valid anymore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_column</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">severity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns a string representation of the error level, e.g. "warning"."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">&lt;</span> <span class="n">WARNING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"Notice"</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">&lt;</span> <span class="n">ERROR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"Warning"</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">&lt;</span> <span class="n">FATAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"Error"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"Fatal"</span>
+
+<div class="viewcode-block" id="Error.visualize">
+<a class="viewcode-back" href="../Reference.html#error.Error.visualize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Shows the line of the document and the position where the error</span>
+<span class="sd">        occurred."""</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">document</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'^</span><span class="se">\n</span><span class="s1">'</span></div>
+
+
+<div class="viewcode-block" id="Error.signature">
+<a class="viewcode-back" href="../Reference.html#error.Error.signature">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">signature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns a signature to quickly check the equality of errors"""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">&lt;&lt;</span> <span class="mi">32</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s1">'big'</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Error.range_obj">
+<a class="viewcode-back" href="../Reference.html#error.Error.range_obj">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">range_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns the range (position plus length) of the error as an LSP-Range-Object.</span>
+<span class="sd">        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#range</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_line</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_column</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'start'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'line'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'character'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">-</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="s1">'end'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'line'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_line</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'character'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_column</span> <span class="o">-</span> <span class="mi">1</span><span class="p">}}</span></div>
+
+
+<div class="viewcode-block" id="Error.diagnostic_obj">
+<a class="viewcode-back" href="../Reference.html#error.Error.diagnostic_obj">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diagnostic_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns the Error as Language Server Protocol Diagnostic object.</span>
+<span class="sd">        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic</span>
+<span class="sd">        """</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">relatedObj</span><span class="p">(</span><span class="n">relatedError</span><span class="p">:</span> <span class="s1">'Error'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="n">relatedError</span><span class="o">.</span><span class="n">orig_doc</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">'location'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'uri'</span><span class="p">:</span> <span class="n">uri</span><span class="p">,</span> <span class="s1">'range'</span><span class="p">:</span> <span class="n">relatedError</span><span class="o">.</span><span class="n">range_obj</span><span class="p">()},</span>
+                <span class="s1">'message'</span><span class="p">:</span> <span class="n">relatedError</span><span class="o">.</span><span class="n">message</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">&lt;</span> <span class="n">WARNING</span><span class="p">:</span>
+            <span class="n">severity</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">&lt;</span> <span class="n">ERROR</span><span class="p">:</span>
+            <span class="n">severity</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">severity</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">diagnostic</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'range'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_obj</span><span class="p">(),</span>
+            <span class="s1">'severity'</span><span class="p">:</span> <span class="n">severity</span><span class="p">,</span>
+            <span class="s1">'code'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+            <span class="s1">'source'</span><span class="p">:</span> <span class="s1">'DHParser'</span><span class="p">,</span>
+            <span class="s1">'message'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+            <span class="c1"># 'tags': []</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">related</span><span class="p">:</span>
+            <span class="n">diagnostic</span><span class="p">[</span><span class="s1">'relatedInformation'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">relatedObj</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">related</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">diagnostic</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="is_warning">
+<a class="viewcode-back" href="../Reference.html#error.is_warning">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_warning</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Error</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns True, if error is merely a warning or a message."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">Error</span><span class="p">):</span>  <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">code</span>
+    <span class="k">return</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="n">ERROR</span></div>
+
+
+
+<div class="viewcode-block" id="is_error">
+<a class="viewcode-back" href="../Reference.html#error.is_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_error</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Error</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns True, if error is a (fatal) error, not just a warning."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">Error</span><span class="p">):</span>  <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">code</span>
+    <span class="k">return</span> <span class="n">code</span> <span class="o">&gt;=</span> <span class="n">ERROR</span></div>
+
+
+
+<div class="viewcode-block" id="is_fatal">
+<a class="viewcode-back" href="../Reference.html#error.is_fatal">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_fatal</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Error</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns True, ir error is fatal. Fatal errors are typically raised</span>
+<span class="sd">    when a crash (i.e. Python exception) occurs at later stages of the</span>
+<span class="sd">    processing pipeline (e.g. ast transformation, compiling). """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">Error</span><span class="p">):</span>  <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">code</span>
+    <span class="k">return</span> <span class="n">code</span> <span class="o">&gt;=</span> <span class="n">FATAL</span></div>
+
+
+
+<div class="viewcode-block" id="error_category">
+<a class="viewcode-back" href="../Reference.html#error.error_category">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">error_category</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Error</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns the category of the error, which is one of "no errors",</span>
+<span class="sd">    "notices", "warnings", "errors", "fatal errors"."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">Error</span><span class="p">):</span>  <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">code</span>
+    <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="n">NOTICE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"no errors"</span>
+    <span class="k">elif</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="n">WARNING</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"notices"</span>
+    <span class="k">elif</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="n">ERROR</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"warnings"</span>
+    <span class="k">elif</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="n">FATAL</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"errors"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"fatal errors"</span></div>
+
+
+
+<div class="viewcode-block" id="has_errors">
+<a class="viewcode-back" href="../Reference.html#error.has_errors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">has_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Error</span><span class="p">],</span> <span class="n">level</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns True, if at least one entry in ``messages`` has at</span>
+<span class="sd">    least the given error ``level``.</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">err_obj</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">err_obj</span><span class="o">.</span><span class="n">code</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="only_errors">
+<a class="viewcode-back" href="../Reference.html#error.only_errors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">only_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Error</span><span class="p">],</span> <span class="n">level</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Error</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns an Iterator that yields only those messages that have</span>
+<span class="sd">    at least the given error level.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">err</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">messages</span> <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span> <span class="o">&gt;=</span> <span class="n">level</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># support for canonical representation, i.e.</span>
+<span class="c1"># filename:line:column:severity (code):error string</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<span class="c1"># See preprocess.py for the real definitions of SourceLocation and</span>
+<span class="c1"># SourceMapFunc! The alias-definitions only serve to avoid a mutual</span>
+<span class="c1"># import-dependency between preprocess.py and error.py</span>
+<span class="n">SourceLocationAlias</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">'SourceLocationAlias'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'original_name'</span><span class="p">,</span> <span class="s1">'original_text'</span><span class="p">,</span> <span class="s1">'pos'</span><span class="p">],</span> <span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">SourceMapFuncAlias</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">SourceLocationAlias</span><span class="p">],</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="add_source_locations">
+<a class="viewcode-back" href="../Reference.html#error.add_source_locations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_source_locations</span><span class="p">(</span><span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">],</span> <span class="n">source_mapping</span><span class="p">:</span> <span class="n">SourceMapFuncAlias</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Adds (or adjusts) line and column numbers of error messages inplace.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        errors:  The list of errors as returned by the method</span>
+<span class="sd">            ``errors()`` of a Node object</span>
+<span class="sd">        source_mapping:  A function that maps error positions to their</span>
+<span class="sd">            positions in the original source file.</span>
+<span class="sd">    """</span>
+    <span class="n">lb_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Illegal error position: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">pos</span><span class="si">}</span><span class="s1"> Must be &gt;= 0!'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># do not overwrite orig_pos if already set</span>
+            <span class="n">err</span><span class="o">.</span><span class="n">orig_doc</span><span class="p">,</span> <span class="n">orig_text</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_pos</span> <span class="o">=</span> <span class="n">source_mapping</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+            <span class="n">lbreaks</span> <span class="o">=</span> <span class="n">lb_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">orig_text</span><span class="p">,</span> <span class="n">linebreaks</span><span class="p">(</span><span class="n">orig_text</span><span class="p">))</span>
+            <span class="n">err</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">lbreaks</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_pos</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_pos</span> <span class="o">+</span> <span class="n">err</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="n">lbreaks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">err</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">lbreaks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_pos</span>  <span class="c1"># err.length should not exceed text length</span>
+            <span class="n">err</span><span class="o">.</span><span class="n">end_line</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">end_column</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">lbreaks</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_pos</span> <span class="o">+</span> <span class="n">err</span><span class="o">.</span><span class="n">length</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="canonical_error_strings">
+<a class="viewcode-back" href="../Reference.html#error.canonical_error_strings">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">canonical_error_strings</span><span class="p">(</span><span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Returns the list of error strings in canonical form that can be parsed by most</span>
+<span class="sd">    editors, i.e. "relative filepath : line : column : severity (code) : error string"</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">error_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="n">source_file_name</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">orig_doc</span>
+            <span class="k">if</span> <span class="n">source_file_name</span> <span class="ow">and</span> <span class="n">is_filename</span><span class="p">(</span><span class="n">source_file_name</span><span class="p">):</span>
+                <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">source_file_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cwd</span><span class="p">):</span>
+                    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">source_file_name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cwd</span><span class="p">):]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">source_file_name</span>
+                <span class="n">err_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="n">err_str</span> <span class="o">=</span> <span class="n">err_str</span><span class="p">[</span><span class="n">err_str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">':'</span><span class="p">):]</span>
+                <span class="n">error_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel_path</span> <span class="o">+</span> <span class="n">err_str</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">error_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error_strings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">error_strings</span></div>
+
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

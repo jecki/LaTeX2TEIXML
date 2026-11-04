@@ -1,0 +1,2730 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Testing &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manuals/06_testing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reference" href="../Reference.html" />
+    <link rel="prev" title="Post-Processing" href="05_postprocessing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/manuals/06_testing.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Testing</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-grammar-tests">Writing grammar-tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-grammar-tests">Running grammar-tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-test-runner-script">The test-runner-script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#test-reports">Test-reports</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging failed tests</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-workflows">Development-Workflows</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#top-down-grammar-development">Top-Down-Grammar-Development</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bottom-up-grammar-development">Bottom-Up-Grammar-Development</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linking-both-approaches">Linking both approaches</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#final-remarks">Final remarks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monitoring-ast-creation">Monitoring AST-creation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-tree-structure-directly">Testing the tree-structure directly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-string-content-of-a-tree">Testing the string-content of a tree</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-processing-pipeline">Testing the processing-pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preparing-tests-for-a-processing-stage">Preparing tests for a processing-stage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-tests-for-a-processing-stage">Writing tests for a processing-stage</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conventional-unit-testing">Conventional Unit-Testing</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="testing">
+<span id="id1"></span><h1>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h1>
+<p>DHParser provides a powerful unit-testing framework that allows testing
+individual components of a grammar separately through all stages of the
+<a class="reference internal" href="05_postprocessing.html#processing-pipelines"><span class="std std-ref">processing pipeline</span></a>. DHParser’s
+unit-testing framework allows to:</p>
+<ul class="simple">
+<li><p>break down the complicated process of writing a grammar into
+relatively simpler tasks of designing grammar-components each
+of which can be tested individually</p></li>
+<li><p>turn writing and refactoring grammars into controlled and
+manageable process. In fact, without unit-testing, refactoring
+of grammars is hardly feasible at all.</p></li>
+<li><p>extend a grammar incrementally without breaking existing code.</p></li>
+<li><p>check the syntax-tree-construction as well as all subsequent
+transformations (as long as their result is serializable).</p></li>
+</ul>
+<p>Because writing grammars can be difficult, refactoring and testing of
+grammars is crucial for the success of a project. Also, one and the same
+formal language can be described by different grammars. (Here, two formal
+languages are considered equal if the set of grammatically correct sentences
+is the same.) The grammar used influences the shape of the syntax-tree that
+the parser yields. Therefore, it is quite common to rewrite a grammar or
+parts of it more than once during the course of developing a formal notation.
+For example, in the first iteration one tries to find a grammar that matches
+the given or intended notation. In the second iteration, the grammar is
+refined to yield a well-shaped syntax-tree to make further processing easier.
+Unit-tests help to safeguard this process against breaking earlier changes by
+later changes.</p>
+<section id="writing-grammar-tests">
+<h2>Writing grammar-tests<a class="headerlink" href="#writing-grammar-tests" title="Link to this heading">#</a></h2>
+<p>The canonical way to write grammar-tests in a DHParser-projects is by
+writing them into a file with a name that matches the the glob-pattern
+<code class="docutils literal notranslate"><span class="pre">*_test_*.ini</span></code>. Tests can then simply be executed by running the
+<code class="docutils literal notranslate"><span class="pre">tst_..._grammar.py</span></code>-script that has been generated by the
+dhparser-command (see <a class="reference internal" href="../Overview.html#full-scale-dsls"><span class="std std-ref">Full scale DSLs</span></a>). The format of these files
+strongly resembles that of common config-files. Here is a test for the
+outline-parser example from the overview (<a class="reference internal" href="../Overview.html#macros"><span class="std std-ref">Macros</span></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"""# Main Heading</span>
+<span class="s2">    ## Section 1</span>
+<span class="s2">    ### SubSection 1.1</span>
+<span class="s2">    ### SubSection 1.2</span>
+<span class="s2">    ## Section 2"""</span>
+
+<span class="p">[</span><span class="n">fail</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">F1</span><span class="p">:</span> <span class="s2">"""# Main Heading</span>
+<span class="s2">    ## Section 1</span>
+<span class="s2">    #### SubSubSection 1.1.1  BADLY NESTED!!!</span>
+<span class="s2">    ### SubSection 1.2</span>
+<span class="s2">    ## Section 2"""</span>
+</pre></div>
+</div>
+<p>Test-files (“.ini”-Files) are separated into sections by headings that
+are enclosed in square-brackets, i.e. <code class="docutils literal notranslate"><span class="pre">[</span></code> and <code class="docutils literal notranslate"><span class="pre">]</span></code>. The heading’s
+name consists of two parts, separated by a colon <code class="docutils literal notranslate"><span class="pre">:</span></code>. The first part
+indicates the kind of the tests that are specified under the heading.
+The second part is the name of the parser that will be called with these
+tests as input. Thus, the heading “[match:document]” means that the
+following tests will be fed to the parser “document” and the parser
+is expected to match. The following heading “[fail:document]” introduces
+tests, where the parser “document” is expected to fail, i.e. the test is
+successful if the parser does not match the snipped fed to the parser.</p>
+<p>The tests themselves are specified by a name followed by a colon <code class="docutils literal notranslate"><span class="pre">:</span></code>
+followed by a single-line or multiline-string which line Python-strings
+can be enclosed in single or triple single-quotation-marks <code class="docutils literal notranslate"><span class="pre">'</span></code> or
+double quotation-marks <code class="docutils literal notranslate"><span class="pre">&quot;</span></code>. <em>Multi-line-strings must always be
+indented by four spaces for all lines except the first line!</em> (The
+indentation will automatically be removed before running the test.)</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The names for fail-tests must differ from the names of
+match-tests! One way to do so is to mark the test with a special
+letter like “M” for match-test and “F” for fail-tests, respectively.
+E.G.: “M1”, “M2”, “M3”, … and “F1”, “F2”, “F3”, …</p>
+</div>
+</section>
+<section id="running-grammar-tests">
+<h2>Running grammar-tests<a class="headerlink" href="#running-grammar-tests" title="Link to this heading">#</a></h2>
+<section id="the-test-runner-script">
+<h3>The test-runner-script<a class="headerlink" href="#the-test-runner-script" title="Link to this heading">#</a></h3>
+<p>Grammar tests can be run either by calling the (auto-generated)
+test-grammar script with the filename of the test-file as argument.
+Alternatively, the script can be run without any arguments, in which
+case it will look for a “test_grammar” folder inside the
+current-directory and then run all test-files in this directory, where
+any file is considered a test-file the name of which matches the
+glob-pattern <code class="docutils literal notranslate"><span class="pre">*_test_*.ini</span></code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is a good idea to add the DHParser-project’s
+<code class="docutils literal notranslate"><span class="pre">tst_..._grammar.py</span></code>-script to the executable tools
+of your Python-IDE. Then it suffices to simply point to
+the test in the IDE’s file-manager and pick the tool
+from the menu to run a particular test.</p>
+<p>This works pretty well with PyCharm, but is also possible with most
+other integrated development environments or code-editors.</p>
+</div>
+<p>From the command-line grammar-tests can be run with a call like this one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tst_outline_grammar.py
+</pre></div>
+</div>
+<p>to run all tests from the “tests_grammar”-subdirectory that are
+contained in test-files the filename of which matches the
+test-filename-pattern <code class="docutils literal notranslate"><span class="pre">*_test_*.ini</span></code>, or, in order to run just the
+tests from a single test-file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tst_outline_grammar.py tests_grammar/03_test_Outline.ini
+</pre></div>
+</div>
+<p>In the above examples the project name is “outline”, thus the middle
+part of the test-script name “_outline_”. In other project the name
+of the autogenerated test-script might be different.</p>
+<p>When calling the script with a single file-name as argument, it is
+not necessary that the file-name matches the test-filename-pattern.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tst_outline_grammar.py tests_grammar/Playground.ini
+</pre></div>
+</div>
+<p>works just as well as long as the file “tests_grammar/Playground.ini”
+exists, even though its name does not match the test-file-name-pattern
+and will, therefore, be overlooked, if the script is called without any
+arguments. This can be quite useful, if you want to experiment with
+tests that you might not (yet) want to add to your regular test-suite.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is a good idea to add the DHParser-project’s
+<code class="docutils literal notranslate"><span class="pre">tst_..._grammar.py</span></code>-script to the executable tools
+of your Python-IDE. Then it suffices to simply point to
+the test in the IDE’s file-manager and pick the tool
+from the menu to run a particular test.</p>
+<p>This works pretty well with PyCharm, but is also possible with most
+other integrated development environments or code-editors.</p>
+</div>
+</section>
+<section id="test-reports">
+<h3>Test-reports<a class="headerlink" href="#test-reports" title="Link to this heading">#</a></h3>
+<p>After the test has been run, the results can be found in the
+“REPORT”-subdirectory of the tests-directory. For each test-file that has been
+executed the REPORT-subdirectory contains a Markdown-file with the detailed
+results.</p>
+<p>Failures and successes as such will also directly be reported in the
+terminal-output of the command. If all tests have been successful, the
+last line of the terminal-output reads: “SUCCESS! All tests passed :-)”.
+If one or more failures occurred, the number of failed tests will be
+reported.</p>
+<p>The test-code for each test will be repeated in the report-file,
+followed by the abstract-syntax-tree (AST) that the code generated in the case
+of (successful) match-tests or the error-messages in case of successful
+fail-tests. This information is not only helpful for testing purposes,
+but also for the implementation of further processing stages which rely
+on the shape of the abstract syntax-tree.</p>
+<p>In our example of the outline-parser tests,
+an excerpt from the report file might look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Match-test "M3"
+----------------
+
+### Test-code:
+
+  # Main Heading
+  ## Section 1
+  ### SubSection 1.1
+  ### SubSection 1.2
+  ## Section 2
+
+### AST
+
+  (document
+    (main
+      (heading "Main Heading")
+      (section
+        (heading "Section 1")
+        (subsection
+          (heading "SubSection 1.1"))
+        (subsection
+          (heading "SubSection 1.2")))
+      (section
+        (heading "Section 2"))))
+
+...
+
+Fail-test "F2"
+---------------
+
+### Test-code:
+    # Main Heading
+    ## Section 1
+    #### BADLY NESTED SubSubSection 1.1.1
+    ### SubSection 1.2
+    ## Section 2
+
+### Messages:
+
+3:1: Error (1010): 'EOF' expected by parser 'document', but »#### BADLY...« found instead!
+3:4: Error (1040): Parser "document" stopped before end, at: »# BADLY NE...« Terminating parser.
+</pre></div>
+</div>
+<p>You might expect that a test-report of the parser would show the
+concrete-syntax-tree (CST) rather than the AST. However, the CST can be
+quite verbose depending on how far it is curbed or not curbed in the
+grammar definition, already (see <a class="reference internal" href="01_EBNF-grammars.html#simplifying-syntax-trees"><span class="std std-ref">Simplifying Syntax-Trees while Parsing</span></a>) and
+is usually less informative than the AST. Typically, you’ll want to
+see it only in very particular cases and only when debugging the
+AST-generation. For this purpose, DHParser’s testing-framework allows
+to quickly turn the additional output of the CST in the test-report
+on and off by simply placing an asterisk <code class="docutils literal notranslate"><span class="pre">*</span></code> after the test name
+of any match test or removing it after the debugging has been done.
+If for example, your test’s name is “M1” you’d simply write <code class="docutils literal notranslate"><span class="pre">M!*:</span>
+<span class="pre">...`</span></code> in the test-input-file with the “.ini”-ending.</p>
+<p>In case a test fails, the error-messages will appear in the report-file.
+DHParser will still attempt to produce an abstract-syntax-tree (AST)
+and, potentially, the results of further processing stages. But these
+will not necessarily represent any reasonable structures. Typically, for
+example, the AST will contain nodes named “ZOMBIE__” which either
+capture passages of the source could which could not be parsed properly,
+due to the failure or, if empty, have been added as an anchor for
+error-messages.</p>
+</section>
+<section id="debugging-failed-tests">
+<h3>Debugging failed tests<a class="headerlink" href="#debugging-failed-tests" title="Link to this heading">#</a></h3>
+<p>More important is the fact that for each failed test an HTML-log will be
+produced in the “LOGS”-subdirectory which resides on the same level as the
+“REPORT”-subdirectory. (If this directory does not exist it will be
+created the nest time a test fails. Like the REPORT-directory it can
+safely be deleted, because it will always be recreated and populated
+anew during the next test-run.) The HTML-log contains a detailed log of
+the parsing process. This can be seen as a post-mortem debugger for
+parsing that helps to find the cause of the failure of the test. The
+most frequent causes for test-failures are 1) EBNF-coding-errors, i.e.
+some part of the EBNF-encoded grammar does not capture or reject a piece
+of the source text that it was expected to capture or reject, or 2) the
+grammar does not yet encode certain constructs of the formal
+target-language and needs to be extended. Here is an excerpt of the
+test-log of a failed test from a converter for
+Typescript-type-definitions which does not yet know the
+“extends”-keyword and therefore fails a particular unit-test:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>L</p></th>
+<th class="head"><p>C</p></th>
+<th class="head"><p>parser call sequence</p></th>
+<th class="head"><p>success</p></th>
+<th class="head"><p>text matched or failed</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>type_alias-&gt;`export`</p></td>
+<td><p>DROP</p></td>
+<td><p>export type Exact&lt;T extends { [key: stri…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>8</p></td>
+<td><p>type_alias-&gt;`type`</p></td>
+<td><p>DROP</p></td>
+<td><p>type Exact&lt;T extends { [key: string]: un…</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>13</p></td>
+<td><p>type_alias-&gt;identifier-&gt;!`true`</p></td>
+<td><p>!FAIL</p></td>
+<td><p>Exact&lt;T extends { [key: string]: unk …</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>13</p></td>
+<td><p>type_alias-&gt;identifier-&gt;!`false`</p></td>
+<td><p>!FAIL</p></td>
+<td><p>Exact&lt;T extends { [key: string]: unk …</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>13</p></td>
+<td><p>type_alias-&gt;identifier-&gt;_part</p></td>
+<td><p>MATCH</p></td>
+<td><p>Exact&lt;T extends { [key: string]: unknown…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>18</p></td>
+<td><p>type_alias-&gt;identifier-&gt;`.`</p></td>
+<td><p>FAIL</p></td>
+<td><p>&lt;T extends { [key: string]: unknown …</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>13</p></td>
+<td><p>type_alias-&gt;identifier</p></td>
+<td><p>MATCH</p></td>
+<td><p>Exact&lt;T extends { [key: string]: unknown…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>18</p></td>
+<td><p>type_alias-&gt;type_parameters-&gt;`&lt;`</p></td>
+<td><p>DROP</p></td>
+<td><p>&lt;T extends { [key: string]: unknown }…</p></td>
+</tr>
+<tr class="row-even"><td><p>.</p></td>
+<td><p>.</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>19</p></td>
+<td><p>… -&gt;parameter_types</p></td>
+<td><p>MATCH</p></td>
+<td><p>T extends { [key: string]: unknown }&gt; = …</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>21</p></td>
+<td><p>type_alias-&gt;type_parameters-&gt;`,`</p></td>
+<td><p>FAIL</p></td>
+<td><p>extends { [key: string]: unknown }&gt; …</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>21</p></td>
+<td><p>type_alias-&gt;type_parameters-&gt;`&gt;`</p></td>
+<td><p>FAIL</p></td>
+<td><p>extends { [key: string]: unknown }&gt; …</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>21</p></td>
+<td><p>type_alias-&gt;type_parameters</p></td>
+<td><p>ERROR</p></td>
+<td><p>ERROR 1010, 50 extends { [key: string]: …</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Typically, the parsing-log is a quite long and the error becomes
+apparent only at the very end. So it is advisable to scroll right to
+the bottom of the page to see what has caused the test to fail by
+looking at the error message (which for the sake of brevity has been
+omitted from the above excerpt, though the error number 1010 for
+mandatory continuation errors still indicates that another item than the
+following “extends” was expected).</p>
+<p>The parsing log log’s the match or non-match of every leaf-parser (i.e.
+parsers that do not call other parsers but try to match the next part of
+the text directly) that is applied during the parsing process. The steps
+leading up to the call a leaf-parser are not recorded individually but
+can be seen from the call-stack which follows the line and column-number
+of the place in the document where the parser tried to match.</p>
+<p>The match or non-match of the leaf-parser is indicated by the
+success-state. There are six different success-states:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>success</p></th>
+<th class="head"><p>meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MATCH</p></td>
+<td><p>the parser matched a part of the following text</p></td>
+</tr>
+<tr class="row-odd"><td><p>DROP</p></td>
+<td><p>the parser matched but the matched text was dropped from the CST</p></td>
+</tr>
+<tr class="row-even"><td><p>FAIL</p></td>
+<td><p>the parser failed to match the following text</p></td>
+</tr>
+<tr class="row-odd"><td><p>!MATCH</p></td>
+<td><p>the parser matched but as part of a negative lookahead it’s a fail</p></td>
+</tr>
+<tr class="row-even"><td><p>!FAIL</p></td>
+<td><p>the parser failed but as part of a negative lookahead it’s a match</p></td>
+</tr>
+<tr class="row-odd"><td><p>ERROR</p></td>
+<td><p>a syntax error was detected during parsing</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Finally, the last part of each entry (i.e. line) in the log is an
+excerpt from the document at the location where the parser stood. In the
+HTML-log, colors indicate the which part of the excerpt was matched. (In
+the pure text-output as shown above this can only be inferred from the
+next line.)</p>
+<p>With these information in mind you should be able to “read” the above
+log-excerpt. It takes a while to get used to reading parsing-logs,
+though. Reading logs can become confusing when lookahead or, in
+particular, when look-behind parsers are involved. Also, keep in mind
+that DHParser uses memoizing to avoid parsing the same part of a
+document over and over again with the same parser. Thus, if you
+encounter a line in the log where the call stack appears to be clipped,
+this is usually due to memoizing an the same parser having been called
+at the same location earlier in the parsing process. (You might find the
+first instance by looking for the same line and column in the earlier
+part of the log.) Still, looking at the parsing-log helps to find and
+understand the causes of unexpected parser-behavior, quickly.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Parsing-logs are by default only generated for failed test.
+In case you’d like to see the parsing-log for a successful test,
+a simple trick is to flip the type of the test from “match” to
+“fail” in the “.ini”-file or vice versa.</p>
+<p>The test with the flipped type will then be reported as a failure,
+but the parsing-log is just the same as if it was a success. Once,
+you have seen the log, you can flip the type back again to get
+a correct test-report.</p>
+</div>
+</section>
+</section>
+<section id="development-workflows">
+<h2>Development-Workflows<a class="headerlink" href="#development-workflows" title="Link to this heading">#</a></h2>
+<p>The development workflows for writing parsers for domain specific
+languages (DSLs) or parsing (semi-)structured text-data are very similar.
+Only that in the latter case there already exists plenty of sample
+material while in the former case one would usually start to draw
+up some examples.</p>
+<p>In both cases, however, it requires going through many iterations
+of adjustments and refinements before the grammar stands. In the
+case of a DSL, the even DSL itself might be adjusted in the course of the
+development, requiring further changes of the grammar all alike.</p>
+<p>This is where test-driven-grammar development comes into play. Before
+even writing a grammar and running it on complete documents, you
+start with a small subset that you gradually extend. There are basically
+to strategies for grammar-development:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Top-Down-Grammar development, where one starts with the macro-
+structure and uses summary parsers to gloss over the
+microstructure, which will be replaced later.</p></li>
+<li><p>Bottom-Up-Grammar development, where you start with parsers
+for the parts of the documents and later connect them with
+higher level parsers.</p></li>
+</ol>
+</div></blockquote>
+<p>Of course, it is also possible to work from both ends and to follow
+both strategies at the same time, until the top-down and
+bottom-up-development meets in the middle.</p>
+<p>We will look at both strategies with the example of our outline-parser
+in the following. In case you want to reenact the following steps, you
+should start by creating a new project with the dhparser-command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dhparser Markdown
+$ cd Markdown
+</pre></div>
+</div>
+<section id="top-down-grammar-development">
+<h3>Top-Down-Grammar-Development<a class="headerlink" href="#top-down-grammar-development" title="Link to this heading">#</a></h3>
+<p>Suppose, you’d like to write a Markdown-parser, then with a
+top-down-strategy you’d start with the outer-elements which in this case
+is the outline of the document, i.e. the structure of headings and
+sub-headings. In the true spirit of test-driven-development we start
+by writing some tests, before even coding the first draft of our
+grammar. So we add a document <code class="docutils literal notranslate"><span class="pre">tests\01_test_outline.ini</span></code> to a
+freshly created project with the following content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"""# Main Heading</span>
+<span class="s2">    ## Section 1</span>
+<span class="s2">    ### SubSection 1.1</span>
+<span class="s2">    ### SubSection 1.2</span>
+<span class="s2">    ## Section 2"""</span>
+
+<span class="p">[</span><span class="n">fail</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">F1</span><span class="p">:</span> <span class="s2">"""# Main Heading</span>
+<span class="s2">    ## Section 1</span>
+<span class="s2">    #### BADLY NESTED SubSubSection 1.1.1</span>
+<span class="s2">    ### SubSection 1.2</span>
+<span class="s2">    ## Section 2"""</span>
+</pre></div>
+</div>
+<p>The meaning of these two test-cases should be obvious: The first is a
+document that only contains an outline, but not yet any content -
+because will start writing our grammar top-down with the definition
+of the outline-elements leaving out the content-elements for now. The
+match-test test will check that our grammar matches a properly formed
+document-outline.</p>
+<p>The second is a fail test, which checks that the parser for our grammar
+does not accidentally match a badly structured document. Now, we will
+start writing a grammar that is suitable to capture the snippet from
+our match-test. As you’ll see in the following, this already requires
+quite a few definitions. Here is our first attempt (which still
+contains a mistake!):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># First attempt of any outline-grammar. Can you spot the error?
+
+#  EBNF-Directives
+@ whitespace = /[ \t]*/  # only horizontal whitespace, no line-feeds
+@ reduction  = merge     # simplify tree as much as possible
+@ hide       = WS, EOF, LINE, GAP
+@ drop       = WS, EOF, backticked, whitespace
+
+#:  Outline
+document = [WS] main [WS] §EOF
+
+main  = `#` ~ heading { WS section }
+section  = `##` ~ heading { WS subsection }
+subsection  = `###` ~ heading { WS subsubsection }
+subsubsection  = `####` ~ heading { WS s5section }
+s5section  = `#####` ~ heading { WS s6section }
+s6section  = `######` ~ heading
+
+heading = LINE
+
+#:  Regular Expressions
+LINE = /[^\n]+/         # everything up to the next linefeed
+GAP  = /(?:[ \t]*\n)+/  # any ws at line-end and all following empty lines
+WS   = GAP              # same as GAP, but will be dropped
+EOF  =  !/./  # no more characters ahead, end of file reached
+</pre></div>
+</div>
+<p>When running the grammar-tests, we notice that while the match-test
+passes as expected, the fail-test fails, that is, it captures the badly
+structured outline, although it shouldn’t. The output of the
+tst-grammar-script on the console looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GRAMMAR</span> <span class="n">TEST</span> <span class="n">UNIT</span><span class="p">:</span> <span class="mi">01</span><span class="n">_test_outline</span>
+  <span class="n">Match</span><span class="o">-</span><span class="n">Tests</span> <span class="k">for</span> <span class="n">parser</span> <span class="s2">"document"</span>
+    <span class="k">match</span><span class="o">-</span><span class="n">test</span> <span class="s2">"M1"</span> <span class="o">...</span> <span class="n">OK</span>
+  <span class="n">Fail</span><span class="o">-</span><span class="n">Tests</span> <span class="k">for</span> <span class="n">parser</span> <span class="s2">"document"</span>
+    <span class="n">fail</span><span class="o">-</span><span class="n">test</span>  <span class="s2">"F1"</span> <span class="o">...</span> <span class="n">FAIL</span>
+</pre></div>
+</div>
+<p>Can you guess why the fail-test did not pass? If
+not it helps to cast a look at the parsing log of the failed test
+that has been stored in file
+“tests/LOGS/fail_document_F2_parser.log.html”.
+There you find the suspicious lines:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>1</p></td>
+<td><p>document-&gt;main-&gt;section-&gt;subsection-&gt; <cite>###</cite></p></td>
+<td><p>DROP</p></td>
+<td><p>#### BADLY NESTED SubSubSection 1.1.1 ##…</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>4</p></td>
+<td><p>document-&gt;main-&gt;section-&gt;subsection-&gt;heading-&gt;LINE</p></td>
+<td><p>MATCH</p></td>
+<td><p># BADLY NESTED SubSubSection 1.1.1 ### S…</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Obviously, the parser “subsection” found its marker consisting
+of three <code class="docutils literal notranslate"><span class="pre">#</span></code>-signs, but then it did not stop short at the next
+<code class="docutils literal notranslate"><span class="pre">#</span></code>-sign, but left this to be captured by its “heading”-parser
+which simply reads the rest of the line, no matter what it looks like.</p>
+<p>The remedy is simple: We add a negative lookahead to check that
+after each heading-marker that no further <code class="docutils literal notranslate"><span class="pre">#</span></code>-sign follows.
+Otherwise, the respective section, subsection, etc. -parser
+simply won’t match. So, in the “Outline”-section of our grammar,
+we change the following definitions, accordingly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>main  = [WS] `#` !`#` ~ heading { WS section }
+section  = `##` !`#` ~ heading { WS subsection }
+subsection  = `###` !`#` ~ heading { WS subsubsection }
+subsubsection  = `####` !`#` ~ heading { WS s5section }
+s5section  = `#####` !`#` ~ heading { WS s6section }
+s6section  = `######` !`#` ~ heading
+</pre></div>
+</div>
+<p>This time the grammar-tests yield the desired result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GRAMMAR</span> <span class="n">TEST</span> <span class="n">UNIT</span><span class="p">:</span> <span class="mi">01</span><span class="n">_test_outline</span>
+  <span class="n">Match</span><span class="o">-</span><span class="n">Tests</span> <span class="k">for</span> <span class="n">parser</span> <span class="s2">"document"</span>
+    <span class="k">match</span><span class="o">-</span><span class="n">test</span> <span class="s2">"M1"</span> <span class="o">...</span> <span class="n">OK</span>
+  <span class="n">Fail</span><span class="o">-</span><span class="n">Tests</span> <span class="k">for</span> <span class="n">parser</span> <span class="s2">"document"</span>
+    <span class="n">fail</span><span class="o">-</span><span class="n">test</span>  <span class="s2">"F1"</span> <span class="o">...</span> <span class="n">OK</span>
+</pre></div>
+</div>
+<p>Before going further down with our top-down-design of the grammar, we draw
+up a test-case that contains more structural details. For this purpose we
+add under the heading <code class="docutils literal notranslate"><span class="pre">[match:document]</span></code> another test-case with a little
+more structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M2</span><span class="p">:</span> <span class="s2">"""# Main Heading</span>
+
+<span class="s2">    Some introductory Text</span>
+
+<span class="s2">    ## Section 1</span>
+<span class="s2">    One paragraph of text</span>
+
+<span class="s2">    Another paragraph of text. This</span>
+<span class="s2">    time stretching over several lines.</span>
+
+<span class="s2">    ## Section 2</span>
+<span class="s2">    ### Section 2.1</span>
+<span class="s2">    ### Section 2.2</span>
+
+<span class="s2">    The previous section is (still) empty.</span>
+<span class="s2">    This one is not.</span>
+<span class="s2">    """</span>
+</pre></div>
+</div>
+<p>If we run the test now, it will expectedly fail with an error message like
+“3:1: Error (1010): ‘EOF’ expected by parser ‘document’,
+but »Some intro…« found instead!”. Before the test succeeds, we need to
+extend out grammar so as to capture the content inside of sections
+as well. In true top-down fashion, first, we provide for the new content
+elements which we will call “blacks” in the definiens of the section-elements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>main  = [WS] `#` !`#` ~ heading [WS blocks] { WS section }
+section  = `##` !`#` ~ heading [WS blocks] { WS subsection }
+subsection  = `###` !`#` ~ heading [WS blocks] { WS subsubsection }
+subsubsection  = `####` !`#` ~ heading [WS blocks] { WS s5section }
+s5section  = `#####` !`#` ~ heading [WS blocks] { WS s6section }
+s6section  = `######` !`#` ~ heading [WS blocks]
+</pre></div>
+</div>
+<p>Then, we define the the “blocks”-element:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>blocks  = !is_heading LINE { GAP !is_heading LINE }
+is_heading = /##?#?#?#?#?(?!#)/
+</pre></div>
+</div>
+<p>This time, the grammar passes the recently added test. However, the new
+element “blocks” is sill a <em>placeholder</em> that does not capture the individual
+paragraphs, let alone other elements like lists or enumerations, as can easily
+be seen by looking at the generated abstract-syntax-tree (AST) in the
+test-report:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">document</span>
+  <span class="p">(</span><span class="n">main</span>
+    <span class="p">(</span><span class="n">heading</span> <span class="s2">"Main Heading"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">blocks</span> <span class="s2">"Some introductory Text"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">section</span>
+      <span class="p">(</span><span class="n">heading</span> <span class="s2">"Section 1"</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">blocks</span>
+        <span class="s2">"One paragraph of text "</span>
+        <span class="s2">""</span>
+        <span class="s2">"Another paragraph of text. This"</span>
+        <span class="s2">"time stretching over several lines."</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">section</span>
+      <span class="p">(</span><span class="n">heading</span> <span class="s2">"Section 2"</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">subsection</span>
+        <span class="p">(</span><span class="n">heading</span> <span class="s2">"Section 2.1"</span><span class="p">))</span>
+      <span class="p">(</span><span class="n">subsection</span>
+        <span class="p">(</span><span class="n">heading</span> <span class="s2">"Section 2.2"</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">blocks</span>
+          <span class="s2">"The previous section is (still) empty."</span>
+          <span class="s2">"This one is not."</span><span class="p">)))))</span>
+</pre></div>
+</div>
+<p>This use of “placeholder”-parsers which sweepingly capture larger
+chunks of text without dissecting their detailed structure is typical
+for the top-down approach. We could continue by replacing (or amending)
+the “blocks”-parser stepwise with more detailed parsers that
+capture individual paragraphs, highlighted passages etc., possibly
+making use of AST-tests (see below) in the process.</p>
+<p>However, we will now turn the tables and start with the detail-
+or “fine”-structure of our outlined text in order to see how the
+bottom-up-approach works.</p>
+</section>
+<section id="bottom-up-grammar-development">
+<h3>Bottom-Up-Grammar-Development<a class="headerlink" href="#bottom-up-grammar-development" title="Link to this heading">#</a></h3>
+<p>For the bottom-up-approach one must first consider what are the
+smallest elements that need to be semantically captured. Surely,
+it would be exaggerated to capture individual letters. One might
+think of words and lines, but then individual words do not really
+matter in Markdown-texts and lines have the disadvantage that
+highlighted elements might stretch over several lines.</p>
+<p>A possible choice are pieces of text
+consisting of letters, punctuation and whitespace the may but
+do not need to stretch over more than one single line, that is,
+they may also contain line-feeds, but they should not encompass
+empty lines. So, basically text is no-whitespace elements
+interspersed by whitespace and single-line-feeds. Let’s
+first write a few tests and then cast this into a formal definition,
+which in my humble opinion is even clearer than the verbal expression.
+Here are the tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">TEXT</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"A bit of text."</span>
+<span class="n">M2</span><span class="p">:</span> <span class="s2">"""A bit of text</span>
+<span class="s2">    over two lines!"""</span>
+
+<span class="p">[</span><span class="n">fail</span><span class="p">:</span><span class="n">TEXT</span><span class="p">]</span>
+<span class="n">F1</span><span class="p">:</span> <span class="s2">"  No leading whitespace"</span>
+<span class="n">F2</span><span class="p">:</span> <span class="s2">"""Empty lines</span>
+
+<span class="s2">     separate paragraphs!"""</span>
+</pre></div>
+</div>
+<p>And here is the definition of a piece of text (which, as is typical
+for the most atomic parsers, consist mostly of regular expressions
+enclosed by slashes):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>TEXT      = CHARS { LLF CHARS }
+CHARS     = /[^\s]+/             # sequence of non whitespace and non line-feed characters
+LLF       = L | LF               # whitespace or single linefeed
+L         = /[ \t]+/             # significant whitespace
+LF        = /[ \t]*\n[ \t]*(?!\n)/  # a single linefeed
+</pre></div>
+</div>
+<p>I am not going to explain the idioms used for encoding text blocks
+(aka “paragraphs”) separated by empty lines, here, as the code
+above should be clear enough with the given comments.</p>
+<p>The next step will be a little bit more complicated: We would like
+to allow inline-markup inside paragraphs. Loosely following the
+Markdown conventions we would like to use a single underscore character
+(<code class="docutils literal notranslate"><span class="pre">_</span></code>) to mark emphasized text, e.g. <code class="docutils literal notranslate"><span class="pre">_emphasized_</span></code>, and double
+underscore markers to mark bold text, e.g.  <code class="docutils literal notranslate"><span class="pre">__bold__</span></code>. Again, we
+start with writing test-code. We assume “emphasis” as the name of the
+parser for emphasized text and “bold” for bold text:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">emphasis</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"_emphasized text_"</span>
+<span class="n">M2</span><span class="p">:</span> <span class="s2">"""_multi</span>
+<span class="s2">    line_"""</span>
+
+<span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">bold</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"__bold text__"</span>
+<span class="n">M2</span><span class="p">:</span> <span class="s2">"""__multi</span>
+<span class="s2">    line bold__"""</span>
+</pre></div>
+</div>
+<p>Now, using underscore characters to markup emphasized or bold text
+raises the question what to write, if we would like to use the
+underscore as a normal character in out text without the intention to
+mark an emphasized block. For this purpose, we add an ordinary
+escape mechanism that allows any character to be used literally,
+if it is preceded by a backslash. Let’s write a quick test:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">emphasis</span><span class="p">]</span>
+<span class="n">M3</span><span class="p">:</span> <span class="s2">"_emphasis with an escaped \_ character_"</span>
+
+<span class="p">[</span><span class="n">fail</span><span class="p">:</span><span class="n">emphasis</span><span class="p">]</span>
+<span class="n">F1</span><span class="p">:</span> <span class="s2">"_cannot complete parsing, because of a dangling _ underscore_"</span>
+</pre></div>
+</div>
+<p>Of course, we also need tests for markup text _containing_ emphasized
+or bold elements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">markup</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"This is **bold** and this is *emphasized*"</span>
+<span class="n">M2</span><span class="p">:</span> <span class="s2">"""This is a text *with several</span>
+<span class="s2">    emphasized words* as well as some</span>
+<span class="s2">    **bold text that contains *emphasized words***."""</span>
+</pre></div>
+</div>
+<p>Now, let’s start coding! In the first step we will implement our
+escape-mechanism. For this purpose we define a new text element,
+named “text” with small letters (in contrast to the “TEXT”-parser
+defined above). Again, we write the test first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"Text with \_ three </span><span class="se">\\</span><span class="s2"> escaped \x elements"</span>
+</pre></div>
+</div>
+<p>In this case it makes sense to also specify the expected result. With the
+following test, we test the flat-string-representation of the
+abstract-syntax-tree (AST) that parser “text” yields for the match-test “M1”.
+Note, that the names of AST-tests and, in fact of any other tests further
+down the processing pipelines must be the same as the names of the match
+test they refer to. (See below for more information on abstract-syntax-tree
+(AST)-testing.):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">AST</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"Text with _ three \ escaped x elements"</span>
+</pre></div>
+</div>
+<p>Now we are ready to fill in the definitions for the parsers
+for which we have just written our tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>text      = (TEXT | ESCAPED) { [LLF] (TEXT | ESCAPED) }
+ESCAPED   = ESCAPED   = `\` /./
+</pre></div>
+</div>
+<p>Note that since we drop any back-ticked literals (see the
+<code class="docutils literal notranslate"><span class="pre">&#64;drop-directive</span></code> way above) the “ESCAPED”-parser should always
+yield the escaped character without the backslash in front of it.</p>
+<p>Unfortunately, the ast-test fails with an error message:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ast</span><span class="o">-</span><span class="n">test</span> <span class="s2">"M1"</span> <span class="k">for</span> <span class="n">parser</span> <span class="s2">"text"</span> <span class="ow">or</span> <span class="n">deserialization</span> <span class="n">of</span> <span class="n">expected</span> <span class="n">value</span> <span class="n">failed</span><span class="p">:</span>
+    <span class="n">Expr</span><span class="o">.</span><span class="p">:</span>     <span class="n">Text</span> <span class="k">with</span> \<span class="n">_</span> <span class="n">three</span> \\ <span class="n">escaped</span> \<span class="n">x</span> <span class="n">elements</span>
+    <span class="n">Expected</span><span class="p">:</span>  <span class="n">Text</span> <span class="k">with</span> <span class="n">_</span> <span class="n">three</span> \ <span class="n">escaped</span> <span class="n">x</span> <span class="n">elements</span>
+    <span class="n">Received</span><span class="p">:</span>  <span class="n">Text</span> <span class="k">with</span> \<span class="n">_</span> <span class="n">three</span> \\ <span class="n">escaped</span> \<span class="n">x</span> <span class="n">elements</span>
+</pre></div>
+</div>
+<p>(The provisio “or deserialization of expected value failed” means that in case
+we had specified the actual AST
+(e.g. (text “Text with _ three escaped x elements”))
+rather than its flat-string-representation the cause of the error might also be
+a syntax-error in the written down abstract syntax tree.)</p>
+<p>Something went wrong! In order to find out what exactly went wrong,
+we could either look into the test-log or into the test-report which
+shows the full abstract-syntax-tree, which looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">text</span>
+  <span class="p">(</span><span class="n">TEXT</span>
+    <span class="p">(</span><span class="n">CHARS</span> <span class="s2">"Text"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">LLF</span>
+      <span class="p">(</span><span class="n">L</span> <span class="s2">" "</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">CHARS</span> <span class="s2">"with"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">LLF</span>
+      <span class="p">(</span><span class="n">L</span> <span class="s2">" "</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">CHARS</span> <span class="s2">"\_"</span><span class="p">)</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>From this it becomes obvious that the
+“ESCAPED”-parser is never invoked but that the escape-sign “&quot; is captured by
+the “CHARS”-parser. Thus, we have to exclude it from the “CHARS”-parser
+explicitly to avoid it being captured by CHARS ans thus, indirectly, also by
+TEXT (with capital letters). At the same time we can take care to also
+exclude the underscore delimiter from the regular expression defining
+the CHARS-parser:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CHARS</span> <span class="o">=</span> <span class="o">/</span><span class="p">[</span><span class="o">^</span>\<span class="n">s</span>\\<span class="n">_</span><span class="p">]</span><span class="o">+/</span>
+</pre></div>
+</div>
+<p>We also need to keep in mind that should we add more inline elements in the
+future that we have to exclude their delimiters from the CHARS-parser
+as well. Now, the test should succeed. (Or, if we have forgotten to add the
+contained parsers of “text” back to the &#64;hide-directive, we’ll find that
+the test fails, but that at least, the AST is sound in the sense that all
+ESCAPED characters have been properly captured by the ESCAPE-parser.)</p>
+<p>We use the same idiom that we have employed in order to enrich simple TEXT
+with ESCAPED characters in the definition of “text” for defining
+markup-text that also contains bold and emphasized elements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>markup    = [indent] (text | bold | emphasis)
+            { [LLF] (text | bold | emphasis) }
+indent    = /[ \t]+(?=[^\s])/
+bold      = `__` §inner_bold `__`
+emphasis  = `_` §inner_emph `_`
+inner_emph = [~ &amp;`_`]
+             (text | bold) { [LLF] (text | bold) }
+             [&lt;-&amp;`_` ~]
+inner_bold = [~ &amp;`_`]/]
+             (text | emphasis) { [LLF] (text | emphasis) }
+             [&lt;-&amp;`_` ~]
+</pre></div>
+</div>
+<p>Note that by placing the emphasis-parser after the bold-parser in the
+definition of the markup-parser, we make sure that a bold-element
+is not accidentally captured as an emphasized-element containing
+another emphasized element.</p>
+<p>The “mandatory marker” <code class="docutils literal notranslate"><span class="pre">§</span></code> ensures that errors when marking
+up bold or emphasized text will be located precisely. (See <a class="reference internal" href="01_EBNF-grammars.html#mandatory-items"><span class="std std-ref">Mandatory items “§”</span></a>.)
+For example, neither bold text nor emphasized text must start or end with whitespace,
+e.g. <code class="docutils literal notranslate"><span class="pre">*</span> <span class="pre">emphasized</span> <span class="pre">*</span></code> must be written as <code class="docutils literal notranslate"><span class="pre">*emphasized*</span></code>, instead.</p>
+<p>The introduction of “inner_emph” and “inner_bold” is due to the fact that
+the beginning- and the end-markers for emphasis and bold-text, respectively, is
+the same, which makes things a little more complicated form a parser-development
+point of view than using different beginning and end-markers. Also, it shall be
+ensured that - while emphasis and bold-text can be nested the one within the other -
+emphasis and bold are not redundantly nested within themselves.</p>
+<p>Both “inner_emph” and “inner_bold” allow - other than “text” - leading
+and trailing (insignificant) whitespace before and after its content in
+case it precedes or succeeds a nested emphasis or bold marker. This allows
+to disambiguate nested bold and emphasized elements
+when necessary by adding whitespace. (Because the whitespace between
+bold and emphasis markers is only needed to disambiguate, it is treated
+as insignificant whitespace.) Otherwise:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="o">**</span><span class="n">bold</span><span class="o">**</span> <span class="n">text</span> <span class="n">inside</span> <span class="n">emphasized</span> <span class="n">text</span> <span class="n">that</span> <span class="n">can</span> <span class="n">be</span> <span class="n">parsed</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>would have to be written as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">***</span><span class="n">bold</span><span class="o">**</span> <span class="n">text</span> <span class="n">inside</span> <span class="n">emphasized</span> <span class="n">text</span> <span class="n">that</span> <span class="n">fails</span> <span class="n">to</span> <span class="n">parse</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>which leads to a parser-error. (See the <a class="reference external" href="https://spec.commonmark.org/0.30/#emphasis-and-strong-emphasis">CommonMark</a>-specification for
+a more complicated solution to the same problem. Think about the
+pros and cons of either solution for a while, if you like!)</p>
+<p>We could have skipped the introduction of the intermediary “text”-parser
+by adding ESCAPED-elements directly to the “markup”-parser, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">markup</span>    <span class="o">=</span> <span class="p">[</span><span class="n">indent</span><span class="p">]</span> <span class="p">(</span><span class="n">TEXT</span> <span class="o">|</span> <span class="n">ESCAPED</span> <span class="o">|</span> <span class="n">bold</span> <span class="o">|</span> <span class="n">emphasis</span><span class="p">)</span>
+            <span class="p">{</span> <span class="p">[</span><span class="n">LLF</span><span class="p">]</span> <span class="p">(</span><span class="n">TEXT</span> <span class="o">|</span> <span class="n">ESCAPED</span> <span class="o">|</span> <span class="n">bold</span> <span class="o">|</span> <span class="n">emphasis</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>The reason, this has not been done is that while we would like to
+flatten ESCAPED chars and other TEXT but not the markup-structures. If
+we add further inline-elements like internet-links for example we
+would not add more intermediaries but rather extend the
+“markup”-parser-definition. (You may want to try to add internet links
+enclosed by <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> as an exercise!)</p>
+<p>Before we stop the bottom-up-approach at this point, there is one last
+touch we might want to add: The abstract syntax tree (AST) still looks
+rather verbose, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">markup</span>
+  <span class="p">(</span><span class="n">text</span>
+    <span class="p">(</span><span class="n">TEXT</span>
+      <span class="p">(</span><span class="n">CHARS</span> <span class="s2">"This"</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">LLF</span>
+        <span class="p">(</span><span class="n">L</span> <span class="s2">" "</span><span class="p">))</span>
+      <span class="p">(</span><span class="n">CHARS</span> <span class="s2">"is"</span><span class="p">)))</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Since, for further processing, we are only interested in distinguishing
+text from highlighted elements (i.e. emphasized and bold text), we
+add the more atomic elements, LLF, L, LF, CHARS, TEXT, ESCAPED  to
+the list of disposables at the beginning of the EBNF-grammar, which
+makes them disappear, merging their content in the higher-level elements.
+Thus we change the &#64;hide-directive at the top of the grammar to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">@</span> <span class="n">hide</span> <span class="o">=</span> <span class="n">WS</span><span class="p">,</span> <span class="n">EOF</span><span class="p">,</span> <span class="n">LINE</span><span class="p">,</span> <span class="n">GAP</span><span class="p">,</span> <span class="n">LLF</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">LF</span><span class="p">,</span>
+         <span class="n">CHARS</span><span class="p">,</span> <span class="n">TEXT</span><span class="p">,</span> <span class="n">ESCAPED</span><span class="p">,</span> <span class="n">inner_emph</span><span class="p">,</span> <span class="n">inner_bold</span>
+</pre></div>
+</div>
+<p>Now, the syntax-trees look much smoother:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">markup</span>
+  <span class="p">(</span><span class="n">text</span> <span class="s2">"This is a text"</span><span class="p">)</span>
+  <span class="p">(:</span><span class="n">L</span> <span class="s2">" "</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">emphasis</span>
+    <span class="p">(</span><span class="n">markup</span>
+      <span class="p">(</span><span class="n">text</span>
+        <span class="s2">"with several"</span>
+        <span class="s2">"emphasized words"</span><span class="p">)))</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>For even further refinement, you need to work with the AST-transformation-table
+that is found in the outlineParser.py-file. For example, by adding an entry
+to merge the whitespace nodes with the text-nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"markup, bold, emphasis"</span><span class="p">:</span> <span class="p">[</span><span class="n">merge_adjacent</span><span class="p">(</span><span class="n">is_one_of</span><span class="p">(</span><span class="s1">'text'</span><span class="p">,</span> <span class="s1">':L'</span><span class="p">,</span> <span class="s1">':LF'</span><span class="p">),</span> <span class="s1">'text'</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>For now, we’ll stop with the bottom-up development and see if and how
+we can link the two parts of our grammar that we have developed so far,
+one in top-down and one in bottom-up-style.</p>
+</section>
+<section id="linking-both-approaches">
+<h3>Linking both approaches<a class="headerlink" href="#linking-both-approaches" title="Link to this heading">#</a></h3>
+<p>In the top-down approach we have defined the largest or the most
+encompassing elements from the whole document, its sections down
+to the block elements that make up the sections of the document.
+For the block elements we have (for the time being) only defined
+a simple makeshift parser as a fill in to be replaced by parsers
+for the fine structure, later:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>blocks  = !is_heading LINE { GAP !is_heading LINE }
+</pre></div>
+</div>
+<p>Let’s again, write a test first. Then it will be easy to spot
+the differences:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Simple Test
+
+## A test of bold- am emphasis-markup
+
+  This paragraph contains *emphasized
+text* that spreads over two lines.
+
+  But what ist this: ** *emphasized* and bold**
+or * **bold** and emphasized*?
+</pre></div>
+</div>
+<p>The AST reveals the use of the summary-parser for blocks that
+does not capture any markup inside paragraphs. In fact, it does
+not even divide the text into separate paragraphs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">document</span>
+  <span class="p">(</span><span class="n">main</span>
+    <span class="p">(</span><span class="n">heading</span>
+      <span class="s2">"Simple Test"</span>
+    <span class="p">)</span>
+    <span class="p">(</span><span class="n">section</span>
+      <span class="p">(</span><span class="n">heading</span>
+        <span class="s2">"A test of bold- am emphasis-markup"</span>
+      <span class="p">)</span>
+      <span class="p">(</span><span class="n">blocks</span>
+        <span class="s2">"  This paragraph contains *emphasized"</span>
+        <span class="s2">"text* that spreads over two lines."</span>
+        <span class="s2">""</span>
+        <span class="s2">"  But what ist this: ** *emphasized* and bold**"</span>
+        <span class="s2">"or * **bold** and emphasized*?"</span>
+      <span class="p">)</span>
+    <span class="p">)</span>
+  <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we can replace the “LINE”-parser in the definition of
+“blocks”, above, by
+the parser for the markup-block that we have arrived at with the
+bottom-up-approach:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>blocks  = !is_heading markup { GAP !is_heading markup }
+</pre></div>
+</div>
+<p>The abstract syntax-tree is, as expected, much more verbose,
+because now it reflects the detailed structure of the markup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">document</span>
+  <span class="p">(</span><span class="n">main</span>
+    <span class="p">(</span><span class="n">heading</span> <span class="s2">"Simple Test"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">section</span>
+      <span class="p">(</span><span class="n">heading</span> <span class="s2">"A test of bold- am emphasis-markup"</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">blocks</span>
+        <span class="p">(</span><span class="n">markup</span>
+          <span class="p">(</span><span class="n">indent</span> <span class="s2">"  "</span><span class="p">)</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">"This paragraph contains "</span><span class="p">)</span>
+          <span class="p">(</span><span class="n">emphasis</span>
+            <span class="p">(</span><span class="n">text</span>
+              <span class="s2">"emphasized"</span>
+              <span class="s2">"text"</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">" that spreads over two lines."</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">GAP</span>
+          <span class="s2">""</span>
+          <span class="s2">""</span>
+          <span class="s2">""</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">markup</span>
+          <span class="p">(</span><span class="n">indent</span> <span class="s2">"  "</span><span class="p">)</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">"But what ist this: "</span><span class="p">)</span>
+          <span class="p">(</span><span class="n">bold</span>
+            <span class="p">(</span><span class="n">emphasis</span>
+              <span class="p">(</span><span class="n">text</span> <span class="s2">"emphasized"</span><span class="p">))</span>
+            <span class="p">(</span><span class="n">text</span> <span class="s2">" and bold"</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">text</span>
+            <span class="s2">""</span>
+            <span class="s2">"or "</span><span class="p">)</span>
+          <span class="p">(</span><span class="n">emphasis</span>
+            <span class="p">(</span><span class="n">bold</span>
+              <span class="p">(</span><span class="n">text</span> <span class="s2">"bold"</span><span class="p">))</span>
+            <span class="p">(</span><span class="n">text</span> <span class="s2">" and emphasized"</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">"?"</span><span class="p">))))))</span>
+</pre></div>
+</div>
+<p>As far as explaining the basics of test-driven-grammar-development goes,
+this should suffice as an example. Admittedly, as far as coding a grammar
+for Markdown, there are still a few things to do, which are here
+left as an exercise to the reader. Here are some suggestions for
+more exercises in test-driven grammar-development:</p>
+<ol class="arabic">
+<li><p>The AST still keeps the content of L, LF and GAP literally,
+although L and LF are merged with adjacent text-nodes during
+<a class="reference internal" href="04_AST-transformation.html#asttransformation"><span class="std std-ref">AST-transformation</span></a> or even earlier.
+Ideally, though they should be normalized (before merging).
+In order to do so, remove these tags from the list of disposable
+tags, and add normalizations to the AST-transformation-table
+in the parser-script.</p></li>
+<li><p>There are more inline elements than bold and emphasis in markdown.
+Add support for inline-quotes and URL. Think about which symbol-
+definitions in the grammar need to be changed for which kind of
+inline-element in order to to so. “markup” or “text” or “both”?
+Or should new, intermediary symbols be introduced?</p></li>
+<li><p>You may have noticed that headings starting with one or more
+<code class="docutils literal notranslate"><span class="pre">#</span></code>-characters must be separated with at least one empty line
+from any preceding text-blocks (other headings do not count
+as text block!). If you haven’t noticed this, verify this
+with suitable match- or fail-tests!</p>
+<p>How would the grammar have to be changed to allow headings to
+be detected as such, even if they directly follow a text block?</p>
+<p>Should the grammar be changed in that way? Or does it have
+advantages (for whom, the writer of the grammar or the writer of
+markdown-text?) to require headings to be separated by an empty
+line from preceding text?</p>
+</li>
+<li><p>Add support for block-quotes, enumerations and unordered lists.</p></li>
+</ol>
+</section>
+<section id="final-remarks">
+<h3>Final remarks<a class="headerlink" href="#final-remarks" title="Link to this heading">#</a></h3>
+<p>Specifying formal grammars is often considered as a painstaking
+process. Using test-driven-development encourages to try things
+a just start writing grammar-code without worrying too much
+whether you have thought of every detail before writing down
+the specification. You just start coding the grammar and worry
+about the details later as you add more and more tests.</p>
+<p>Top-Down and bottom-up-development are to different but supplementary
+strategies for incremental development. There is no rule when to use
+which of these approaches. Rather, one will switch between these
+approaches in the course of the grammar development as appropriate.
+The bottom-up approach is a bit simpler in so far as it does not
+require summary- or scaffolding-parsers to skip parts of a
+document for which the grammar has not yet been spelled out.</p>
+<p>In connection with the bottom-up and top-down development-strategies
+test-driven grammar-development allows for “rapid prototyping” of
+grammars. DHParser’s ability to detect changes in the grammar-code
+and automatically recompile it before the parser is run allows for
+short turn-around-times and makes it easy to refactor the grammar
+frequently.</p>
+<p>In Digital-Humanities-Test-scenarios, formal grammars are not only used
+for parsing strictly defined formal notations (e.g. LaTeX) but also for
+retro-digitization or, rather, re-structuring of “semi-structured”
+human-written documents with a notation the rules of which are only
+verbally described, often somewhat vague and incomplete and in practice
+not always followed diligently. Examples are dictionaries (see <a class="reference external" href="https://www.kit.gwi.uni-muenchen.de/?band=82908&amp;v=2#subchapter:5-2-abbildung-von-semi-strukturierten-texten">Zacherl
+2022</a>), (specialized) bibliographies and the like. In these
+application-cases, parser-development requires very many iterations and
+test-driven-grammar-development becomes an almost invaluable tool. (An
+alternative approach would be to use machine-learning to “read” this
+kind of data, e.g. <a class="reference external" href="https://github.com/kermitt2/grobid">GROBID</a> for bibliographies. Your mileage may vary
+with either approach. It is also at least in principle possible to
+employ machine learning to find formal grammars that match a large set
+of test-cases (“Grammar Induction”).)</p>
+</section>
+</section>
+<section id="monitoring-ast-creation">
+<h2>Monitoring AST-creation<a class="headerlink" href="#monitoring-ast-creation" title="Link to this heading">#</a></h2>
+<p>So far, we have only written tests that allow us the check whether our
+parser(s) match or fail certain kinds of input as expected. However, we
+might also be interested in testing whether the abstract-syntax-tree
+(AST) that the parser yields has the expected shape. In particular,
+since this shape is not strictly determined by our grammar (as is that
+of the concrete-syntax-tree) but also by the set of AST-transformations
+that we apply in order to transform the concrete-syntax-tree (CST) to
+the abstract-syntax-tree (AST). And these transformations may of course
+contain bugs.</p>
+<p>One important method for checking tree-structures (as well as any other
+data-structure) is structural validation. This, however, requires
+specifying the structure of the valid AST in another formal language
+like Relax-NG which is similar to and not much less complicated than
+specifying the grammar of a formal language with EBNF. For
+rapid-prototyping of grammars and especially in the early stages of
+grammar-development, this is hardly a viable option.</p>
+<p>DHParser does not yet support structural validation of tree-data.
+However, DHParser allows to compare the resulting syntax-tree (CST or
+AST) or their string-content against a given result for any match-test.
+It is also possible to check the data-trees or the strings-serialized
+results of any further <a class="reference external" href="processing_pipelines">processing-stages</a> in
+the same way (see below.)</p>
+<p>ASTs can be tested by adding an <code class="docutils literal notranslate"><span class="pre">[AST:parser_name]</span></code> to the test file.
+“parser_name” must of course be replaced by a valid parser (symbol) of
+the grammar. Moreover, it must be a name for which a
+<code class="docutils literal notranslate"><span class="pre">[match:parser_name]</span></code> sections exists in the same test-file. Each
+AST-test is related to a match test for the same parser. The relation
+between the AST-test and its match-test is established by using the same
+test-name, e.g. “M1”, “M2”, …, for both.</p>
+<p>There exist two different types of AST-tests:</p>
+<ol class="arabic">
+<li><p>Tests of the structure and content of the AST. Here, the test code is
+a complete tree that must be specified either as S-expression or as
+XML-code.</p></li>
+<li><p>Tests of the concatenated string-content (or “flat string-content”)
+of the tree. In this case, the test-code consists of a string that is
+enclosed in either single (’) or double (”) quotation marks for
+single line strings or triple single (‘’’) or triple double
+quotation marks (“””) for multiline strings - just like strings in
+Python.</p>
+<p>The following lines after the first line of multiline strings MUST be
+indented by 4 spaces. The indentation does not count as part of the
+test-string and will be automatically removed before the test-result
+is compared.</p>
+</li>
+</ol>
+<p>The following examples are motivated by a common requirement of
+electronic document processing which is the normalization of the
+document. Let’s assume that we want to perform the following three types
+of normalization to our text-data:</p>
+<ol class="arabic simple">
+<li><p>The “GAP”-nodes between “markup”-nodes shall be dropped from the
+syntax tree. After all gaps of one or more empty lines merely serve
+as delimiters for paragraphs. Generally, delimiters are not needed in
+a syntax-tree any more, because the document structure is expressed
+by the tree-structure.</p></li>
+<li><p>Line-feeds within paragraphs should be replaced by single blank
+characters to achieve a stronger regularity of the text-content.
+After all the exact place where a linefeed occurs is not relevant,
+anyway, and may change depending on the output-form or device.</p></li>
+<li><p>Sequences of blank characters should be normalized to a single blank
+character to indicate.</p></li>
+</ol>
+<section id="testing-the-tree-structure-directly">
+<h3>Testing the tree-structure directly<a class="headerlink" href="#testing-the-tree-structure-directly" title="Link to this heading">#</a></h3>
+<p>As mentioned test-cases for ASTs consist of two parts, a match-test-case
+and a related AST-test-case. A simple trick for writing the
+AST-test-case quickly is to write the match-test first, then let the
+test-script run and copy and paste the AST from the report-file to the
+test-file (“.ini”-file) as AST-test case. Finally, edit this AST to its
+desired shape. Take this as starting point for programming the
+AST-transformation or earlier tree-simplifications via the
+<code class="docutils literal notranslate"><span class="pre">&#64;hide</span></code>- and <code class="docutils literal notranslate"><span class="pre">&#64;drop</span></code>- directives.</p>
+<p>Here is the full test case for dropping GAP-nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">A1</span><span class="p">:</span> <span class="s2">"""# No gaps. please</span>
+
+<span class="s2">    one paragraph</span>
+
+<span class="s2">    and another paragraph"""</span>
+
+<span class="p">[</span><span class="n">AST</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">A1</span><span class="p">:</span> <span class="p">(</span><span class="n">document</span>
+      <span class="p">(</span><span class="n">main</span>
+        <span class="p">(</span><span class="n">heading</span> <span class="s2">"No gaps. please"</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">blocks</span>
+          <span class="p">(</span><span class="n">markup</span>
+            <span class="p">(</span><span class="n">text</span> <span class="s2">"one paragraph"</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">markup</span>
+            <span class="p">(</span><span class="n">text</span> <span class="s2">"and another paragraph"</span><span class="p">)))))</span>
+</pre></div>
+</div>
+<p>Note, that the AST-test-case has the same name, in this case “A1”, and
+that the code of the AST-test is, of course, not enclosed in quotation
+marks. The code describing the tree can either - like in the example,
+above - be denoted as S-expression or as XML. The results will be
+reported as S-expression, never the less. (If you prefer XML-output, you
+need to change the respective configuration value for
+tree-serializations.)</p>
+<p>Since we have not yet adjusted the grammar and AST-transformation-code
+in order to drop the GAP-nodes, running the test-script, yields a
+failure of the AST-Test “A1”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Abstract</span> <span class="n">syntax</span> <span class="n">tree</span> <span class="n">test</span> <span class="s2">"A1"</span> <span class="k">for</span> <span class="n">parser</span> <span class="s2">"document"</span> <span class="n">failed</span><span class="p">:</span>
+<span class="o">...</span>
+        <span class="n">Expected</span><span class="p">:</span>  <span class="p">(</span><span class="n">document</span>
+                     <span class="p">(</span><span class="n">main</span> <span class="p">(</span><span class="n">heading</span> <span class="s1">'No gaps. please"'</span><span class="p">)</span>
+                     <span class="p">(</span><span class="n">blocks</span>
+                       <span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"one paragraph"</span><span class="p">))</span>
+                       <span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"and another paragraph"</span><span class="p">)))))</span>
+        <span class="n">Received</span><span class="p">:</span>  <span class="p">(</span><span class="n">document</span>
+                     <span class="p">(</span><span class="n">main</span> <span class="p">(</span><span class="n">heading</span> <span class="s2">"No gaps. please"</span><span class="p">)</span>
+                     <span class="p">(</span><span class="n">blocks</span> <span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"one paragraph"</span><span class="p">))</span>
+                     <span class="p">(</span><span class="n">GAP</span> <span class="s2">""</span> <span class="s2">""</span> <span class="s2">""</span><span class="p">)</span>
+                     <span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"and another paragraph"</span><span class="p">)))))</span>
+</pre></div>
+</div>
+<p>The required adjustments in order to run the test successfully are quite
+trivial: Simply add the “GAP”-symbol to both the <code class="docutils literal notranslate"><span class="pre">&#64;hide</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">&#64;drop</span></code>-directive of the grammar and the reported AST-test-failure
+will disappear.</p>
+</section>
+<section id="testing-the-string-content-of-a-tree">
+<h3>Testing the string-content of a tree<a class="headerlink" href="#testing-the-string-content-of-a-tree" title="Link to this heading">#</a></h3>
+<p>For the conversion of line-feeds to single-whitespace-characters, we
+will use a simple string comparison instead of a full tree comparison as
+test (see above):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">A1</span><span class="o">*</span><span class="p">:</span> <span class="s2">"""Text in</span>
+<span class="s2">    two lines"""</span>
+
+<span class="p">[</span><span class="n">AST</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">A1</span><span class="p">:</span> <span class="s2">"Text in two lines"</span>
+</pre></div>
+</div>
+<p>This time, because it is a string comparison, the test code must stand
+within quotation marks. We mark the match test with an asterisk “*” in
+order to receive output for the CST in the report, too. This will be
+helpful for engineering the AST-transformations that we need for the
+normalization. The AST-test shows what kind of result, we expect in the
+end. Again, as we have not yet changed our grammar or parser-script, we
+will receive an error message when running the test-script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AST</span><span class="o">-</span><span class="n">test</span> <span class="n">A1</span><span class="o">*</span> <span class="k">for</span> <span class="n">parser</span> <span class="n">text</span> <span class="ow">or</span> <span class="n">deserialization</span> <span class="n">of</span> <span class="n">expected</span> <span class="n">value</span> <span class="n">failed</span><span class="p">:</span>
+<span class="o">...</span>
+        <span class="n">Expected</span><span class="p">:</span>  <span class="n">Text</span> <span class="ow">in</span> <span class="n">two</span> <span class="n">lines</span>
+        <span class="n">Received</span><span class="p">:</span>  <span class="n">Text</span> <span class="ow">in</span>
+<span class="n">two</span> <span class="n">lines</span>
+</pre></div>
+</div>
+<p>As we did not specify the expected result as an (S-expression) tree but
+as a string, the expected and received results are also printed as a
+strings in the error-message. Also, the error-message is slightly more
+vague, because there is the possibility that the comparison of expected
+and received result failed due to the expected result having
+unintentionally been miss-specified, which is not the case, here,
+however.</p>
+<p>If we look up the AST and CST-trees in the report file, we find that
+both read as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">text</span> <span class="s2">"Text in"</span> <span class="s2">"two lines"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note, that multiline-text in tree-nodes is rendered by DHParser as a
+sequence of strings rather than a multiline string with line-feeds. So,
+the “text”-node really consists of one string with a line-break in
+between. The line-break is not explicit in form of an “LF”-node, because
+it has just like the significant whitespace and character-sequences that
+make up the text-element been added to the <code class="docutils literal notranslate"><span class="pre">&#64;hide</span></code>-directive in
+the grammar. This LF and L nodes will be merged with CHARS-nodes
+wherever possible during the parsing stage, already.</p>
+<p>There are two possible strategies for replacing the line-feeds with
+whitespace: Either a) by replacing the line-feed-characters in the
+string-content of the text-nodes during AST-transformation by writing a
+dedicated transformation-procedure or b) removing LF from the list of
+disposable symbols in the grammar, then exchanging its content of each
+LF-node with a single whitespace characters and, maybe also changing
+its name to “L” in the course of doing so, both during the
+AST-transformation-stage and, finally, merging any CHARS- and L-nodes
+within all nodes where they could possibly appear (i.e. text, bold and
+emphasis) into a single flat node, again.</p>
+<p>Although, b) is more complicated, we will follow b), because this is the
+more general approach. So, we start by adjusting our list of disposable
+nodes, i.e. nodes that like anonymous-nodes can be flattened during
+parsing, already. It then reads:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">@</span> <span class="n">hide</span>  <span class="o">=</span> <span class="n">WS</span><span class="p">,</span> <span class="n">EOF</span><span class="p">,</span> <span class="n">LINE</span><span class="p">,</span> <span class="n">GAP</span><span class="p">,</span> <span class="n">LLF</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">CHARS</span><span class="p">,</span> <span class="n">TEXT</span><span class="p">,</span> <span class="n">ESCAPED</span><span class="p">,</span>
+          <span class="n">inner_emph</span><span class="p">,</span> <span class="n">inner_bold</span><span class="p">,</span> <span class="n">blocks</span>
+</pre></div>
+</div>
+<p>If we run the test script, the result of the test in the report file now
+reads:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Match</span><span class="o">-</span><span class="n">test</span> <span class="s2">"A1*"</span>
+<span class="o">-----------------</span>
+
+<span class="c1">### Test-code:</span>
+
+    <span class="n">Text</span> <span class="ow">in</span>
+    <span class="n">two</span> <span class="n">lines</span>
+
+<span class="c1">### Error:</span>
+
+<span class="n">AST</span><span class="o">-</span><span class="n">test</span> <span class="n">A1</span><span class="o">*</span> <span class="k">for</span> <span class="n">parser</span> <span class="n">text</span> <span class="ow">or</span> <span class="n">deserialization</span> <span class="n">of</span> <span class="n">expected</span> <span class="n">value</span> <span class="n">failed</span><span class="p">:</span>
+    <span class="n">Expr</span><span class="o">.</span><span class="p">:</span>     <span class="n">Text</span> <span class="ow">in</span>
+    <span class="n">two</span> <span class="n">lines</span>
+    <span class="n">Expected</span><span class="p">:</span>  <span class="n">Text</span> <span class="ow">in</span> <span class="n">two</span> <span class="n">lines</span>
+    <span class="n">Received</span><span class="p">:</span>  <span class="n">Text</span> <span class="ow">in</span>
+<span class="n">two</span> <span class="n">lines</span>
+
+<span class="c1">### CST</span>
+
+    <span class="p">(</span><span class="n">text</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"Text in"</span><span class="p">)</span> <span class="p">(</span><span class="n">LF</span> <span class="s2">""</span> <span class="s2">""</span><span class="p">)</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"two lines"</span><span class="p">))</span>
+
+<span class="c1">### AST</span>
+
+    <span class="p">(</span><span class="n">text</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"Text in"</span><span class="p">)</span> <span class="p">(</span><span class="n">LF</span> <span class="s2">""</span> <span class="s2">""</span><span class="p">)</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"two lines"</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>As expected, the AST-error is duly reported, and the CST and the AST are
+identical, since we have not yet programmed the AST-transformation to
+change the line-feed nodes (“LF”) into whitespace-nodes.</p>
+<p>What might appear surprising is the occurrence of “:Text”-nodes inside
+the “text”-nodes. “:Text” is DHParsers stock name for anonymous
+leaf-nodes. (“:Text”-nodes can be thought of as the equivalent to the
+plain-text parts inside <a class="reference external" href="https://www.w3.org/TR/xml/#sec-mixed-content">mixed-content XML-tags</a>.) “:Text”-tags are
+created when the parser merges anonymous leaf-nodes of different types.
+(See the <a class="reference internal" href="01_EBNF-grammars.html#definition-anonymous-nodes"><span class="std std-ref">definition of anonymous nodes</span></a> and ref:<cite>simplifying_syntax_trees</cite> to
+understand the role of anonymous nodes and “early merging” of
+leaf-nodes.)</p>
+<p>Now, let’s adjust the tree-transformation so that all line-feeds will be
+replaced by whitespaces. The following shows one possible way how this
+can be achieved. (For the general understanding of this kind of
+quasi-declarative tree-transformations, see
+<a class="reference internal" href="04_AST-transformation.html#declarative-tree-transformation"><span class="std std-ref">Declarative Tree-Transformation</span></a>.):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">outline_AST_transformation_table</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"LF"</span><span class="p">:</span> <span class="p">[</span><span class="n">replace_content_with</span><span class="p">(</span><span class="s1">' '</span><span class="p">),</span> <span class="n">change_name</span><span class="p">(</span><span class="s1">':L'</span><span class="p">)],</span>
+    <span class="s2">"markup, bold, emphasis, text"</span><span class="p">:</span>
+          <span class="p">[</span><span class="n">merge_adjacent</span><span class="p">(</span><span class="n">is_one_of</span><span class="p">(</span><span class="s1">'text'</span><span class="p">,</span> <span class="s1">':Text'</span><span class="p">,</span> <span class="s1">':L'</span><span class="p">),</span> <span class="s1">'text'</span><span class="p">),</span>
+           <span class="n">apply_if</span><span class="p">(</span><span class="n">reduce_single_child</span><span class="p">,</span> <span class="n">is_one_of</span><span class="p">(</span><span class="s1">'text'</span><span class="p">))],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Compared to the earlier version of the transformation-table one entry
+(“markup, bold, …”) has been changed in several ways and another entry
+(“LF”) has been added. Let’s look at the differences one by one:</p>
+<ol class="arabic">
+<li><p>First of all, the entry “LF” has been added. The transformations that
+are performed on “LF”-nodes replaces their content with a single
+whitespace and then renames these nodes to “:L” (anonymous
+significant whitespace).</p>
+<p>The latter is not strictly necessary, but helpful (for debugging) to
+avoid surprises, since with the change of the content, the semantics
+of the name “LF” are not appropriate any more.</p>
+</li>
+<li><p>Then, “text” has been added to the list of elements within which
+adjacent child-elements with purely textual content are merged.
+Therefore the key of this table entry now reads “markup, bold,
+emphasis, text”.</p></li>
+<li><p>Then, the list of elements, passed to the boolean check “is_one_of”
+in the condition-clause of the <a class="reference internal" href="../Reference.html#transform.merge_adjacent" title="transform.merge_adjacent"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_adjacent()</span></code></a>
+has been adjusted by adding “:Text” and removing the “:LF”, which
+cannot occur anymore, anyway, because the transformations are applied
+depth-first by DHParser and before the LF-child-node is merged with
+other nodes by its parent-element, it has been renamed.</p>
+<p>Note that <a class="reference internal" href="../Reference.html#transform.merge_adjacent" title="transform.merge_adjacent"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge_adjacent()</span></code></a> is a transformation
+that (potentially) merges (some of) the <em>children</em> of the node on
+which it is called or, more precisely, of the last node in the
+path on which it is called.</p>
+</li>
+<li><p>Following the merging of adjacent nodes, the
+:py:func`~transform.reduce_single_child`-transformation will be
+applied under the condition that the path on which it is called
+is a “text”-node.</p>
+<p>This is done to ensure that “text”-nodes
+always come out as leaf-nodes and are not nested within themselves.
+By contrast, “bold” and “emphasis” are always supposed to be
+branch nodes, even in the case they contain a single “text”-node
+as child.</p>
+<p>The deeper reason for both modeling “text”-nodes as leaf nodes and
+“markup”, “bold”, “emphasis” as branch-nodes is that it makes
+further processing easier when the same brand of nodes (i.e. nodes
+with the same name) always have the same type (branch or leave).</p>
+</li>
+</ol>
+<p>With these changes in place the indirect test of the AST by its
+string-content succeeds. There are no line-feeds anymore in the
+string, but only whitespaces.</p>
+<p>We will use the same strategy for the last normalization step,
+i.e. normalizing sequences of whitespace to single whitespaces.
+Let’s again draw up a test-case, first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">A2</span><span class="p">:</span> <span class="s2">"Testing  whitespace   normalization"</span>
+
+<span class="p">[</span><span class="n">AST</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">A2</span><span class="p">:</span> <span class="s2">"Testing whitespace normalization"</span>
+</pre></div>
+</div>
+<p>Now, in order to normalize whitespace we could just as before
+devise a tree-transformation for “L” or “:L”-nodes. However,
+there is also another solution that exists in combining
+significant whitespace that is strictly defined as a single
+whitespace character (0x20) with insignificant whitespace,
+which is more performant, because the normalization already
+happens in the parsing stage (as a byproduct of the
+elimination of insignificant whitespace). We only need to
+change the definition of “L” from  <code class="docutils literal notranslate"><span class="pre">/[</span> <span class="pre">\t]+/</span></code> to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L</span>  <span class="o">=</span> <span class="o">/</span><span class="p">[</span> \<span class="n">t</span><span class="p">]</span><span class="o">/~</span>
+</pre></div>
+</div>
+<p>Here, the tilde character “~” stands for
+<a class="reference internal" href="01_EBNF-grammars.html#insignificant-whitespace"><span class="std std-ref">insignificant whitespace</span></a>.
+This simple change suffices to normalize (horizontal) whitespace
+and make the test succeed. Again, coding the AST-test as
+simple string suffices, because the actual tree-structure
+is not involved, here. Of course, we could also have written
+a tree-test, which, since we decided to ensure that text-nodes
+are always leaf-nodes after the AST-transformation, is quite
+trivial in this case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">AST</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">A2</span><span class="p">:</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"Testing whitespace normalization"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is also possible to test the
+concrete-syntax-tree (CST) in just the same way as the
+AST. Since the last normalization is performed in the
+parsing stage, already, it might appear more logical
+to test the CST rather than the AST. A reason to refrain
+from CST-tests is that the CST can be awfully verbose.
+And if the AST-test succeeds one can most of the time
+assume that the CST has been correct as well.</p>
+<p>In this example, however, the CST-test is just as simple
+as the AST-test. In fact, it differs just by a single
+letter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">CST</span><span class="p">:</span><span class="n">text</span><span class="p">]</span>
+<span class="n">A2</span><span class="p">:</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"Testing whitespace normalization"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing-the-processing-pipeline">
+<h2>Testing the processing-pipeline<a class="headerlink" href="#testing-the-processing-pipeline" title="Link to this heading">#</a></h2>
+<p>Also, later stages of the <a class="reference internal" href="05_postprocessing.html#processing-pipelines"><span class="std std-ref">processing pipeline</span></a> can be
+tested with the same apparatus as long as their results are either node-trees or
+serializable as strings. To illustrate both of these cases, let us extend our
+“outline”-parser so that it transforms the input documents to HTML in two steps.</p>
+<p>In the first step the abstract syntax-tree is transformed into a DOM-tree (kind
+of). In the second step the DOM-tree is serialized as an HTML document. With
+DHParser’s <a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>-function the second step is almost
+trivial, but for the sake of illustration we will nevertheless implement this
+as a separate processing stage. This also has the benefit that we can test the
+structure of the DOM-tree independently from the formatting of the final
+HTML-document.</p>
+<section id="preparing-tests-for-a-processing-stage">
+<h3>Preparing tests for a processing-stage<a class="headerlink" href="#preparing-tests-for-a-processing-stage" title="Link to this heading">#</a></h3>
+<p>In true test-driven-development spirit, we start by looking at the ASTs for a
+couple of examples and then ask ourselves what the DOM should look like for
+these examples. We write down the DOM-trees as tests and then start to program
+the necessary transformations. With the transformations in place, we finally run
+our tests to see if everything works as expected. So let’s go ahead and write
+some test or, what amounts to the same, pick some of the already written tests
+and look at the resulting AST in the report file. Here are some tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">emphasis</span><span class="p">]</span>
+<span class="n">D1</span><span class="p">:</span> <span class="s2">"*emphasized*"</span>
+
+<span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">blocks</span><span class="p">]</span>
+<span class="n">D1</span><span class="p">:</span> <span class="s2">"""First paragraph of text.</span>
+
+<span class="s2">Next paragraph</span>
+<span class="s2">of text."""</span>
+
+<span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">D1</span><span class="p">:</span> <span class="n">M4</span><span class="p">:</span> <span class="s2">"""# Simple Test</span>
+
+<span class="s2">    ## A test of bold- and emphasis-markup</span>
+
+<span class="s2">      This paragraph contains *emphasized</span>
+<span class="s2">    text* that spreads over two lines.</span>
+
+<span class="s2">      But what ist this: ** *emphasized* and bold**</span>
+<span class="s2">    or * **bold** and emphasized*?"""</span>
+</pre></div>
+</div>
+<p>The report files show the following ASTs for these tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">emphasis</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"emphasized"</span><span class="p">))</span>
+
+<span class="p">(:</span><span class="n">blocks</span>
+  <span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"First paragraph of text."</span><span class="p">))</span>
+  <span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"Next paragraph of text."</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>In case you wonder why there is a colon in front of “blocks”:
+This is due to the fact that we have added
+“blocks” to the list of disposable nodes in our grammar, earlier.
+In cases where a disposable node cannot be disposed as in this case
+where it cannot be flattened, because it is the root node, it will be marked
+with a colon just like an “anonymous” node. In the following
+example has been flattened during parsing as expected, leaving
+the “markup”-nodes as direct children of “section”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">document</span>
+  <span class="p">(</span><span class="n">main</span>
+    <span class="p">(</span><span class="n">heading</span> <span class="s2">"Simple Test"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">section</span>
+      <span class="p">(</span><span class="n">heading</span> <span class="s2">"A test of bold- and emphasis-markup"</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">markup</span>
+        <span class="p">(</span><span class="n">indent</span> <span class="s2">"  "</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">text</span> <span class="s2">"This paragraph contains "</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">emphasis</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">"emphasized text"</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">text</span> <span class="s2">" that spreads over two lines."</span><span class="p">))</span>
+      <span class="p">(</span><span class="n">markup</span>
+        <span class="p">(</span><span class="n">indent</span> <span class="s2">"  "</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">text</span> <span class="s2">"But what ist this: "</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">bold</span>
+          <span class="p">(</span><span class="n">emphasis</span>
+            <span class="p">(</span><span class="n">text</span> <span class="s2">"emphasized"</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">" and bold"</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">text</span> <span class="s2">" or "</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">emphasis</span>
+          <span class="p">(</span><span class="n">bold</span>
+            <span class="p">(</span><span class="n">text</span> <span class="s2">"bold"</span><span class="p">))</span>
+          <span class="p">(</span><span class="n">text</span> <span class="s2">" and emphasized"</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">text</span> <span class="s2">"?"</span><span class="p">)))))</span>
+</pre></div>
+</div>
+<p>Now, let’s think about what the HTML-equivalents for the node-names
+and structures in the AST would be. Here ist a list:</p>
+<ol class="arabic">
+<li><p>“text”- nodes should be reduced when they are the single child of some
+other node, i.e. the text-node will be dissolved and its content will
+directly be attached to the parent node.</p></li>
+<li><p>the simplemost case is that of the “bold” and  “emphasis”- nodes which can
+simply be renamed to
+[b](<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b</a>) and
+[i](<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i</a>),
+respectively. (Alternatively, they could be renamed to
+[span](<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span</a>) with
+either the CSS-properties “font-weight: bold” or “font-style: italic” in
+the style-attribute of that node.). Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">bold</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"bold"</span><span class="p">))</span>  <span class="o">-&gt;</span> <span class="p">(</span><span class="n">b</span> <span class="s2">"bold"</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>“markup”-blocks should be renamed to
+[p](<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p</a>), which HTML
+uses for paragraphs. “indent”-nodes which grammar can occur only as the
+first child inside a “markup”-node (as can be seen in the grammar), shall be
+removed after adding the property “text-indent: 2em” to the style-attribute
+of the parent “markup”-node, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">markup</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"some text"</span><span class="p">))</span>  <span class="o">-&gt;</span> <span class="p">(</span><span class="n">p</span> <span class="s2">"some text"</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>“heading”-nodes must be renamed to “h1”, “h2”, “h3” … “h6”
+according their place in the hierarchy of nested “main”, “section”,
+“subsection” … “s6section”-elements.</p></li>
+<li><p>After that the “main”, “section”, … -elements can either be dissolve
+(i.e. reduced) or renamed to
+“[section](<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section</a>)”.
+The yields a semantically more explicit DOM while the former yields a more
+concise document-tree. We will go for the more concise tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(section
+  (heading "Section 1")
+  (markup
+    (indent "    ")
+    (text "A paragraph of text"))
+
+-&gt;
+
+(h1 "Section 1")
+(p `(style "text-indent: 2em;") "A paragraph of text")
+</pre></div>
+</div>
+</li>
+<li><p>Finally, the “document”-node can simply be renamed to
+“[body](<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body</a>)”.
+Later, when serializing as HTML we only need to add a header and the enclosind
+“html”-tags.</p></li>
+</ol>
+<p>Having made up our mind about how to transform the AST into a DOM-tree, we could
+now transform the AST shown above by hand into a DOM-tree to get our first
+test-case. However, a much more pragmatic approach is to program the
+transformation first (or ask an artificial intelligence to do it, following the
+above recipe) and then correct the output, which - on the first try - most
+probably still contains errors, by hand and add it as test case.</p>
+<p>There are many different ways of programming a tree-transformation. DHParser
+offers scaffolding-code for several of these, most notably a table-based
+tree-transformation (see <a class="reference internal" href="04_AST-transformation.html#asttransformation"><span class="std std-ref">AST-Transformation</span></a>) and a object-oriented,
+class-based approach (see <a class="reference internal" href="05_postprocessing.html#compiling"><span class="std std-ref">Post-Processing</span></a>), both of which are variants of the
+well-known visitor-pattern. As of now, DHParser does not offer a pattern-matching
+approach like XSLT. The following is a solution with the class-based approach.
+The table-based approach is usually much more concise, but less readable.</p>
+<p>In the (autogenerated) “outlineParser.py”-file there is already an empty
+<code class="docutils literal notranslate"><span class="pre">outlineCompiler</span></code>-class in the “COMPILE SECTION” which can filled in and
+renamed as follows. Let’s set out with the glue-code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DOMCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">RootNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">root</span><span class="o">.</span><span class="n">stage</span> <span class="o">==</span> <span class="s2">"AST"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Source stage `AST` expected, `but `</span><span class="si">{</span><span class="n">root</span><span class="o">.</span><span class="n">stage</span><span class="si">}</span><span class="s2">`found."</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s2">"DOM"</span>
+</pre></div>
+</div>
+<p>In the prepare-method the destination-stage should needs to set so that the
+processing-pipeline can keep track of the progress. This is essential for
+the processing pipeline to work. The check of the source-stage with the
+assertion-statement is not necessary but helps to locate potential programming
+errors in case something goes wrong.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use the term “stage” in two different meanings (which, however,
+are easily distinguished by the context) to denote either:</p>
+<ol class="arabic simple">
+<li><p>the data-stage which denotes the state the data is in at a specific
+point in the processing pipeline, e.g. source document,
+preprocessed source documtnet, AST, CST, etc.</p></li>
+<li><p>the “processing-” or “transformation-stage” which denotes a
+transformation-function from one data-stage to the next.</p></li>
+</ol>
+<p>In the source code, the name <code class="docutils literal notranslate"><span class="pre">stage</span></code> is always used for the data-stage,
+while the transformation stage is either a <code class="docutils literal notranslate"><span class="pre">Junction</span></code>-tuple or the
+transformation-callable that is returned by the <code class="docutils literal notranslate"><span class="pre">factory</span></code>-field of
+that tuple.</p>
+</div>
+<p>Next, we define the finalize-method. This might be surprising at first, because
+after the AST has been run through all visitor-methods the tree should only
+consist of HTML-nodes, already. This, however, is only true if we serve complete
+documents to our processing-pipeline. But during unit-testing, we only
+serve snippets of documents to the pipeline in most cases. Thus, we cannot
+assume that the visitor-method of the root-node of complete documents
+“on_document()” or any other visitor-method will be called under any
+circumstances.</p>
+<p>Generally speaking, all transformations in the processing-pipeline should
+be designed in such a way that they work not only on entire documents but
+also on parts of documents. Usually this only requires little extra-effort.
+In cases where this is not possible, the only alternative that is left is
+to write mockups for each unit-test that represent complete documents.
+This is much more cumbersome and not well supported by DHParser’s
+testing-framework which groups the tests by symbols-names of the
+parts of the grammar that shall be tested.</p>
+<p>In our case it could happen that the root-node is not a valid
+HTML-tag-name after compiling an AST that does not represent an entire
+document. We can use the finalize-method to rename the root-node
+(whatever that may be) to “div” in cases where its name is not that of
+an HTML-tag. While it would not do much harm to leave it as it is (HTML5
+allows custom tag names and most internet browsers a pretty tolerant
+even towards invalid tag-names), it can be confusing to get test-outputs
+that look like mistakes. Also, since the results will be passed on to a
+further processing-stage (HTML-serialization), it it is better to avoid
+testing-artifacts at this stage.</p>
+<p>In order to fix left-behind node-names, We could either check the
+root-node’s name against a list of valid tag-names or against a list of
+potentially left-behind tag-names from the AST. In our case it is easier
+to pursue the latter strategy, because only “container”-nodes, i.e.
+nodes that can contain more than one child and at the same time are
+meant to be flattened if possible can become “left behind”. (In case you
+think this would be hard to know or analyze beforehand: Don’t worry! You
+can start to provide for these cases when they occur and you can even
+confine yourself to those cases that come up in your test - because, as
+said, this is a harmless problem, if it is a problem at all.) So, let’s
+just rename all of these node-names to “div” if they appear as
+root-name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'main'</span><span class="p">,</span> <span class="s1">'section'</span><span class="p">,</span> <span class="s1">'subsection'</span><span class="p">,</span> <span class="s1">'subsubsection'</span><span class="p">,</span>
+                       <span class="s1">'s5section'</span><span class="p">,</span> <span class="s1">'s6section'</span><span class="p">,</span> <span class="s1">'blocks'</span><span class="p">,</span> <span class="s1">':blocks'</span><span class="p">):</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'div'</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p>The following visitor-method for the document-node is self-explaining.
+As described in <a class="reference internal" href="05_postprocessing.html#compiling"><span class="std std-ref">Post-Processing</span></a>, visitor-methods are called by the
+scaffolding code of <a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a> when the tree-traversal
+reaches the node with the name that corresponds to the name of the
+visitor-method. The scaffolding code also updates the
+<code class="docutils literal notranslate"><span class="pre">self.path</span></code>-variable (which we will make use of, further below). The
+traversal of the child-nodes must explicitly be triggered by the
+visitor-method by calling <a class="reference internal" href="../Reference.html#compile.Compiler.fallback_compiler" title="compile.Compiler.fallback_compiler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fallback_compiler()</span></code></a>
+which is usually done at the beginning of the visitor-method. Every
+visitor-method is required to return the compilation-result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"body"</span>
+    <span class="k">return</span> <span class="n">node</span>
+</pre></div>
+</div>
+<p>Since the transformation of the structural-components
+(i.e. sections, subsections etc.) is very similar for each of
+these components we factor out the similarities to a meta-method
+for these components which is called by the visitor-methods for
+the structural-components:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compile_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">heading_name</span><span class="p">):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="n">node</span><span class="p">[</span><span class="s1">'heading'</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">heading_name</span>
+    <span class="n">replace_by_children</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">node</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_main</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_structure</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"h1"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_structure</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"h2"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_subsection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_structure</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"h3"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_subsubsection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_structure</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"h4"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_s5section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_structure</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"h5"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_s6section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_structure</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"h6"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we provide visitor-methods for the paragraph and
+inline-elements. For the actual transformation-work, we are,
+of course, free to delegate to the transformation-methods
+of <a class="reference internal" href="../Reference.html#module-3" title="transform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transform</span></code></a> like <a class="reference internal" href="../Reference.html#transform.replace_by_children" title="transform.replace_by_children"><code class="xref py py-func docutils literal notranslate"><span class="pre">replace_by_children()</span></code></a>
+or <a class="reference internal" href="../Reference.html#transform.reduce_single_child" title="transform.reduce_single_child"><code class="xref py py-func docutils literal notranslate"><span class="pre">reduce_single_child()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_markup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'indent'</span><span class="p">:</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">'style'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"text-indent: 2em;"</span>
+        <span class="k">del</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'text'</span><span class="p">:</span>
+       <span class="n">reduce_single_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"p"</span>
+    <span class="k">return</span> <span class="n">node</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_bold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'text'</span><span class="p">:</span>
+        <span class="n">reduce_single_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"b"</span>
+    <span class="k">return</span> <span class="n">node</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_emphasis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'text'</span><span class="p">:</span>
+        <span class="n">reduce_single_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"i"</span>
+    <span class="k">return</span> <span class="n">node</span>
+</pre></div>
+</div>
+<p>Before the test-reports yields the results of this processing-stage
+for the match-tests defined in the test-files, the
+<a class="reference internal" href="05_postprocessing.html#junctions"><span class="std std-ref">junction</span></a> for this stage needs to be declared:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">compiling</span><span class="p">:</span> <span class="n">Junction</span> <span class="o">=</span> <span class="n">create_junction</span><span class="p">(</span><span class="n">DOMCompiler</span><span class="p">,</span> <span class="s2">"AST"</span><span class="p">,</span> <span class="s2">"DOM"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and the junction must be added to the list of junctions which is defined
+a bit further below in the Processing-Pipeline-section:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">junctions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ASTTransformation</span><span class="p">,</span> <span class="n">compiling</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>By default, all destinations of all available junctions will be written
+to the test-report. If this is not desired, the variable “test_targets”
+in the same section must be supplied with a set of names of those
+data-stages that shall be reported.</p>
+<p>When we run the test-script (“tst_outline_grammar.py”) again, the
+results will not only report the AST but also the DOM-stage, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Test</span> <span class="n">of</span> <span class="n">parser</span><span class="p">:</span> <span class="s2">"emphasis"</span>
+<span class="o">==========================</span>
+
+<span class="n">Match</span><span class="o">-</span><span class="n">test</span> <span class="s2">"M1"</span>
+<span class="o">----------------</span>
+
+<span class="c1">### Test-code:</span>
+    <span class="o">*</span><span class="n">emphasized</span><span class="o">*</span>
+<span class="c1">### AST</span>
+    <span class="p">(</span><span class="n">emphasis</span> <span class="p">(</span><span class="n">text</span> <span class="s2">"emphasized"</span><span class="p">))</span>
+<span class="c1">### DOM</span>
+    <span class="p">(</span><span class="n">i</span> <span class="s2">"emphasized"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, stages the results of which are trees are serialized as
+S-expressions. This can be changed by adjusting the global
+“serializations”-variable in the …Parser.py-script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">serializations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'DOM'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'XML'</span><span class="p">],</span> <span class="s1">'*'</span><span class="p">,</span> <span class="p">:[</span><span class="s1">'Sxpr'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>“serializations” is a dictionary where the keys are the names of the
+stage (of the data) and the values are lists of serialization-types
+which can be any of “sxpr” (S-expression), “SXML” (S-expression conforming to
+the <a class="reference external" href="sxml_spec">SXML-specification</a>), “XML” or “tree” (a simple indented tree).
+The serialization of test results is determined by the first item from the
+value-list. The other items are only used when serializing the output of the
+…Parser.py-script. The asterisk “*” is a joker which means that any stage
+that has not been explicitly specified with a key in the serializations-dictionary
+will use the serialization(s) associated to the asterisk.</p>
+<p>The output for a given stage will be serialized in
+all formats of the list associated to this stage. Because often the same value
+will be associated to several keys, it can be helpful to use a “multi-keyword table”
+the kind of which is also used for specifying AST-transformations.
+See <a class="reference internal" href="../Reference.html#toolkit.expand_table" title="toolkit.expand_table"><code class="xref py py-func docutils literal notranslate"><span class="pre">expand_table()</span></code></a>.</p>
+</section>
+<section id="writing-tests-for-a-processing-stage">
+<h3>Writing tests for a processing-stage<a class="headerlink" href="#writing-tests-for-a-processing-stage" title="Link to this heading">#</a></h3>
+<p>Once the junctions for the steps beyond AST-transformation have been specified,
+writing test for data-stages beyond the AST is as simple as writing an AST-test.
+If the data at the respective stage is tree-data, you can write down the expected
+tree as an XML-snippet or S-expression. In case the data is of any other type,
+you write the expected string that results from applying “str()” to the test-data
+at that stage.</p>
+<p>Since the DOM-tree is still tree-data, we specify the expected result
+in a tree-serialization-format, say, as as S-expression. As mentioned earlier,
+it is a pragmatic approach to run the test first and then copy and past the
+result for the DOM-tree from the report-file and adjust these by hand so that they
+reflect what we want the results to look like in this stage (although they do not
+yes, but that is what test-driven-development is about).</p>
+<p>Note that the same symbol names from the grammar are used to specify tests for
+later processing stages. It does not matter if the name of the root-node has been
+changed as in this-case where the “document”-root-node is renamed to “body”.
+The test must never the less be specified as “[DOM:document]”, because it takes
+the data that has been passed on from the [match:document]-test.</p>
+<p>This is what the DOM-test look like in the test-input-file (“.ini”-file):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[match:emphasis]
+D1: "*emphasized*"
+
+[match:blocks]
+D1: """First paragraph of text.
+
+Next paragraph
+of text."""
+
+[match:document]
+D1: M4: """# Simple Test
+
+    ## A test of bold- and emphasis-markup
+
+      This paragraph contains *emphasized
+    text* that spreads over two lines.
+
+      But what ist this: ** *emphasized* and bold**
+    or * **bold** and emphasized*?"""
+
+...
+
+[DOM:emphasis]
+D1: (i "emphasized")
+
+[DOM:blocks]
+D1: (div (p "First paragraph of text.") (p "Next paragraph of text."))
+
+[DOM:document]  # element-name reflects the original grammar-symbol!
+D1: (body
+    (h1 "Simple Test")
+    (h2 "A test of bold- and emphasis-markup")
+    (p `(style "text-indent: 2em;")
+      (text "This paragraph contains ")
+      (i "emphasized text")
+      (text " that spreads over two lines."))
+    (p `(style "text-indent: 2em;")
+      (text "But what ist this: ")
+      (b
+        (i "emphasized")
+        (text " and bold"))
+      (text " or ")
+      (i
+        (b "bold")
+        (text " and emphasized"))
+      (text "?")))
+</pre></div>
+</div>
+<p>The next time, we run the test, the DOM-trees that a generated during the test will
+be matched against the trees specified under the “[DOM:…]”-headings of the test-file.</p>
+<p>Writing tests for the last stage, the HTML-output, is just the same. Again, we will,
+for the sake of simplicity start with the transformation. The transformation from the
+DOM-tree to actual HTML is pretty simple, because we only need to add an HTML-header
+and a serialize the DOM-tree as XML. For the header, we can simply write a
+string-template:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HTML_TMPL</span> <span class="o">=</span> <span class="s2">"""&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang="en-GB"&gt;</span>
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">    &lt;title&gt;</span><span class="si">{title}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">    &lt;meta charset="utf8"/&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="si">{body}</span>
+<span class="s2">&lt;/html&gt;</span>
+<span class="s2">"""</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">HTMLSerializer</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">RootNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">root</span><span class="o">.</span><span class="n">stage</span> <span class="o">==</span> <span class="s2">"DOM"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Source stage `DOM` expected, `but `</span><span class="si">{</span><span class="n">root</span><span class="o">.</span><span class="n">stage</span><span class="si">}</span><span class="s2">` found."</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s2">"html"</span>
+        <span class="n">h1</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">pick</span><span class="p">(</span><span class="s1">'h1'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="n">h1</span> <span class="k">else</span> <span class="s1">''</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">string_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'text'</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">HTML_TMPL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wildcard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">string_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'text'</span><span class="p">})</span>
+
+<span class="n">serializing</span><span class="p">:</span> <span class="n">Junction</span> <span class="o">=</span> <span class="n">create_junction</span><span class="p">(</span><span class="n">HTMLSerializer</span><span class="p">,</span> <span class="s2">"DOM"</span><span class="p">,</span> <span class="s2">"html"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, don’t forget to add the “serializing”-junction to the set of
+junctions that define the processing-pipeline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">junctions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ASTTransformation</span><span class="p">,</span> <span class="n">compiling</span><span class="p">,</span> <span class="n">serializing</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The HTML-Serializer above is pretty straight-forward. Almost all of the work
+is done by <a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a> called in the wildcard-method.
+Note that the wildcard-method does not even descend into the tree, it
+just returns the XML-serialized tree for whatever element is the root
+element of the DOM-tree received from the last stage.</p>
+<p>We add the html-header in the
+visitor-method of the root-element (body) and not in the wildcard-method
+for serializing all other nodes or in the “finalize”-method which is
+not even present, here. This has the effect that the header is only
+added in tests of entire documents, but not of single elements
+which would be cumbersome.</p>
+<p>Other than the AST-&gt;DOM-transformation we return the HTML-document
+or the (HTML-snippets from tests of document-parts) as strings.
+Therefore we must specify the test-code for the html-stage also
+in form of strings. This means that the formatting of the
+html-test-code must be exactly the same as that returned by the
+DOM-&gt;html-transformation with the same line-breaks, indentation
+and all:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">html</span><span class="p">:</span><span class="n">emphasis</span><span class="p">]</span>
+<span class="n">D1</span><span class="p">:</span> <span class="s2">"&lt;i&gt;emphasized&lt;/i&gt;"</span>
+
+<span class="p">[</span><span class="n">html</span><span class="p">:</span><span class="n">blocks</span><span class="p">]</span>
+<span class="n">D1</span><span class="p">:</span> <span class="s2">"""&lt;div&gt;</span>
+<span class="s2">      &lt;p&gt;First paragraph of text.&lt;/p&gt;</span>
+<span class="s2">      &lt;p&gt;Next paragraph of text.&lt;/p&gt;</span>
+<span class="s2">    &lt;/div&gt;"""</span>
+
+
+<span class="p">[</span><span class="n">html</span><span class="p">:</span><span class="n">document</span><span class="p">]</span>
+<span class="n">D1</span><span class="p">:</span> <span class="s2">"""&lt;!DOCTYPE html&gt;</span>
+<span class="s2">    &lt;html lang="en-GB"&gt;</span>
+<span class="s2">    &lt;head&gt;</span>
+<span class="s2">        &lt;title&gt;Simple Test&lt;/title&gt;</span>
+<span class="s2">        &lt;meta charset="utf8"/&gt;</span>
+<span class="s2">    &lt;/head&gt;</span>
+<span class="s2">    &lt;body&gt;</span>
+<span class="s2">      &lt;h1&gt;Simple Test&lt;/h1&gt;</span>
+<span class="s2">      &lt;h2&gt;A test of bold- and emphasis-markup&lt;/h2&gt;</span>
+<span class="s2">      &lt;p style="text-indent: 2em;"&gt;</span>
+<span class="s2">        This paragraph contains</span>
+<span class="s2">        &lt;i&gt;emphasized text&lt;/i&gt;</span>
+<span class="s2">        that spreads over two lines.</span>
+<span class="s2">      &lt;/p&gt;</span>
+<span class="s2">      &lt;p style="text-indent: 2em;"&gt;</span>
+<span class="s2">        But what ist this:</span>
+<span class="s2">        &lt;b&gt;</span>
+<span class="s2">          &lt;i&gt;emphasized&lt;/i&gt;</span>
+<span class="s2">          and bold</span>
+<span class="s2">        &lt;/b&gt;</span>
+<span class="s2">        or</span>
+<span class="s2">        &lt;i&gt;</span>
+<span class="s2">          &lt;b&gt;bold&lt;/b&gt;</span>
+<span class="s2">          and emphasized</span>
+<span class="s2">        &lt;/i&gt;</span>
+<span class="s2">        ?</span>
+<span class="s2">      &lt;/p&gt;</span>
+<span class="s2">    &lt;/body&gt;</span>
+<span class="s2">    &lt;/html&gt;"""</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="conventional-unit-testing">
+<h2>Conventional Unit-Testing<a class="headerlink" href="#conventional-unit-testing" title="Link to this heading">#</a></h2>
+<p>All though, the DHParser’s testing-framework is by now quite comprehensive
+there are situation where you might want to resort to conventional
+unit-testing:</p>
+<ol class="arabic">
+<li><p>Testing for the occurrence of particular error-codes or error-messages.
+As of Version 1.7 DHParser’s testing framework has no support for
+testing errors. This may change with future versions.</p></li>
+<li><p>Testing of data-stages in which the data is not compositional, anymore,
+in the sense that you could test isolated pieces of code (without
+context) and still receive meaningful results.</p>
+<p>This assumption which is true for parsing of context-free grammars
+(save for the use of lookahead and lookbehind-parsers for which
+DHParsers testing-framework offers some workarounds, though),
+might not be true for later processing stages, anymore.
+The assumption of context-independence is baked into DHParser’s
+testing-framework and will therefore not change in the future.</p>
+</li>
+</ol>
+<p>Therefore, we will illustrate how conventional unit-testing works.
+Let’s assume that we want to test error-localization (a common
+pain-point of parser-building) and error-reporting in case
+something goes wrong. The glue code for a conventional unit-test
+for the <a class="reference external" href="https://docs.pytest.org/en/stable/">pytest</a>-Framework (not for the unittest-module from
+the Python standard library) looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">outlineParser</span>
+
+<span class="n">BAD_NESTING_EXAMPLE</span> <span class="o">=</span> <span class="s2">"""# Main Heading</span>
+<span class="s2">## Section 1</span>
+<span class="s2">#### BADLY NESTED SubSubSection 1.1.1</span>
+<span class="s2">## Section 2"""</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestErrorReporting</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_bad_nesting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">html</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">outlineParser</span><span class="o">.</span><span class="n">compile_src</span><span class="p">(</span><span class="n">BAD_NESTING_EXAMPLE</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>  <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In case you do not have <a class="reference external" href="https://docs.pytest.org/en/stable/">pytest</a> installed you can also employ DHParser’s
+micro testing framework by adding the following code at the end of the test-script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">runner</span>
+    <span class="n">runner</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Now, the tests can be run simply by calling the script. However, I strongly
+recommend using <a class="reference external" href="https://docs.pytest.org/en/stable/">pytest</a>, because it is more flexible and more powerful.</p>
+<p>The test-example consists of a badly nested outline-structure where a heading
+of the 4th level erroneously follows up on a heding of the 2nd level.
+Our test-code does not yet include any <code class="docutils literal notranslate"><span class="pre">assert</span></code>-statements that actually test
+anything. Instead it simply outputs the results that we later want to test.
+This is typical pattern when developing unit-test. You first write a “test”
+that merely output’s the results of the function that you want to test.
+Then, looking at those results, you determine where the error lies and think
+of suitable <code class="docutils literal notranslate"><span class="pre">assert</span></code>-statements that could test for the error.</p>
+<p>Now, let’s see what this script prints on the screen and then we will think
+about where the errors-messages could be improved. The output of the script is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>3:1: Error (1010): EOF expected by parser 'document', but »#### BADLY...« found instead!
+3:4: Error (1040): Parser "document" stopped before end, at: »# BADLY NE...« Terminating parser.
+</pre></div>
+</div>
+<p>Now, while the location of the first error is correct, the error message
+“end of file expected” is confusing, because clearly (for a human observer)
+the error lies in a mistakenly specified heading level, not in an abrupt ending
+of the document. Also, it would be preferable if the parser would just skip
+the erroneous passage and continue parsing, rather than stopping shortly
+after the error occurred.</p>
+<p>The meaning of the error codes, e.g. 1010, 1040, …,
+can by the way, be looked up in the <a class="reference internal" href="../Reference.html#module-9" title="error"><code class="xref py py-mod docutils literal notranslate"><span class="pre">error</span></code></a>-module. Codes between
+1000 and 9999 indicate “normal” errors while codes above 10000 indicate “fatal”
+errors and codes of 999 and below mean warnings. The codes between 1000 and 2000
+are reserved for DHParser-errors and should not be used for custom error codes
+(see below).</p>
+<p>Now, let’s first think about what kind of error report we would like to receive
+in such a case as that of our example. Then, again following the idea of
+test-driven-development, we will first implement a test, i.e. the missing
+<code class="docutils literal notranslate"><span class="pre">assert</span></code>-statements in the code, above and check that this test duly fails.
+Finally, we implement the desired form of error-reporting in our parser or,
+rather by exploiting the error-specification facilities of the DHParser,
+in our grammar.</p>
+<p>So, what we would like to see would probably be single, concrete error
+message for bad nesting with a specific error code that allows us to uniquely
+this type of error, e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span> <span class="n">Error</span><span class="p">(</span><span class="mi">2010</span><span class="p">):</span> <span class="n">Bad</span> <span class="n">nesting</span> <span class="n">of</span> <span class="n">headings</span>
+</pre></div>
+</div>
+<p>Here, we have (arbitrarily) assigned the error code 2010 for the error that
+indicates a bad nesting of headings. The second error from above
+(“stopped before end”) should not appear at all. So let’s adjust our
+test-code, accordingly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TestErrorReporting</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_bad_nesting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">html</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">outlineParser</span><span class="o">.</span><span class="n">compile_src</span><span class="p">(</span><span class="n">BAD_NESTING_EXAMPLE</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">2010</span>
+</pre></div>
+</div>
+<p>If we run the test-code, now, it will fail with the first assertion, already.
+So let’s now amend our grammar a little bit. Firstly, by using DHParser’s
+<code class="docutils literal notranslate"><span class="pre">&#64;..._skip</span></code> directive to instruct the parser how to continue after some
+error occurred within a particular sub-parser (see:
+<a class="reference internal" href="01_EBNF-grammars.html#skip-and-resume"><span class="std std-ref">skip directive</span></a> in the grammar-manual). This
+requires a bit of preparation. Because in order to use the skip-directive
+we first need to make sure that we catch bad nestings not only at the right
+location in the source code (which already happed) but also that we pick
+the error up at the particular point in our grammar, i.e. the particular
+sub-parser(s) that does not (or do not) match, because of the error.</p>
+<p>Admittedly, this requires a bit of the black-magic art of designing
+fail-tolerant parsers. But what is meant should easily become clear when
+presenting the solution to this challenge. First we need to adjust the
+parsers for the different levels of the outline, so that they “catch”
+any nesting error. For this, we can use the
+<a class="reference internal" href="01_EBNF-grammars.html#mandatory-items"><span class="std std-ref">mandatory-operator “§”</span></a> that
+instructs the parser to raise an error (an not just return a non-match)
+when the grammatical structure-definitions following this operator do
+not match:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>main  = [WS] `#` !`#` ~ heading [WS blocks] { WS (§&amp;main_expect) section }
+section  = `##` !`#` ~ heading [WS blocks] { WS (§&amp;section_expect) subsection }
+subsection  = `###` !`#` ~ heading [WS blocks] { WS (§&amp;subsection_expect) subsubsection }
+subsubsection  = `####` !`#` ~ heading [WS blocks] { WS (§&amp;subsubsection_expect) s5section }
+s5section  = `#####` !`#` ~ heading [WS blocks] { WS (§&amp;s5section_expect) s6section }
+s6section  = `######` !`#` ~ heading [WS blocks]
+</pre></div>
+</div>
+<p>Here, the mandatory operator “§” is followed by a lookahead parser “&amp;…” (defined below) that
+specifies for each heading what kind of items can follow under that heading. Let’s just
+think this through for the subsection-level. Once we are inside a subsection-environment what
+can follow it either an other subsection, or a subsubsection (one, but only one level down) or
+a section or, in fact, any of the upper levels (because the end of a lower level can be the
+end of any of the upper level, not just one level above - note this asymmetrie of the levels
+above that can follow in comparison with the levels below that can follow). And, of course,
+the end of file may also always follow. So what we have to consider are the following
+structures:</p>
+<p>Case 1 (one level down):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main</span>
+<span class="c1">## section</span>
+<span class="c1">### SUBSECTION</span>
+<span class="c1">#### subsubsection</span>
+</pre></div>
+</div>
+<p>Case 2 (same level):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main</span>
+<span class="c1">## section</span>
+<span class="c1">### SUBSECTION</span>
+<span class="c1">### subsection</span>
+</pre></div>
+</div>
+<p>Case 3 (one level up):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main</span>
+<span class="c1">## section  1</span>
+<span class="c1">### SUBSECTION</span>
+<span class="c1">## section 2</span>
+</pre></div>
+</div>
+<p>CASE 4 (two levels up and, in this case, also end of file):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main</span>
+<span class="c1">## section</span>
+<span class="c1">### SUBSECTION</span>
+</pre></div>
+</div>
+<p>All these cases and only these cases are allowed. So for our lookahead-parser
+“subsection_expect” we need to find a parser that catches these and only these
+cases. But this is simple:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subsection_expect</span> <span class="o">=</span> <span class="n">section</span> <span class="o">|</span> <span class="n">subsection</span> <span class="o">|</span> <span class="n">subsubsection</span> <span class="o">|</span> <span class="n">EOF</span>
+</pre></div>
+</div>
+<p>The other “expect”-parsers follow the same pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main_expect</span> <span class="o">=</span> <span class="n">section</span> <span class="o">|</span> <span class="n">EOF</span>
+<span class="n">section_expect</span> <span class="o">=</span> <span class="n">section</span> <span class="o">|</span> <span class="n">subsection</span> <span class="o">|</span> <span class="n">EOF</span>
+<span class="n">subsection_expect</span> <span class="o">=</span> <span class="n">section</span> <span class="o">|</span> <span class="n">subsection</span> <span class="o">|</span> <span class="n">subsubsection</span> <span class="o">|</span> <span class="n">EOF</span>
+<span class="n">subsubsection_expect</span> <span class="o">=</span> <span class="n">section</span> <span class="o">|</span> <span class="n">subsection</span> <span class="o">|</span> <span class="n">subsubsection</span> <span class="o">|</span> <span class="n">s5section</span> <span class="o">|</span> <span class="n">EOF</span>
+<span class="n">s5section_expect</span> <span class="o">=</span> <span class="n">section</span> <span class="o">|</span> <span class="n">subsection</span> <span class="o">|</span> <span class="n">subsubsection</span> <span class="o">|</span> <span class="n">s5section</span> <span class="o">|</span> <span class="n">s6section</span> <span class="o">|</span> <span class="n">EOF</span>
+</pre></div>
+</div>
+<p>Before we can let our tests run again, we must make sure that the parser
+gets updated with the new grammar. We can do this by running our
+“tst_outline_grammar.py”-script which does this automatically for us.
+Doing so has the additional benefit that we make sure that we haven’t
+messed up the grammar whil adding better error-handling-code, for
+otherwise we’d now see errors in when running the grammar-tests. So,
+we run this script from the commant line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># python tst_outline_grammar.py</span>
+</pre></div>
+</div>
+<p>If we let our tests run, now, three errors will be reported instead of two!
+This does not need to surprise us, because so far we have only amended the grammar
+with better code for the error localization, not for the continuation after an
+error has been found. The third error that has newly appeared is “merely” a
+fatal error due to a compilation-stage further down the processing pipeline
+that crashes because of an unrecognised syntax-tree. It is not surprising that
+the syntax-tree for a test source-code with syntax-errors changes if we work
+on the error management. So no need to worry!</p>
+<p>What is more important: The message of the error at the location where our
+syntax-error lies now precisely tells us the the parser (or part of the grammar)
+within which the error occurred, namely “section”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>3:1: Error (1010): &amp;section_expect expected by parser 'section', but »#### BADLY...« found instead!
+</pre></div>
+</div>
+<p>Let’s now continue by adding grammar-code that allows the parser to catch up
+after an error of this type has occurred:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@document_skip = /(?!.|\n)/
+@main_skip = ({!main_expect until_heading})
+@section_skip = ({!section_expect until_heading})
+@subsection_skip = ({!subsection_expect until_heading})
+@subsubsection_skip = ({!subsubsection_expect until_heading})
+@s5section_skip = ({!s5section_expect until_heading})
+
+until_heading = /#*[^#]*/
+</pre></div>
+</div>
+<p>As explained in detail in the <a class="reference internal" href="01_EBNF-grammars.html#skip-and-resume"><span class="std std-ref">grammar manual</span></a>, the
+<code class="docutils literal notranslate"><span class="pre">&#64;skip</span></code>-directive moves the location in the text forward but stays within
+the sequence parser where the error has been raised. Again, as explained
+in the manual, there exist two different methods, how a suitable location
+for error recovery can be searched, either by specifying a regular
+expression that matches the next suitable reentry point
+(see the definition of <code class="docutils literal notranslate"><span class="pre">&#64;document_skip</span></code> above) an which must be enclosed
+in slashes “/…/”, or by a full fleged parser which eats all characters
+until the next suitable reentry-point and which must be enclosed in round
+bracket “(…)”. (Example: <code class="docutils literal notranslate"><span class="pre">&#64;main_skip</span> <span class="pre">=</span> <span class="pre">({!main_expect</span> <span class="pre">until_heading})</span></code>)
+When using the latter method, the skip-parser specified may, of course,
+refer to other parsers defined outside the skip-directive itself. In our
+very last example &#64;main_skip thus refers to “main_expect” and “until_heading”.</p>
+<p>The working-mechanism of the parser <code class="docutils literal notranslate"><span class="pre">{!main_expect</span> <span class="pre">until_heading}</span></code> is
+to continue to move forward until the next heading, unless the heading
+reached is matched by “main_exepct” (and likewise for the skip-parser of
+section, subsection, …)</p>
+<p>Again, we first update the parser by running the “tst…grammar.py”-skript:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># python tst_outline_grammar.py</span>
+</pre></div>
+</div>
+<p>If we now run our unit-test-skript, we find that there is only one
+error left. In particular, no “stopped before end”-error is reported,
+any more. The error-message left, reads:</p>
+<blockquote>
+<div><p>3:1: Error (1010): &amp;section_expect expected by parser ‘section’, but »#### BADLY…« found instead!</p>
+</div></blockquote>
+<p>Still, the second assertion in our test code fails (as expected),
+because the error message and code have not yet been customized.
+In order to do so, we have to add yet another couple of statements
+to our grammar:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@document_error = '', "End of file expected!"
+@main_error = /(?=#)/, "2010:Bad nesting of headings"
+@section_error = /(?=#)/, "2010:Bad nesting of headings"
+@subsection_error = /(?=#)/, "2010:Bad nesting of headings"
+@subsubsection_error = /(?=#)/, "2010:Bad nesting of headings"
+@s5section_error = /(?=#)/, "2010:Bad nesting of headings"
+</pre></div>
+</div>
+<p>As explained in the <a class="reference internal" href="01_EBNF-grammars.html#custom-error-messages"><span class="std std-ref">grammar manual</span></a>,
+customized error messages are attached to the parser where an error
+may occurr and they consist of a regular expression (optional) and an
+error message that will be picked instead of DHParser’s stock error
+when the regular expression matches at the location of the error
+in the source code.</p>
+<p>Algthough, not shown here, several error messages (with different regular
+expressions) can be defined for one and the same parser. An empty
+string instead of the regular expression indicates that this
+message will be picked if none of the regular expression matches.</p>
+<p>An error code separated by a colon can be placed right before
+the error message. (If no code is speficied, the code is defaults
+to 1000). Here, we have decided to use the code 2010.</p>
+<p>Once these last changes are in placed, our test does not fail any more,
+because the only remaining error message is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span> <span class="n">Error</span> <span class="p">(</span><span class="mi">2010</span><span class="p">):</span> <span class="n">Bad</span> <span class="n">nesting</span> <span class="n">of</span> <span class="n">headings</span>
+</pre></div>
+</div>
+<p>But that is exactly the error message we wanted to show to the
+user in case the nesting of the headings was wrong. So our unit-test
+for this error message succeeds correctly.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05_postprocessing.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Post-Processing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../Reference.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-grammar-tests">Writing grammar-tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-grammar-tests">Running grammar-tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-test-runner-script">The test-runner-script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#test-reports">Test-reports</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging failed tests</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-workflows">Development-Workflows</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#top-down-grammar-development">Top-Down-Grammar-Development</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bottom-up-grammar-development">Bottom-Up-Grammar-Development</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linking-both-approaches">Linking both approaches</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#final-remarks">Final remarks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monitoring-ast-creation">Monitoring AST-creation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-tree-structure-directly">Testing the tree-structure directly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-string-content-of-a-tree">Testing the string-content of a tree</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-processing-pipeline">Testing the processing-pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preparing-tests-for-a-processing-stage">Preparing tests for a processing-stage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-tests-for-a-processing-stage">Writing tests for a processing-stage</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conventional-unit-testing">Conventional Unit-Testing</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -31,7 +31,7 @@ from __future__ import annotations
 import collections.abc
 from functools import partial, singledispatch, reduce
 import operator
-from typing import AbstractSet, Callable, cast, Container, Dict, \
+from typing import Set, Callable, cast, Container, Dict, \
     Tuple, List, Sequence, Union, Optional
 
 try:
@@ -43,7 +43,7 @@ from DHParser.error import ErrorCode, AST_TRANSFORM_CRASH, ERROR
 from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, LEAF_PTYPES, PLACEHOLDER, \
     RootNode, parse_sxpr, flatten_sxpr, Path, pp_path
 from DHParser.toolkit import issubtype, isgenerictype, expand_table, smart_list, re, \
-    deprecation_warning, TypeAlias, ByteString
+    deprecation_warning, TypeAlias, ByteString, type_origin
 
 
 __all__ = ('TransformationDict',
@@ -98,7 +98,8 @@ __all__ = ('TransformationDict',
            'merge_connected',
            'merge_results',
            'move_fringes',
-           'pull_up',
+           # 'pull_up',
+           # 'pull_out',
            'left_associative',
            'lean_left',
            'apply_if',
@@ -198,14 +199,14 @@ def transformation_factory(t1=None, t2=None, t3=None, t4=None, t5=None):
 
     Usage::
 
-        @transformation_factory(AbstractSet[str])
+        @transformation_factory(Set[str])
         def remove_tokens(path, tokens):
             ...
 
     or, alternatively::
 
         @transformation_factory
-        def remove_tokens(path, tokens: AbstractSet[str]):
+        def remove_tokens(path, tokens: Set[str]):
             ...
 
     Example::
@@ -239,17 +240,24 @@ def transformation_factory(t1=None, t2=None, t3=None, t4=None, t5=None):
         #                     "decorator. Use the equivalent non-generic type instead!"
         #                     % str(t))
         t = real_type(t)
-        if isgenerictype(t):
-            raise TypeError("Generic Type %s not permitted\n in transformation_factory "
-                            "decorator. Use the equivalent non-generic type instead!"
-                            % str(t))
         if issubtype(Path, t):
             raise TypeError("Sequence type %s not permitted\nin transformation_factory "
                             "decorator, because it could be mistaken for a base class "
                             "of Path\nwhich is the type of the canonical first "
                             "argument of transformation functions. Try 'tuple' instead!"
                             % str(t))
+        if isgenerictype(t):
+            t = type_origin(t)[0]
+            # raise TypeError("Generic Type %s not permitted\n in transformation_factory "
+            #                 "decorator. Use the equivalent non-generic type instead!"
+            #                 % str(t))
         return t
+
+    def mkset(args):
+        args0 = next(iter(args))
+        if len(args) == 1 and isinstance(args0, (set, frozenset)):
+            return set(args0)
+        return set(args)
 
     def decorator(f):
         nonlocal t1
@@ -268,10 +276,12 @@ def transformation_factory(t1=None, t2=None, t3=None, t4=None, t5=None):
         elif issubtype(p1type, type_guard(t1)):
             try:
                 if len(params) == 1 and issubtype(p1type, Container) \
-                        and not (issubtype(p1type, str) or issubtype(p1type, ByteString)):
+                        and (getattr(p1type, '__origin__', None) is Union  # isinstance(p1type, Union)
+                             or not issubtype(p1type, (str, ByteString))):
                     def gen_special(*args):
-                        c = set(args) if issubtype(p1type, AbstractSet) else \
-                            tuple(args) if issubtype(p1type, Sequence) else args
+                        c = mkset(args) if issubtype(p1type, (Set, frozenset)) \
+                            else tuple(args) if issubtype(p1type, Sequence) \
+                            else args
                         d = {params[0].name: c}
                         return partial(f, **d)
                     assert p1type.__args__ is not None, "Please use more specific container " \
@@ -627,14 +637,14 @@ def neg(path: Path, bool_func: collections.abc.Callable) -> Optional[bool]:
 
 
 @transformation_factory(collections.abc.Set)
-def any_of(path: Path, bool_func_set: AbstractSet[collections.abc.Callable]) -> bool:
+def any_of(path: Path, bool_func_set: Set[collections.abc.Callable]) -> bool:
     """Returns True, if any of the bool functions in `bool_func_set` evaluate to True
     for the given path."""
     return any(bf(path) for bf in bool_func_set)
 
 
 @transformation_factory(collections.abc.Set)
-def all_of(path: Path, bool_func_set: AbstractSet[collections.abc.Callable]) -> bool:
+def all_of(path: Path, bool_func_set: Set[collections.abc.Callable]) -> bool:
     """Returns True, if all the bool functions in `bool_func_set` evaluate to True
     for the given path."""
     return all(bf(path) for bf in bool_func_set)
@@ -718,7 +728,7 @@ def is_empty(path: Path) -> bool:
 
 
 @transformation_factory(collections.abc.Set)
-def is_token(path: Path, tokens: AbstractSet[str] = frozenset()) -> bool:
+def is_token(path: Path, tokens: Union[Set[str], str] = set()) -> bool:
     """
     Checks whether the last node in the path has the name ":Text"
     and it's content matches one of the given tokens. Leading and trailing
@@ -730,7 +740,7 @@ def is_token(path: Path, tokens: AbstractSet[str] = frozenset()) -> bool:
 
 
 @transformation_factory(collections.abc.Set)
-def is_one_of(path: Path, name_set: AbstractSet[str]) -> bool:
+def is_one_of(path: Path, name_set: Union[Set[str], str]) -> bool:
     """Returns true, if the node's name is one of the given tag names."""
     return path[-1].name in name_set
 
@@ -742,7 +752,7 @@ def is_a(path: Path, name: str) -> bool:
 
 
 @transformation_factory(collections.abc.Set)
-def not_one_of(path: Path, name_set: AbstractSet[str]) -> bool:
+def not_one_of(path: Path, name_set: Union[Set[str], str]) -> bool:
     """Returns true, if the node's name is not one of the given tag names."""
     return path[-1].name not in name_set
 
@@ -795,9 +805,7 @@ def has_attr(path: Path, attr: str="", value: Optional[str] = None) -> bool:
         raise ValueError('Function DHParser.transform.has_attr() expects a path, not a node! '
                          'Use method node.has_attr() to check whether a node has attributes '
                          'or has a particular attribute or a particular attribute value?')
-    assert isinstance(path, List), f"Object {path} is not a list of nodes! Did you write has_attr when meant hasattr?"
     node = path[-1]
-    assert isinstance(path, Node), f"Object {path} is not a list of nodes! Did you write has_attr when meant hasattr?"
     if not attr:
         return node.has_attr()
     if value is None:
@@ -808,9 +816,9 @@ def has_attr(path: Path, attr: str="", value: Optional[str] = None) -> bool:
 
 @transformation_factory(collections.abc.Set)
 def has_ancestor(path: Path,
-                 name_set: AbstractSet[str],
+                 name_set: Union[Set[str], str],
                  generations: int = -1,
-                 until: Union[AbstractSet[str], str] = frozenset()) -> bool:
+                 until: Union[Set[str], str] = set()) -> bool:
     """
     Checks whether a node with one of the given tag names appears somewhere
     in the path before the last node in the path.
@@ -840,7 +848,7 @@ def has_ancestor(path: Path,
 
 
 @transformation_factory(collections.abc.Set)
-def has_parent(path: Path, name_set: AbstractSet[str]) -> bool:
+def has_parent(path: Path, name_set: Union[Set[str], str]) -> bool:
     """Checks whether the immediate predecessor in the path has one of the
     given tags."""
     return has_ancestor(path, name_set, 1)
@@ -852,9 +860,9 @@ def has_children(path: Path) -> bool:
 
 
 @transformation_factory(collections.abc.Set)
-def has_descendant(path: Path, name_set: AbstractSet[str],
+def has_descendant(path: Path, name_set: Union[Set[str], str],
                    generations: int = -1,
-                   until: Union[AbstractSet[str], str] = frozenset()) -> bool:
+                   until: Union[Set[str], str] = set()) -> bool:
     """Checks whether a node with one of the given tag names appears somewhere
     among the descendants (children and children's children etc.)
     of the last node in the path.
@@ -887,14 +895,14 @@ def has_descendant(path: Path, name_set: AbstractSet[str],
 
 
 @transformation_factory(collections.abc.Set)
-def has_child(path: Path, name_set: AbstractSet[str]) -> bool:
+def has_child(path: Path, name_set: Union[Set[str], str]) -> bool:
     """Checks whether at least one child (i.e. immediate descendant) has one of
     the given tags."""
     return has_descendant(path, name_set, 1)
 
 
 @transformation_factory(collections.abc.Set)
-def has_sibling(path: Path, name_set: AbstractSet[str]):
+def has_sibling(path: Path, name_set: Union[Set[str], str]):
     """Checks whether the last node in the path has a node with one of the
     given names as sibling."""
     if len(path) >= 2:
@@ -1281,13 +1289,13 @@ def collapse_children_if(path: Path,
 
 
 def fuse_anonymous_leaves(result: list[Node]) -> list[Node, ...]:
-    """Mereges all anonymous leave nodes and returns a list of the
-    merge nodes, e.g.::
+    """Merges all anonymous leave nodes and returns a list of the
+    merged nodes, e.g.::
 
-    >>> tree = parse_sxpr('(p (:t "alpha") (:t "beta") (x "zzz") (:y (:t "uuu")) (:t "gamma"))')
-    >>> tree.result = tuple(fuse_anonymous_leaves(list(tree.children)))
-    >>> print(tree.as_sxpr())
-    (p (:t "alphabeta") (x "zzz") (:y (:t "uuu")) (:t "gamma"))
+        >>> tree = parse_sxpr('(p (:t "alpha") (:t "beta") (x "zzz") (:y (:t "uuu")) (:t "gamma"))')
+        >>> tree.result = tuple(fuse_anonymous_leaves(list(tree.children)))
+        >>> print(tree.as_sxpr())
+        (p (:t "alphabeta") (x "zzz") (:y (:t "uuu")) (:t "gamma"))
     """
     i = 0
     L = len(result)
@@ -1626,51 +1634,101 @@ def move_fringes(path: Path, condition: CondFunc, *, side:str = "both", merge: b
         parent._set_result(parent_children[:a + 1] + before + (node,) + after + parent_children[b:])
 
 
-def pull_up(path):
-    """Moves the last Node in the list one level up in the hierarchy.
+# WARNING: pull_up or pull_out shouldn't be used because they change grandparents
+#          which potentially messes up tree-traversal...
 
-    >>> tree = parse_sxpr('(p (t "A") (i (t "1") (X "---") (t "2")) (t "B"))')
-    >>> path = tree.pick_path('X')
-    >>> pull_up(path)
-    >>> print(tree.as_sxpr())
-    (p (t "A") (i (t "1")) (X (i "---")) (i (t "2")) (t "B"))
+# def _pull_up_or_out(path, keep_markup: bool):
+#     """See :py:meth:`pull_up` and :py:meth:`pull_out`."""
+#     node = path[-1]
+#     if len(path) <= 2:
+#         return
+#     parent = path[-2]
+#     ur_parent = path[-3]
+#     try:
+#         i = parent.index(node)
+#         i2 = ur_parent.index(parent)
+#     except ValueError:
+#         parent = path[0].find_parent(node)
+#         ur_parent = path[0].find_parent(parent)
+#         i = parent.index(node)
+#         i2 = ur_parent.index(parent)
+#     if keep_markup:
+#         node._set_result(Node(parent.name, node.result).with_pos(node._pos).with_attr(parent.attr))
+#     children = ur_parent._children
+#     inlay = []
+#     if i > 0:
+#         inlay.append(Node(parent.name, parent[:i]).with_pos(parent._pos).with_attr(parent.attr))
+#     inlay.append(node)
+#     if i < len(parent.children) - 1:
+#         inlay.append(Node(parent.name, parent[i + 1:]).with_pos(parent[i + 1]._pos).with_attr(parent.attr))
+#     ur_parent._set_result(children[:i2] + tuple(inlay) + children[i2 + 1:])
 
-    >>> tree = parse_sxpr('(p (t "A") (i (X "---") (t "2")) (t "B"))')
-    >>> path = tree.pick_path('X')
-    >>> pull_up(path)
-    >>> print(tree.as_sxpr())
-    (p (t "A") (X (i "---")) (i (t "2")) (t "B"))
 
-    >>> tree = parse_sxpr('(p (t "A") (i  (t "1") (X "---")) (t "B"))')
-    >>> path = tree.pick_path('X')
-    >>> pull_up(path)
-    >>> print(tree.as_sxpr())
-    (p (t "A") (i (t "1")) (X (i "---")) (t "B"))
-
-    >>> tree = parse_sxpr('(p (t "A") (i (X "---")) (t "B"))')
-    >>> path = tree.pick_path('X')
-    >>> pull_up(path)
-    >>> print(tree.as_sxpr())
-    (p (t "A") (X (i "---")) (t "B"))
-
-    EXPERIMENTAL!!!
-    """
-    node = path[-1]
-    if len(path) <= 2:
-        return
-    parent = path[-2]
-    ur_parent = path[-3]
-    i = parent.index(node)
-    i2 = ur_parent.index(parent)
-    node._set_result(Node(parent.name, node.result).with_pos(node._pos).with_attr(parent.attr))
-    children = ur_parent._children
-    inlay = []
-    if i > 0:
-        inlay.append(Node(parent.name, parent[:i]).with_pos(parent._pos).with_attr(parent.attr))
-    inlay.append(node)
-    if i < len(parent.children) - 1:
-        inlay.append(Node(parent.name, parent[i + 1:]).with_pos(parent[i + 1]._pos).with_attr(parent.attr))
-    ur_parent._set_result(children[:i2] + tuple(inlay) + children[i2 + 1:])
+# def pull_up(path, keep_markup: bool = True):
+#     """Moves the last Node in the list one level up in the hierarchy, but
+#     leaving markup intact. This means that a single child of the same type
+#     and with the same attributes as the parent node will be added to the
+#     moved up node that takes the content the node had before moving up.
+#     (See examples, below!) Use :py:func:`pull_out` if you don't want to
+#     keep the markup intact.
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i (t "1") (X "---") (t "2")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_up(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (i (t "1")) (X (i "---")) (i (t "2")) (t "B"))
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i (X "---") (t "2")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_up(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (X (i "---")) (i (t "2")) (t "B"))
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i  (t "1") (X "---")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_up(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (i (t "1")) (X (i "---")) (t "B"))
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i (X "---")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_up(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (X (i "---")) (t "B"))
+#     """
+#     _pull_up_or_out(path, keep_markup=True)
+#
+#
+# def pull_out(path):
+#     """Moves the last Node in the list one level up in the hierarchy,
+#     breaking up the surrounding markup. Use :py:func:`pull_up` if you
+#     want to keep the surrounding markup intact.
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i (t "1") (X "---") (t "2")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_out(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (i (t "1")) (X "---") (i (t "2")) (t "B"))
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i (X "---") (t "2")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_out(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (X "---") (i (t "2")) (t "B"))
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i  (t "1") (X "---")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_out(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (i (t "1")) (X "---") (t "B"))
+#
+#     >>> tree = parse_sxpr('(p (t "A") (i (X "---")) (t "B"))')
+#     >>> path = tree.pick_path('X')
+#     >>> pull_out(path)
+#     >>> print(tree.as_sxpr())
+#     (p (t "A") (X "---") (t "B"))
+#     """
+#     _pull_up_or_out(path, keep_markup=False)
 
 
 def left_associative(path: Path):
@@ -1691,7 +1749,7 @@ def left_associative(path: Path):
 
 
 @transformation_factory(collections.abc.Set)
-def lean_left(path: Path, operators: AbstractSet[str]):
+def lean_left(path: Path, operators: Union[Set[str], str]):
     """
     Turns a right-leaning tree into a left-leaning tree:
 
@@ -1794,7 +1852,7 @@ def keep_children_if(path: Path, condition: CondFunc):
 
 
 @transformation_factory(collections.abc.Set)
-def keep_tokens(path: Path, tokens: AbstractSet[str] = frozenset()):
+def keep_tokens(path: Path, tokens: Union[Set[str], str] = set()):
     """Removes any among a particular set of tokens from the immediate
     descendants of a node. If ``tokens`` is the empty set, all tokens
     are removed."""
@@ -1802,7 +1860,7 @@ def keep_tokens(path: Path, tokens: AbstractSet[str] = frozenset()):
 
 
 @transformation_factory(collections.abc.Set)
-def keep_nodes(path: Path, names: AbstractSet[str]):
+def keep_nodes(path: Path, names: Union[Set[str], str]):
     """Removes children by tag name."""
     keep_children_if(path, partial(is_one_of, name_set=names))
 
@@ -1875,7 +1933,7 @@ def remove_brackets(path: Path):
 
 
 @transformation_factory(collections.abc.Set)
-def remove_tokens(path: Path, tokens: AbstractSet[str] = frozenset()):
+def remove_tokens(path: Path, tokens: Union[Set[str], str] = set()):
     """Removes any among a particular set of tokens from the immediate
     descendants of a node. If ``tokens`` is the empty set, all tokens
     are removed."""
@@ -1883,7 +1941,7 @@ def remove_tokens(path: Path, tokens: AbstractSet[str] = frozenset()):
 
 
 @transformation_factory(collections.abc.Set)
-def remove_children(path: Path, names: AbstractSet[str]):
+def remove_children(path: Path, names: Union[Set[str], str]):
     """Removes children by tag name."""
     remove_children_if(path, partial(is_one_of, name_set=names))
 
@@ -1965,7 +2023,7 @@ def add_attributes(path: Path, attributes: dict):  # Dict[str, str]
 
 
 @transformation_factory
-def del_attributes(path: Path, attributes: collections.abc.Set = frozenset()):  # Set[str]
+def del_attributes(path: Path, attributes: collections.abc.Set = set()):  # Set[str]
     """
     Removes XML-attributes from the last node in the given path.
     If the given set is empty, all attributes will be deleted.
@@ -2027,7 +2085,7 @@ def node_maker(name: str,
 
 
 @transformation_factory(collections.abc.Set)
-def positions_of(path: Path, names: AbstractSet[str] = frozenset()) -> Tuple[int, ...]:
+def positions_of(path: Path, names: Union[Set[str], str] = set()) -> Tuple[int, ...]:
     """Returns a (potentially empty) tuple of the positions of the
     children that have one of the given `names`.
     """
@@ -2165,7 +2223,7 @@ def assert_content(path: Path, regexp: str):
 
 
 @transformation_factory(collections.abc.Set)
-def require(path: Path, child_tags: AbstractSet[str]):
+def require(path: Path, child_tags: Union[Set[str], str]):
     node = path[-1]
     for child in node._children:
         if child.name not in child_tags:
@@ -2174,7 +2232,7 @@ def require(path: Path, child_tags: AbstractSet[str]):
 
 
 @transformation_factory(collections.abc.Set)
-def forbid(path: Path, child_tags: AbstractSet[str]):
+def forbid(path: Path, child_tags: Union[Set[str], str]):
     node = path[-1]
     for child in node._children:
         if child.name in child_tags:

@@ -17,7 +17,7 @@
 
 
 """
-Module ``toolkit`` contains utility functions that are needed across
+Module "toolkit" contains utility functions that are needed across
 several of the other DHParser-Modules Helper functions that are not
 needed in more than one module are best placed within that module and
 not in the toolkit-module. Acceptable exceptions to this rule are
@@ -31,29 +31,18 @@ import functools
 import io
 import json
 import os
+import re
 import sys
 
 
-try:
-    if sys.version.find('PyPy') >= 0:
-        import re  # regex might not work with PyPy reliably: https://pypi.org/project/regex/
-    else:
-        import regex as re
-except ImportError:
-    import re
-
 if sys.version_info >= (3, 12, 0):
     from collections.abc import Iterable, Sequence, Set, MutableSet, Callable, Container, Hashable
-    from typing import Any, Type, Union, Optional, TypeAlias, Protocol
-    AbstractSet = Set
-    FrozenSet = frozenset
-    Dict = dict
-    List = list
-    Tuple = tuple
-    ByteString: TypeAlias = Union[bytes, bytearray]
+    from typing import Any, Type, Union, Optional, TypeAlias, Protocol, FrozenSet, \
+        Dict, List, Tuple
+    ByteString: TypeAlias = Union[bytes, bytearray, memoryview]
     static = staticmethod
 else:
-    from typing import Any, Iterable, Sequence, Set, AbstractSet, Union, Dict, List, Tuple, \
+    from typing import Any, Iterable, Sequence, Set, Union, Dict, List, Tuple, \
         FrozenSet, MutableSet, Optional, Type, Callable, Container, Hashable, ByteString
     try:
         from typing import Protocol
@@ -79,7 +68,7 @@ except (NameError, ImportError):
     import DHParser.externallibs.shadow_cython as cython
 
 from DHParser.configuration import access_thread_locals, get_config_value, set_config_value, \
-    CONFIG_PRESET, NEVER_MATCH_PATTERN
+    reset_config_dict, CONFIG_PRESET, NEVER_MATCH_PATTERN
 from DHParser.stringview import StringView
 
 
@@ -91,7 +80,6 @@ __all__ = ('re',
            'CancelQuery',
            'get_annotations',
            # 'gen_id',
-           'ThreadLocalSingletonFactory',
            'LazyRE',
            'RX_ENTITY',
            'RX_NON_ASCII',
@@ -103,6 +91,7 @@ __all__ = ('re',
            'xml_entity',
            'char_code',
            'RxPatternType',
+           'RxType',
            'escape_re',
            'escape_ctrl_chars',
            'is_filename',
@@ -129,6 +118,7 @@ __all__ = ('re',
            'line_col',
            'text_pos',
            'normalize_docstring',
+           'type_origin',
            'issubtype',
            'isgenerictype',
            'DeserializeFunc',
@@ -155,9 +145,12 @@ __all__ = ('re',
            'DHPARSER_DIR',
            'deprecated',
            'deprecation_warning',
+           'ThreadLocalSingletonFactory',
            'SingleThreadExecutor',
+           'ExecutorWrapper',
            'multiprocessing_broken',
            'MultiCoreManager',
+           'disable_multi_interp_extensions_check',
            'PickMultiCoreExecutor',
            'instantiate_executor',
            'cpu_count',
@@ -165,7 +158,6 @@ __all__ = ('re',
            'Iterable',
            'Sequence',
            'Set',
-           'AbstractSet',
            'MutableSet',
            'FrozenSet',
            'Callable',
@@ -210,118 +202,6 @@ def identity(x):
 
 
 CancelQuery: TypeAlias = Callable[[], bool]  # A type for a cancellation-callback
-
-
-global_id_counter: int = 0
-
-
-def gen_id() -> int:
-    """Generates a unique id. (Not thread-safe!)"""
-    global global_id_counter
-    global_id_counter += 1
-    return global_id_counter
-
-
-class ThreadLocalSingletonFactory:
-    """
-    Generates a singleton-factory that returns one and
-    the same instance of `class_or_factory` for one and the
-    same thread, but different instances for different threads.
-
-    Note: Parameter uniqueID should be provided if class_or_factory is
-    not unique but generic. See the source code of
-    :py:func:`DHParser.dsl.create_transtable_junction`
-    """
-    def __init__(self, class_or_factory, name: str = "", *,
-                 uniqueID: Union[str, int] = 0,
-                 ident=None):
-        if ident is not None:
-            deprecation_warning('Parameter "ident" of DHParser.toolkit.ThreadLocalSingletonFactory'
-                                ' is deprecated and will be ignored.')
-        self.class_or_factory = class_or_factory
-        # partial functions do not have a __name__ attribute!
-        name = name or getattr(class_or_factory, '__name__', '') or class_or_factory.func.__name__
-        if not uniqueID:
-            if not hasattr(self.__class__, 'lock'):
-                import threading
-                self.__class__.lock = threading.Lock()
-            with self.__class__.lock:
-                uniqueID = gen_id()
-        self.singleton_name = f"{name}_{str(id(self))}_{str(uniqueID)}_singleton"
-        THREAD_LOCALS = access_thread_locals()
-        assert not hasattr(THREAD_LOCALS, self.singleton_name), self.singleton_name
-
-    def __call__(self):
-        THREAD_LOCALS = access_thread_locals()
-        try:
-            singleton = getattr(THREAD_LOCALS, self.singleton_name)
-        except AttributeError:
-            setattr(THREAD_LOCALS, self.singleton_name, self.class_or_factory())
-            singleton = getattr(THREAD_LOCALS, self.singleton_name)
-        return singleton
-
-
-@functools.lru_cache()
-def is_filename(strg: str) -> bool:
-    r"""
-    Tries to guess whether the given string is a file name. It is
-    assumed that it is NOT a filename if any of the following
-    conditions is true:
-
-    - It starts with a byte-order mark, i.e. '\ufffe' or '\ufeff'.
-    - It starts or ends with a blank, i.e. " ".
-    - It contains any of the characters in the set [\*?"<>|].
-
-    For disambiguation of non-filenames it is best to add a
-    byteorder-mark to the beginning of the string, because this
-    will be stripped by the DHParser's parser, anyway!
-    """
-    return strg and strg[0:1] not in ('\ufeff', '\ufffe') \
-        and strg[0:3] not in ('\xef\xbb\xbf', '\x00\x00\ufeff', '\x00\x00\ufffe') \
-        and strg.find('\n') < 0 \
-        and strg[:1] != " " and strg[-1:] != " " \
-        and all(strg.find(ch) < 0 for ch in '*?"<>|')
-
-
-def is_html_name(url: str) -> bool:
-    """Returns True if the URL ends with .htm or .html"""
-    return url[-5:].lower() == '.html' or url[-4:].lower() == '.htm'
-
-
-@cython.locals(i=cython.int, L=cython.int)
-def relative_path(from_path: str, to_path: str) -> str:
-    """Returns the relative path in order to open a file from
-    `to_path` when the script is running in `from_path`. Example::
-
-        >>> relative_path('project/common/dir_A', 'project/dir_B').replace(chr(92), '/')
-        '../../dir_B'
-    """
-    from_path = os.path.normpath(os.path.abspath(from_path)).replace('\\', '/')
-    to_path = os.path.normpath(os.path.abspath(to_path)).replace('\\', '/')
-    if from_path and from_path[-1] != '/':
-        from_path += '/'
-    if to_path and to_path[-1] != '/':
-        to_path += '/'
-    i = 0
-    L = min(len(from_path), len(to_path))
-    while i < L and from_path[i] == to_path[i]:
-        i += 1
-    return os.path.normpath(from_path[i:].count('/') * '../' + to_path[i:])
-
-
-def split_path(path: str) -> Tuple[str, ...]:
-    """Splits a filesystem path into its components. Other than
-    os.path.split(), it does not only split of the last part::
-
-        >>> split_path('a/b/c')
-        ('a', 'b', 'c')
-        >>> os.path.split('a/b/c')  # for comparison.
-        ('a/b', 'c')
-    """
-    split = os.path.split(path)
-    while split[0]:
-        split = os.path.split(split[0]) + split[1:]
-    return split[1:]
 
 
 def concurrent_ident() -> str:
@@ -433,13 +313,16 @@ def deprecation_warning(message: str):
         except DeprecationWarning as e:
             try:
                 deprecation_policy = get_config_value('deprecation_policy')
-            except AssertionError as e:
+            except AssertionError:
                 deprecation_policy = 'warn'
-                print(e)
             if deprecation_policy == 'warn':
                 import traceback
-                stacktrace = traceback.format_exc()
-                print(stacktrace)
+                stack = traceback.extract_stack()
+                for i in range(len(stack) - 1, -1, -1):
+                    if stack[i].filename.startswith('<frozen importlib._bootstrap'):
+                        del stack[i]
+                traceback.print_list(stack[:-1])  # '\n'.join(traceback_format_list(stack[:-1]
+                print(e)
             else:
                 raise e
 
@@ -461,23 +344,33 @@ def deprecated(message: str) -> Callable:
     assert isinstance(message, str)
 
     def decorator(f: Callable) -> Callable:
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            deprecation_warning(message or str(f))
-            return f(*args, **kwargs)
-        return wrapper
+        if cython.compiled:
+            def wrapper(*args, **kwargs):
+                deprecation_warning(message or str(f))
+                return f(*args, **kwargs)
+            return wrapper
+        else:
+            @functools.wraps(f)
+            def wrapper(*args, **kwargs):
+                deprecation_warning(message or str(f))
+                return f(*args, **kwargs)
+            return wrapper
     return decorator
 
 
 def get_annotations(item):
-    if sys.version_info >= (3, 14):
+    if sys.version_info >= (3, 14, 0):
         from annotationlib import get_annotations, Format
         return get_annotations(item, format=Format.VALUE)
-    elif sys.version_info >= (3, 10):
+    elif sys.version_info >= (3, 10, 0):
         import inspect
         return inspect.get_annotations(item)
     else:
-        return item.__annotations__
+        try:
+            return item.__annotations__
+        except AttributeError: # Python Version 3.8 compatibility
+            assert isinstance(item, functools.partial)
+            return item.func.__annotations__
 
 
 #######################################################################
@@ -519,21 +412,91 @@ def normalize_circular_path(path: Tuple[str, ...]) -> Tuple[str, ...]:
         >>> normalize_circular_path(('term', 'factor', 'expression'))
         ('expression', 'term', 'factor')
     """
-    assert isinstance(path, Tuple)
+    assert isinstance(path, Tuple), type(path)
     first_sym = min(path)
     i = path.index(first_sym)
     return path[i:] + path[:i]
 
 
-def normalize_circular_paths(path: Union[Tuple[str, ...], AbstractSet[Tuple[str, ...]]]) \
+def normalize_circular_paths(path: Union[Tuple[str, ...], Set[Tuple[str, ...]]]) \
         -> Union[Tuple[str, ...], MutableSet[Tuple[str, ...]], MutableSet]:
     """Like :py:func:`normalize_circular_path`, but normalizes a whole set of
     paths at once.
     """
-    if isinstance(path, AbstractSet):
+    if isinstance(path, (Set, frozenset)):
         return {normalize_circular_path(p) for p in path}
     else:
         return normalize_circular_path(path)
+
+
+#######################################################################
+#
+#  files and directories
+#
+#######################################################################
+
+
+@functools.lru_cache()
+def is_filename(strg: str) -> bool:
+    r"""
+    Tries to guess whether the given string is a file name. It is
+    assumed that it is NOT a filename if any of the following
+    conditions is true:
+
+    - It starts with a byte-order mark, i.e. '\ufffe' or '\ufeff'.
+    - It starts or ends with a blank, i.e. " ".
+    - It contains any of the characters in the set [\*?"<>|].
+
+    For disambiguation of non-filenames it is best to add a
+    byteorder-mark to the beginning of the string, because this
+    will be stripped by the DHParser's parser, anyway!
+    """
+    return bool(strg) and strg[0:1] not in ('\ufeff', '\ufffe') \
+        and strg[0:3] not in ('\xef\xbb\xbf', '\x00\x00\ufeff', '\x00\x00\ufffe') \
+        and strg.find('\n') < 0 \
+        and strg[:1] != " " and strg[-1:] != " " \
+        and all(strg.find(ch) < 0 for ch in '*?"<>|')
+
+
+def is_html_name(url: str) -> bool:
+    """Returns True if the URL ends with .htm or .html"""
+    return url[-5:].lower() == '.html' or url[-4:].lower() == '.htm'
+
+
+@cython.locals(i=cython.int, L=cython.int)
+def relative_path(from_path: str, to_path: str) -> str:
+    """Returns the relative path in order to open a file from
+    `to_path` when the script is running in `from_path`. Example::
+
+        >>> relative_path('project/common/dir_A', 'project/dir_B').replace(chr(92), '/')
+        '../../dir_B'
+    """
+    from_path = os.path.normpath(os.path.abspath(from_path)).replace('\\', '/')
+    to_path = os.path.normpath(os.path.abspath(to_path)).replace('\\', '/')
+    if from_path and from_path[-1] != '/':
+        from_path += '/'
+    if to_path and to_path[-1] != '/':
+        to_path += '/'
+    i = 0
+    L = min(len(from_path), len(to_path))
+    while i < L and from_path[i] == to_path[i]:
+        i += 1
+    return os.path.normpath(from_path[i:].count('/') * '../' + to_path[i:])
+
+
+def split_path(path: str) -> Tuple[str, ...]:
+    """Splits a filesystem path into its components. Other than
+    os.path.split(), it does not only split of the last part::
+
+        >>> split_path('a/b/c')
+        ('a', 'b', 'c')
+        >>> os.path.split('a/b/c')  # for comparison.
+        ('a/b', 'c')
+    """
+    split: Tuple[str, ...] = os.path.split(path)
+    while split[0]:
+        split = os.path.split(split[0]) + split[1:]
+    return split[1:]
 
 
 #######################################################################
@@ -558,7 +521,7 @@ class LazyRE:
     def __init__(self, regexp: str, flags = 0):
         self.regexp = regexp
         self.re_flags = flags
-        self.rx = None
+        self.rx: Optional[RxPatternType] = None
 
     def compile_me(self):
         if self.rx is None:
@@ -635,20 +598,24 @@ class LazyRE:
         return self.rx.subn(*args, **kwargs)
 
 
-# RX_NEVER_MATCH = LazyRE(NEVER_MATCH_PATTERN)  # DEPRECATED: moved to parse.py
+RX_NEVER_MATCH = LazyRE(NEVER_MATCH_PATTERN)  # DEPRECATED: moved to parse.py
 try:
     RxPatternType: TypeAlias = re.Pattern
 except AttributeError:
-    RxPatternType: TypeAlias = Any
+    RxPatternType = Any
+    # RxPatternType: TypeAlias = Any  # cython crashes here!
 
 
-def subf(rx: Union[RxPatternType, LazyRE], repl: Callable[[str], str], text) -> str:
+RxType: TypeAlias = Union[RxPatternType, LazyRE]
+
+
+def subf(rx: RxType, repl: Callable[[str], str], text) -> str:
     r"""Substitutes a pattern in text with a replacement that is derived
     from the found matches by a function. Example::
 
-    >>> RX_CTRL_CHARS = re.compile(r'''[\x00-\x08\x0B-\x1F]''')
-    >>> subf(RX_CTRL_CHARS, lambda s: str(ord(s)), '\r')
-    '13'
+        >>> RX_CTRL_CHARS = re.compile(r'''[\x00-\x08\x0B-\x1F]''')
+        >>> subf(RX_CTRL_CHARS, lambda s: str(ord(s)), '\r')
+        '13'
     """
     a = 0
     chunks = []
@@ -1117,18 +1084,22 @@ def char_code(unicode_ch) -> str:
 
 
 def ascii_xml_entity(ch) -> str:
-    r"""Converts a character to an XML entity. Example::
+    r"""
+    Converts a character to an XML entity. Example::
 
-    >>> print(ascii_xml_entity('\r'))
-    &#x0d;"""
+        >>> print(ascii_xml_entity('\r'))
+        &#x0d;
+    """
     return f'&#x{ord(ch):02x};'
 
 
 def ascii_char_code(ch) -> str:
-    r"""Converts a character with ord(ch) < 256 to char-code. Example::
+    r"""
+    Converts a character with ord(ch) < 256 to char-code. Example::
 
-    >>> print(ascii_char_code('a'))
-    \x61"""
+        >>> print(ascii_char_code('a'))
+        \x61
+    """
     return f'\\x{ord(ch):02x}'
 
 
@@ -1139,35 +1110,55 @@ def ascii_char_code(ch) -> str:
 #######################################################################
 
 
+def type_origin(t) -> tuple:
+    """Returns the origin, i.e. non-generic version of a generic type,
+    e.g. origin(set[str]) yields (<class set>,)"""
+    def fix(t: Any) -> Any:
+        return {'Dict': dict, 'Tuple': tuple, 'List': list}.get(t, t)
+    try:
+        if isinstance(t, (str, bytes)):  t = eval(t)
+        ot = t.__origin__
+        if ot is Union:
+            try:
+                return tuple((fix(a.__origin__) if a.__origin__ is not None else fix(a))
+                             for a in t.__args__)
+            except AttributeError:
+                try:
+                    return tuple((fix(a.__origin__) if a.__origin__ is not None else fix(a))
+                                 for a in t.__union_args__)
+                except AttributeError:
+                    return t.__args__
+    except AttributeError:
+        if t == 'unicode':  # work-around for cython bug
+            return str,
+        return fix(t),
+    return (fix(ot),) if ot is not None else (fix(t),)
+
 def issubtype(sub_type, base_type) -> bool:
     """Returns `True` if sub_type is a subtype of `base_type`.
     WARNING: Implementation is somewhat "hackish" and might break
     with new Python versions.
     """
-    def origin(t) -> tuple:
-        def fix(t: Any) -> Any:
-            return {'Dict': dict, 'Tuple': tuple, 'List': list}.get(t, t)
-        try:
-            if isinstance(t, (str, bytes)):  t = eval(t)
-            ot = t.__origin__
-            if ot is Union:
-                try:
-                    return tuple((fix(a.__origin__) if a.__origin__ is not None else fix(a))
-                                 for a in t.__args__)
-                except AttributeError:
-                    try:
-                        return tuple((fix(a.__origin__) if a.__origin__ is not None else fix(a))
-                                     for a in t.__union_args__)
-                    except AttributeError:
-                        return t.__args__
-        except AttributeError:
-            if t == 'unicode':  # work-around for cython bug
-                return str,
-            return fix(t),
-        return (fix(ot),) if ot is not None else (fix(t),)
-    true_st = origin(sub_type)
-    true_bt = origin(base_type)[0]
-    return any(issubclass(st, true_bt) for st in true_st)
+    from inspect import isclass
+
+    def origins(t) -> tuple:
+        t = (type_origin(p)[0] for p in t) if isinstance(t, tuple) else type_origin(t)
+        t = tuple(p if isclass(p) else type_origin(p)[0] for p in t)
+        # carry_on = True
+        # while carry_on:
+        #     carry_on = False
+        #     tl = []
+        #     for p in t:
+        #         if isclass(p):
+        #             tl.append(p)
+        #         else:
+        #             tl.append(origin_(p)[0])
+        #             carry_on = True
+        # t = tuple(tl)
+        return t
+    true_st = origins(sub_type)
+    true_bt = origins(base_type)
+    return any(issubclass(st, bt) for st in true_st for bt in true_bt)
 
 
 def isgenerictype(t):
@@ -1185,6 +1176,15 @@ def isgenerictype(t):
 
 
 RX_FILEPATH = LazyRE(r'[^ \t][^\n\t?*=]+(?<![ \t])')  # r'[\w/:. \\]+'
+
+
+def get_piped_data(timeout: float = 0.1) -> str:
+    """Reads data from a unix-pipe. Ensures that script is not blocking!"""
+    import select
+    if not sys.stdin.isatty() \
+            and select.select([sys.stdin], [], [], timeout)[0]:
+        return sys.stdin.read()
+    return ''
 
 
 def load_if_file(text_or_file) -> str:
@@ -1216,6 +1216,10 @@ def load_if_file(text_or_file) -> str:
                 'Please check that the file is not corrupted.')
             raise
     else:
+        if text_or_file[0:1] in ('\ufeff', '\ufffe'):
+            text_or_file = text_or_file[1:]
+        elif text_or_file[0:3] in ('\xef\xbb\xbf', '\x00\x00\ufeff', '\x00\x00\ufffe'):
+            text_or_file = text_or_file[3:]
         return text_or_file
 
 
@@ -1331,7 +1335,10 @@ def has_fenced_code(text_or_file: str, info_strings=('ebnf', 'test')) -> bool:
     rx_fence = re.compile(fence_tmpl % (label_re, label_re), flags=re.IGNORECASE)
 
     for match in rx_fence.finditer(markdown):
-        matched_string = re.match(r'\n`+|\n~+', match.group(0)).group(0)
+        m = re.match(r'\n`+|\n~+', match.group(0))
+        if m is None:
+            continue
+        matched_string = m.group(0)
         if markdown.find(matched_string, match.end()) >= 0:
             return True
         else:
@@ -1339,7 +1346,7 @@ def has_fenced_code(text_or_file: str, info_strings=('ebnf', 'test')) -> bool:
     return False
 
 
-def md5(*txt) -> str:
+def md5(*txt):
     """
     Returns the md5-checksum for `txt`. This can be used to test if
     some piece of text, for example, a grammar source file, has changed.
@@ -1491,7 +1498,7 @@ def smart_list(arg: Union[str, Iterable, Any]) -> Union[Sequence, Set]:
             if len(lst) > 1:
                 return [s.strip() for s in lst]
         return [s.strip() for s in arg.strip().split(' ')]
-    elif isinstance(arg, Sequence) or isinstance(arg, Set):
+    elif isinstance(arg, Sequence) or isinstance(arg, (Set, frozenset)):
         return arg
     elif isinstance(arg, Iterable):
         return list(arg)
@@ -1790,6 +1797,55 @@ def pp_json_str(jsons: str) -> str:
 #
 #######################################################################
 
+global_id_counter: int = 0
+
+
+def gen_id() -> int:
+    """Generates a unique id. (Not thread-safe!)"""
+    global global_id_counter
+    global_id_counter += 1
+    return global_id_counter
+
+
+class ThreadLocalSingletonFactory:
+    """
+    Generates a singleton-factory that returns one and
+    the same instance of `class_or_factory` for one and the
+    same thread, but different instances for different threads.
+
+    Note: Parameter uniqueID should be provided if class_or_factory is
+    not unique but generic. See the source code of
+    :py:func:`DHParser.dsl.create_transtable_junction`
+    """
+    def __init__(self, class_or_factory, name: str = "", *,
+                 uniqueID: Union[str, int] = 0,
+                 ident=None):
+        if ident is not None:
+            deprecation_warning('Parameter "ident" of DHParser.toolkit.ThreadLocalSingletonFactory'
+                                ' is deprecated and will be ignored.')
+        self.class_or_factory = class_or_factory
+        # partial functions do not have a __name__ attribute!
+        name = name or getattr(class_or_factory, '__name__', '') or class_or_factory.func.__name__
+        if not uniqueID:
+            if not hasattr(self.__class__, 'lock'):
+                import threading
+                self.__class__.lock = threading.Lock()
+            with self.__class__.lock:
+                uniqueID = gen_id()
+        self.singleton_name = f"{name}_{str(id(self))}_{str(uniqueID)}_singleton"
+        THREAD_LOCALS = access_thread_locals()
+        assert not hasattr(THREAD_LOCALS, self.singleton_name), self.singleton_name
+
+    def __call__(self):
+        THREAD_LOCALS = access_thread_locals()
+        try:
+            singleton = getattr(THREAD_LOCALS, self.singleton_name)
+        except AttributeError:
+            setattr(THREAD_LOCALS, self.singleton_name, self.class_or_factory())
+            singleton = getattr(THREAD_LOCALS, self.singleton_name)
+        return singleton
+
+
 class SingleThreadExecutor:
     r"""SingleThreadExecutor is a replacement for
     concurrent.future.ProcessPoolExecutor and
@@ -1827,6 +1883,51 @@ class SingleThreadExecutor:
 
     def __exit__(self, *args, **kwargs):
         return None
+
+
+def submit_wrapper(fn, pid, args=(), kwargs={}):
+    if CONFIG_PRESET['main_pid']:
+        assert CONFIG_PRESET['main_pid'] == pid
+    else:
+        CONFIG_PRESET['main_pid'] = pid
+        reset_config_dict()
+    return fn(*args, **kwargs)
+
+
+def mapped_wrapper(*args, fn=None, pid=''):
+    if CONFIG_PRESET['main_pid']:
+        assert CONFIG_PRESET['main_pid'] == pid
+    else:
+        CONFIG_PRESET['main_pid'] = pid
+        reset_config_dict()
+    return fn(*args)
+
+
+class ExecutorWrapper:
+    def __init__(self, executor):
+        assert not isinstance(executor, ExecutorWrapper)
+        self.executor = executor
+
+    def submit(self, fn, *args, **kwargs):  # -> concurrent.futures.Future:
+        pid = CONFIG_PRESET['main_pid'] or str(os.getpid())
+        return self.executor.submit(submit_wrapper, fn, pid, args, kwargs)
+
+    def map(self, fn, *iterables, timeout=None, chunksize=1):
+        pid = CONFIG_PRESET['main_pid'] or str(os.getpid())
+        wrapper = functools.partial(mapped_wrapper, fn=fn, pid=pid)
+        return self.executor.map(wrapper, *iterables)
+
+    def shutdown(self, wait=True, *, cancel_futures=False):
+        return self.executor.shutdown(wait=wait, cancel_futures=cancel_futures)
+
+        # context-manager
+
+    def __enter__(self):
+        self.executor.__enter__()
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        return self.executor.__exit__(*args, **kwargs)
 
 
 @functools.lru_cache(None)
@@ -1942,7 +2043,6 @@ def MultiCoreManager():
         return ThreadingManagerShim()
 
 
-
 # def unpickle_result(result):
 #     import pickle
 #     try:
@@ -1975,7 +2075,7 @@ def MultiCoreManager():
 #         return self.future.exception(timeout)
 #
 #     def add_done_callback(self, fn):
-#         pass # TODO: Wrap fn
+#         pass # TOODO: Wrap fn
 #
 #
 # def pickled_return(f):
@@ -2016,6 +2116,21 @@ def MultiCoreManager():
 #         self.pool.shutdown(wait, cancel_futures=cancel_futures)
 
 
+def disable_multi_interp_extensions_check():
+    """Disables compatibility check of Python >= 3.14 InterpreterPoolExecutor.
+    See: https://github.com/cython/cython/issues/6445
+    DANGEROUS!!!"""
+    import sys
+    if sys.version_info >= (3, 14, 0):
+        import _imp
+        _imp._override_multi_interp_extensions_check(-1)
+
+
+def init_interpreter_pool_worker(parent_sys_path):
+    import sys
+    sys.path = parent_sys_path
+
+
 class PickMultiCoreExecutorShim:
     def __call__(self):  # -> Type[concurrent.futures.Executor]:
         """Returns an instance of the most lightweight
@@ -2040,9 +2155,12 @@ class PickMultiCoreExecutorShim:
         if sys.version_info >= (3, 14, 0) \
                 and CONFIG_PRESET['multicore_pool'] == 'InterpreterPool' \
                 and not getattr(DHParser.stringview, 'cython_optimized', False):
-            return concurrent.futures.InterpreterPoolExecutor()
+            return ExecutorWrapper(concurrent.futures.InterpreterPoolExecutor(
+                initializer = init_interpreter_pool_worker,
+                initargs=(sys.path,)
+            ))
         else:
-            return concurrent.futures.ProcessPoolExecutor()
+            return ExecutorWrapper(concurrent.futures.ProcessPoolExecutor())
 
 
 PickMultiCoreExecutor = PickMultiCoreExecutorShim()
@@ -2084,7 +2202,7 @@ def instantiate_executor(allow_parallel: bool,
         if mode == "singlethread":
             return SingleThreadExecutor()
         elif mode == "multithreading" or multiprocessing_broken():
-            if not issubclass(preferred_executor, concurrent.futures.ThreadPoolExecutor):
+            if not (issubclass(preferred_executor, concurrent.futures.ThreadPoolExecutor)):
                 return concurrent.futures.ThreadPoolExecutor(*args, **kwargs)
         else:
             assert mode in ("multicore", "multiprocessing"), \
@@ -2092,7 +2210,10 @@ def instantiate_executor(allow_parallel: bool,
             if mode == "multiprocessing":
                 print('Value "multiprocessing" for config-variable "debug_parallel_execution"'
                       ' is deprecated. Please, use "multicore", instead!')
-        return preferred_executor(*args, **kwargs)
+        if not isinstance(preferred_executor, (ExecutorWrapper, PickMultiCoreExecutorShim)):
+            return ExecutorWrapper(preferred_executor(*args, **kwargs))
+        else:
+            return preferred_executor(*args, **kwargs)
     return SingleThreadExecutor()
 
 

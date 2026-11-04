@@ -1,0 +1,1128 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>log &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/log';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for log</h1><div class="highlight"><pre>
+<span></span><span class="c1"># log.py - logging and debugging for DHParser</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2018  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+<span class="sd">"""</span>
+<span class="sd">Module ``log`` contains logging and debugging support for the</span>
+<span class="sd">parsing process.</span>
+
+<span class="sd">For logging functionality, the global variable LOGGING is defined which</span>
+<span class="sd">contains the name of a directory where log files shall be placed. By</span>
+<span class="sd">setting its value to the empty string "" logging can be turned off.</span>
+
+<span class="sd">To read the directory name function ``LOGS_DIR()`` should be called</span>
+<span class="sd">rather than reading the variable LOGGING. ``LOGS_DIR()`` makes sure</span>
+<span class="sd">the directory exists and raises an error if a file with the same name</span>
+<span class="sd">already exists.</span>
+
+<span class="sd">For debugging of the parsing process, the parsing history can be</span>
+<span class="sd">logged and written to an html-File.</span>
+
+<span class="sd">For ease of use module ``log`` defines a context-manager ``logging``</span>
+<span class="sd">to which either ``False`` (turn off logging), a log directory name or</span>
+<span class="sd">``True`` for the default logging directory is passed as argument.</span>
+<span class="sd">The other components of DHParser check whether logging is on and</span>
+<span class="sd">write log files in the logging directory accordingly. Usually,</span>
+<span class="sd">this will be concrete and abstract syntax trees as well as the full</span>
+<span class="sd">and abbreviated parsing history.</span>
+
+<span class="sd">Example::</span>
+
+<span class="sd">    from DHParser import compile_source, start_logging, set_config_value</span>
+<span class="sd">    start_logging("LOGS")</span>
+<span class="sd">    set_config_value('log_syntax_trees', {'CST', 'AST'})</span>
+<span class="sd">    set_config_value('history_tracking', True)</span>
+<span class="sd">    set_config_value('resume_notices', True)</span>
+<span class="sd">    result, errors, ast = compile_source(source, preprocessor, grammar,</span>
+<span class="sd">                                         transformer, compiler)</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cython</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">DHParser.externallibs.shadow_cython</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cython</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">access_presets</span><span class="p">,</span> <span class="n">finalize_presets</span><span class="p">,</span> <span class="n">get_config_value</span><span class="p">,</span> \
+    <span class="n">set_config_value</span><span class="p">,</span> <span class="n">get_preset_value</span><span class="p">,</span> <span class="n">set_preset_value</span><span class="p">,</span> <span class="n">is_accessing_presets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.stringview</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">FrozenNode</span><span class="p">,</span> <span class="n">ZOMBIE_TAG</span><span class="p">,</span> <span class="n">EMPTY_PTYPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape_ctrl_chars</span><span class="p">,</span> <span class="n">abbreviate_middle</span><span class="p">,</span> <span class="n">TypeAlias</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'CallItem'</span><span class="p">,</span>
+           <span class="s1">'start_logging'</span><span class="p">,</span>
+           <span class="s1">'suspend_logging'</span><span class="p">,</span>
+           <span class="s1">'resume_logging'</span><span class="p">,</span>
+           <span class="s1">'log_dir'</span><span class="p">,</span>
+           <span class="s1">'local_log_dir'</span><span class="p">,</span>
+           <span class="s1">'is_logging'</span><span class="p">,</span>
+           <span class="s1">'create_log'</span><span class="p">,</span>
+           <span class="s1">'append_log'</span><span class="p">,</span>
+           <span class="s1">'clear_logs'</span><span class="p">,</span>
+           <span class="s1">'NONE_TAG'</span><span class="p">,</span>
+           <span class="s1">'NONE_NODE'</span><span class="p">,</span>
+           <span class="s1">'callstack_as_str'</span><span class="p">,</span>
+           <span class="s1">'HistoryRecord'</span><span class="p">,</span>
+           <span class="s1">'log_ST'</span><span class="p">,</span>
+           <span class="s1">'log_parsing_history'</span><span class="p">)</span>
+
+
+<span class="n">CallItem</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>      <span class="c1"># call stack item: (name, location)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># basic logging functionality</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="start_logging">
+<a class="viewcode-back" href="../Reference.html#log.start_logging">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">start_logging</span><span class="p">(</span><span class="n">dirname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"LOGS"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Turns logging on and sets the log-directory to ``dirname``.</span>
+<span class="sd">    The log-directory, if it does not already exist, will be created</span>
+<span class="sd">    lazily, i.e. only when logging actually starts.</span>
+
+<span class="sd">    This function should best be called before spawning any subprocesses,</span>
+<span class="sd">    otherwise the dirname might not be propagated to the subprocesses."""</span>
+    <span class="n">accessing_presets</span> <span class="o">=</span> <span class="n">is_accessing_presets</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">accessing_presets</span><span class="p">:</span>
+        <span class="n">access_presets</span><span class="p">()</span>
+    <span class="n">log_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span> <span class="k">if</span> <span class="n">dirname</span> <span class="k">else</span> <span class="s1">''</span>
+    <span class="k">if</span> <span class="n">log_dir</span> <span class="o">!=</span> <span class="n">get_preset_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">):</span>
+        <span class="n">set_preset_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">)</span>
+        <span class="c1"># set_config_value('log_dir', log_dir)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">accessing_presets</span><span class="p">:</span>
+        <span class="n">finalize_presets</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="suspend_logging">
+<a class="viewcode-back" href="../Reference.html#log.suspend_logging">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">suspend_logging</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Suspends logging in the current thread. Returns the log-dir</span>
+<span class="sd">    for resuming logging later."""</span>
+    <span class="n">save</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">)</span>
+    <span class="n">set_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">save</span></div>
+
+
+
+<div class="viewcode-block" id="resume_logging">
+<a class="viewcode-back" href="../Reference.html#log.resume_logging">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resume_logging</span><span class="p">(</span><span class="n">log_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resumes logging in the current thread with the given log-dir."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s1">'log_dir'</span><span class="p">:</span>
+        <span class="n">access_presets</span><span class="p">()</span>
+        <span class="n">log_dir</span> <span class="o">=</span> <span class="n">get_preset_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">)</span>
+        <span class="n">finalize_presets</span><span class="p">()</span>
+    <span class="n">set_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="log_dir">
+<a class="viewcode-back" href="../Reference.html#log.log_dir">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_dir</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a directory for log files (if it does not exist) and</span>
+<span class="sd">    returns its path.</span>
+
+<span class="sd">    WARNING: Any files in the log dir will eventually be overwritten.</span>
+<span class="sd">    Don't use a directory name that could be the name of a directory</span>
+<span class="sd">    for other purposes than logging.</span>
+
+<span class="sd">    ATTENTION: The log-dir is stored thread locally, which means the log-dir</span>
+<span class="sd">    as well as the information whether logging is turned on or off will not</span>
+<span class="sd">    automatically be transferred to any subprocesses. This needs to be done</span>
+<span class="sd">    explicitly. (See :py:func:`testing.grammar_suite` for an example, how this can</span>
+<span class="sd">    be done.)</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        path: The directory path. If empty, the configured value will be</span>
+<span class="sd">            used, i.e. ``configuration.get_config_value('log_dir')``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str - name of the logging directory or "" if logging is turned off.</span>
+<span class="sd">    """</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dirname</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">''</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+    <span class="c1"># ``try ... except`` rather than ``if os.path.exists(...)`` for thread-safety</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
+        <span class="n">info_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s1">'info.txt'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">info_file_name</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">info_file_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"This directory has been created by DHParser to store log files from</span><span class="se">\n</span><span class="s2">"</span>
+                        <span class="s2">"parsing. ANY FILE IN THIS DIRECTORY CAN BE OVERWRITTEN! Therefore,</span><span class="se">\n</span><span class="s2">"</span>
+                        <span class="s2">"do not place any files here and do not bother editing files in this</span><span class="se">\n</span><span class="s2">"</span>
+                        <span class="s2">"directory as any changes will get lost.</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">'"'</span> <span class="o">+</span> <span class="n">dirname</span> <span class="o">+</span> <span class="s1">'" cannot be used as log directory, '</span>
+                                          <span class="s1">'because it is not a directory!'</span><span class="p">)</span>
+    <span class="n">set_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">,</span> <span class="n">dirname</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dirname</span></div>
+
+
+
+<div class="viewcode-block" id="local_log_dir">
+<a class="viewcode-back" href="../Reference.html#log.local_log_dir">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">local_log_dir</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'./LOGS'</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Context manager for temporarily switching to a different log-directory."""</span>
+    <span class="k">assert</span> <span class="n">path</span><span class="p">,</span> <span class="s2">"Pathname cannot be empty"</span>
+    <span class="n">saved_log_dir</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">)</span>
+    <span class="n">log_dir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">set_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">,</span> <span class="n">saved_log_dir</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_logging">
+<a class="viewcode-back" href="../Reference.html#log.is_logging">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_logging</span><span class="p">(</span><span class="n">thread_local_query</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""-&gt; True, if logging is turned on."""</span>
+    <span class="k">if</span> <span class="n">thread_local_query</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">get_config_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">access_presets</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">get_preset_value</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">))</span>
+        <span class="n">finalize_presets</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="create_log">
+<a class="viewcode-back" href="../Reference.html#log.create_log">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_log</span><span class="p">(</span><span class="n">log_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Creates a new log file. If log_name is not just a file name but a path with</span>
+<span class="sd">    at least one directory (which can be './') the file is not created in the</span>
+<span class="sd">    configured log directory but at the given path. If a file with the same</span>
+<span class="sd">    name already exists, it will be overwritten.</span>
+
+<span class="sd">    :param log_name: The file name of the log file to be created</span>
+<span class="sd">    :return: the file name of the log file or an empty string if the log-file</span>
+<span class="sd">        has not been created (e.g. because logging is still turned off and</span>
+<span class="sd">        no log-directory set).</span>
+<span class="sd">    """</span>
+    <span class="n">ldir</span><span class="p">,</span> <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">log_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ldir</span><span class="p">:</span>
+        <span class="n">ldir</span> <span class="o">=</span> <span class="n">log_dir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ldir</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ldir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ldir</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ldir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'LOG-FILE: '</span> <span class="o">+</span> <span class="n">log_name</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_name</span>
+    <span class="k">return</span> <span class="s1">''</span></div>
+
+
+
+<div class="viewcode-block" id="append_log">
+<a class="viewcode-back" href="../Reference.html#log.append_log">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">append_log</span><span class="p">(</span><span class="n">log_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">strings</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Appends one or more strings to the log-file with the name ``log_name``,</span>
+<span class="sd">    if logging is turned on and log_name is not the empty string, or</span>
+<span class="sd">    ``log_name`` contains path information.</span>
+
+<span class="sd">    :param log_name: The name of the log file. The file must already exist.</span>
+<span class="sd">        (See: :py:func:`create_log` above).</span>
+<span class="sd">    :param strings: One or more strings that will be written to the log-file.</span>
+<span class="sd">        No delimiters will be added, i.e. all delimiters like blanks or</span>
+<span class="sd">        linefeeds need to be added explicitly to the list of strings, before</span>
+<span class="sd">        calling :py:func:`append_log`.</span>
+<span class="sd">    :param echo: If True, the log message will be echoed on the terminal.</span>
+<span class="sd">        In this case the message will even be echoed if logging is turned off.</span>
+<span class="sd">    """</span>
+    <span class="n">ldir</span><span class="p">,</span> <span class="n">log_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">log_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ldir</span><span class="p">:</span>
+        <span class="n">ldir</span> <span class="o">=</span> <span class="n">log_dir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ldir</span> <span class="ow">and</span> <span class="n">log_name</span><span class="p">:</span>
+        <span class="n">log_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ldir</span><span class="p">,</span> <span class="n">log_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_path</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">create_log</span><span class="p">(</span><span class="n">log_path</span><span class="p">),</span> <span class="s1">'Could not create log file: "</span><span class="si">{}</span><span class="s1">"'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">echo</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="clear_logs">
+<a class="viewcode-back" href="../Reference.html#log.clear_logs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clear_logs</span><span class="p">(</span><span class="n">logfile_types</span><span class="o">=</span><span class="nb">frozenset</span><span class="p">([</span><span class="s1">'.cst'</span><span class="p">,</span> <span class="s1">'.ast'</span><span class="p">,</span> <span class="s1">'.log'</span><span class="p">])):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Removes all logs from the log-directory and removes the</span>
+<span class="sd">    log-directory if it is empty.</span>
+<span class="sd">    """</span>
+    <span class="n">log_dirname</span> <span class="o">=</span> <span class="n">log_dir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">log_dirname</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_dirname</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">log_dirname</span><span class="p">):</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">log_dirname</span><span class="p">)</span>
+        <span class="n">only_log_files</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dirname</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">logfile_types</span> <span class="ow">or</span> <span class="n">file</span> <span class="o">==</span> <span class="s1">'info.txt'</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">only_log_files</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">only_log_files</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">log_dirname</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># parsing history</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NoneNode</span><span class="p">(</span><span class="n">FrozenNode</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="n">NONE_TAG</span> <span class="o">=</span> <span class="s2">":None"</span>
+<span class="n">NONE_NODE</span> <span class="o">=</span> <span class="n">NoneNode</span><span class="p">(</span><span class="n">NONE_TAG</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+
+<span class="n">FlowOperatorNames</span> <span class="o">=</span> <span class="p">{</span><span class="s1">':Lookahead'</span><span class="p">:</span> <span class="s1">'&amp;'</span><span class="p">,</span>
+                     <span class="s1">':NegativeLookahead'</span><span class="p">:</span> <span class="s1">'!'</span><span class="p">,</span>
+                     <span class="s1">':Lookbehind'</span><span class="p">:</span> <span class="s1">'&lt;-&amp;'</span><span class="p">,</span>
+                     <span class="s1">':NegativeLookbehind'</span><span class="p">:</span> <span class="s1">'&lt;-!'</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="callstack_as_str">
+<a class="viewcode-back" href="../Reference.html#log.callstack_as_str">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">callstack_as_str</span><span class="p">(</span><span class="n">callstack</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CallItem</span><span class="p">],</span> <span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a string representation of the callstack!"""</span>
+    <span class="c1"># return "-&gt;".join(name for name, _ in self.call_stack)</span>
+    <span class="n">short_stack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">callstack</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">FlowOperatorNames</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">short_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">FlowOperatorNames</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="o">+</span> <span class="n">short_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">node_name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">':'</span><span class="p">:</span>
+            <span class="n">short_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="n">depth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_stack</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">"-&gt;"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">short_stack</span><span class="p">[:</span><span class="n">depth</span><span class="p">]))</span>
+    <span class="n">omitted</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_stack</span><span class="p">)</span> <span class="o">-</span> <span class="n">depth</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">omitted</span><span class="si">}</span><span class="s1">]-&gt;'</span> <span class="o">+</span> <span class="n">s</span> <span class="k">if</span> <span class="n">omitted</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">s</span></div>
+
+
+
+<div class="viewcode-block" id="HistoryRecord">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HistoryRecord</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Stores debugging information about one completed step in the</span>
+<span class="sd">    parsing history.</span>
+
+<span class="sd">    A parsing step is "completed" when the last one of a nested</span>
+<span class="sd">    sequence of parser-calls returns. The call stack including</span>
+<span class="sd">    the last parser call will be frozen in the ``HistoryRecord``-</span>
+<span class="sd">    object. In addition, a reference to the generated leaf node</span>
+<span class="sd">    (if any) will be stored and the result status of the last</span>
+<span class="sd">    parser call, which ist either MATCH, FAIL (i.e. no match)</span>
+<span class="sd">    or ERROR.</span>
+<span class="sd">    """</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'call_stack'</span><span class="p">,</span> <span class="s1">'node'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">,</span> <span class="s1">'line_col'</span><span class="p">,</span> <span class="s1">'errors'</span><span class="p">,</span> <span class="s1">'_stack'</span><span class="p">,</span> <span class="s1">'_status'</span><span class="p">,</span> <span class="s1">'_excerpt'</span><span class="p">)</span>
+
+    <span class="n">MATCH</span> <span class="o">=</span> <span class="s2">"MATCH"</span>
+    <span class="n">NMATCH</span> <span class="o">=</span> <span class="s2">"!MATCH"</span>
+    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">"DROP"</span>
+    <span class="n">NDROP</span> <span class="o">=</span> <span class="s2">"!DROP"</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">"ERROR"</span>
+    <span class="n">NFAIL</span> <span class="o">=</span> <span class="s2">"!FAIL"</span>
+    <span class="n">FAIL</span> <span class="o">=</span> <span class="s2">"FAIL"</span>
+    <span class="n">Snapshot_Fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'line'</span><span class="p">,</span> <span class="s1">'column'</span><span class="p">,</span> <span class="s1">'stack'</span><span class="p">,</span> <span class="s1">'status'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">)</span>
+    <span class="n">Snapshot</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">'Snapshot'</span><span class="p">,</span> <span class="n">Snapshot_Fields</span><span class="p">)</span>
+
+    <span class="n">COLGROUP</span> <span class="o">=</span> <span class="s1">'&lt;colgroup&gt;</span><span class="se">\n</span><span class="s1">&lt;col style="width:2%"/&gt;&lt;col style="width:2%"/&gt;&lt;col '</span> \
+               <span class="s1">'style="width:65%"/&gt;&lt;col style="width:6%"/&gt;&lt;col style="width:25%"/&gt;</span><span class="se">\n</span><span class="s1">&lt;/colgroup&gt;'</span>
+    <span class="n">HEADINGS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'&lt;tr&gt;&lt;th&gt;L&lt;/th&gt;&lt;th&gt;C&lt;/th&gt;&lt;th&gt;parser call sequence&lt;/th&gt;'</span>
+                <span class="s1">'&lt;th&gt;success&lt;/th&gt;&lt;th&gt;text matched or failed&lt;/th&gt;&lt;/tr&gt;'</span><span class="p">)</span>
+    <span class="n">HTML_LEAD_IN</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">'&lt;!DOCTYPE html&gt;</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'&lt;html lang="en"&gt;</span><span class="se">\n</span><span class="s1">&lt;head&gt;</span><span class="se">\n</span><span class="s1">&lt;meta charset="utf-8"/&gt;</span><span class="se">\n</span><span class="s1">&lt;style&gt;</span><span class="se">\n</span><span class="s1">'</span>
+<span class="w">        </span><span class="sd">"""@media (prefers-color-scheme: dark) {</span>
+<span class="sd">          body {</span>
+<span class="sd">            background: #000;</span>
+<span class="sd">            color: #fff;</span>
+<span class="sd">          } }      </span>
+<span class="sd">        @media (prefers-color-scheme: light) {</span>
+<span class="sd">          body {</span>
+<span class="sd">            background: #fff;</span>
+<span class="sd">            color: #000;</span>
+<span class="sd">          } }\n"""</span>
+        <span class="s1">'table {border-spacing: 0px; border: thin solid grey; width:100%}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'td,th {font-family:monospace; '</span>
+        <span class="s1">'border-right: thin solid grey; border-bottom: thin solid grey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'td.line, td.column {color:grey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.text {color:blue}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.lookahead {color:darkgreen}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.nofail {color:grey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.nomatch {color:grey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.dropped {color:dodgerblue}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.failtext {font-weight:normal; color:grey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.errortext {font-weight:normal; color:darkred}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.unmatched {font-weight:normal; color:lightgrey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.fail {font-weight:bold; color:darkgrey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.nfail {font-weight:bold; color:darkgrey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.error {font-weight:bold; color:red}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.match {font-weight:bold; color:green}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.nmatch {font-weight:bold; color:green}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.emptymatch {font-weight:bold; color:darkseagreen}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.emptynmatch {font-weight:bold; color:darkseagreen}</span><span class="se">\n</span><span class="s1">'</span>  
+        <span class="s1">'.drop {font-weight:bold; color:green}</span><span class="se">\n</span><span class="s1">'</span>        
+        <span class="s1">'.ndrop {font-weight:semibold; color:darkslategrey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'.matchstack {font-weight:bold;color:darkred}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'span {color:darkgrey}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'&lt;/style&gt;</span><span class="se">\n</span><span class="s1">&lt;/head&gt;</span><span class="se">\n</span><span class="s1">&lt;body&gt;</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">HTML_LEAD_OUT</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">&lt;/body&gt;</span><span class="se">\n</span><span class="s1">&lt;/html&gt;</span><span class="se">\n</span><span class="s1">'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_stack</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">CallItem</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CallItem</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span>
+                 <span class="n">node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">],</span>
+                 <span class="n">text</span><span class="p">:</span> <span class="n">StringView</span><span class="p">,</span>
+                 <span class="n">line_col</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+                 <span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">]</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call_stack</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CallItem</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">call_stack</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="n">NONE_NODE</span> <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span> <span class="n">StringView</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_col</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">line_col</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">Error</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">]</span> <span class="o">=</span> <span class="n">errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_excerpt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s1">''</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'</span><span class="si">%4i</span><span class="s1">, </span><span class="si">%2i</span><span class="s1">:  </span><span class="si">%s</span><span class="s1">;  </span><span class="si">%s</span><span class="s1">;  "</span><span class="si">%s</span><span class="s1">"'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'HistoryRecord(</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> \
+               <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_stack</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">),</span>
+                <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_col</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">))</span>
+
+<div class="viewcode-block" id="HistoryRecord.as_tuple">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord.as_tuple">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Snapshot</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns history record formatted as a snapshot tuple.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_col</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_col</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">excerpt</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HistoryRecord.as_csv_line">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord.as_csv_line">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_csv_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns history record formatted as a csv table row.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'"</span><span class="si">{}</span><span class="s1">", "</span><span class="si">{}</span><span class="s1">", "</span><span class="si">{}</span><span class="s1">", "</span><span class="si">{}</span><span class="s1">", "</span><span class="si">{}</span><span class="s1">"'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="HistoryRecord.as_html_tr">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord.as_html_tr">[docs]</a>
+    <span class="nd">@cython</span><span class="o">.</span><span class="n">locals</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_html_tr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns history record formatted as an html table row.</span>
+<span class="sd">        """</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">html</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="s1">'-&amp;gt;'</span><span class="p">,</span> <span class="s1">'&lt;span&gt;&amp;shy;-&amp;gt;&lt;/span&gt;'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'&lt;-'</span><span class="p">,</span> <span class="s1">'&amp;lt;-'</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+        <span class="n">excerpt</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excerpt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">excerpt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">' '</span><span class="p">:</span>
+            <span class="n">stripped</span> <span class="o">=</span> <span class="n">excerpt</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+            <span class="n">excerpt</span> <span class="o">=</span> <span class="s2">"&amp;nbsp;"</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">excerpt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">stripped</span><span class="p">))</span> <span class="o">+</span> <span class="n">stripped</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">HistoryRecord</span><span class="o">.</span><span class="n">Snapshot_Fields</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">field_name</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">)}</span>
+        <span class="n">status_class</span> <span class="o">=</span> <span class="s1">'error'</span> <span class="k">if</span> <span class="n">status</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'ERROR'</span> <span class="k">else</span> <span class="n">status</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'!'</span><span class="p">,</span> <span class="s1">'n'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MATCH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NMATCH</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">_result</span><span class="p">:</span>
+            <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'empty'</span> <span class="o">+</span> <span class="n">status_class</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'status'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">status_class</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MATCH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DROP</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NMATCH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NDROP</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">DROP</span><span class="p">:</span>
+                <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'text'</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'dropped'</span>
+            <span class="c1"># elif status[:1] == '!':</span>
+            <span class="c1">#     classes[idx['text']] = 'nofail'</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'&amp;'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'text'</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'lookahead'</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">40</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">excerpt</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">dots</span> <span class="o">=</span> <span class="s1">'...'</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="k">else</span> <span class="s1">''</span>
+            <span class="n">excerpt</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">excerpt</span><span class="p">,</span> <span class="s1">'&lt;span class="unmatched"&gt;'</span><span class="p">,</span>
+                               <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="n">n</span><span class="p">])),</span> <span class="n">dots</span><span class="p">,</span> <span class="s1">'&lt;/span&gt;'</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">'-&amp;gt;'</span><span class="p">)</span>
+            <span class="n">ch</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">12</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">13</span><span class="p">]</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">ch</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">()</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">'-&amp;gt;'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">ch</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">12</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">13</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">12</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'&lt;'</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">stack</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">stack</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="s1">'&lt;span class="matchstack"&gt;'</span><span class="p">,</span> <span class="n">stack</span><span class="p">[</span><span class="n">i</span><span class="p">:]])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stack</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">stack</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="s1">'&lt;span class="matchstack"&gt;'</span><span class="p">,</span> <span class="n">stack</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">k</span><span class="p">],</span>
+                                     <span class="s1">'&lt;/span&gt;'</span><span class="p">,</span> <span class="n">stack</span><span class="p">[</span><span class="n">k</span><span class="p">:]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stack</span> <span class="o">=</span> <span class="s1">'&lt;span class="matchstack"&gt;</span><span class="si">{}</span><span class="s1">&lt;/span&gt;'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">FAIL</span><span class="p">:</span>
+            <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'text'</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'failtext'</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">NFAIL</span><span class="p">:</span>
+            <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'text'</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'nofail'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">status</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">status</span>
+            <span class="n">stack</span> <span class="o">+=</span> <span class="s1">'&lt;br/&gt;</span><span class="se">\n</span><span class="s1">"</span><span class="si">%s</span><span class="s1">"'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">err_msg</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'&lt;'</span><span class="p">,</span> <span class="s1">'&amp;lt;'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'&gt;'</span><span class="p">,</span> <span class="s1">'&amp;gt;'</span><span class="p">)</span>
+            <span class="n">classes</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s1">'text'</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'errortext'</span>
+        <span class="n">tpl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Snapshot</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_col</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_col</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                            <span class="n">stack</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">excerpt</span><span class="p">)</span>  <span class="c1"># type: Tuple[str, str, str, str, str]</span>
+        <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'&lt;tr&gt;'</span><span class="p">]</span> <span class="o">+</span> <span class="p">[(</span><span class="s1">'&lt;td class="</span><span class="si">%s</span><span class="s1">"&gt;</span><span class="si">%s</span><span class="s1">&lt;/td&gt;'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+                                   <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="n">tpl</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'&lt;/tr&gt;</span><span class="se">\n</span><span class="s1">'</span><span class="p">])</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">err_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stack</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span> <span class="o">=</span> <span class="n">callstack_as_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_stack</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stack</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">'-&gt;'</span><span class="p">)</span>
+                <span class="n">neg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">'!'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">call_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">":Lookbehind"</span><span class="p">,</span> <span class="s2">":NegativeLookbehind"</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">NONE_TAG</span><span class="p">,</span> <span class="n">ZOMBIE_TAG</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NDROP</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">DROP</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NFAIL</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">FAIL</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">NONE_TAG</span><span class="p">,</span> <span class="n">ZOMBIE_TAG</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NFAIL</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">FAIL</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">EMPTY_PTYPE</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">_result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NDROP</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">DROP</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NMATCH</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">MATCH</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NMATCH</span> <span class="k">if</span> <span class="n">neg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">MATCH</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">excerpt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excerpt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">NONE_TAG</span><span class="p">,</span> <span class="n">ZOMBIE_TAG</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                <span class="n">excerpt</span> <span class="o">=</span> <span class="n">abbreviate_middle</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">),</span> <span class="mi">40</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">excerpt</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="mi">36</span><span class="p">]</span> <span class="o">+</span> <span class="s1">' ...'</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">36</span> <span class="k">else</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_excerpt</span> <span class="o">=</span> <span class="n">escape_ctrl_chars</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">excerpt</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_excerpt</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def extent(self) -&gt; slice:</span>
+    <span class="c1">#     return (slice(-self.remaining - len(self.node), -self.remaining) if self.node</span>
+    <span class="c1">#             else slice(-self.remaining, None))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remaining</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">strlen</span><span class="p">()</span>
+
+<div class="viewcode-block" id="HistoryRecord.last_match">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord.last_match">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_match</span><span class="p">(</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">'HistoryRecord'</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'HistoryRecord'</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns the last match from the parsing-history.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            history:  the parsing-history as a list of HistoryRecord objects</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the history record of the last match or none if either history is</span>
+<span class="sd">            empty or no parser could match</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">history</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">MATCH</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">record</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="HistoryRecord.most_advanced_match">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord.most_advanced_match">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">most_advanced_match</span><span class="p">(</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">'HistoryRecord'</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'HistoryRecord'</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns the closest-to-the-end-match from the parsing-history.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            history:  the parsing-history as a list of HistoryRecord objects</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the history record of the closest-to-the-end-match or none if either history is</span>
+<span class="sd">            empty or no parser could match</span>
+<span class="sd">        """</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">history</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">MATCH</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">remaining</span> <span class="o">&lt;</span> <span class="n">remaining</span> <span class="ow">or</span> <span class="n">remaining</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">record</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">remaining</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="HistoryRecord.most_advanced_fail">
+<a class="viewcode-back" href="../Reference.html#log.HistoryRecord.most_advanced_fail">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">most_advanced_fail</span><span class="p">(</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">'HistoryRecord'</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'HistoryRecord'</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns the closest-to-the-end-fail from the parsing-history.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            history:  the parsing-history as a list of HistoryRecord objects</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the history record of the closest-to-the-end-fail or none if either history is</span>
+<span class="sd">            empty or no parser failed</span>
+<span class="sd">        """</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">history</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">FAIL</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">remaining</span> <span class="o">&lt;</span> <span class="n">remaining</span> <span class="ow">or</span> <span class="n">remaining</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">record</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">remaining</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+</div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1">#  context specific log functions, i.e. logging of syntax trees,</span>
+<span class="c1">#  grammar history and the like</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="log_ST">
+<a class="viewcode-back" href="../Reference.html#log.log_ST">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_ST</span><span class="p">(</span><span class="n">syntax_tree</span><span class="p">,</span> <span class="n">log_file_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Writes an S-expression-representation of the ``syntax_tree`` to a file,</span>
+<span class="sd">    if logging is turned on. Returns True, if logging was turned on and</span>
+<span class="sd">    log could be written. Returns False, if logging was turned off.</span>
+<span class="sd">    Raises a FileSystem error if writing the log failed for some reason.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">is_logging</span><span class="p">():</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">(),</span> <span class="n">log_file_name</span><span class="p">)</span>
+        <span class="c1"># if os.path.exists(path):</span>
+        <span class="c1">#     print('WARNING: Log-file "%s" already exists and will be overwritten!' % path)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="log_parsing_history">
+<a class="viewcode-back" href="../Reference.html#log.log_parsing_history">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_parsing_history</span><span class="p">(</span><span class="n">grammar</span><span class="p">,</span> <span class="n">log_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="n">as_html</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Writes a log of the parsing history of the most recently parsed document, if</span>
+<span class="sd">    logging is turned on. Returns True, if that was the case and writing the</span>
+<span class="sd">    history was successful.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        grammar (Grammar):  The Grammar object from which the parsing history</span>
+<span class="sd">            shall be logged.</span>
+<span class="sd">        log_file_name (str):  The (base-)name of the log file to be written.</span>
+<span class="sd">            If no name is given (default), then the class name of the grammar</span>
+<span class="sd">            object will be used.</span>
+<span class="sd">        as_html (bool):  If true (default), the log will be output as html-Table,</span>
+<span class="sd">            otherwise as plain test. (Browsers might take a few seconds or</span>
+<span class="sd">            minutes to display the table for long histories.)</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_log</span><span class="p">(</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">log_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">htm</span> <span class="o">=</span> <span class="s1">'.html'</span> <span class="k">if</span> <span class="n">as_html</span> <span class="k">else</span> <span class="s1">''</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_dir</span><span class="p">(),</span> <span class="n">log_name</span> <span class="o">+</span> <span class="s2">"_parser.log"</span> <span class="o">+</span> <span class="n">htm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="c1"># print('WARNING: Log-file "%s" already existed and was deleted.' % path)</span>
+        <span class="k">if</span> <span class="n">history</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">as_html</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">HistoryRecord</span><span class="o">.</span><span class="n">HTML_LEAD_IN</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">&lt;/table&gt;</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">HTML_LEAD_OUT</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">history</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_line</span><span class="p">(</span><span class="n">log</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Appends a line to a list of HTML table rows. Starts a new</span>
+<span class="sd">        table every 100 rows to allow browser to speed up rendering.</span>
+<span class="sd">        Does this really work...?"""</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">as_html</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">log</span><span class="p">)</span> <span class="o">%</span> <span class="mi">50</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'&lt;/table&gt;</span><span class="se">\n</span><span class="s1">&lt;table&gt;'</span><span class="p">,</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">COLGROUP</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_logging</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">log_file_name</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">log_file_name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">7</span><span class="p">]</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'grammar'</span><span class="p">)</span> <span class="k">else</span> <span class="n">name</span>
+    <span class="k">elif</span> <span class="n">log_file_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.log'</span><span class="p">):</span>
+        <span class="n">log_file_name</span> <span class="o">=</span> <span class="n">log_file_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'&lt;h1&gt;Parsing history of "</span><span class="si">%s</span><span class="s1">"&lt;/h1&gt;'</span> <span class="o">%</span> <span class="n">log_file_name</span><span class="p">]</span>  <span class="c1"># type: List[str]</span>
+    <span class="n">LOG_SIZE_THRESHOLD</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'log_size_threshold'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">LOG_SIZE_THRESHOLD</span><span class="p">:</span>
+        <span class="n">warning</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'Sorry, man, </span><span class="si">%i</span><span class="s1">K history records is just too many! '</span>
+                   <span class="s1">'Only looking at the last </span><span class="si">%i</span><span class="s1">K records.'</span>
+                   <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">LOG_SIZE_THRESHOLD</span> <span class="o">//</span> <span class="mi">1000</span><span class="p">))</span>
+        <span class="n">html_warning</span> <span class="o">=</span> <span class="s1">'&lt;p&gt;&lt;strong&gt;'</span> <span class="o">+</span> <span class="n">warning</span> <span class="o">+</span> <span class="s1">'&lt;/strong&gt;&lt;/p&gt;'</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">html_warning</span><span class="p">)</span>
+
+    <span class="n">lead_in</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span> <span class="n">join</span><span class="p">([</span><span class="s1">'&lt;table&gt;'</span><span class="p">,</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">COLGROUP</span><span class="p">,</span> <span class="n">HistoryRecord</span><span class="o">.</span><span class="n">HEADINGS</span><span class="p">])</span>
+    <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lead_in</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[</span><span class="o">-</span><span class="n">LOG_SIZE_THRESHOLD</span><span class="p">:]:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">as_html_tr</span><span class="p">()</span> <span class="k">if</span> <span class="n">as_html</span> <span class="k">else</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">append_line</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+    <span class="n">write_log</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">log_file_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

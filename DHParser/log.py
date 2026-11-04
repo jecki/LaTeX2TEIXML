@@ -318,7 +318,7 @@ class HistoryRecord:
     parser call, which ist either MATCH, FAIL (i.e. no match)
     or ERROR.
     """
-    __slots__ = ('call_stack', 'node', 'text', 'pos', 'line_col', 'errors', '_stack', '_status', '_excerpt')
+    __slots__ = ('call_stack', 'node', 'text', 'line_col', 'errors', '_stack', '_status', '_excerpt')
 
     MATCH = "MATCH"
     NMATCH = "!MATCH"
@@ -337,6 +337,16 @@ class HistoryRecord:
     HTML_LEAD_IN = (
         '<!DOCTYPE html>\n'
         '<html lang="en">\n<head>\n<meta charset="utf-8"/>\n<style>\n'
+        """@media (prefers-color-scheme: dark) {
+          body {
+            background: #000;
+            color: #fff;
+          } }      
+        @media (prefers-color-scheme: light) {
+          body {
+            background: #fff;
+            color: #000;
+          } }\n"""
         'table {border-spacing: 0px; border: thin solid grey; width:100%}\n'
         'td,th {font-family:monospace; '
         'border-right: thin solid grey; border-bottom: thin solid grey}\n'

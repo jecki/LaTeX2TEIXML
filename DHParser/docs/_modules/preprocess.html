@@ -1,0 +1,1060 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>preprocess &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/preprocess';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for preprocess</h1><div class="highlight"><pre>
+<span></span><span class="c1"># preprocess.py - preprocessing of source files for DHParser</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2016  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+
+<span class="sd">"""</span>
+<span class="sd">Module ``preprocess`` contains functions for preprocessing source</span>
+<span class="sd">code before the parsing stage as well as source mapping facilities</span>
+<span class="sd">to map the locations of parser and compiler errors to the</span>
+<span class="sd">non-preprocessed source text. (See :py:class:`~error.SourceMap`)</span>
+
+<span class="sd">Preprocessing (and source mapping of errors) are useful</span>
+<span class="sd">in cases where a syntax or certain syntactical features (like marking</span>
+<span class="sd">blocks with indentation for example), cannot be described completely</span>
+<span class="sd">with context-free grammars.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> \
+    <span class="n">NamedTuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">add_source_locations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.stringview</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">re</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">LazyRE</span><span class="p">,</span> <span class="n">deprecated</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'RX_TOKEN_NAME'</span><span class="p">,</span>
+           <span class="s1">'BEGIN_TOKEN'</span><span class="p">,</span>
+           <span class="s1">'TOKEN_DELIMITER'</span><span class="p">,</span>
+           <span class="s1">'END_TOKEN'</span><span class="p">,</span>
+           <span class="s1">'IncludeInfo'</span><span class="p">,</span>
+           <span class="s1">'FindIncludeFunc'</span><span class="p">,</span>
+           <span class="s1">'IncludeReaderFunc'</span><span class="p">,</span>
+           <span class="s1">'DeriveFileNameFunc'</span><span class="p">,</span>
+           <span class="s1">'PreprocessorFunc'</span><span class="p">,</span>
+           <span class="s1">'PreprocessorFactory'</span><span class="p">,</span>
+           <span class="s1">'PreprocessorResult'</span><span class="p">,</span>
+           <span class="s1">'result_from_mapping'</span><span class="p">,</span>
+           <span class="s1">'Tokenizer'</span><span class="p">,</span>
+           <span class="s1">'make_token'</span><span class="p">,</span>
+           <span class="s1">'strip_tokens'</span><span class="p">,</span>
+           <span class="s1">'SourceLocation'</span><span class="p">,</span>
+           <span class="s1">'SourceMap'</span><span class="p">,</span>
+           <span class="s1">'SourceMapFunc'</span><span class="p">,</span>
+           <span class="s1">'gen_neutral_srcmap_func'</span><span class="p">,</span>
+           <span class="s1">'apply_src_mappings'</span><span class="p">,</span>
+           <span class="s1">'nil_preprocessor'</span><span class="p">,</span>
+           <span class="s1">'nil_preprocessor_factory'</span><span class="p">,</span>
+           <span class="s1">'chain_preprocessors'</span><span class="p">,</span>
+           <span class="s1">'prettyprint_tokenized'</span><span class="p">,</span>
+           <span class="s1">'tokenized_to_original_mapping'</span><span class="p">,</span>
+           <span class="s1">'make_preprocessor'</span><span class="p">,</span>
+           <span class="s1">'gen_find_include_func'</span><span class="p">,</span>
+           <span class="s1">'ReadIncludeClass'</span><span class="p">,</span>
+           <span class="s1">'ReadIncludeOnce'</span><span class="p">,</span>
+           <span class="s1">'preprocess_includes'</span><span class="p">)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Types and constants</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<span class="n">BEGIN_TOKEN</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\x1b</span><span class="s1">'</span>
+<span class="n">TOKEN_DELIMITER</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\x1c</span><span class="s1">'</span>
+<span class="n">END_TOKEN</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\x1d</span><span class="s1">'</span>
+<span class="n">RESERVED_TOKEN_CHARS</span> <span class="o">=</span> <span class="n">BEGIN_TOKEN</span> <span class="o">+</span> <span class="n">TOKEN_DELIMITER</span> <span class="o">+</span> <span class="n">END_TOKEN</span>
+
+<span class="n">RX_TOKEN_NAME</span> <span class="o">=</span> <span class="n">LazyRE</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\w+'</span><span class="p">)</span>
+<span class="n">RX_TOKEN_ARGUMENT</span> <span class="o">=</span> <span class="n">LazyRE</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[^\x1b\x1c\x1d]*'</span><span class="p">)</span>
+<span class="n">RX_TOKEN</span> <span class="o">=</span> <span class="n">LazyRE</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\x1b(?P&lt;name&gt;\w+)\x1c(?P&lt;argument&gt;[^\x1b\x1c\x1d]*)\x1d'</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IncludeInfo">
+<a class="viewcode-back" href="../Reference.html#preprocess.IncludeInfo">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IncludeInfo</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">begin</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="vm">__name__</span>  <span class="c1"># required for cython/pickle compatibility</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">has_includes</span><span class="p">(</span><span class="n">sm</span><span class="p">:</span> <span class="n">SourceMap</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">fname</span> <span class="o">!=</span> <span class="n">sm</span><span class="o">.</span><span class="n">original_name</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">sm</span><span class="o">.</span><span class="n">file_names</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SourceLocation">
+<a class="viewcode-back" href="../Reference.html#preprocess.SourceLocation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceLocation</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A particular location in the original, not preprocessed source code.</span>
+
+<span class="sd">    :ivar original_name: The original source filename. If the document is composed of</span>
+<span class="sd">        a master file and (possibly nested) includes this will be the name of the file</span>
+<span class="sd">        that the position is related to.</span>
+<span class="sd">    :ivar original_text: The original, i.e. not yet preprocessed text-content of the</span>
+<span class="sd">        file the position relates to.</span>
+<span class="sd">    :ivar pos: The location within original_text.</span>
+<span class="sd">    """</span>
+    <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span>          <span class="c1"># the file name (or path or uri) of the source code</span>
+    <span class="n">original_text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StringView</span><span class="p">]</span>  <span class="c1"># the source code itself</span>
+    <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span>                    <span class="c1"># a position within the code</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="vm">__name__</span>       <span class="c1"># needed for cython compatibility</span></div>
+
+
+<span class="n">SourceMapFunc</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">SourceLocation</span><span class="p">],</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PreprocessorResult">
+<a class="viewcode-back" href="../Reference.html#preprocess.PreprocessorResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PreprocessorResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">original_text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StringView</span><span class="p">]</span>
+    <span class="n">preprocessed_text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StringView</span><span class="p">]</span>
+    <span class="n">back_mapping</span><span class="p">:</span> <span class="n">SourceMapFunc</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">]</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="vm">__name__</span>  <span class="c1"># required for cython/pickle compatibility</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">result_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">SourceMap</span><span class="p">,</span>
+              <span class="n">original_text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StringView</span><span class="p">],</span>
+              <span class="n">processed_text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StringView</span><span class="p">],</span>
+              <span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">PreprocessorResult</span><span class="p">:</span>
+    <span class="n">mapping</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">PreprocessorResult</span><span class="p">(</span><span class="n">original_text</span><span class="p">,</span> <span class="n">processed_text</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+<span class="n">FindIncludeFunc</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">IncludeInfo</span><span class="p">],</span>   <span class="c1"># (document: str,  start: int)</span>
+                                   <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">]</span>
+<span class="n">IncludeReaderFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">IncludeReaderFactory</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">IncludeReaderFunc</span><span class="p">]</span>
+<span class="n">DeriveFileNameFunc</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">]</span>  <span class="c1"># include name -&gt; file name</span>
+<span class="n">PreprocessorFunc</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">PreprocessorResult</span><span class="p">],</span>  <span class="c1"># (text: str, filename: str) -&gt; result</span>
+                                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">]</span>
+<span class="n">PreprocessorFactory</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">PreprocessorFunc</span><span class="p">]</span>
+<span class="n">Tokenizer</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">]]],</span>
+                             <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">]</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Chaining of preprocessors</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="nil_preprocessor">
+<a class="viewcode-back" href="../Reference.html#preprocess.nil_preprocessor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">nil_preprocessor</span><span class="p">(</span><span class="n">original_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreprocessorResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A preprocessor that does nothing, i.e. just returns the input.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">neutral_back_mapping</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceLocation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SourceLocation</span><span class="p">(</span><span class="n">original_name</span><span class="p">,</span> <span class="n">original_text</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">PreprocessorResult</span><span class="p">(</span><span class="n">original_text</span><span class="p">,</span> <span class="n">original_text</span><span class="p">,</span> <span class="n">neutral_back_mapping</span><span class="p">,</span> <span class="p">[])</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nil_preprocessor_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PreprocessorFunc</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">nil_preprocessor</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_preprocessors</span><span class="p">(</span><span class="n">original_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">preprocessors</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PreprocessorFunc</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> \
+        <span class="o">-&gt;</span> <span class="n">PreprocessorResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Applies several preprocessing functions sequentially to a source text</span>
+<span class="sd">    and returns the preprocessed text as well as a function that maps</span>
+<span class="sd">    text-positions in the processed text onto the corresponding position</span>
+<span class="sd">    in the original source test.</span>
+<span class="sd">    """</span>
+    <span class="n">processed</span> <span class="o">=</span> <span class="n">original_text</span>
+    <span class="n">mapping_chain</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">error_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">prep</span> <span class="ow">in</span> <span class="n">preprocessors</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">processed</span><span class="p">,</span> <span class="n">mapping_func</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">prep</span><span class="p">(</span><span class="n">processed</span><span class="p">,</span> <span class="n">original_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mapping_chain</span><span class="p">:</span>
+                <span class="n">chain</span> <span class="o">=</span> <span class="n">mapping_chain</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">chain</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chain</span> <span class="o">=</span> <span class="p">[</span><span class="n">gen_neutral_srcmap_func</span><span class="p">(</span><span class="n">original_text</span><span class="p">,</span> <span class="n">original_name</span><span class="p">)]</span>
+            <span class="n">add_source_locations</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">apply_src_mappings</span><span class="p">,</span> <span class="n">mappings</span><span class="o">=</span><span class="n">chain</span><span class="p">))</span>
+        <span class="n">mapping_chain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mapping_func</span><span class="p">)</span>
+        <span class="n">error_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+    <span class="n">mapping_chain</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">PreprocessorResult</span><span class="p">(</span>
+        <span class="n">original_text</span><span class="p">,</span> <span class="n">processed</span><span class="p">,</span>
+        <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">apply_src_mappings</span><span class="p">,</span> <span class="n">mappings</span><span class="o">=</span><span class="n">mapping_chain</span><span class="p">),</span>
+        <span class="n">error_list</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="chain_preprocessors">
+<a class="viewcode-back" href="../Reference.html#preprocess.chain_preprocessors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">chain_preprocessors</span><span class="p">(</span><span class="o">*</span><span class="n">preprocessors</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreprocessorFunc</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Merges a sequence of preprocessor functions in to a single function.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">prep</span> <span class="ow">is</span> <span class="n">preprocess_includes</span> <span class="k">for</span> <span class="n">prep</span> <span class="ow">in</span> <span class="n">preprocessors</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The preprocessor for include files must be applied first, "</span>
+                         <span class="s2">"and there can be no more than one preprocessor for includes."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_apply_preprocessors</span><span class="p">,</span> <span class="n">preprocessors</span><span class="o">=</span><span class="n">preprocessors</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Tokenization support</span>
+<span class="c1">#</span>
+<span class="c1"># In DHParser the source text is usually not tokenized, but,</span>
+<span class="c1"># optionally, it can be enriched by tokens (or parts of it replaced</span>
+<span class="c1"># by tokens) to, say, indicate beginnings and endings of indented</span>
+<span class="c1"># or quoted blocks that are difficult to capture with an EBNF-parser.</span>
+<span class="c1">#</span>
+<span class="c1">######################################################################</span>
+
+
+<div class="viewcode-block" id="make_token">
+<a class="viewcode-back" href="../Reference.html#preprocess.make_token">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_token</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">argument</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Turns the ``token`` and ``argument`` into a special token that</span>
+<span class="sd">    will be caught by the ``PreprocessorToken``-parser.</span>
+
+<span class="sd">    This function is a support function that should be used by</span>
+<span class="sd">    preprocessors to inject preprocessor tokens into the source text.</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="n">RX_TOKEN_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">RX_TOKEN_ARGUMENT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">BEGIN_TOKEN</span> <span class="o">+</span> <span class="n">token</span> <span class="o">+</span> <span class="n">TOKEN_DELIMITER</span> <span class="o">+</span> <span class="n">argument</span> <span class="o">+</span> <span class="n">END_TOKEN</span></div>
+
+
+
+<div class="viewcode-block" id="prettyprint_tokenized">
+<a class="viewcode-back" href="../Reference.html#preprocess.prettyprint_tokenized">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prettyprint_tokenized</span><span class="p">(</span><span class="n">tokenized</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a pretty-printable version of a document that contains tokens."""</span>
+    <span class="k">return</span> <span class="n">tokenized</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\x1b</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'&lt;'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\x1c</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'|'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\x1d</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'&gt;'</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="strip_tokens">
+<a class="viewcode-back" href="../Reference.html#preprocess.strip_tokens">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">strip_tokens</span><span class="p">(</span><span class="n">tokenized</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Replaces all tokens with the token's arguments."""</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">RX_TOKEN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">tokenized</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tokenized</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">start</span><span class="p">])</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s1">'argument'</span><span class="p">])</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">RX_TOKEN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">tokenized</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tokenized</span><span class="p">[</span><span class="n">pos</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Source Maps - mapping source code positions between different</span>
+<span class="c1">#               transformations of the source text</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<div class="viewcode-block" id="SourceMap">
+<a class="viewcode-back" href="../Reference.html#preprocess.SourceMap">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceMap</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Class SourceMap captures a mapping from the preprocessed source code (that is</span>
+<span class="sd">    possibly also stitched together from different files) to the original source files</span>
+<span class="sd">    and source positions. It is possible to use more than one source map (see</span>
+<span class="sd">    :py:func:`apply_src_mappings`). Thus, several preprocessing stages can be applied</span>
+<span class="sd">    in sequence and the positions, say where errors occurred, can still be back-propagated</span>
+<span class="sd">    to the original input file(s).</span>
+
+<span class="sd">    :ivar original_name: The original source filename. If the source allows includes,</span>
+<span class="sd">        this should be the name of the master file.</span>
+<span class="sd">    :ivar positions: A list of locations in the processed file. Each location is to be</span>
+<span class="sd">        understood as a marker from which on the position in the processed</span>
+<span class="sd">        file must be shifted by a different offset to gain the position in the original</span>
+<span class="sd">        file. The first element in the list of positions should always be 0 and it must</span>
+<span class="sd">        contain as its last element the length of the processed source plus 1 (or higher).</span>
+<span class="sd">        (+1 allows the location to exceed the end of the text by 1 which makes writing</span>
+<span class="sd">        algorithms easier that if the location was not allowed to point beyond the end</span>
+<span class="sd">        of the text.)</span>
+<span class="sd">    :ivar offsets: The list of offsets corresponding to the positions. For each position</span>
+<span class="sd">        entry positions[n], the corresponding offsets value offsets[n] contains</span>
+<span class="sd">        the offset (positive or negative or zero) that will be added to all locations</span>
+<span class="sd">        in the half-open interval [ positions[n], positions[n + 1] [</span>
+<span class="sd">    :ivar file_names: A list of file names corresponding to the positions, i.e. for each</span>
+<span class="sd">        position[n] the name of the file that the text from this position just until</span>
+<span class="sd">        before the next position was taken from.</span>
+<span class="sd">    :ivar originals_dict: A dictionary, mapping the file-names to their text-content in</span>
+<span class="sd">        form of a :py:class:`~stringview.StringView`-object.</span>
+<span class="sd">    """</span>
+    <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span>          <span class="c1"># nome or path or uri of the original source file</span>
+    <span class="n">positions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>        <span class="c1"># a list of locations</span>
+    <span class="n">offsets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>          <span class="c1"># the corresponding offsets to be added from these locations onward</span>
+    <span class="n">file_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>       <span class="c1"># list of file_names to which the source locations relate</span>
+    <span class="n">originals_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StringView</span><span class="p">]]</span>  <span class="c1"># File names =&gt; (included) source texts</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="vm">__name__</span>       <span class="c1"># needed for cython compatibility</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceMap</span><span class="p">:</span>   <span class="c1"># actually returns Self</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The length of the lists of positions, offsets and file names "</span>
+                             <span class="s2">"must be equal."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The length of the lists of positions, offsets and file names "</span>
+                             <span class="s2">"must be at least 2."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The first element of the list of positions must be 0."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The list of positions must be strictly increasing. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="SourceMap.srcpos">
+<a class="viewcode-back" href="../Reference.html#preprocess.SourceMap.srcpos">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">srcpos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns the source position corresponding to the given position in the processed text.</span>
+
+<span class="sd">        Other than the map-method get_srcpos does not return the file name of the source! If</span>
+<span class="sd">        the destination was composed of more than one file, the map-method is recommended</span>
+<span class="sd">        instead. For a single file-mapping, srcpos is preferable, because its faster."""</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">bisect</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">position</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Position </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2"> seems is out of range "</span>
+                         <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">[ "</span>
+                         <span class="sa">f</span><span class="s2">"or source map ist corrupted."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SourceMap.map">
+<a class="viewcode-back" href="../Reference.html#preprocess.SourceMap.map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceLocation</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Maps a position in a (pre-)processed text to its corresponding</span>
+<span class="sd">        position in the original document according to the given source map.</span>
+
+<span class="sd">        If the destination has not been derived from several source-files</span>
+<span class="sd">        it is recommended to use the faster srcpos()-method.</span>
+
+<span class="sd">        :param  position: the position in the processed text</span>
+<span class="sd">        :returns: the mapped source location (result.pos contains</span>
+<span class="sd">            the actual position, result.original_name the file name of the</span>
+<span class="sd">            source whithin which the position is located.)</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_names</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">))</span>
+        <span class="c1"># assert set(self.file_names) == set(self.originals_dict.keys())</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">bisect</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">):</span>
+            <span class="n">original_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_names</span><span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">SourceLocation</span><span class="p">(</span>
+                <span class="n">original_name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">originals_dict</span><span class="p">[</span><span class="n">original_name</span><span class="p">],</span>
+                <span class="nb">min</span><span class="p">(</span><span class="n">position</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Position </span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2"> seems is out of range "</span>
+                         <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">[ "</span>
+                         <span class="sa">f</span><span class="s2">"or source map ist corrupted."</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="gen_neutral_srcmap_func">
+<a class="viewcode-back" href="../Reference.html#preprocess.gen_neutral_srcmap_func">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_neutral_srcmap_func</span><span class="p">(</span><span class="n">original_text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">StringView</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceMapFunc</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Generates a source map function that maps positions to itself."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">original_name</span><span class="p">:</span>  <span class="n">original_name</span> <span class="o">=</span> <span class="s1">'UNKNOWN_FILE'</span>
+    <span class="c1"># return lambda pos: SourceLocation(original_name, original_text, pos)</span>
+    <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">SourceLocation</span><span class="p">,</span> <span class="n">original_name</span><span class="p">,</span> <span class="n">original_text</span><span class="p">)</span></div>
+
+
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"DHParser.preprocessor.map_source is deprecated, use SourceMap.map instead!"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_source</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">srcmap</span><span class="p">:</span> <span class="n">SourceMap</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceLocation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""DEPRECATED: Use SourceMap.map instead!"""</span>
+    <span class="k">return</span> <span class="n">srcmap</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"DHParser.preprocessor.source_map is deprecated, use SourceMap.map instead!"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">source_map</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">srcmap</span><span class="p">:</span> <span class="n">SourceMap</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceLocation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""DEPRECATED: Use SourceMap.map instead!"""</span>
+    <span class="k">return</span> <span class="n">srcmap</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="apply_src_mappings">
+<a class="viewcode-back" href="../Reference.html#preprocess.apply_src_mappings">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_src_mappings</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mappings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SourceMapFunc</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SourceLocation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Sequentially apply a number of mapping functions to a source position.</span>
+<span class="sd">    In the context of source mapping, the source position usually is a</span>
+<span class="sd">    position within a preprocessed source text and mappings should therefore</span>
+<span class="sd">    be a list of reverse-mappings in reversed order.</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="n">mappings</span>
+    <span class="n">filename</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span>
+    <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">:</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">position</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">SourceLocation</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="tokenized_to_original_mapping">
+<a class="viewcode-back" href="../Reference.html#preprocess.tokenized_to_original_mapping">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tokenized_to_original_mapping</span><span class="p">(</span><span class="n">tokenized_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                  <span class="n">original_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                  <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'UNKNOWN_FILE'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceMap</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Generates a source map for mapping positions in a text that has</span>
+<span class="sd">    been enriched with token markers to their original positions.</span>
+
+<span class="sd">    :param tokenized_text:  the source text enriched with token markers</span>
+<span class="sd">    :param original_text: the original source text</span>
+<span class="sd">    :param original_name:  the name or path or uri of the original source file</span>
+<span class="sd">    :returns:  a source map, i.e. a list of positions and a list of corresponding</span>
+<span class="sd">        offsets. The list of positions is ordered from smallest to highest.</span>
+<span class="sd">        An offset is valid for its associated position and all following</span>
+<span class="sd">        positions until (and excluding) the next position in the list of</span>
+<span class="sd">        positions.</span>
+<span class="sd">    """</span>
+    <span class="n">positions</span><span class="p">,</span> <span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">tokenized_text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">BEGIN_TOKEN</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">tokenized_text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">TOKEN_DELIMITER</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">tokenized_text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">END_TOKEN</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">e</span>
+        <span class="n">o</span> <span class="o">-=</span> <span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">positions</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">offsets</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">o</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="p">])</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">tokenized_text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">BEGIN_TOKEN</span><span class="p">,</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokenized_text</span><span class="p">):</span>
+        <span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokenized_text</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># specific condition for preprocessor tokens</span>
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">offsets</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">L</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">SourceMap</span><span class="p">(</span>
+        <span class="n">original_name</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="p">[</span><span class="n">original_name</span><span class="p">]</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="p">{</span><span class="n">original_name</span><span class="p">:</span> <span class="n">original_text</span><span class="p">})</span><span class="o">.</span>\
+        <span class="n">validate</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="make_preprocessor">
+<a class="viewcode-back" href="../Reference.html#preprocess.make_preprocessor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_preprocessor</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">:</span> <span class="n">Tokenizer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreprocessorFunc</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Generates a preprocessor function from a "naive" tokenizer, i.e.</span>
+<span class="sd">    a function that merely adds preprocessor tokens to a source text and</span>
+<span class="sd">    returns the modified source.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocessor</span><span class="p">(</span><span class="n">original_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> \
+            <span class="o">-&gt;</span> <span class="n">PreprocessorResult</span><span class="p">:</span>
+        <span class="n">tokenized_text</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">original_text</span><span class="p">)</span>
+        <span class="n">srcmap</span> <span class="o">=</span> <span class="n">tokenized_to_original_mapping</span><span class="p">(</span><span class="n">tokenized_text</span><span class="p">,</span> <span class="n">original_text</span><span class="p">,</span> <span class="n">original_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PreprocessorResult</span><span class="p">(</span><span class="n">original_text</span><span class="p">,</span> <span class="n">tokenized_text</span><span class="p">,</span> <span class="n">srcmap</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">preprocessor</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Includes - support for chaining source texts via an in clude command</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="gen_find_include_func">
+<a class="viewcode-back" href="../Reference.html#preprocess.gen_find_include_func">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gen_find_include_func</span><span class="p">(</span><span class="n">rx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                          <span class="n">comment_rx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">derive_file_name</span><span class="p">:</span> <span class="n">DeriveFileNameFunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span><span class="p">)</span> \
+                          <span class="o">-&gt;</span> <span class="n">FindIncludeFunc</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Generates a function to find include-statements in a file.</span>
+
+<span class="sd">    :param rx: A regular expression (either as string or compiled</span>
+<span class="sd">        regular expression) to catch the names of the includes in</span>
+<span class="sd">        a document. The expression should catch</span>
+<span class="sd">    :param comment_rx: The regular expression for comments. (This</span>
+<span class="sd">        should always either be NEVER_MATCH_PATTERN or exactly the</span>
+<span class="sd">        same as the comment-regular rexpression defined in the grammar!)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="n">rx</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">rx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comment_rx</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="n">comment_rx</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">comment_rx</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_include</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">begin</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IncludeInfo</span><span class="p">:</span>
+        <span class="k">nonlocal</span> <span class="n">rx</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">begin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">begin</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">derive_file_name</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">'name'</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">IncludeInfo</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="o">-</span> <span class="n">begin</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">IncludeInfo</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_comment</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">begin</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="k">nonlocal</span> <span class="n">rx</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">comment_rx</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">begin</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">()</span> <span class="k">if</span> <span class="n">m</span> <span class="k">else</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">meta_find_include</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">begin</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IncludeInfo</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">find_comment</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">begin</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">find_include</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">begin</span><span class="p">)</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="k">while</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">find_comment</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">+</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">):</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">find_include</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">k</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="k">while</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">find_comment</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">info</span>
+
+    <span class="k">return</span> <span class="n">find_include</span> <span class="k">if</span> <span class="n">comment_rx</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">meta_find_include</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ReadIncludeClass</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_include</span><span class="p">(</span><span class="n">include_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_include</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">include_name</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ReadIncludeOnce</span><span class="p">(</span><span class="n">ReadIncludeClass</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">already_included</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">include_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">already_included</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">""</span>     <span class="c1"># don't include the same file twice</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">already_included</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">include_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_include</span><span class="p">(</span><span class="n">include_name</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_include_map</span><span class="p">(</span><span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">original_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">find_next_include</span><span class="p">:</span> <span class="n">FindIncludeFunc</span><span class="p">,</span>
+                         <span class="n">include_reader</span><span class="p">:</span> <span class="n">IncludeReaderFactory</span> <span class="o">=</span> <span class="n">ReadIncludeClass</span><span class="p">)</span> \
+                         <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SourceMap</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">file_names</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_map</span><span class="p">(</span><span class="n">source_name</span><span class="p">,</span> <span class="n">source_text</span><span class="p">,</span> <span class="n">find_next</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SourceMap</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">nonlocal</span> <span class="n">file_names</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="n">SourceMap</span><span class="p">(</span><span class="n">source_name</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">source_name</span><span class="p">],</span> <span class="p">{</span><span class="n">source_name</span><span class="p">:</span> <span class="n">source_text</span><span class="p">})</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Circular include of </span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s1"> detected!'</span><span class="p">)</span>
+        <span class="n">file_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+
+        <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+        <span class="n">original_pointer</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">original_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">result_pointer</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_begin</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">begin</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">include_name</span> <span class="o">=</span> <span class="n">find_next</span><span class="p">(</span><span class="n">source_text</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">include_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">include_name</span><span class="p">)</span>
+        <span class="n">read_include</span> <span class="o">=</span> <span class="n">include_reader</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">begin</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">begin</span> <span class="o">&gt;</span> <span class="n">last_begin</span>
+            <span class="n">source_delta</span> <span class="o">=</span> <span class="n">begin</span> <span class="o">-</span> <span class="n">original_pointer</span>
+            <span class="n">original_pointer</span> <span class="o">+=</span> <span class="n">source_delta</span>
+            <span class="n">result_pointer</span> <span class="o">+=</span> <span class="n">source_delta</span>
+            <span class="n">included_text</span> <span class="o">=</span> <span class="n">read_include</span><span class="p">(</span><span class="n">include_name</span><span class="p">)</span>
+            <span class="n">inner_map</span><span class="p">,</span> <span class="n">inner_text</span> <span class="o">=</span> <span class="n">generate_map</span><span class="p">(</span><span class="n">include_name</span><span class="p">,</span> <span class="n">included_text</span><span class="p">,</span> <span class="n">find_next</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">offsets</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">file_names</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">positions</span><span class="p">)):</span>
+                <span class="n">inner_map</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">result_pointer</span>
+                <span class="n">inner_map</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">result_pointer</span>
+            <span class="k">if</span> <span class="n">source_delta</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">map</span><span class="o">.</span><span class="n">file_names</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="nb">map</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="nb">map</span><span class="o">.</span><span class="n">offsets</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source_text</span><span class="p">[</span><span class="n">original_pointer</span> <span class="o">-</span> <span class="n">source_delta</span><span class="p">:</span> <span class="n">original_pointer</span><span class="p">])</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">file_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">file_names</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">positions</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">offsets</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">offsets</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">originals_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">inner_map</span><span class="o">.</span><span class="n">originals_dict</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inner_text</span><span class="p">)</span>
+            <span class="n">inner_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_text</span><span class="p">)</span>
+            <span class="n">result_pointer</span> <span class="o">+=</span> <span class="n">inner_length</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">file_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_pointer</span><span class="p">)</span>
+            <span class="n">original_pointer</span> <span class="o">+=</span> <span class="n">length</span>
+            <span class="n">original_offset</span> <span class="o">+=</span> <span class="n">length</span> <span class="o">-</span> <span class="n">inner_length</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">original_offset</span><span class="p">)</span>
+            <span class="n">begin</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">include_name</span> <span class="o">=</span> <span class="n">find_next</span><span class="p">(</span><span class="n">source_text</span><span class="p">,</span> <span class="n">original_pointer</span><span class="p">)</span>
+            <span class="n">include_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">include_name</span><span class="p">)</span>
+        <span class="n">rest</span> <span class="o">=</span> <span class="n">source_text</span><span class="p">[</span><span class="n">original_pointer</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">rest</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">map</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">rest</span><span class="p">))</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">original_offset</span><span class="p">)</span>
+            <span class="nb">map</span><span class="o">.</span><span class="n">file_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+        <span class="n">file_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+        <span class="c1"># map.file_offsets = [-offset for offset in map.offsets]  # only for debugging!</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">,</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">generate_map</span><span class="p">(</span><span class="n">original_name</span><span class="p">,</span> <span class="n">original_text</span><span class="p">,</span> <span class="n">find_next_include</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">srcmap_includes</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">inclmap</span><span class="p">:</span> <span class="n">SourceMap</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SourceLocation</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">bisect</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_right</span><span class="p">(</span><span class="n">inclmap</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span><span class="p">:</span>
+        <span class="n">source_name</span> <span class="o">=</span> <span class="n">inclmap</span><span class="o">.</span><span class="n">file_names</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">SourceLocation</span><span class="p">(</span>
+            <span class="n">source_name</span><span class="p">,</span>
+            <span class="n">inclmap</span><span class="o">.</span><span class="n">originals_dict</span><span class="p">[</span><span class="n">source_name</span><span class="p">],</span>
+            <span class="n">position</span> <span class="o">+</span> <span class="n">inclmap</span><span class="o">.</span><span class="n">offsets</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span>
+
+
+<div class="viewcode-block" id="preprocess_includes">
+<a class="viewcode-back" href="../Reference.html#preprocess.preprocess_includes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess_includes</span><span class="p">(</span><span class="n">original_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                        <span class="n">original_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                        <span class="n">find_next_include</span><span class="p">:</span> <span class="n">FindIncludeFunc</span><span class="p">,</span>
+                        <span class="n">include_reader</span><span class="p">:</span> <span class="n">IncludeReaderFactory</span><span class="o">=</span><span class="n">ReadIncludeClass</span><span class="p">)</span> \
+                        <span class="o">-&gt;</span> <span class="n">PreprocessorResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Preprocesses include statements in a file.</span>
+
+<span class="sd">    :param original_text: The original source file (if already read from disk)</span>
+<span class="sd">    :param original_name: The file-name of the original source</span>
+<span class="sd">    :param find_next_include: The function to find the next include-statement</span>
+<span class="sd">    :param include_reader: A factory that returns a function that retrieves the</span>
+<span class="sd">        content from an included file.</span>
+<span class="sd">    :return: the result of the preprocessing: (original document,</span>
+<span class="sd">        processed document, source mapping, (possibly empty) list of errors)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">original_text</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">original_name</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">original_text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">include_map</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">generate_include_map</span><span class="p">(</span>
+        <span class="n">original_name</span><span class="p">,</span> <span class="n">original_text</span><span class="p">,</span> <span class="n">find_next_include</span><span class="p">,</span> <span class="n">include_reader</span><span class="p">)</span>
+    <span class="n">mapping_func</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">srcmap_includes</span><span class="p">,</span> <span class="n">inclmap</span><span class="o">=</span><span class="n">include_map</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PreprocessorResult</span><span class="p">(</span><span class="n">original_text</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">mapping_func</span><span class="p">,</span> <span class="p">[])</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

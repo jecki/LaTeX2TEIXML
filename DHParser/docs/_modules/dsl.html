@@ -1,0 +1,1496 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dsl &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/dsl';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for dsl</h1><div class="highlight"><pre>
+<span></span><span class="c1"># dsl.py - Support for domain-specific notations for DHParser</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2016  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+<span class="sd">"""</span>
+<span class="sd">Module ``dsl`` contains high-level functions for the compilation</span>
+<span class="sd">of domain-specific languages based on an EBNF grammar.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> \
+    <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">DHParser.ebnf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.compile</span><span class="w"> </span><span class="kn">import</span> <span class="n">Compiler</span><span class="p">,</span> <span class="n">compile_source</span><span class="p">,</span> <span class="n">CompilerFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">full_pipeline</span><span class="p">,</span> <span class="n">Junction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config_value</span><span class="p">,</span> <span class="n">set_config_value</span><span class="p">,</span> <span class="n">get_config_values</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.ebnf</span><span class="w"> </span><span class="kn">import</span> <span class="n">EBNFCompiler</span><span class="p">,</span> <span class="n">DHPARSER_IMPORTS</span><span class="p">,</span> <span class="n">grammar_chksum</span><span class="p">,</span> \
+    <span class="n">get_ebnf_preprocessor</span><span class="p">,</span> <span class="n">get_ebnf_grammar</span><span class="p">,</span> <span class="n">get_ebnf_transformer</span><span class="p">,</span> <span class="n">get_ebnf_compiler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">is_error</span><span class="p">,</span> <span class="n">has_errors</span><span class="p">,</span> <span class="n">only_errors</span><span class="p">,</span> <span class="n">canonical_error_strings</span><span class="p">,</span> \
+    <span class="n">ErrorCode</span><span class="p">,</span> <span class="n">ERROR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">suspend_logging</span><span class="p">,</span> <span class="n">resume_logging</span><span class="p">,</span> <span class="n">is_logging</span><span class="p">,</span> <span class="n">append_log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grammar</span><span class="p">,</span> <span class="n">ParserFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">nil_preprocessor</span><span class="p">,</span> <span class="n">PreprocessorFunc</span><span class="p">,</span> \
+    <span class="n">PreprocessorFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformerFunc</span><span class="p">,</span> <span class="n">TransformerFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">DHPARSER_DIR</span><span class="p">,</span> <span class="n">load_if_file</span><span class="p">,</span> <span class="n">is_python_code</span><span class="p">,</span> <span class="n">is_filename</span><span class="p">,</span> \
+    <span class="n">compile_python_object</span><span class="p">,</span> <span class="n">re</span><span class="p">,</span> <span class="n">as_identifier</span><span class="p">,</span> <span class="n">cpu_count</span><span class="p">,</span> <span class="n">LazyRE</span><span class="p">,</span> <span class="n">CancelQuery</span><span class="p">,</span> \
+    <span class="n">deprecated</span><span class="p">,</span> <span class="n">deprecation_warning</span><span class="p">,</span> <span class="n">instantiate_executor</span><span class="p">,</span> <span class="n">PickMultiCoreExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.versionnumber</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__version_info__</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'DefinitionError'</span><span class="p">,</span>
+           <span class="s1">'CompilationError'</span><span class="p">,</span>
+           <span class="s1">'read_template'</span><span class="p">,</span>
+           <span class="s1">'load_compiler_suite'</span><span class="p">,</span>
+           <span class="s1">'grammar_changed'</span><span class="p">,</span>
+           <span class="s1">'compileDSL'</span><span class="p">,</span>
+           <span class="s1">'raw_compileEBNF'</span><span class="p">,</span>
+           <span class="s1">'compileEBNF'</span><span class="p">,</span>
+           <span class="s1">'grammar_provider'</span><span class="p">,</span>
+           <span class="s1">'create_parser'</span><span class="p">,</span>
+           <span class="s1">'compile_on_disk'</span><span class="p">,</span>
+           <span class="s1">'recompile_grammar'</span><span class="p">,</span>
+           <span class="s1">'create_scripts'</span><span class="p">,</span>
+           <span class="s1">'restore_server_script'</span><span class="p">,</span>
+           <span class="s1">'process_file'</span><span class="p">,</span>
+           <span class="s1">'batch_process'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="read_template">
+<a class="viewcode-back" href="../Reference.html#dsl.read_template">[docs]</a>
+<span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Reads a script-template from a template file named ``template_name``</span>
+<span class="sd">    in the template-directory and returns it as a string.</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DHPARSER_DIR</span><span class="p">,</span> <span class="s1">'templates'</span><span class="p">,</span> <span class="n">template_name</span><span class="p">),</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+
+
+<span class="n">SECTION_MARKER</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\n</span>
+<span class="s2">#######################################################################</span>
+<span class="s2">#</span>
+<span class="s2"># </span><span class="si">{marker}</span>
+<span class="s2">#</span>
+<span class="s2">#######################################################################</span>
+<span class="se">\n</span><span class="s2">"""</span>
+
+<span class="n">CONSISTENCY_CHECK</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\n</span>
+<span class="s2">try:</span>
+<span class="s2">    assert RE_INCLUDE == NEVER_MATCH_PATTERN or </span><span class="se">\\</span>
+<span class="s2">        RE_COMMENT in (</span><span class="si">{NAME}</span><span class="s2">Grammar.COMMENT__, NEVER_MATCH_PATTERN), </span><span class="se">\\</span>
+<span class="s2">        "Please adjust the pre-processor-variable RE_COMMENT in file </span><span class="si">{NAME}</span><span class="s2">Parser.py so that " </span><span class="se">\\</span>
+<span class="s2">        "it either is the NEVER_MATCH_PATTERN or has the same value as the COMMENT__-attribute " </span><span class="se">\\</span>
+<span class="s2">        "of the grammar class </span><span class="si">{NAME}</span><span class="s2">Grammar! " </span><span class="se">\\</span>
+<span class="s2">        'Currently, RE_COMMENT reads "</span><span class="si">%s</span><span class="s2">" while COMMENT__ is "</span><span class="si">%s</span><span class="s2">". ' </span><span class="se">\\</span>
+<span class="s2">        % (RE_COMMENT, </span><span class="si">{NAME}</span><span class="s2">Grammar.COMMENT__) + </span><span class="se">\\</span>
+<span class="s2">        "</span><span class="se">\\</span><span class="s2">n</span><span class="se">\\</span><span class="s2">nIf RE_COMMENT == NEVER_MATCH_PATTERN then includes will deliberately be " </span><span class="se">\\</span>
+<span class="s2">        "processed, otherwise RE_COMMENT==</span><span class="si">{NAME}</span><span class="s2">Grammar.COMMENT__ allows the " </span><span class="se">\\</span>
+<span class="s2">        "preprocessor to ignore comments."</span>
+<span class="s2">except (AttributeError, NameError):</span>
+<span class="s2">    pass</span>
+<span class="se">\n</span><span class="s2">"""</span>
+
+<span class="n">RX_SECTION_MARKER</span> <span class="o">=</span> <span class="n">LazyRE</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="sa">r</span><span class="s1">'.*?SECTION.*?'</span><span class="p">))</span>
+<span class="n">RX_WHITESPACE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\s*'</span><span class="p">)</span>
+
+<span class="n">SYMBOLS_SECTION</span> <span class="o">=</span> <span class="s2">"SYMBOLS SECTION - Can be edited. Changes will be preserved."</span>
+<span class="n">PREPROCESSOR_SECTION</span> <span class="o">=</span> <span class="s2">"PREPROCESSOR SECTION - Can be edited. Changes will be preserved."</span>
+<span class="n">CUSTOM_PARSER_SECTION</span> <span class="o">=</span> <span class="s2">"CUSTOM PARSER Section - Can be edited. Changes will be preserved."</span>
+<span class="n">PARSER_SECTION</span> <span class="o">=</span> <span class="s2">"PARSER SECTION - Don't edit! CHANGES WILL BE OVERWRITTEN!"</span>
+<span class="n">AST_SECTION</span> <span class="o">=</span> <span class="s2">"AST SECTION - Can be edited. Changes will be preserved."</span>
+<span class="n">COMPILER_SECTION</span> <span class="o">=</span> <span class="s2">"COMPILER SECTION - Can be edited. Changes will be preserved."</span>
+<span class="n">END_SECTIONS_MARKER</span> <span class="o">=</span> <span class="s2">"END OF DHPARSER-SECTIONS"</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DSLException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Base class for DSL-exceptions.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Error</span><span class="p">],</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Error</span><span class="p">]]):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> \
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">"</span><span class="si">%i</span><span class="s2">. "</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+                                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">))</span>
+        <span class="c1"># return '\n'.join(str(err) for err in self.errors)</span>
+
+
+<div class="viewcode-block" id="DefinitionError">
+<a class="viewcode-back" href="../Reference.html#dsl.DefinitionError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefinitionError</span><span class="p">(</span><span class="n">DSLException</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raised when (already) the grammar of a domain specific language (DSL)</span>
+<span class="sd">    contains errors. Usually, these are repackaged parse.GrammarError(s).</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">grammar_src</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grammar_src</span> <span class="o">=</span> <span class="n">grammar_src</span></div>
+
+
+
+<div class="viewcode-block" id="CompilationError">
+<a class="viewcode-back" href="../Reference.html#dsl.CompilationError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompilationError</span><span class="p">(</span><span class="n">DSLException</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raised when a string or file in a domain specific language (DSL)</span>
+<span class="sd">    contains errors. These can also contain definition errors that</span>
+<span class="sd">    have been caught early.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">dsl_text</span><span class="p">,</span> <span class="n">dsl_grammar</span><span class="p">,</span> <span class="n">AST</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsl_text</span> <span class="o">=</span> <span class="n">dsl_text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsl_grammar</span> <span class="o">=</span> <span class="n">dsl_grammar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AST</span> <span class="o">=</span> <span class="n">AST</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">error_str</span><span class="p">(</span><span class="n">messages</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Error</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns all true errors (i.e. not just warnings) from the</span>
+<span class="sd">    ``messages`` as a concatenated multiline string.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span> <span class="k">if</span> <span class="n">is_error</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">code</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">grammar_instance</span><span class="p">(</span><span class="n">grammar_representation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Grammar</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns a grammar object and the source code of the grammar, from</span>
+<span class="sd">    the given ``grammar``-data which can be either a file name, ebnf-code,</span>
+<span class="sd">    python-code, a Grammar-derived grammar class or an instance of</span>
+<span class="sd">    such a class (i.e. a grammar object already).</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grammar_representation</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># read grammar</span>
+        <span class="n">grammar_src</span> <span class="o">=</span> <span class="n">load_if_file</span><span class="p">(</span><span class="n">grammar_representation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_python_code</span><span class="p">(</span><span class="n">grammar_src</span><span class="p">):</span>
+            <span class="n">parser_py</span> <span class="o">=</span> <span class="n">grammar_src</span>  <span class="c1"># type: str</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>            <span class="c1"># type: List[Error]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lg_dir</span> <span class="o">=</span> <span class="n">suspend_logging</span><span class="p">()</span>
+            <span class="n">result</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compile_source</span><span class="p">(</span>
+                <span class="n">grammar_src</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">get_ebnf_grammar</span><span class="p">(</span><span class="n">grammar_src</span><span class="p">),</span> <span class="n">get_ebnf_transformer</span><span class="p">(),</span> <span class="n">get_ebnf_compiler</span><span class="p">())</span>
+            <span class="n">parser_py</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="n">resume_logging</span><span class="p">(</span><span class="n">lg_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DefinitionError</span><span class="p">(</span><span class="n">only_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">),</span> <span class="n">grammar_src</span><span class="p">)</span>
+        <span class="n">imports</span> <span class="o">=</span> <span class="n">DHPARSER_IMPORTS</span>
+        <span class="n">grammar_class</span> <span class="o">=</span> <span class="n">compile_python_object</span><span class="p">(</span><span class="n">imports</span> <span class="o">+</span> <span class="n">parser_py</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'\w+Grammar$'</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">,</span> <span class="n">Grammar</span><span class="p">):</span>
+            <span class="n">parser_root</span> <span class="o">=</span> <span class="n">grammar_class</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Could not compile or Grammar class!'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># assume that dsl_grammar is a ParserHQ-object or Grammar class</span>
+        <span class="n">grammar_src</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grammar_representation</span><span class="p">,</span> <span class="n">Grammar</span><span class="p">):</span>
+            <span class="n">parser_root</span> <span class="o">=</span> <span class="n">grammar_representation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># assume ``grammar_representation`` is a grammar class and get the root object</span>
+            <span class="n">parser_root</span> <span class="o">=</span> <span class="n">grammar_representation</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">parser_root</span><span class="p">,</span> <span class="n">grammar_src</span>
+
+
+<div class="viewcode-block" id="grammar_changed">
+<a class="viewcode-back" href="../Reference.html#dsl.grammar_changed">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">grammar_changed</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">,</span> <span class="n">grammar_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns ``True`` if ``grammar_class`` does not reflect the latest</span>
+<span class="sd">    changes of ``grammar_source``</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        grammar_class:  the parser class representing the grammar</span>
+<span class="sd">            or the file name of a compiler suite containing the grammar</span>
+<span class="sd">        grammar_source:  File name or string representation of the</span>
+<span class="sd">            EBNF code of the grammar</span>
+
+<span class="sd">    Returns (bool):</span>
+<span class="sd">        True, if the source text of the grammar is different from the</span>
+<span class="sd">        source from which the grammar class was generated</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'force_recompile_grammar'</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">load_if_file</span><span class="p">(</span><span class="n">grammar_source</span><span class="p">)</span>
+    <span class="n">chksum</span> <span class="o">=</span> <span class="n">grammar_chksum</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># grammar_class = load_compiler_suite(grammar_class)[1]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pycode</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">'class \w*\(Grammar\)'</span><span class="p">,</span> <span class="n">pycode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">' </span><span class="si">{4}</span><span class="s1">source_hash__ *= *"([a-z0-9]*)"'</span><span class="p">,</span>
+                          <span class="n">pycode</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">()[</span><span class="mi">1</span><span class="p">]:])</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span> <span class="ow">and</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">chksum</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">chksum</span> <span class="o">!=</span> <span class="n">grammar_class</span><span class="o">.</span><span class="n">source_hash__</span></div>
+
+
+
+<div class="viewcode-block" id="compileDSL">
+<a class="viewcode-back" href="../Reference.html#dsl.compileDSL">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compileDSL</span><span class="p">(</span><span class="n">text_or_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">preprocessor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreprocessorFunc</span><span class="p">],</span>
+               <span class="n">dsl_grammar</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Grammar</span><span class="p">],</span>
+               <span class="n">ast_transformation</span><span class="p">:</span> <span class="n">TransformerFunc</span><span class="p">,</span>
+               <span class="n">compiler</span><span class="p">:</span> <span class="n">Compiler</span><span class="p">,</span>
+               <span class="n">fail_when</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Compiles a text in a domain-specific language (DSL) with an</span>
+<span class="sd">    EBNF-specified grammar. Returns the compiled text or raises a</span>
+<span class="sd">    compilation error.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        CompilationError if any errors occurred during compilation</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text_or_file</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">Compiler</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">grammar_src</span> <span class="o">=</span> <span class="n">grammar_instance</span><span class="p">(</span><span class="n">dsl_grammar</span><span class="p">)</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">AST</span> <span class="o">=</span> <span class="n">compile_source</span><span class="p">(</span><span class="n">text_or_file</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span>
+                                           <span class="n">ast_transformation</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">fail_when</span><span class="p">):</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">load_if_file</span><span class="p">(</span><span class="n">text_or_file</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CompilationError</span><span class="p">(</span><span class="n">only_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">fail_when</span><span class="p">),</span> <span class="n">src</span><span class="p">,</span> <span class="n">grammar_src</span><span class="p">,</span> <span class="n">AST</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="raw_compileEBNF">
+<a class="viewcode-back" href="../Reference.html#dsl.raw_compileEBNF">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">raw_compileEBNF</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">branding</span><span class="o">=</span><span class="s2">"DSL"</span><span class="p">,</span> <span class="n">fail_when</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EBNFCompiler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Compiles an EBNF grammar file and returns the compiler object</span>
+<span class="sd">    that was used and which can now be queried for the result as well</span>
+<span class="sd">    as skeleton code for preprocessor, transformer and compiler objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ebnf_src(str):  Either the file name of an EBNF grammar or</span>
+<span class="sd">            the EBNF grammar itself as a string.</span>
+<span class="sd">        branding (str):  Branding name for the compiler suite source</span>
+<span class="sd">            code.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        An instance of class ``ebnf.EBNFCompiler``</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        CompilationError if any errors occurred during compilation</span>
+<span class="sd">    """</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">get_ebnf_grammar</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">)</span>
+    <span class="n">compiler</span> <span class="o">=</span> <span class="n">get_ebnf_compiler</span><span class="p">(</span><span class="n">branding</span><span class="p">,</span> <span class="n">ebnf_src</span><span class="p">)</span>
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">get_ebnf_transformer</span><span class="p">()</span>
+    <span class="n">compileDSL</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">,</span> <span class="n">nil_preprocessor</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">fail_when</span><span class="p">)</span>
+    <span class="c1"># compile.result now contains the result of the last call</span>
+    <span class="k">return</span> <span class="n">compiler</span></div>
+
+
+
+<span class="n">VERSION_CHECK</span><span class="o">=</span><span class="sa">f</span><span class="s2">"""import DHParser.versionnumber</span>
+<span class="s2">if DHParser.versionnumber.__version_info__ &lt; </span><span class="si">{</span><span class="n">__version_info__</span><span class="si">}</span><span class="s2">:</span>
+<span class="s2">    print(f'DHParser version </span><span class="se">{{</span><span class="s2">DHParser.versionnumber.__version__</span><span class="se">}}</span><span class="s2"> is lower than the DHParser '</span>
+<span class="s2">          f'version </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">, </span><span class="se">{{</span><span class="s2">os.path.basename(__file__)</span><span class="se">}}</span><span class="s2"> has first been generated with. '</span>
+<span class="s2">          f'Please install a more recent version of DHParser to avoid unexpected errors!')</span>
+<span class="s2">"""</span>
+
+<span class="n">LOCAL_CONFIG</span><span class="o">=</span><span class="s2">"""</span>
+<span class="s2">if sys.version_info &gt;= (3, 14, 0):</span>
+<span class="s2">    CONFIG_PRESET['multicore_pool'] = 'InterpreterPool'</span>
+<span class="s2">read_local_config(os.path.join(scriptdir, '</span><span class="si">{NAME}</span><span class="s2">Config.ini'))</span>
+<span class="s2">"""</span>
+
+
+<div class="viewcode-block" id="compileEBNF">
+<a class="viewcode-back" href="../Reference.html#dsl.compileEBNF">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compileEBNF</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">branding</span><span class="o">=</span><span class="s2">"DSL"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Compiles an EBNF source file and returns the source code of a</span>
+<span class="sd">    compiler suite with skeletons for preprocessor, transformer and</span>
+<span class="sd">    compiler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ebnf_src(str):  Either the file name of an EBNF-grammar or</span>
+<span class="sd">            the EBNF-grammar itself as a string.</span>
+<span class="sd">        branding (str):  Branding name for the compiler suite source</span>
+<span class="sd">            code.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The complete compiler suite skeleton as Python source code.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        CompilationError if any errors occurred during compilation</span>
+<span class="sd">    """</span>
+    <span class="n">compiler</span> <span class="o">=</span> <span class="n">raw_compileEBNF</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">,</span> <span class="n">branding</span><span class="p">)</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"#/usr/bin/python</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">SYMBOLS_SECTION</span><span class="p">),</span>
+           <span class="n">DHPARSER_IMPORTS</span><span class="p">,</span> <span class="n">VERSION_CHECK</span><span class="p">,</span> <span class="n">LOCAL_CONFIG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NAME</span> <span class="o">=</span> <span class="n">branding</span><span class="p">),</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">PREPROCESSOR_SECTION</span><span class="p">),</span> <span class="n">compiler</span><span class="o">.</span><span class="n">gen_preprocessor_skeleton</span><span class="p">(),</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">CUSTOM_PARSER_SECTION</span><span class="p">),</span> <span class="n">compiler</span><span class="o">.</span><span class="n">gen_custom_parser_example</span><span class="p">(),</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">PARSER_SECTION</span><span class="p">),</span> <span class="n">compiler</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+           <span class="n">CONSISTENCY_CHECK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NAME</span><span class="o">=</span><span class="n">branding</span><span class="p">),</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">AST_SECTION</span><span class="p">),</span> <span class="n">compiler</span><span class="o">.</span><span class="n">gen_transformer_skeleton</span><span class="p">(),</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">COMPILER_SECTION</span><span class="p">),</span> <span class="n">compiler</span><span class="o">.</span><span class="n">gen_compiler_skeleton</span><span class="p">(),</span>
+           <span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">END_SECTIONS_MARKER</span><span class="p">),</span>
+           <span class="n">read_template</span><span class="p">(</span><span class="s1">'DSLParser.pyi'</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NAME</span><span class="o">=</span><span class="n">branding</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="grammar_provider">
+<a class="viewcode-back" href="../Reference.html#dsl.grammar_provider">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">grammar_provider</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">branding</span><span class="o">=</span><span class="s2">"DSL"</span><span class="p">,</span>
+                     <span class="n">additional_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                     <span class="n">fail_when</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParserFactory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Compiles an EBNF grammar and returns a grammar-parser provider</span>
+<span class="sd">    function for that grammar.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ebnf_src(str):  Either the file name of an EBNF grammar or</span>
+<span class="sd">            the EBNF-grammar itself as a string.</span>
+<span class="sd">        branding (str or bool):  Branding name for the compiler</span>
+<span class="sd">            suite source code.</span>
+<span class="sd">        additional_code: Python code added to the generated source. This typically</span>
+<span class="sd">            contains the source code of semantic actions referred to in the</span>
+<span class="sd">            generated source, e.g. filter-functions, resume-point-search-functions</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A provider function for a grammar object for texts in the</span>
+<span class="sd">        language defined by ``ebnf_src``.</span>
+<span class="sd">    """</span>
+    <span class="n">grammar_src</span> <span class="o">=</span> <span class="n">compileDSL</span><span class="p">(</span>
+        <span class="n">ebnf_src</span><span class="p">,</span> <span class="n">get_ebnf_preprocessor</span><span class="p">(),</span> <span class="n">get_ebnf_grammar</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">),</span> <span class="n">get_ebnf_transformer</span><span class="p">(),</span>
+        <span class="n">get_ebnf_compiler</span><span class="p">(</span><span class="n">branding</span><span class="p">,</span> <span class="n">ebnf_src</span><span class="p">),</span> <span class="n">fail_when</span><span class="p">)</span>
+    <span class="n">log_name</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'compiled_EBNF_log'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">log_name</span> <span class="ow">and</span> <span class="n">is_logging</span><span class="p">():</span>  <span class="n">append_log</span><span class="p">(</span><span class="n">log_name</span><span class="p">,</span> <span class="n">grammar_src</span><span class="p">)</span>
+    <span class="n">imports</span> <span class="o">=</span> <span class="n">DHPARSER_IMPORTS</span>
+    <span class="n">parsing_stage</span> <span class="o">=</span> <span class="n">compile_python_object</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">imports</span><span class="p">,</span> <span class="n">additional_code</span><span class="p">,</span> <span class="n">grammar_src</span><span class="p">]),</span>
+                                          <span class="sa">r</span><span class="s1">'parsing'</span><span class="p">)</span>  <span class="c1"># r'get_(?:\w+_)?grammar$'</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">parsing_stage</span><span class="o">.</span><span class="n">factory</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parsing_stage</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="s1">'keywords'</span><span class="p">):</span>
+            <span class="n">parsing_stage</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="s1">'python_src'</span><span class="p">]</span> <span class="o">=</span> <span class="n">grammar_src</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parsing_stage</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">python_src__</span> <span class="o">=</span> <span class="n">grammar_src</span>
+        <span class="k">return</span> <span class="n">parsing_stage</span><span class="o">.</span><span class="n">factory</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Could not compile grammar provider!'</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="create_parser">
+<a class="viewcode-back" href="../Reference.html#dsl.create_parser">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_parser</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">branding</span><span class="o">=</span><span class="s2">"DSL"</span><span class="p">,</span> <span class="n">additional_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Grammar</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Compiles the ebnf source into a callable Grammar-object. This is</span>
+<span class="sd">    essentially syntactic sugar for ``grammar_provider(ebnf)()``.</span>
+<span class="sd">    """</span>
+    <span class="n">grammar_factory</span> <span class="o">=</span> <span class="n">grammar_provider</span><span class="p">(</span><span class="n">ebnf_src</span><span class="p">,</span> <span class="n">branding</span><span class="p">,</span> <span class="n">additional_code</span><span class="p">)</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">grammar_factory</span><span class="p">()</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">grammar_factory</span><span class="p">,</span> <span class="s1">'python_src__'</span><span class="p">,</span>
+                  <span class="n">grammar_factory</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="s1">'python_src'</span><span class="p">])</span>
+    <span class="c1"># extract Grammar class from source code for more clarity</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">f</span><span class="s1">'class </span><span class="si">{</span><span class="n">branding</span><span class="si">}</span><span class="s1">Grammar(Grammar):'</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">src</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="ow">or</span> <span class="n">src</span><span class="p">[</span><span class="n">k</span><span class="p">:</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'    '</span><span class="p">):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">grammar</span><span class="o">.</span><span class="n">python_src__</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">src</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span>
+    <span class="k">return</span> <span class="n">grammar</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">split_source</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Splits the ``file_content`` into the seven sections: intro, imports,</span>
+<span class="sd">    preprocessor_py, parser_py, ast_py, compiler_py, outro.</span>
+<span class="sd">    Raises a value error if the number of sections is not equal to 7.</span>
+<span class="sd">    """</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="n">RX_SECTION_MARKER</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+    <span class="n">ls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ls</span> <span class="o">!=</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'File "</span><span class="si">%s</span><span class="s1">" contains </span><span class="si">%i</span><span class="s1"> instead of 7 sections. Please '</span>
+                         <span class="s1">'delete or repair file manually.'</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">ls</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sections</span>
+
+
+<div class="viewcode-block" id="load_compiler_suite">
+<a class="viewcode-back" href="../Reference.html#dsl.load_compiler_suite">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_compiler_suite</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> \
+        <span class="n">Tuple</span><span class="p">[</span><span class="n">PreprocessorFactory</span><span class="p">,</span> <span class="n">ParserFactory</span><span class="p">,</span>
+              <span class="n">TransformerFactory</span><span class="p">,</span> <span class="n">CompilerFactory</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Extracts a compiler suite from the file name or string ``compiler_suite``</span>
+<span class="sd">    and returns it as a tuple (preprocessor, parser, ast, compiler).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        4-tuple (preprocessor function, parser class,</span>
+<span class="sd">                 ast transformer function, compiler class)</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">RX_SECTION_MARKER</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">load_if_file</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">)</span>
+    <span class="n">imports</span> <span class="o">=</span> <span class="n">DHPARSER_IMPORTS</span>
+    <span class="k">if</span> <span class="n">is_python_code</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">):</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="n">split_source</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">preprocessor_py</span><span class="p">,</span> <span class="n">parser_py</span><span class="p">,</span> <span class="n">ast_py</span><span class="p">,</span> <span class="n">compiler_py</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sections</span>
+        <span class="c1"># TODO: Compile in one step and pick parts from namespace later ?</span>
+        <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">compile_python_object</span><span class="p">(</span><span class="n">imports</span> <span class="o">+</span> <span class="n">preprocessor_py</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'preprocessing'</span><span class="p">)</span><span class="o">.</span><span class="n">factory</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">compile_python_object</span><span class="p">(</span><span class="n">imports</span> <span class="o">+</span> <span class="n">parser_py</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'parsing'</span><span class="p">)</span><span class="o">.</span><span class="n">factory</span>
+        <span class="n">ast</span> <span class="o">=</span> <span class="n">compile_python_object</span><span class="p">(</span><span class="n">imports</span> <span class="o">+</span> <span class="n">ast_py</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'ASTTransformation'</span><span class="p">)</span><span class="o">.</span><span class="n">factory</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Assume source is an ebnf grammar.</span>
+        <span class="c1"># Is there really any reasonable application case for this?</span>
+        <span class="n">lg_dir</span> <span class="o">=</span> <span class="n">suspend_logging</span><span class="p">()</span>
+        <span class="n">compiler_py</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compile_source</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">get_ebnf_grammar</span><span class="p">(),</span>
+                                                  <span class="n">get_ebnf_transformer</span><span class="p">(),</span>
+                                                  <span class="n">get_ebnf_compiler</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">,</span> <span class="n">source</span><span class="p">))</span>
+        <span class="n">resume_logging</span><span class="p">(</span><span class="n">lg_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DefinitionError</span><span class="p">(</span><span class="n">only_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">),</span> <span class="n">source</span><span class="p">)</span>
+        <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">get_ebnf_preprocessor</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">get_ebnf_grammar</span>
+        <span class="n">ast</span> <span class="o">=</span> <span class="n">get_ebnf_transformer</span>
+    <span class="n">compiler</span> <span class="o">=</span> <span class="n">compile_python_object</span><span class="p">(</span><span class="n">imports</span> <span class="o">+</span> <span class="n">compiler_py</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'compiling'</span><span class="p">)</span><span class="o">.</span><span class="n">factory</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">preprocessor</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">Callable</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">compiler</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">compiler</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Could not generate compiler suite from source code!'</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_outdated</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">grammar_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Returns ``True``  if the ``compile_suite`` needs to be updated.</span>
+
+<span class="sd">    An update is needed, if either the grammar in the compiler suite</span>
+<span class="sd">    does not reflect the latest changes of ``grammar_source`` or if</span>
+<span class="sd">    sections from the compiler suite have diligently been overwritten</span>
+<span class="sd">    with whitespace order to trigger their recreation. Note: Do not</span>
+<span class="sd">    delete or overwrite the section marker itself.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        compiler_suite:  the parser class representing the grammar</span>
+<span class="sd">            or the file name of a compiler suite containing the grammar</span>
+<span class="sd">        grammar_source:  File name or string representation of the</span>
+<span class="sd">            EBNF code of the grammar</span>
+
+<span class="sd">    Returns (bool):</span>
+<span class="sd">        True, if ``compiler_suite`` seems to be out of date.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_compiler_suite</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grammar_changed</span><span class="p">(</span><span class="n">grammar</span><span class="p">(),</span> <span class="n">grammar_source</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_compiler</span><span class="p">(</span><span class="n">text_or_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">compiler_suite</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fail_when</span><span class="p">:</span> <span class="n">ErrorCode</span> <span class="o">=</span> <span class="n">ERROR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Compiles a source with a given compiler suite.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text_or_file (str):  Either the file name of the source code or</span>
+<span class="sd">            the source code directly. (Which is determined by</span>
+<span class="sd">            heuristics. If ``text_or_file`` contains at least on</span>
+<span class="sd">            linefeed then it is always assumed to be a source text and</span>
+<span class="sd">            not a file name.)</span>
+<span class="sd">        compiler_suite(str):  File name of the compiler suite to be</span>
+<span class="sd">            used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The result of the compilation, the form and type of which</span>
+<span class="sd">        depends entirely on the compiler.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        CompilerError</span>
+<span class="sd">    """</span>
+    <span class="n">preprocessor</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">compiler</span> <span class="o">=</span> <span class="n">load_compiler_suite</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">compileDSL</span><span class="p">(</span><span class="n">text_or_file</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">(),</span> <span class="n">parser</span><span class="p">(),</span> <span class="n">ast</span><span class="p">(),</span> <span class="n">compiler</span><span class="p">(),</span> <span class="n">fail_when</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="compile_on_disk">
+<a class="viewcode-back" href="../Reference.html#dsl.compile_on_disk">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compile_on_disk</span><span class="p">(</span><span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">parser_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                    <span class="n">compiler_suite</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+                    <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">".xml"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Error</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Compiles a source file with a given compiler and writes the</span>
+<span class="sd">    result to a file.</span>
+
+<span class="sd">    If no ``compiler_suite`` is given it is assumed that the source</span>
+<span class="sd">    file is an EBNF grammar. In this case the result will be a Python</span>
+<span class="sd">    script containing a parser for that grammar as well as the</span>
+<span class="sd">    skeletons for a preprocessor, AST transformation table, and compiler.</span>
+<span class="sd">    If the Python script already exists only the parser name in the</span>
+<span class="sd">    script will be updated. (For this to work, the different names</span>
+<span class="sd">    need to be delimited section marker blocks.). :py:func:`compile_on_disk`</span>
+<span class="sd">    returns a list of error messages or an empty list if no errors</span>
+<span class="sd">    occurred.</span>
+
+<span class="sd">    :param source_file:  The file name of the source text to be compiled.</span>
+<span class="sd">    :param parser_name:  The name of the generated parser. If the empty</span>
+<span class="sd">        string is passed, the default name "...Parser.py" will be used.</span>
+<span class="sd">    :param compiler_suite:  The file name of the parser/compiler-suite</span>
+<span class="sd">        (usually ending with 'Parser.py'), with which the source file</span>
+<span class="sd">        shall be compiled. If this is left empty, the source file is</span>
+<span class="sd">        assumed to be an EBNF-Grammar that will be compiled with the</span>
+<span class="sd">        internal EBNF-Compiler.</span>
+<span class="sd">    :param extension:  The result of the compilation (if successful)</span>
+<span class="sd">        is written to a file with the same name but a different extension</span>
+<span class="sd">        than the source file. This parameter sets the extension.</span>
+<span class="sd">    :returns:  A (potentially empty) list of error or warning messages.</span>
+<span class="sd">    """</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+    <span class="n">rootname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser_name</span><span class="p">:</span>  <span class="n">parser_name</span> <span class="o">=</span> <span class="n">rootname</span> <span class="o">+</span> <span class="s1">'Parser.py'</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Optional[TextIO]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="c1"># dhpath = relative_path(os.path.dirname(rootname), DHPARSER_PARENTDIR)</span>
+    <span class="n">compiler_name</span> <span class="o">=</span> <span class="n">as_identifier</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rootname</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">compiler_suite</span><span class="p">:</span>
+        <span class="n">sfactory</span><span class="p">,</span> <span class="n">pfactory</span><span class="p">,</span> <span class="n">tfactory</span><span class="p">,</span> <span class="n">cfactory</span> <span class="o">=</span> <span class="n">load_compiler_suite</span><span class="p">(</span><span class="n">compiler_suite</span><span class="p">)</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">pfactory</span><span class="p">()</span>
+        <span class="n">compiler1</span> <span class="o">=</span> <span class="n">cfactory</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sfactory</span> <span class="o">=</span> <span class="n">get_ebnf_preprocessor</span>  <span class="c1"># PreprocessorFactory</span>
+        <span class="n">pfactory</span> <span class="o">=</span> <span class="n">get_ebnf_grammar</span>       <span class="c1"># ParserFactory</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">pfactory</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>         <span class="c1"># EBNF-Parser will be selected to fit the flavor</span>
+        <span class="n">tfactory</span> <span class="o">=</span> <span class="n">get_ebnf_transformer</span>   <span class="c1"># TransformerFactory</span>
+        <span class="n">cfactory</span> <span class="o">=</span> <span class="n">get_ebnf_compiler</span>      <span class="c1"># CompilerFactory</span>
+        <span class="n">compiler1</span> <span class="o">=</span> <span class="n">cfactory</span><span class="p">()</span>            <span class="c1"># CompilerFunc</span>
+
+    <span class="n">is_ebnf_compiler</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># type: bool</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">compiler1</span><span class="p">,</span> <span class="n">EBNFCompiler</span><span class="p">):</span>
+        <span class="n">is_ebnf_compiler</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">compiler1</span><span class="o">.</span><span class="n">set_grammar_name</span><span class="p">(</span><span class="n">compiler_name</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compile_source</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">sfactory</span><span class="p">(),</span> <span class="n">parser</span><span class="p">,</span> <span class="n">tfactory</span><span class="p">(),</span> <span class="n">compiler1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">messages</span>
+
+    <span class="k">elif</span> <span class="n">is_ebnf_compiler</span><span class="p">:</span>
+        <span class="c1"># trans == get_ebnf_transformer or trans == EBNFTransformer:</span>
+        <span class="c1"># either an EBNF- or no compiler suite given</span>
+        <span class="n">ebnf_compiler</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">EBNFCompiler</span><span class="p">,</span> <span class="n">compiler1</span><span class="p">)</span>  <span class="c1"># type: EBNFCompiler</span>
+        <span class="k">global</span> <span class="n">SECTION_MARKER</span><span class="p">,</span> <span class="n">RX_SECTION_MARKER</span><span class="p">,</span> <span class="n">PREPROCESSOR_SECTION</span><span class="p">,</span> <span class="n">PARSER_SECTION</span><span class="p">,</span> \
+            <span class="n">AST_SECTION</span><span class="p">,</span> <span class="n">COMPILER_SECTION</span><span class="p">,</span> <span class="n">END_SECTIONS_MARKER</span><span class="p">,</span> <span class="n">RX_WHITESPACE</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">parser_name</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">sections</span> <span class="o">=</span> <span class="n">split_source</span><span class="p">(</span><span class="n">parser_name</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+            <span class="n">intro</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">outro</span> <span class="o">=</span> <span class="n">sections</span>
+            <span class="k">if</span> <span class="n">imports</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">:</span>  <span class="n">imports</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span>
+            <span class="c1"># TODO: Verify compiler</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">):</span>
+            <span class="n">intro</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">outro</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">''</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">RX_WHITESPACE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">intro</span><span class="p">):</span>
+            <span class="n">intro</span> <span class="o">=</span> <span class="s1">'#!/usr/bin/env python3'</span>
+        <span class="k">if</span> <span class="n">RX_WHITESPACE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">outro</span><span class="p">):</span>
+            <span class="n">outro</span> <span class="o">=</span> <span class="n">read_template</span><span class="p">(</span><span class="s1">'DSLParser.pyi'</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NAME</span><span class="o">=</span><span class="n">compiler_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">RX_WHITESPACE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">imports</span><span class="p">):</span>
+            <span class="n">imports</span> <span class="o">=</span> <span class="n">DHParser</span><span class="o">.</span><span class="n">ebnf</span><span class="o">.</span><span class="n">DHPARSER_IMPORTS</span> <span class="o">+</span> <span class="n">VERSION_CHECK</span> \
+                      <span class="o">+</span> <span class="n">LOCAL_CONFIG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NAME</span><span class="o">=</span><span class="n">compiler_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">imports</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"from DHParser."</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> \
+                <span class="ow">or</span> <span class="n">imports</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'PseudoJunction'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> \
+                <span class="ow">or</span> <span class="n">imports</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'create_parser_junction'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">imports</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">from DHParser.pipeline import PseudoJunction, create_parser_junction</span><span class="se">\n\n</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="n">RX_WHITESPACE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">preprocessor</span><span class="p">):</span>
+            <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">ebnf_compiler</span><span class="o">.</span><span class="n">gen_preprocessor_skeleton</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">RX_WHITESPACE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">ast</span><span class="p">):</span>
+            <span class="n">ast</span> <span class="o">=</span> <span class="n">ebnf_compiler</span><span class="o">.</span><span class="n">gen_transformer_skeleton</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">RX_WHITESPACE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">compiler</span><span class="p">):</span>
+            <span class="n">compiler</span> <span class="o">=</span> <span class="n">ebnf_compiler</span><span class="o">.</span><span class="n">gen_compiler_skeleton</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">parser_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">intro</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">SYMBOLS_SECTION</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">imports</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">PREPROCESSOR_SECTION</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">preprocessor</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">PARSER_SECTION</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CONSISTENCY_CHECK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NAME</span><span class="o">=</span><span class="n">compiler_name</span><span class="p">),)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">AST_SECTION</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">COMPILER_SECTION</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">compiler</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">SECTION_MARKER</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="n">END_SECTIONS_MARKER</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outro</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'# Could not write file "</span><span class="si">{</span><span class="n">parser_name</span><span class="si">}</span><span class="s1">" because of: '</span>
+                  <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"># "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">)'</span><span class="p">)))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span><span class="o">,</span><span class="w"> </span><span class="nn">stat</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"Windows"</span><span class="p">:</span>
+            <span class="c1"># set file permissions so that the parser_name can be executed</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">parser_name</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">parser_name</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IEXEC</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">rootname</span> <span class="o">+</span> <span class="n">extension</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'.xml'</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Illegal result type: '</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'# Could not write file "'</span> <span class="o">+</span> <span class="n">rootname</span> <span class="o">+</span> <span class="s1">'.py" because of: '</span>
+                  <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2"># "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">)'</span><span class="p">)))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">messages</span></div>
+
+
+
+<div class="viewcode-block" id="recompile_grammar">
+<a class="viewcode-back" href="../Reference.html#dsl.recompile_grammar">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">recompile_grammar</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">parser_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                      <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                      <span class="n">notify</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Re-compiles an EBNF-grammar if necessary, that is, if either no</span>
+<span class="sd">    corresponding 'XXXXParser.py'-file exists or if that file is</span>
+<span class="sd">    outdated.</span>
+
+<span class="sd">    :param ebnf_filename:  The filename of the ebnf-source of the grammar.</span>
+<span class="sd">            In case this is a directory and not a file, all files within</span>
+<span class="sd">            this directory ending with .ebnf will be compiled.</span>
+<span class="sd">    :param parser_name:  The name of the compiler script. If not given</span>
+<span class="sd">            the ebnf-filename without extension and with the addition</span>
+<span class="sd">            of "Parser.py" will be used.</span>
+<span class="sd">    :param force:  If False (default), the grammar will only be</span>
+<span class="sd">            recompiled if it has been changed.</span>
+<span class="sd">    :param notify:  'notify' is a function without parameters that</span>
+<span class="sd">            is called when recompilation actually takes place. This can</span>
+<span class="sd">            be used to inform the user.</span>
+<span class="sd">    :returns: True, if recompilation of grammar has been successful or did</span>
+<span class="sd">            not take place, because the Grammar hasn't changed since the last</span>
+<span class="sd">            compilation. False, if the recompilation of the grammar has been</span>
+<span class="sd">            attempted but failed.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">):</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.ebnf'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="n">success</span> <span class="ow">and</span> <span class="n">recompile_grammar</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">,</span> <span class="n">force</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span>
+
+    <span class="n">base</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser_name</span><span class="p">:</span>
+        <span class="n">parser_name</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">'Parser.py'</span>
+    <span class="n">error_file_name</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">'_ebnf_MESSAGES.txt'</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: Sequence[Error]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parser_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">force</span>
+            <span class="ow">or</span> <span class="n">grammar_changed</span><span class="p">(</span><span class="n">parser_name</span><span class="p">,</span> <span class="n">ebnf_filename</span><span class="p">)):</span>
+        <span class="n">notify</span><span class="p">()</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="n">compile_on_disk</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">)</span>
+
+        <span class="c1"># try again with heuristic EBNF-parser, if parser failed due to a</span>
+        <span class="c1"># different EBNF-dialect</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">messages</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"'DEF' expected by parser 'definition'"</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">syntax_variant</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'syntax_variant'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">syntax_variant</span> <span class="o">!=</span> <span class="s1">'heuristic'</span><span class="p">:</span>
+                <span class="n">set_config_value</span><span class="p">(</span><span class="s1">'syntax_variant'</span><span class="p">,</span> <span class="s1">'heuristic'</span><span class="p">)</span>
+                <span class="n">messages2</span> <span class="o">=</span> <span class="n">compile_on_disk</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">)</span>
+                <span class="n">set_config_value</span><span class="p">(</span><span class="s1">'syntax_variant'</span><span class="p">,</span> <span class="n">syntax_variant</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">messages2</span><span class="p">):</span>
+                    <span class="n">messages</span> <span class="o">=</span> <span class="n">messages2</span>
+
+        <span class="k">if</span> <span class="n">messages</span><span class="p">:</span>
+            <span class="c1"># print("Errors while compiling: " + ebnf_filename + '!')</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">error_file_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">error_file_name</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">error_file_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="create_scripts">
+<a class="viewcode-back" href="../Reference.html#dsl.create_scripts">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_scripts</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                   <span class="n">parser_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                   <span class="n">server_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                   <span class="n">app_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                   <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Creates a parser script from the grammar with the filename</span>
+<span class="sd">    ``ebnf_filename'`` or, if ebnf_filename referes to a directory from all</span>
+<span class="sd">    grammars in files ending with ".ebnf" in that directory.</span>
+
+<span class="sd">    If ``server_name`` is not None a script for starting a parser-server</span>
+<span class="sd">    will be created as well. Running the parser as a server has the advantage</span>
+<span class="sd">    that the startup time for calling the parser is greatly reduced for</span>
+<span class="sd">    subsequent parser calls. (While the same can be achieved with running</span>
+<span class="sd">    the parser script in batch-processing-mode by passing a directory or</span>
+<span class="sd">    several filenames on the command line to the parser script, batch</span>
+<span class="sd">    processing is not suitable for all application cases. For example,</span>
+<span class="sd">    it is not usable when implementing language servers to feed</span>
+<span class="sd">    editors with data from the parseing process.)</span>
+
+<span class="sd">    if ``app_name`` is not None an application script with a tkinter-based</span>
+<span class="sd">    graphical user interface will be created as well. (When distributing</span>
+<span class="sd">    this script with pyinstaller, parallel processing should be turned off</span>
+<span class="sd">    at least on MS Windows systems!)</span>
+
+<span class="sd">    :param ebnf_filename: The filename of the grammar, from which the servfer</span>
+<span class="sd">        script's filename is derived.</span>
+<span class="sd">    :param parser_name: The filename of the parser script or the empty string</span>
+<span class="sd">        if the default filename shall be used.</span>
+<span class="sd">    :param server_name: The filename of the server script of the empty string</span>
+<span class="sd">        if the default filename shall be used, or None if no server script</span>
+<span class="sd">        shall be created.</span>
+<span class="sd">    :param app_name: The filename of the server script of the empty string</span>
+<span class="sd">        if the default filename shall be used, or None if no app-script</span>
+<span class="sd">        shall be created</span>
+<span class="sd">    :param overwrite: If True an existing server script will be overwritten.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.ebnf'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+                <span class="n">create_scripts</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">base</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_script</span><span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="n">template_name</span><span class="p">):</span>
+        <span class="k">nonlocal</span> <span class="n">base</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">read_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'DSL'</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span><span class="o">,</span><span class="w"> </span><span class="nn">stat</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"Windows"</span><span class="p">:</span>
+            <span class="c1"># set file permissions so that the server-script can be executed</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">script_name</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IEXEC</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser_name</span><span class="p">:</span>  <span class="n">parser_name</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">'Parser.py'</span>
+    <span class="k">if</span> <span class="n">server_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">server_name</span><span class="p">:</span>  <span class="n">server_name</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">'Server.py'</span>
+    <span class="k">if</span> <span class="n">app_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">app_name</span><span class="p">:</span>  <span class="n">app_name</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">'App.py'</span>
+    <span class="k">if</span> <span class="n">server_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">server_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">):</span>
+        <span class="n">create_script</span><span class="p">(</span><span class="n">server_name</span><span class="p">,</span> <span class="s2">"DSLServer.pyi"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">app_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">app_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">):</span>
+        <span class="n">create_script</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="s2">"DSLApp.pyi"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parser_name</span><span class="p">):</span>  <span class="n">recompile_grammar</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">)</span></div>
+
+
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"restore_server_script() is deprecated! Please, use create_scripts()."</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">restore_server_script</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                          <span class="n">parser_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                          <span class="n">server_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                          <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="n">create_scripts</span><span class="p">(</span><span class="n">ebnf_filename</span><span class="p">,</span> <span class="n">parser_name</span><span class="p">,</span> <span class="n">server_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># batch-processing</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="process_file">
+<a class="viewcode-back" href="../Reference.html#dsl.process_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_file</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">preprocessor_factory</span><span class="p">:</span> <span class="n">PreprocessorFactory</span><span class="p">,</span>
+                 <span class="n">parser_factory</span><span class="p">:</span> <span class="n">ParserFactory</span><span class="p">,</span>
+                 <span class="n">junctions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">],</span>
+                 <span class="n">targets</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">serializations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+                 <span class="n">cancel_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancelQuery</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Compiles the source and writes the serialized results back to disk,</span>
+<span class="sd">    unless any fatal errors have occurred. Error and Warning messages are</span>
+<span class="sd">    written to a file with the same name as `result_filename` with an</span>
+<span class="sd">    appended "_ERRORS.txt" or "_WARNINGS.txt" in place of the name's</span>
+<span class="sd">    extension. Returns the name of the error-messages file or an empty</span>
+<span class="sd">    string, if no errors or warnings occurred.</span>
+
+<span class="sd">    :param source:  the source document or the filename of the source-document</span>
+<span class="sd">    :param out_dir:  the path of the output-directory. If the output-directory</span>
+<span class="sd">        does not exist, it will be created.</span>
+<span class="sd">    :param preprocessor_factory:  A factory-function that returns a</span>
+<span class="sd">        preprocessing function.</span>
+<span class="sd">    :param parser_factory: A factory-function that returns a parser function</span>
+<span class="sd">        which, usually, is a :py:class:`parse.Grammar`-object.</span>
+<span class="sd">    :param junctions:  a set of junctions for all processing stages beyond</span>
+<span class="sd">        parsing.</span>
+<span class="sd">    :param serializations: A dictionary of serialization names, e.g. "sxpr",</span>
+<span class="sd">        "xml", "json" for those target stages that still are node-trees. These</span>
+<span class="sd">        will be serialized and written to disk in all given serializations.</span>
+<span class="sd">    :param cancel_query: A boolean-valued function without parameters that</span>
+<span class="sd">        is polled during processing. If it returns True, processing will be</span>
+<span class="sd">        canceled.</span>
+
+<span class="sd">    :return: either the empty string or the file name of a file that contains</span>
+<span class="sd">        the errors or warnings that occurred while processing the source.</span>
+<span class="sd">    """</span>
+    <span class="n">source_filename</span> <span class="o">=</span> <span class="n">source</span> <span class="k">if</span> <span class="n">is_filename</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'unknown_document_name'</span>
+    <span class="n">dest_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">source_filename</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">full_pipeline</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">preprocessor_factory</span><span class="p">,</span> <span class="n">parser_factory</span><span class="p">,</span> <span class="n">junctions</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span>
+                            <span class="n">cancel_query</span><span class="o">=</span><span class="n">cancel_query</span><span class="p">)</span>
+    <span class="n">end_results</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="n">r</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">}</span>
+
+    <span class="c1"># create target directories</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">end_results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># do not use os.path.exists(), here: RACE CONDITION!!</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="n">error_file_name</span> <span class="o">=</span> <span class="n">dest_name</span> <span class="o">+</span> <span class="s1">'_FATAL_ERROR.txt'</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">error_file_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Destination directory path "</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">" already in use!'</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">error_file_name</span>
+
+    <span class="c1"># write data</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[];</span>  <span class="n">errstrs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">end_results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_results</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="k">else</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">estr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">estr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">errstrs</span><span class="p">:</span>
+                <span class="n">errstrs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">estr</span><span class="p">)</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">end_results</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s1">'.'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">dest_name</span><span class="p">,</span> <span class="n">t</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+                <span class="n">slist</span> <span class="o">=</span> <span class="n">serializations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">serializations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">'*'</span><span class="p">,</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'default_serialization'</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slist</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># normalize file-extensions:</span>
+                    <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">'default'</span><span class="p">:</span>  <span class="n">s</span> <span class="o">=</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'default_serialization'</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">'s-expression'</span><span class="p">:</span>  <span class="n">s</span> <span class="o">=</span> <span class="s1">'sxpr'</span>
+                    <span class="k">elif</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">'indented'</span><span class="p">:</span>  <span class="n">s</span> <span class="o">=</span> <span class="s1">'tree'</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'.'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">s</span><span class="p">]),</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
+    <span class="n">errors</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">err_ext</span> <span class="o">=</span> <span class="s1">'_ERRORS.txt'</span> <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'_WARNINGS.txt'</span>
+        <span class="n">err_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">dest_name</span> <span class="o">+</span> <span class="n">err_ext</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">err_filename</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">canonical_error_strings</span><span class="p">(</span><span class="n">errors</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">err_filename</span>
+    <span class="k">return</span> <span class="s1">''</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">never_cancel</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="n">Future</span> <span class="o">=</span> <span class="nb">object</span>  <span class="c1"># to save the import of concurrent.futures when not needed!</span>
+                 <span class="c1"># todo: Could protocols for structural typing be useful, here?</span>
+
+<div class="viewcode-block" id="batch_process">
+<a class="viewcode-back" href="../Reference.html#dsl.batch_process">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">batch_process</span><span class="p">(</span><span class="n">file_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">process_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">CancelQuery</span><span class="p">]],</span> <span class="nb">str</span><span class="p">],</span>
+                                      <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]],</span>
+                  <span class="o">*</span><span class="p">,</span> <span class="n">submit_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Future</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">log_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">cancel_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancelQuery</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">cancel_func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancelQuery</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Compiles all files listed in file_names and writes the results and/or</span>
+<span class="sd">    error messages to the directory `our_dir`. Returns a list of error</span>
+<span class="sd">    messages files.</span>
+
+<span class="sd">    :param file_names: A list of names of files to be processed with the</span>
+<span class="sd">        function passed to the process_file-parameter.</span>
+<span class="sd">    :param out_dir: The name of a directory, to which the output will be</span>
+<span class="sd">        written (i.e. compilation and/or pipeline-processing results as</span>
+<span class="sd">        well as possibly intermediate stages and error-logs)</span>
+<span class="sd">    :param process_file: A function for processing source-texts. This function</span>
+<span class="sd">        receives the name of a source file and output-directory as parameters</span>
+<span class="sd">        and returns the name of an error-log-file (if there have been errors)</span>
+<span class="sd">        or the empty string if there were none.</span>
+<span class="sd">    :param submit_func: A function which calls the process_file function. This</span>
+<span class="sd">        additional indirection allows executing the call in a separate thread</span>
+<span class="sd">        or process, if desired. submit_func must return a</span>
+<span class="sd">        concurrent.futures.Future()-object!</span>
+<span class="sd">    :param log_func: A function that receives a string as parameter and which</span>
+<span class="sd">        is called with an appropriate message whenever another file has been</span>
+<span class="sd">        fully processed.</span>
+<span class="sd">    :param cancel_query: A callback-function without parameters that returns</span>
+<span class="sd">        either True if further processing shall be canceled or False if</span>
+<span class="sd">        processing shall continue. This allows interrupting long-running</span>
+<span class="sd">        batch-processing tasks. Typically, cancel_query will be the</span>
+<span class="sd">        event.is_set-function of a multiprocessing.Event-object that has</span>
+<span class="sd">        been instantiated before calling batch_process.</span>
+<span class="sd">    :param cancel_func: DEPRECATED. Please, use cancel_query.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collect_results</span><span class="p">(</span><span class="n">res_iter</span><span class="p">,</span> <span class="n">file_names</span><span class="p">,</span> <span class="n">log_func</span><span class="p">,</span> <span class="n">cancel_query</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">error_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">cancel_query</span><span class="p">():</span> <span class="k">return</span> <span class="n">error_list</span>
+        <span class="k">for</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">error_filename</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">file_names</span><span class="p">,</span> <span class="n">res_iter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">log_func</span><span class="p">:</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="p">(</span><span class="s2">" with "</span> <span class="o">+</span> <span class="n">error_filename</span><span class="p">[</span><span class="n">error_filename</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span> \
+                    <span class="k">if</span> <span class="n">error_filename</span> <span class="k">else</span> <span class="s2">""</span>
+                <span class="n">log_func</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Compiled "%s"'</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">error_filename</span><span class="p">:</span>
+                <span class="n">error_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cancel_query</span><span class="p">():</span> <span class="k">return</span> <span class="n">error_list</span>
+        <span class="k">return</span> <span class="n">error_list</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+    <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">deprecation_warning</span><span class="p">(</span><span class="s1">'Parameter name "cancel_func" of function '</span>
+            <span class="s1">'DHParser.dsl.batch_process() is deprected. Use "cancel_query" instead!'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cancel_query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cancel_query</span> <span class="o">=</span> <span class="n">cancel_func</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">process_file</span><span class="p">)</span>
+    <span class="n">parm_tuple</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pf_parms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">parm_tuple</span><span class="o">.</span><span class="n">annotation</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">pf_parms</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">"'process_file'-function passed to DHParser.dsl.batch_process() "</span>
+                            <span class="s2">"appears to be outdated as it does not take a tuple with a third "</span>
+                            <span class="s2">"parameter. It's signature ought to be (args: tuple(source: str, "</span>
+                            <span class="s2">"out_dir: str, cancel_query: DHParser.toolkit.CancelQuery))."</span><span class="p">)</span>
+        <span class="n">pf_parms</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pf_parms</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">if</span> <span class="n">submit_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">instantiate_executor</span><span class="p">(</span><span class="n">get_config_value</span><span class="p">(</span><span class="s1">'batch_processing_parallelization'</span><span class="p">),</span>
+                                    <span class="n">PickMultiCoreExecutor</span><span class="p">)</span>
+        <span class="n">chunksize</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">get_config_value</span><span class="p">(</span><span class="s1">'batch_processing_max_chunk_size'</span><span class="p">),</span>
+                        <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">pf_parms</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">res_iter</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">process_file</span><span class="p">,</span>
+                                <span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">cancel_query</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">),</span>
+                                <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res_iter</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">process_file</span><span class="p">,</span> <span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">),</span>
+                                <span class="n">chunksize</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+        <span class="n">error_files</span> <span class="o">=</span> <span class="n">collect_results</span><span class="p">(</span><span class="n">res_iter</span><span class="p">,</span> <span class="n">file_names</span><span class="p">,</span> <span class="n">log_func</span><span class="p">,</span> <span class="n">cancel_query</span> <span class="ow">or</span> <span class="n">never_cancel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cancel_futures</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pf_parms</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">submit_func</span><span class="p">(</span><span class="n">process_file</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">cancel_query</span><span class="p">)</span>
+                       <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">submit_func</span><span class="p">(</span><span class="n">process_file</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">]</span>
+        <span class="n">res_iter</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">)</span>
+        <span class="n">error_files</span> <span class="o">=</span> <span class="n">collect_results</span><span class="p">(</span><span class="n">res_iter</span><span class="p">,</span> <span class="n">file_names</span><span class="p">,</span> <span class="n">log_func</span><span class="p">,</span> <span class="n">cancel_query</span> <span class="ow">or</span> <span class="n">never_cancel</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">:</span>  <span class="n">f</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">futures</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">error_files</span></div>
+
+
+
+<span class="c1"># moved or deprecated functions</span>
+
+<span class="n">PseudoJunction</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">'PseudoJunction'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'factory'</span><span class="p">],</span> <span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># DEPRECATED: Use pipeline.PseudoJunction</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'create_preprocess_junction() has moved to the pipeline-module! Use "from DHParser.pipeline import create_preprocess_junction"'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_preprocess_junction</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">include_regex</span><span class="p">,</span> <span class="n">comment_regex</span><span class="p">,</span>
+                               <span class="n">derive_file_name</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">DHParser</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
+    <span class="k">return</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">create_preprocess_junction</span><span class="p">(</span>
+        <span class="n">tokenizer</span><span class="p">,</span> <span class="n">include_regex</span><span class="p">,</span> <span class="n">comment_regex</span><span class="p">,</span> <span class="n">derive_file_name</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'The name "create_preprocess_transition()" is deprecated. Use "DHParser.pipeline.create_preprocess_junction()" instead.'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_preprocess_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span>   <span class="n">create_preprocess_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'create_parser_junction() has moved to the pipeline-module! Use "from DHParser.pipeline import create_parser_junction"'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_parser_junction</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">DHParser</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
+    <span class="k">return</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">create_parser_junction</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'The name "create_parser_transition()" is deprecated. Use "DHParser.pipeline.create_parser_junction()" instead.'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_parser_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span>   <span class="n">create_parser_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'create_compiler_junction() has moved to the pipeline-module! Use "from DHParser.pipeline import create_compiler_junction"'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_compiler_junction</span><span class="p">(</span><span class="n">compile_class</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">DHParser</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
+    <span class="k">return</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">create_compiler_junction</span><span class="p">(</span><span class="n">compile_class</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'The name "create__compiler_transition()" is deprecated. Use "DHParser.pipeline.create_compiler_junction()" instead.'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_compiler_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">create_compiler_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"DHParser.dsl.create_transtable_transition() is deprecated, "</span>
+            <span class="s2">"because it does not work with lambdas as transformer functions!"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_transtable_junction</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">):</span>
+    <span class="c1"># This does not work if table contains functions that cannot be pickled (i.e. lambda-functions)!</span>
+    <span class="k">return</span> <span class="n">create_transtable_transition</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'The name "create_transtable_transition()" is deprecated. Use "DHParser.pipeline.create_transtable_junction()" instead.'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_transtable_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">create_transtable_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'create_evaluation_junction() has moved to the pipeline-module! Use "from DHParser.pipeline import create_evaluation_junction"'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_evaluation_junction</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="n">supply_path_arg</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">DHParser</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
+    <span class="k">return</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">create_evaluation_junction</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="n">supply_path_arg</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'The name "create_evaluation_transition()" is deprecated. Use "DHParser.pipeline.create_evaluation_junction()" instead.'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_evaluation_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">create_evaluation_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'create_junction() has moved to the pipeline-module! Use "from DHParser.pipeline import create_junction"'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="n">hint</span> <span class="o">=</span> <span class="s2">"?"</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">DHParser</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
+    <span class="k">return</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">create_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="n">hint</span><span class="p">)</span>
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">'The name "create_transition()" is deprecated. Use "DHParser.pipeline.create_junction()" instead.'</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">create_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

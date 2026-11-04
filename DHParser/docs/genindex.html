@@ -1,0 +1,2345 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/DHParser_Logo_128.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="_static/DHParser_Logo_128.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.abbreviate_middle">abbreviate_middle() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#configuration.access_presets">access_presets() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#configuration.access_thread_locals">access_thread_locals() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.active_tasks">active_tasks (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#toolkit.MutableSet.add">add() (MutableSet method)</a>
+</li>
+      <li><a href="Reference.html#transform.add_attributes">add_attributes() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.add_class">add_class() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#configuration.add_config_values">add_config_values() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#transform.add_error">add_error() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.RootNode.add_error">(RootNode method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#standoff.ContentMapping.add_markup">add_markup() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#error.add_source_locations">add_source_locations() (in module error)</a>
+</li>
+      <li><a href="Reference.html#nodetree.add_token">add_token() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.add_token_to_attr">add_token_to_attr() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.alive">alive (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#transform.all_of">all_of() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.Alternative">Alternative (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.Always">Always (class in parse)</a>
+</li>
+      <li><a href="Reference.html#transform.always">always() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.AnalysisError">AnalysisError (class in parse)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.anonymous">anonymous (Node property)</a>
+</li>
+      <li><a href="Reference.html#toolkit.Any">Any (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#transform.any_of">any_of() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.AnyChar">AnyChar (class in parse)</a>
+</li>
+      <li><a href="Reference.html#log.append_log">append_log() (in module log)</a>
+</li>
+      <li><a href="Reference.html#parse.Parser.apply">apply() (Parser method)</a>
+</li>
+      <li><a href="Reference.html#transform.apply_if">apply_if() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.apply_ifelse">apply_ifelse() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#preprocess.apply_src_mappings">apply_src_mappings() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#parse.Parser.apply_to_trail">apply_to_trail() (Parser method)</a>
+</li>
+      <li><a href="Reference.html#transform.apply_unless">apply_unless() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.artifact">artifact() (in module parse)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#log.HistoryRecord.as_csv_line">as_csv_line() (HistoryRecord method)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.as_ebnf__">as_ebnf__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_etree">as_etree() (Node method)</a>
+</li>
+      <li><a href="Reference.html#pipeline.as_graph">as_graph() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_html">as_html() (Node method)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.as_html_tr">as_html_tr() (HistoryRecord method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.as_identifier">as_identifier() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_json">as_json() (Node method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.as_list">as_list() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_ndst">as_ndst() (Node method)</a>
+</li>
+      <li><a href="Reference.html#pipeline.as_paths">as_paths() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_sxml">as_sxml() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_sxpr">as_sxpr() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_tree">as_tree() (Node method)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.as_tuple">as_tuple() (HistoryRecord method)</a>
+
+      <ul>
+        <li><a href="Reference.html#toolkit.as_tuple">(in module toolkit)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.Node.as_unist">as_unist() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_unist_obj">as_unist_obj() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_xast">as_xast() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.as_xml">as_xml() (Node method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.RootNode.as_xml">(RootNode method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#toolkit.ascii_char_code">ascii_char_code() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.ascii_xml_entity">ascii_xml_entity() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.assemble_parser">assemble_parser() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#transform.assert_has_children">assert_has_children() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.associated_symbol__">associated_symbol__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#compile.CompilationResult.AST">AST (CompilationResult attribute)</a>
+</li>
+      <li><a href="Reference.html#server.asyncio_connect">asyncio_connect() (in module server)</a>
+</li>
+      <li><a href="Reference.html#server.asyncio_run">asyncio_run() (in module server)</a>
+</li>
+      <li><a href="Reference.html#nodetree.FrozenNode.attr">attr (FrozenNode property)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.attr">(Node property)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#compile.Compiler.attr_visitor_name">attr_visitor_name() (Compiler method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#preprocess.PreprocessorResult.back_mapping">back_mapping (PreprocessorResult attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#dsl.batch_process">batch_process() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#preprocess.IncludeInfo.begin">begin (IncludeInfo attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.cached_load">cached_load() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#log.callstack_as_str">callstack_as_str() (in module log)</a>
+</li>
+      <li><a href="Reference.html#error.canonical_error_strings">canonical_error_strings() (in module error)</a>
+</li>
+      <li><a href="Reference.html#parse.Capture">Capture (class in parse)</a>
+</li>
+      <li><a href="Reference.html#preprocess.chain_preprocessors">chain_preprocessors() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#transform.change_name">change_name() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#toolkit.char_code">char_code() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.check_rx">check_rx() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.children">children (Node property)</a>
+</li>
+      <li><a href="Reference.html#testing.clean_report">clean_report() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#toolkit.MutableSet.clear">clear() (MutableSet method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.clear_from_cache">clear_from_cache() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#log.clear_logs">clear_logs() (in module log)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.client_response">client_response() (Connection method)</a>
+</li>
+      <li><a href="Reference.html#transform.collapse">collapse() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.collapse_children_if">collapse_children_if() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.collect_empty_tags">collect_empty_tags() (Node method)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.Snapshot.column">column (HistoryRecord.Snapshot attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.CombinedParser">CombinedParser (class in parse)</a>
+</li>
+      <li><a href="Reference.html#dsl.CompilationError">CompilationError</a>
+</li>
+      <li><a href="Reference.html#compile.CompilationResult">CompilationResult (class in compile)</a>
+</li>
+      <li>
+    compile
+
+      <ul>
+        <li><a href="Reference.html#module-4">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#compile.Compiler.compile">compile() (Compiler method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.compile_ebnf">compile_ebnf() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#ebnf.compile_ebnf_ast">compile_ebnf_ast() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#dsl.compile_on_disk">compile_on_disk() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#toolkit.compile_python_object">compile_python_object() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#compile.compile_source">compile_source() (in module compile)</a>
+</li>
+      <li><a href="Reference.html#dsl.compileDSL">compileDSL() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#dsl.compileEBNF">compileEBNF() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#compile.Compiler">Compiler (class in compile)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#compile.CompilerError">CompilerError</a>
+</li>
+      <li><a href="Reference.html#toolkit.concurrent_ident">concurrent_ident() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#ebnf.ConfigurableEBNFGrammar">ConfigurableEBNFGrammar (class in ebnf)</a>
+</li>
+      <li>
+    configuration
+
+      <ul>
+        <li><a href="Reference.html#module-13">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#server.Connection">Connection (class in server)</a>
+</li>
+      <li><a href="Reference.html#pipeline.connection">connection() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#transform.contains_only_whitespace">contains_only_whitespace() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.content">content (Node property)</a>
+</li>
+      <li><a href="Reference.html#transform.content_matches">content_matches() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.content_of">content_of() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#standoff.SerializationMapping.content_pos">content_pos() (SerializationMapping method)</a>
+</li>
+      <li><a href="Reference.html#standoff.content_regions">content_regions() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping">ContentMapping (class in standoff)</a>
+</li>
+      <li><a href="Reference.html#parse.ContextSensitive">ContextSensitive (class in parse)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.continue_with_data">continue_with_data() (RootNode method)</a>
+</li>
+      <li><a href="Reference.html#parse.copy_parser_base_attrs">copy_parser_base_attrs() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.Sequence.count">count() (Sequence method)</a>
+
+      <ul>
+        <li><a href="Reference.html#stringview.StringView.count">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.Counted">Counted (class in parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.cpu_count">cpu_count() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#pipeline.create_compiler_junction">create_compiler_junction() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#pipeline.create_evaluation_junction">create_evaluation_junction() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#pipeline.create_junction">create_junction() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#log.create_log">create_log() (in module log)</a>
+</li>
+      <li><a href="Reference.html#nodetree.create_match_function">create_match_function() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#dsl.create_parser">create_parser() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#pipeline.create_parser_junction">create_parser_junction() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#nodetree.create_path_match_function">create_path_match_function() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#pipeline.create_preprocess_junction">create_preprocess_junction() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#dsl.create_scripts">create_scripts() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#testing.create_test_templates">create_test_templates() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#parse.CustomParser">CustomParser (class in parse)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#testing.MockStream.data_available">data_available() (MockStream method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.DHParser_JSONEncoder.default">default() (DHParser_JSONEncoder method)</a>
+</li>
+      <li><a href="Reference.html#dsl.DefinitionError">DefinitionError</a>
+</li>
+      <li><a href="Reference.html#transform.del_attributes">del_attributes() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.delimit_children">delimit_children() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#toolkit.deprecated">deprecated() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.deprecation_warning">deprecation_warning() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#pipeline.PipeTree.depth">depth (PipeTree attribute)</a>
+</li>
+      <li><a href="Reference.html#pipeline.PipeTree.desc">desc (PipeTree attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.Parser.descendant_trails">descendant_trails() (Parser method)</a>
+</li>
+      <li><a href="Reference.html#parse.Parser.descendants">descendants() (Parser method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.deserialize">deserialize() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.DHParser_JSONEncoder">DHParser_JSONEncoder (class in nodetree)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#error.Error.diagnostic_obj">diagnostic_obj() (Error method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.did_match">did_match() (RootNode method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.directly_referred">directly_referred() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.disable_multi_interp_extensions_check">disable_multi_interp_extensions_check() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.MutableSet.discard">discard() (MutableSet method)</a>
+</li>
+      <li><a href="Reference.html#parse.Drop">Drop() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#nodetree.drop_leaf">drop_leaf() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.DropFrom">DropFrom() (in module parse)</a>
+</li>
+      <li>
+    dsl
+
+      <ul>
+        <li><a href="Reference.html#module-7">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#pipeline.Junction.dst">dst (Junction attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.DTKN">DTKN() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#configuration.dump_config_data">dump_config_data() (in module configuration)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    ebnf
+
+      <ul>
+        <li><a href="Reference.html#module-0">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#ebnf.ebnf_from_ast">ebnf_from_ast() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#ebnf.ebnf_to_ast">ebnf_to_ast() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler">EBNFCompiler (class in ebnf)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompilerError">EBNFCompilerError</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFDirectives">EBNFDirectives (class in ebnf)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.echo_log">echo_log (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.ForwardBase.effective_pname">effective_pname() (ForwardBase method)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.LateBindingUnary.effective_pname">(LateBindingUnary method)</a>
+</li>
+        <li><a href="Reference.html#parse.Parser.effective_pname">(Parser method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#pipeline.end_points">end_points() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.endswith">endswith() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.ensuing_str">ensuing_str() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.ensure_drop_propagation__">ensure_drop_propagation__() (Grammar class method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.eq_tokens">eq_tokens() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.equals">equals() (Node method)</a>
+</li>
+      <li><a href="Reference.html#parse.ERR">ERR (class in parse)</a>
+</li>
+      <li>
+    error
+
+      <ul>
+        <li><a href="Reference.html#module-9">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.AnalysisError.error">error (AnalysisError attribute)</a>
+</li>
+      <li><a href="Reference.html#error.Error">Error (class in error)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#error.error_category">error_category() (in module error)</a>
+</li>
+      <li><a href="Reference.html#transform.error_on">error_on() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.error_safe">error_safe() (RootNode method)</a>
+</li>
+      <li><a href="Reference.html#parse.ErrorCatchingNary">ErrorCatchingNary (class in parse)</a>
+</li>
+      <li><a href="Reference.html#error.ErrorCode">ErrorCode (class in error)</a>
+</li>
+      <li><a href="Reference.html#preprocess.PreprocessorResult.errors">errors (PreprocessorResult attribute)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.errors_sorted">errors_sorted (RootNode property)</a>
+</li>
+      <li><a href="Reference.html#toolkit.escape_ctrl_chars">escape_ctrl_chars() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.escape_formatstr">escape_formatstr() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.escape_re">escape_re() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.evaluate">evaluate() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.evaluate_path">evaluate_path() (Node method)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.exec">exec (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#server.ExecutionEnvironment.execute">execute() (ExecutionEnvironment method)</a>
+</li>
+      <li><a href="Reference.html#server.ExecutionEnvironment">ExecutionEnvironment (class in server)</a>
+</li>
+      <li><a href="Reference.html#toolkit.expand_table">expand_table() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.extract_counted">extract_counted() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#pipeline.extract_data">extract_data() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#parse.extract_error_code">extract_error_code() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.extract_range">extract_range() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.extract_regex">extract_regex() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#testing.extract_symbols">extract_symbols() (in module testing)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#pipeline.Junction.factory">factory (Junction attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#pipeline.PseudoJunction.factory">(PseudoJunction attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#compile.Compiler.fallback_compiler">fallback_compiler() (Compiler method)</a>
+</li>
+      <li><a href="Reference.html#preprocess.IncludeInfo.file_name">file_name (IncludeInfo attribute)</a>
+</li>
+      <li><a href="Reference.html#preprocess.SourceMap.file_names">file_names (SourceMap attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.fill_associated_symbol_cache__">fill_associated_symbol_cache__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#compile.Compiler.finalize">finalize() (Compiler method)</a>
+</li>
+      <li><a href="Reference.html#configuration.finalize_presets">finalize_presets() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.find">find() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.find_common_ancestor">find_common_ancestor() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.find_parent">find_parent() (Node method)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.finditer">finditer() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.finished_tasks">finished_tasks (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#toolkit.first">first() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.fix_XML_attribute_value">fix_XML_attribute_value() (in module toolkit)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#transform.flatten">flatten() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.flatten_sxpr">flatten_sxpr() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.flatten_xml">flatten_xml() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.flush_markup_cache">flush_markup_cache() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.foregoing_str">foregoing_str() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.Forward">Forward (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.ForwardBase">ForwardBase (class in parse)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.from_etree">from_etree() (Node static method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.FrozenNode.from_json_obj">from_json_obj() (FrozenNode static method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.from_json_obj">(Node static method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.FrozenNode">FrozenNode (class in nodetree)</a>
+</li>
+      <li><a href="Reference.html#pipeline.full_pipeline">full_pipeline() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#parse.fullmatch">fullmatch() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.fullmatch__">fullmatch__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#transform.fuse">fuse() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.fuse_anonymous_leaves">fuse_anonymous_leaves() (in module transform)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.gen_compiler_skeleton">gen_compiler_skeleton() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.gen_custom_parser_example">gen_custom_parser_example() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#preprocess.gen_find_include_func">gen_find_include_func() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#preprocess.gen_neutral_srcmap_func">gen_neutral_srcmap_func() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.gen_preprocessor_skeleton">gen_preprocessor_skeleton() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.gen_transformer_skeleton">gen_transformer_skeleton() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.get">get() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.get_attr">get_attr() (Node method)</a>
+</li>
+      <li><a href="Reference.html#configuration.get_config_value">get_config_value() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#configuration.get_config_values">get_config_values() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#ebnf.get_EBNF_AST_Serialization_Table">get_EBNF_AST_Serialization_Table() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#ebnf.get_ebnf_grammar">get_ebnf_grammar() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.get_location">get_location() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.get_next_sibling">get_next_sibling() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.get_node_index">get_node_index() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#parse.Retrieve.get_node_name">get_node_name() (Retrieve method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#standoff.ContentMapping.get_node_position">get_node_position() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.get_path">get_path() (ContentMapping method)</a>
+
+      <ul>
+        <li><a href="Reference.html#standoff.SerializationMapping.get_path">(SerializationMapping method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#standoff.ContentMapping.get_path_and_offset">get_path_and_offset() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.get_path_index">get_path_index() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#configuration.get_preset_values">get_preset_values() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#nodetree.get_prev_sibling">get_prev_sibling() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.ErrorCatchingNary.get_reentry_point">get_reentry_point() (ErrorCatchingNary method)</a>
+</li>
+      <li><a href="Reference.html#testing.get_report">get_report() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.get_text">get_text() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar">Grammar (class in parse)</a>
+</li>
+      <li><a href="Reference.html#dsl.grammar_changed">grammar_changed() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#ebnf.grammar_chksum">grammar_chksum() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#dsl.grammar_provider">grammar_provider() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#testing.grammar_suite">grammar_suite() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#testing.grammar_unit">grammar_unit() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#parse.GrammarError">GrammarError</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#server.Server.handle_plaindata_request">handle_plaindata_request() (Server method)</a>
+</li>
+      <li><a href="Reference.html#transform.has_ancestor">has_ancestor() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.has_attr">has_attr() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.has_attr">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#transform.has_child">has_child() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.has_children">has_children() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.has_class">has_class() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#transform.has_content">has_content() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.has_descendant">has_descendant() (in module transform)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.Node.has_equal_attr">has_equal_attr() (Node method)</a>
+</li>
+      <li><a href="Reference.html#error.has_errors">has_errors() (in module error)</a>
+</li>
+      <li><a href="Reference.html#transform.has_parent">has_parent() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#server.has_server_stopped">has_server_stopped() (in module server)</a>
+</li>
+      <li><a href="Reference.html#transform.has_sibling">has_sibling() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.has_token">has_token() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.has_token_on_attr">has_token_on_attr() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord">HistoryRecord (class in log)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.Snapshot">HistoryRecord.Snapshot (class in log)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.identify_python">identify_python() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.identity">identity() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#parse.IgnoreCase">IgnoreCase (class in parse)</a>
+</li>
+      <li><a href="Reference.html#preprocess.IncludeInfo">IncludeInfo (class in preprocess)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.index">index() (Node method)</a>
+
+      <ul>
+        <li><a href="Reference.html#toolkit.Sequence.index">(Sequence method)</a>
+</li>
+        <li><a href="Reference.html#stringview.StringView.index">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.Node.indices">indices() (Node method)</a>
+
+      <ul>
+        <li><a href="Reference.html#stringview.StringView.indices">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#transform.insert">insert() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.insert">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#standoff.ContentMapping.insert_node">insert_node() (ContentMapping method)</a>
+
+      <ul>
+        <li><a href="Reference.html#standoff.insert_node">(in module standoff)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#toolkit.instantiate_executor">instantiate_executor() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#parse.Interleave">Interleave (class in parse)</a>
+</li>
+      <li><a href="Reference.html#configuration.is_accessing_presets">is_accessing_presets() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#transform.is_anonymous">is_anonymous() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.is_anonymous_leaf">is_anonymous_leaf() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.is_context_sensitive">is_context_sensitive() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#transform.is_empty">is_empty() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#error.is_error">is_error() (in module error)</a>
+</li>
+      <li><a href="Reference.html#error.is_fatal">is_fatal() (in module error)</a>
+</li>
+      <li><a href="Reference.html#toolkit.is_filename">is_filename() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.is_html_name">is_html_name() (in module toolkit)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#log.is_logging">is_logging() (in module log)</a>
+</li>
+      <li><a href="Reference.html#parse.RegExp.is_lookahead">is_lookahead() (RegExp method)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.SmartRE.is_lookahead">(SmartRE method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#transform.is_named">is_named() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.is_one_of">is_one_of() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.Alternative.is_optional">is_optional() (Alternative method)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.Always.is_optional">(Always method)</a>
+</li>
+        <li><a href="Reference.html#parse.Counted.is_optional">(Counted method)</a>
+</li>
+        <li><a href="Reference.html#parse.Interleave.is_optional">(Interleave method)</a>
+</li>
+        <li><a href="Reference.html#parse.Option.is_optional">(Option method)</a>
+</li>
+        <li><a href="Reference.html#parse.Parser.is_optional">(Parser method)</a>
+</li>
+        <li><a href="Reference.html#parse.RegExp.is_optional">(RegExp method)</a>
+</li>
+        <li><a href="Reference.html#parse.Series.is_optional">(Series method)</a>
+</li>
+        <li><a href="Reference.html#parse.SmartRE.is_optional">(SmartRE method)</a>
+</li>
+        <li><a href="Reference.html#parse.Text.is_optional">(Text method)</a>
+</li>
+        <li><a href="Reference.html#parse.Whitespace.is_optional">(Whitespace method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.is_parser_placeholder">is_parser_placeholder() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.is_python_code">is_python_code() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#standoff.is_sorted_and_merged">is_sorted_and_merged() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#transform.is_token">is_token() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#error.is_warning">is_warning() (in module error)</a>
+</li>
+      <li><a href="Reference.html#toolkit.Set.isdisjoint">isdisjoint() (Set method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.isgenerictype">isgenerictype() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.issubtype">issubtype() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.iterate_paths">iterate_paths() (ContentMapping method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.json_dumps">json_dumps() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.json_rpc">json_rpc() (in module toolkit)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.JSONnull">JSONnull (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.JSONstr">JSONstr (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#pipeline.Junction">Junction (class in pipeline)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#transform.keep_children">keep_children() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.keep_children_if">keep_children_if() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.keep_content">keep_content() (in module transform)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#transform.keep_nodes">keep_nodes() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.keep_tokens">keep_tokens() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.key_node_name">key_node_name() (in module transform)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.last">last() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.last_match">last_match() (HistoryRecord static method)</a>
+</li>
+      <li><a href="Reference.html#parse.last_value">last_value() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#parse.LateBindingUnary">LateBindingUnary (class in parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.LazyRE">LazyRE (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#nodetree.leaf_path">leaf_path() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#transform.lean_left">lean_left() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.left_associative">left_associative() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#preprocess.IncludeInfo.length">length (IncludeInfo attribute)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.Snapshot.line">line (HistoryRecord.Snapshot attribute)</a>
+</li>
+      <li><a href="Reference.html#toolkit.line_col">line_col() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.linebreaks">linebreaks() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.literal_rx">literal_rx() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#dsl.load_compiler_suite">load_compiler_suite() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#toolkit.load_if_file">load_if_file() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#log.local_log_dir">local_log_dir() (in module log)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.locate">locate() (Node method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.Node.locate_path">locate_path() (Node method)</a>
+</li>
+      <li><a href="Reference.html#parse.CombinedParser.location_info">location_info() (CombinedParser method)</a>
+</li>
+      <li><a href="Reference.html#standoff.LocationInfo">LocationInfo (class in standoff)</a>
+</li>
+      <li>
+    log
+
+      <ul>
+        <li><a href="Reference.html#module-12">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#log.log_dir">log_dir() (in module log)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.log_file">log_file (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#log.log_parsing_history">log_parsing_history() (in module log)</a>
+</li>
+      <li><a href="Reference.html#log.log_ST">log_ST() (in module log)</a>
+</li>
+      <li><a href="Reference.html#parse.longest_match">longest_match() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#parse.Lookahead">Lookahead (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.Lookbehind">Lookbehind (class in parse)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.lsp_initialized">lsp_initialized (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.lsp_shutdown">lsp_shutdown (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#transform.lstrip">lstrip() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#stringview.StringView.lstrip">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#toolkit.lxml_XML_attribute_value">lxml_XML_attribute_value() (in module toolkit)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#preprocess.make_preprocessor">make_preprocessor() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.make_search_rule">make_search_rule() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#preprocess.make_token">make_token() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#parse.ErrorCatchingNary.mandatory_violation">mandatory_violation() (ErrorCatchingNary method)</a>
+</li>
+      <li><a href="Reference.html#preprocess.SourceMap.map">map() (SourceMap method)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.markup">markup() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#parse.match">match() (in module parse)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.NegativeLookahead.match">(NegativeLookahead method)</a>
+</li>
+        <li><a href="Reference.html#parse.NegativeLookbehind.match">(NegativeLookbehind method)</a>
+</li>
+        <li><a href="Reference.html#stringview.StringView.match">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.Grammar.match__">match__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.match_path_str">match_path_str() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.matching_bracket">matching_bracket() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.matching_brackets">matching_brackets() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.md5">md5() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#transform.merge_adjacent">merge_adjacent() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.merge_connected">merge_connected() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.merge_leaves">merge_leaves() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.merge_results">merge_results() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#testing.merge_test_units">merge_test_units() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#transform.merge_treetops">merge_treetops() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#compile.CompilationResult.messages">messages (CompilationResult attribute)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.milestone_segment">milestone_segment() (Node method)</a>
+</li>
+      <li><a href="Reference.html#parse.mixin_comment">mixin_comment() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#parse.mixin_nonempty">mixin_nonempty() (in module parse)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#testing.MockStream">MockStream (class in testing)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="Reference.html#module-4">compile</a>
+</li>
+        <li><a href="Reference.html#module-13">configuration</a>
+</li>
+        <li><a href="Reference.html#module-7">dsl</a>
+</li>
+        <li><a href="Reference.html#module-0">ebnf</a>
+</li>
+        <li><a href="Reference.html#module-9">error</a>
+</li>
+        <li><a href="Reference.html#module-12">log</a>
+</li>
+        <li><a href="Reference.html#module-1">nodetree</a>
+</li>
+        <li><a href="Reference.html#module-6">parse</a>
+</li>
+        <li><a href="Reference.html#module-5">pipeline</a>
+</li>
+        <li><a href="Reference.html#module-8">preprocess</a>
+</li>
+        <li><a href="Reference.html#module-14">server</a>
+</li>
+        <li><a href="Reference.html#module-2">standoff</a>
+</li>
+        <li><a href="Reference.html#module-15">stringview</a>
+</li>
+        <li><a href="Reference.html#module-10">testing</a>
+</li>
+        <li><a href="Reference.html#module-16">toolkit</a>
+</li>
+        <li><a href="Reference.html#module-11">trace</a>
+</li>
+        <li><a href="Reference.html#module-3">transform</a>
+</li>
+        <li><a href="Reference.html#module-17">versionnumber</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#log.HistoryRecord.most_advanced_fail">most_advanced_fail() (HistoryRecord static method)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.most_advanced_match">most_advanced_match() (HistoryRecord static method)</a>
+</li>
+      <li><a href="Reference.html#transform.move_fringes">move_fringes() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#toolkit.multiprocessing_broken">multiprocessing_broken() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.MutableSet">MutableSet (class in toolkit)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#parse.Parser.name">name() (Parser method)</a>
+</li>
+      <li><a href="Reference.html#transform.name_matches">name_matches() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.NaryParser">NaryParser (class in parse)</a>
+</li>
+      <li><a href="Reference.html#transform.neg">neg() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.NegativeLookahead">NegativeLookahead (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.NegativeLookbehind">NegativeLookbehind (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.Never">Never (class in parse)</a>
+</li>
+      <li><a href="Reference.html#transform.never">never() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#standoff.never_empty">never_empty() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#standoff.never_invalid">never_invalid() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.new_error">new_error() (RootNode method)</a>
+</li>
+      <li><a href="Reference.html#parse.ParserError.new_PE">new_PE() (ParserError method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.next_path">next_path() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#preprocess.nil_preprocessor">nil_preprocessor() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node">Node (class in nodetree)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#standoff.NodeLocation.node">node (NodeLocation attribute)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.node_errors">node_errors() (RootNode method)</a>
+</li>
+      <li><a href="Reference.html#transform.node_maker">node_maker() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#standoff.NodeLocation">NodeLocation (class in standoff)</a>
+</li>
+      <li>
+    nodetree
+
+      <ul>
+        <li><a href="Reference.html#module-1">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.NoMemoizationParser">NoMemoizationParser (class in parse)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.non_terminal">non_terminal() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.normalize_circular_path">normalize_circular_path() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.normalize_circular_paths">normalize_circular_paths() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.normalize_docstring">normalize_docstring() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#transform.normalize_position_representation">normalize_position_representation() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.normalize_token_sequence">normalize_token_sequence() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#transform.normalize_whitespace">normalize_whitespace() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.not_one_of">not_one_of() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#compile.NoTransformation">NoTransformation() (in module compile)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#standoff.LocationInfo.offset">offset (LocationInfo attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#standoff.SerLocation.offset">(SerLocation attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#preprocess.SourceMap.offsets">offsets (SourceMap attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.OneOrMore">OneOrMore (class in parse)</a>
+</li>
+      <li><a href="Reference.html#error.only_errors">only_errors() (in module error)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.optimize_definitions_order">optimize_definitions_order() (EBNFCompiler method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#parse.Option">Option (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.optional_last_value">optional_last_value() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#preprocess.SourceLocation.original_name">original_name (SourceLocation attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#preprocess.SourceMap.original_name">(SourceMap attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#preprocess.PreprocessorResult.original_text">original_text (PreprocessorResult attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#preprocess.SourceLocation.original_text">(SourceLocation attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#preprocess.SourceMap.originals_dict">originals_dict (SourceMap attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    parse
+
+      <ul>
+        <li><a href="Reference.html#module-6">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#ebnf.parse_ebnf">parse_ebnf() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#nodetree.parse_json">parse_json() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.parse_sxml">parse_sxml() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.parse_sxpr">parse_sxpr() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.parse_xml">parse_xml() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.AnalysisError.parser">parser (AnalysisError attribute)</a>
+</li>
+      <li><a href="Reference.html#parse.Parser">Parser (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.ParserError">ParserError</a>
+</li>
+      <li><a href="Reference.html#standoff.SerLocation.part">part (SerLocation attribute)</a>
+</li>
+      <li><a href="Reference.html#standoff.LocationInfo.path">path (LocationInfo attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#standoff.SerLocation.path">(SerLocation attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.path_head">path_head() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.path_head_if">path_head_if() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#standoff.LocationInfo.path_index">path_index (LocationInfo attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#standoff.NodeLocation.path_index">(NodeLocation attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.path_sanity_check">path_sanity_check() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.path_str">path_str() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.path_tail">path_tail() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.path_tail_if">path_tail_if() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#transform.peek">peek() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.pending_responses">pending_responses (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.pick">pick() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.pick_child">pick_child() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.pick_from_path">pick_from_path() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.pick_from_path_if">pick_from_path_if() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.pick_if">pick_if() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.pick_path">pick_path() (in module nodetree)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.pick_path">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.pick_path_if">pick_path_if() (in module nodetree)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.pick_path_if">(Node method)</a>
+</li>
+      </ul></li>
+      <li>
+    pipeline
+
+      <ul>
+        <li><a href="Reference.html#module-5">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#pipeline.PipeTree">PipeTree (class in pipeline)</a>
+</li>
+      <li><a href="Reference.html#parse.Pop">Pop (class in parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.MutableSet.pop">pop() (MutableSet method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.FrozenNode.pos">pos (FrozenNode property)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.pos">(Node property)</a>
+</li>
+        <li><a href="Reference.html#preprocess.SourceLocation.pos">(SourceLocation attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#standoff.ContentMapping.pos">pos() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#preprocess.SourceMap.positions">positions (SourceMap attribute)</a>
+</li>
+      <li><a href="Reference.html#transform.positions_of">positions_of() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#toolkit.pp_json">pp_json() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.pp_json_str">pp_json_str() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#nodetree.pp_path">pp_path() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.pred_siblings">pred_siblings() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#compile.Compiler.prepare">prepare() (Compiler method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.prepare_literal">prepare_literal() (EBNFCompiler method)</a>
+</li>
+      <li>
+    preprocess
+
+      <ul>
+        <li><a href="Reference.html#module-8">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#ebnf.preprocess_ebnf">preprocess_ebnf() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#preprocess.preprocess_includes">preprocess_includes() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#preprocess.PreprocessorResult.preprocessed_text">preprocessed_text (PreprocessorResult attribute)</a>
+</li>
+      <li><a href="Reference.html#preprocess.PreprocessorResult">PreprocessorResult (class in preprocess)</a>
+</li>
+      <li><a href="Reference.html#parse.PreprocessorToken">PreprocessorToken (class in parse)</a>
+</li>
+      <li><a href="Reference.html#preprocess.prettyprint_tokenized">prettyprint_tokenized() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#nodetree.prev_path">prev_path() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#toolkit.printw">printw() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#server.probe_tcp_server">probe_tcp_server() (in module server)</a>
+</li>
+      <li><a href="Reference.html#dsl.process_file">process_file() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#compile.process_tree">process_tree() (in module compile)</a>
+</li>
+      <li><a href="Reference.html#toolkit.Protocol">Protocol (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#pipeline.PseudoJunction">PseudoJunction (class in pipeline)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.push_rollback__">push_rollback__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.put_response">put_response() (Connection method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#standoff.range_difference">range_difference() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#standoff.range_intersection">range_intersection() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#error.Error.range_obj">range_obj() (Error method)</a>
+</li>
+      <li><a href="Reference.html#standoff.range_union">range_union() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#dsl.raw_compileEBNF">raw_compileEBNF() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#parse.RE">RE() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#configuration.read_local_config">read_local_config() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#dsl.read_template">read_template() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.reader">reader (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#stringview.real_indices">real_indices() (in module stringview)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.rebuild_mapping">rebuild_mapping() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.rebuild_mapping_slice">rebuild_mapping_slice() (ContentMapping method)</a>
+</li>
+      <li><a href="Reference.html#dsl.recompile_grammar">recompile_grammar() (in module dsl)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.reconstruct_path">reconstruct_path() (Node method)</a>
+</li>
+      <li><a href="Reference.html#transform.reduce_single_child">reduce_single_child() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.referred_symbols">referred_symbols() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.reflow_as_oneliner">reflow_as_oneliner() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.RegExp">RegExp (class in parse)</a>
+</li>
+      <li><a href="Reference.html#server.Server.register_service_rpc">register_service_rpc() (Server method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.relative_path">relative_path() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#transform.remove">remove() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#toolkit.MutableSet.remove">(MutableSet method)</a>
+</li>
+        <li><a href="Reference.html#nodetree.Node.remove">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#transform.remove_anonymous_empty">remove_anonymous_empty() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_anonymous_tokens">remove_anonymous_tokens() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_brackets">remove_brackets() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_children">remove_children() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_children_if">remove_children_if() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.remove_class">remove_class() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_content">remove_content() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_empty">remove_empty() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_if">remove_if() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_infix_operator">remove_infix_operator() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.remove_token">remove_token() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.remove_token_from_attr">remove_token_from_attr() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_tokens">remove_tokens() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.remove_whitespace">remove_whitespace() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.reorder_alternatives">reorder_alternatives() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.replace">replace() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.replace_by">replace_by() (Node method)</a>
+</li>
+      <li><a href="Reference.html#transform.replace_by_children">replace_by_children() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.replace_by_single_child">replace_by_single_child() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.replace_child_names">replace_child_names() (in module transform)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#transform.replace_content_with">replace_content_with() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.replace_or_reduce">replace_or_reduce() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.ForwardBase.repr">repr (ForwardBase property)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.repr">(Node property)</a>
+</li>
+        <li><a href="Reference.html#parse.Parser.repr">(Parser property)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#compile.Compiler.reset">reset() (Compiler method)</a>
+
+      <ul>
+        <li><a href="Reference.html#ebnf.EBNFCompiler.reset">(EBNFCompiler method)</a>
+</li>
+        <li><a href="Reference.html#parse.Forward.reset">(Forward method)</a>
+</li>
+        <li><a href="Reference.html#parse.NoMemoizationParser.reset">(NoMemoizationParser method)</a>
+</li>
+        <li><a href="Reference.html#parse.Parser.reset">(Parser method)</a>
+</li>
+        <li><a href="Reference.html#parse.Pop.reset">(Pop method)</a>
+</li>
+        <li><a href="Reference.html#parse.SimpleForwardIterative.reset">(SimpleForwardIterative method)</a>
+</li>
+        <li><a href="Reference.html#parse.SimpleForwardRecursive.reset">(SimpleForwardRecursive method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#standoff.reset_chain_ID">reset_chain_ID() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#configuration.reset_config_dict">reset_config_dict() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#testing.reset_unit">reset_unit() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#server.Server.respond">respond() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.response_queue">response_queue (Connection attribute)</a>
+</li>
+      <li><a href="Reference.html#compile.CompilationResult.result">result (CompilationResult attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.FrozenNode.result">(FrozenNode property)</a>
+</li>
+        <li><a href="Reference.html#nodetree.Node.result">(Node property)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#log.resume_logging">resume_logging() (in module log)</a>
+</li>
+      <li><a href="Reference.html#trace.resume_notices_off">resume_notices_off() (in module trace)</a>
+</li>
+      <li><a href="Reference.html#trace.resume_notices_on">resume_notices_on() (in module trace)</a>
+</li>
+      <li><a href="Reference.html#parse.Retrieve">Retrieve (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.Retrieve.retrieve_and_match">retrieve_and_match() (Retrieve method)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.reversed__">reversed__ (Grammar property)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.rfind">rfind() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#parse.Grammar.rollback_to__">rollback_to__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode">RootNode (class in nodetree)</a>
+</li>
+      <li><a href="Reference.html#server.rpc_entry_info">rpc_entry_info() (in module server)</a>
+</li>
+      <li><a href="Reference.html#server.Server.rpc_identify_server">rpc_identify_server() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.Server.rpc_info">rpc_info() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.Server.rpc_logging">rpc_logging() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.Server.rpc_serve_page">rpc_serve_page() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.rpc_table_info">rpc_table_info() (in module server)</a>
+</li>
+      <li><a href="Reference.html#transform.rstrip">rstrip() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#stringview.StringView.rstrip">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#server.Server.run">run() (Server method)</a>
+</li>
+      <li><a href="Reference.html#pipeline.run_pipeline">run_pipeline() (in module pipeline)</a>
+</li>
+      <li><a href="Reference.html#server.Server.run_stream_server">run_stream_server() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.Server.run_tcp_server">run_tcp_server() (Server method)</a>
+</li>
+      <li><a href="Reference.html#testing.runner">runner() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#toolkit.RxPatternType">RxPatternType (in module toolkit)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.sane_parser_name">sane_parser_name() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#stringview.StringView.search">search() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.select">select() (ContentMapping method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.select">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.Node.select_children">select_children() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.select_from_path">select_from_path() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#nodetree.select_from_path_if">select_from_path_if() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#standoff.ContentMapping.select_if">select_if() (ContentMapping method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.select_if">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.select_path">select_path() (in module nodetree)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.select_path">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.select_path_if">select_path_if() (in module nodetree)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.select_path_if">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#toolkit.Sequence">Sequence (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#standoff.SerLocation.ser_pos">ser_pos (SerLocation attribute)</a>
+</li>
+      <li><a href="Reference.html#standoff.SerializationMapping">SerializationMapping (class in standoff)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.serialize">serialize() (Node method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.RootNode.serialize">(RootNode method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.Series">Series (class in parse)</a>
+</li>
+      <li><a href="Reference.html#standoff.SerLocation">SerLocation (class in standoff)</a>
+</li>
+      <li><a href="Reference.html#standoff.SerPart">SerPart (class in standoff)</a>
+</li>
+      <li>
+    server
+
+      <ul>
+        <li><a href="Reference.html#module-14">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#server.Server">Server (class in server)</a>
+</li>
+      <li><a href="Reference.html#toolkit.Set">Set (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#parse.ForwardBase.set">set() (ForwardBase method)</a>
+</li>
+      <li><a href="Reference.html#configuration.set_config_value">set_config_value() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#parse.Forward.set_fwtracer">set_fwtracer() (Forward method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.set_grammar_name">set_grammar_name() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#parse.Forward.set_proxy">set_proxy() (Forward method)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.ForwardBase.set_proxy">(ForwardBase method)</a>
+</li>
+        <li><a href="Reference.html#parse.Parser.set_proxy">(Parser method)</a>
+</li>
+        <li><a href="Reference.html#parse.Series.set_proxy">(Series method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#trace.set_tracer">set_tracer() (in module trace)</a>
+</li>
+      <li><a href="Reference.html#error.Error.severity">severity (Error property)</a>
+</li>
+      <li><a href="Reference.html#server.ExecutionEnvironment.shutdown">shutdown() (ExecutionEnvironment method)</a>
+</li>
+      <li><a href="Reference.html#error.Error.signature">signature() (Error method)</a>
+</li>
+      <li><a href="Reference.html#parse.SimpleForwardIterative">SimpleForwardIterative (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.SimpleForwardRecursive">SimpleForwardRecursive (class in parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.SingleThreadExecutor">SingleThreadExecutor (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.smart_list">smart_list() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#parse.SmartRE">SmartRE (class in parse)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.smartRE_expression">smartRE_expression() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.smartRE_literal">smartRE_literal() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#stringview.TextBuffer.snapshot">snapshot() (TextBuffer method)</a>
+</li>
+      <li><a href="Reference.html#standoff.sort_and_merge">sort_and_merge() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#preprocess.SourceLocation">SourceLocation (class in preprocess)</a>
+</li>
+      <li><a href="Reference.html#preprocess.SourceMap">SourceMap (class in preprocess)</a>
+</li>
+      <li><a href="Reference.html#standoff.sourcemapped_path">sourcemapped_path() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#standoff.sourcemapped_selection">sourcemapped_selection() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#server.spawn_tcp_server">spawn_tcp_server() (in module server)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#stringview.StringView.split">split() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#server.split_header">split_header() (in module server)</a>
+</li>
+      <li><a href="Reference.html#standoff.split_node">split_node() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#toolkit.split_path">split_path() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#standoff.split_tree">split_tree() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#standoff.split_tree_if">split_tree_if() (in module standoff)</a>
+</li>
+      <li><a href="Reference.html#pipeline.Junction.src">src (Junction attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#pipeline.PipeTree.src">(PipeTree attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#preprocess.SourceMap.srcpos">srcpos() (SourceMap method)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.Snapshot.stack">stack (HistoryRecord.Snapshot attribute)</a>
+</li>
+      <li>
+    standoff
+
+      <ul>
+        <li><a href="Reference.html#module-2">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#log.start_logging">start_logging() (in module log)</a>
+
+      <ul>
+        <li><a href="Reference.html#server.Server.start_logging">(Server method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#stringview.StringView.startswith">startswith() (StringView method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.static">static (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#parse.Alternative.static_analysis">static_analysis() (Alternative method)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.Capture.static_analysis">(Capture method)</a>
+</li>
+        <li><a href="Reference.html#parse.Counted.static_analysis">(Counted method)</a>
+</li>
+        <li><a href="Reference.html#parse.ErrorCatchingNary.static_analysis">(ErrorCatchingNary method)</a>
+</li>
+        <li><a href="Reference.html#parse.Interleave.static_analysis">(Interleave method)</a>
+</li>
+        <li><a href="Reference.html#parse.Lookahead.static_analysis">(Lookahead method)</a>
+</li>
+        <li><a href="Reference.html#parse.OneOrMore.static_analysis">(OneOrMore method)</a>
+</li>
+        <li><a href="Reference.html#parse.Option.static_analysis">(Option method)</a>
+</li>
+        <li><a href="Reference.html#parse.Parser.static_analysis">(Parser method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.Grammar.static_analysis__">static_analysis__() (Grammar method)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.Snapshot.status">status (HistoryRecord.Snapshot attribute)</a>
+</li>
+      <li><a href="Reference.html#server.Server.stop_logging">stop_logging() (Server method)</a>
+</li>
+      <li><a href="Reference.html#server.stop_tcp_server">stop_tcp_server() (in module server)</a>
+</li>
+      <li><a href="Reference.html#server.StreamReaderProxy">StreamReaderProxy (class in server)</a>
+</li>
+      <li><a href="Reference.html#server.StreamWriterProxy">StreamWriterProxy (class in server)</a>
+</li>
+      <li>
+    stringview
+
+      <ul>
+        <li><a href="Reference.html#module-15">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#stringview.StringView">StringView (class in stringview)</a>
+</li>
+      <li><a href="Reference.html#transform.strip">strip() (in module transform)</a>
+
+      <ul>
+        <li><a href="Reference.html#stringview.StringView.strip">(StringView method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#preprocess.strip_tokens">strip_tokens() (in module preprocess)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.strlen">strlen() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.strlen_of">strlen_of() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#toolkit.subf">subf() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.SingleThreadExecutor.submit">submit() (SingleThreadExecutor method)</a>
+</li>
+      <li><a href="Reference.html#server.ExecutionEnvironment.submit_as_process">submit_as_process() (ExecutionEnvironment method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.succ_siblings">succ_siblings() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#log.suspend_logging">suspend_logging() (in module log)</a>
+</li>
+      <li><a href="Reference.html#nodetree.RootNode.swallow">swallow() (RootNode method)</a>
+</li>
+      <li><a href="Reference.html#transform.swap_attributes">swap_attributes() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.swap_nested_nodes">swap_nested_nodes() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.AnalysisError.symbol">symbol (AnalysisError attribute)</a>
+
+      <ul>
+        <li><a href="Reference.html#parse.Parser.symbol">(Parser property)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.Retrieve.symbol_pname">symbol_pname (Retrieve property)</a>
+</li>
+      <li><a href="Reference.html#parse.Synonym">Synonym (class in parse)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    testing
+
+      <ul>
+        <li><a href="Reference.html#module-10">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#parse.Text">Text (class in parse)</a>
+</li>
+      <li><a href="Reference.html#log.HistoryRecord.Snapshot.text">text (HistoryRecord.Snapshot attribute)</a>
+</li>
+      <li><a href="Reference.html#stringview.TextBuffer.text_edits">text_edits() (TextBuffer method)</a>
+</li>
+      <li><a href="Reference.html#toolkit.text_pos">text_pos() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#stringview.TextBuffer">TextBuffer (class in stringview)</a>
+</li>
+      <li><a href="Reference.html#toolkit.ThreadLocalSingletonFactory">ThreadLocalSingletonFactory (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#parse.TKN">TKN() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#nodetree.FrozenNode.to_json_obj">to_json_obj() (FrozenNode method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.to_json_obj">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#preprocess.tokenized_to_original_mapping">tokenized_to_original_mapping() (in module preprocess)</a>
+</li>
+      <li>
+    toolkit
+
+      <ul>
+        <li><a href="Reference.html#module-16">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    trace
+
+      <ul>
+        <li><a href="Reference.html#module-11">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#nodetree.RootNode.transfer_errors">transfer_errors() (RootNode method)</a>
+</li>
+      <li>
+    transform
+
+      <ul>
+        <li><a href="Reference.html#module-3">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#ebnf.transform_ebnf">transform_ebnf() (in module ebnf)</a>
+</li>
+      <li><a href="Reference.html#transform.transform_result">transform_result() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.transformation_factory">transformation_factory() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.transformer">transformer() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.traverse">traverse() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.traverse_locally">traverse_locally() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#nodetree.tree_sanity_check">tree_sanity_check() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#parse.TreeReduction">TreeReduction() (in module parse)</a>
+</li>
+      <li><a href="Reference.html#toolkit.type_origin">type_origin() (in module toolkit)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#parse.UnaryParser">UnaryParser (class in parse)</a>
+</li>
+      <li><a href="Reference.html#parse.UninitializedError">UninitializedError</a>
+</li>
+      <li><a href="Reference.html#toolkit.Union">Union (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#testing.unique_name">unique_name() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#testing.unit_from_config">unit_from_config() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#testing.unit_from_file">unit_from_file() (in module testing)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#testing.unit_from_json">unit_from_json() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#testing.unit_to_config">unit_to_config() (in module testing)</a>
+</li>
+      <li><a href="Reference.html#toolkit.unrepr">unrepr (class in toolkit)</a>
+</li>
+      <li><a href="Reference.html#stringview.TextBuffer.update">update() (TextBuffer method)</a>
+</li>
+      <li><a href="Reference.html#transform.update_attr">update_attr() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#transform.update_attr_unless">update_attr_unless() (in module transform)</a>
+</li>
+      <li><a href="Reference.html#parse.update_scanner">update_scanner() (in module parse)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.validate_token_sequence">validate_token_sequence() (in module nodetree)</a>
+</li>
+      <li><a href="Reference.html#configuration.validate_value">validate_value() (in module configuration)</a>
+</li>
+      <li><a href="Reference.html#toolkit.validate_XML_attribute_value">validate_XML_attribute_value() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.verify_initialization">verify_initialization() (Connection method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    versionnumber
+
+      <ul>
+        <li><a href="Reference.html#module-17">module</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#compile.Compiler.visitor_name">visitor_name() (Compiler method)</a>
+</li>
+      <li><a href="Reference.html#error.Error.visualize">visualize() (Error method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.Node.walk_tree">walk_tree() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.Node.walk_tree_paths">walk_tree_paths() (Node method)</a>
+</li>
+      <li><a href="Reference.html#parse.Whitespace">Whitespace (class in parse)</a>
+</li>
+      <li><a href="Reference.html#ebnf.EBNFCompiler.whitespace_rx">whitespace_rx() (EBNFCompiler method)</a>
+</li>
+      <li><a href="Reference.html#compile.Compiler.wildcard">wildcard() (Compiler method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.Node.with_attr">with_attr() (Node method)</a>
+</li>
+      <li><a href="Reference.html#nodetree.FrozenNode.with_pos">with_pos() (FrozenNode method)</a>
+
+      <ul>
+        <li><a href="Reference.html#nodetree.Node.with_pos">(Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="Reference.html#toolkit.wrap_str_literal">wrap_str_literal() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#toolkit.wrap_str_nicely">wrap_str_nicely() (in module toolkit)</a>
+</li>
+      <li><a href="Reference.html#server.Connection.writer">writer (Connection attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#toolkit.xml_entity">xml_entity() (in module toolkit)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.XMLSpacePolicy">XMLSpacePolicy (class in nodetree)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#parse.ZeroOrMore">ZeroOrMore (class in parse)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Reference.html#nodetree.zoom_into_path">zoom_into_path() (in module nodetree)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

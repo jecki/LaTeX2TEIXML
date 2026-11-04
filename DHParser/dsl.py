@@ -17,7 +17,7 @@
 
 """
 Module ``dsl`` contains high-level functions for the compilation
-of domain-specific languages based on an EBNF-grammar.
+of domain-specific languages based on an EBNF grammar.
 """
 
 from __future__ import annotations
@@ -32,19 +32,19 @@ from typing import Any, cast, List, Tuple, Union, Iterator, Iterable, Optional, 
 import DHParser.ebnf
 from DHParser.compile import Compiler, compile_source, CompilerFactory
 from DHParser.pipeline import full_pipeline, Junction
-from DHParser.configuration import get_config_value, set_config_value
-from DHParser.ebnf import EBNFCompiler, DHPARSER_IMPORTS, \
+from DHParser.configuration import get_config_value, set_config_value, get_config_values
+from DHParser.ebnf import EBNFCompiler, DHPARSER_IMPORTS, grammar_chksum, \
     get_ebnf_preprocessor, get_ebnf_grammar, get_ebnf_transformer, get_ebnf_compiler
 from DHParser.error import Error, is_error, has_errors, only_errors, canonical_error_strings, \
     ErrorCode, ERROR
 from DHParser.log import suspend_logging, resume_logging, is_logging, append_log
 from DHParser.nodetree import Node
-from DHParser.parse import Grammar, ParserFactory
+from DHParser.parse_grammar import Grammar, ParserFactory
 from DHParser.preprocess import nil_preprocessor, PreprocessorFunc, \
     PreprocessorFactory
 from DHParser.transform import TransformerFunc, TransformerFactory
 from DHParser.toolkit import DHPARSER_DIR, load_if_file, is_python_code, is_filename, \
-    compile_python_object, re, as_identifier, cpu_count, LazyRE, CancelQuery, md5, \
+    compile_python_object, re, as_identifier, cpu_count, LazyRE, CancelQuery, \
     deprecated, deprecation_warning, instantiate_executor, PickMultiCoreExecutor
 from DHParser.versionnumber import __version__, __version_info__
 
@@ -83,6 +83,22 @@ SECTION_MARKER = """\n
 # {marker}
 #
 #######################################################################
+\n"""
+
+CONSISTENCY_CHECK = """\n
+try:
+    assert RE_INCLUDE == NEVER_MATCH_PATTERN or \\
+        RE_COMMENT in ({NAME}Grammar.COMMENT__, NEVER_MATCH_PATTERN), \\
+        "Please adjust the pre-processor-variable RE_COMMENT in file {NAME}Parser.py so that " \\
+        "it either is the NEVER_MATCH_PATTERN or has the same value as the COMMENT__-attribute " \\
+        "of the grammar class {NAME}Grammar! " \\
+        'Currently, RE_COMMENT reads "%s" while COMMENT__ is "%s". ' \\
+        % (RE_COMMENT, {NAME}Grammar.COMMENT__) + \\
+        "\\n\\nIf RE_COMMENT == NEVER_MATCH_PATTERN then includes will deliberately be " \\
+        "processed, otherwise RE_COMMENT=={NAME}Grammar.COMMENT__ allows the " \\
+        "preprocessor to ignore comments."
+except (AttributeError, NameError):
+    pass
 \n"""
 
 RX_SECTION_MARKER = LazyRE(SECTION_MARKER.format(marker=r'.*?SECTION.*?'))
@@ -167,7 +183,7 @@ def grammar_instance(grammar_representation) -> Tuple[Grammar, str]:
             lg_dir = suspend_logging()
             result, messages, _ = compile_source(
                 grammar_src, None,
-                get_ebnf_grammar(), get_ebnf_transformer(), get_ebnf_compiler())
+                get_ebnf_grammar(grammar_src), get_ebnf_transformer(), get_ebnf_compiler())
             parser_py = cast(str, result)
             resume_logging(lg_dir)
         if has_errors(messages):
@@ -205,8 +221,10 @@ def grammar_changed(grammar_class, grammar_source: str) -> bool:
         True, if the source text of the grammar is different from the
         source from which the grammar class was generated
     """
+    if get_config_value('force_recompile_grammar'):
+        return True
     grammar = load_if_file(grammar_source)
-    chksum = md5(grammar, __version__)
+    chksum = grammar_chksum(grammar)
     if isinstance(grammar_class, str):
         # grammar_class = load_compiler_suite(grammar_class)[1]
         with open(grammar_class, 'r', encoding='utf8') as f:
@@ -266,7 +284,7 @@ def raw_compileEBNF(ebnf_src: str, branding="DSL", fail_when: ErrorCode = ERROR)
     Raises:
         CompilationError if any errors occurred during compilation
     """
-    grammar = get_ebnf_grammar()
+    grammar = get_ebnf_grammar(ebnf_src)
     compiler = get_ebnf_compiler(branding, ebnf_src)
     transformer = get_ebnf_transformer()
     compileDSL(ebnf_src, nil_preprocessor, grammar, transformer, compiler, fail_when)
@@ -311,6 +329,7 @@ def compileEBNF(ebnf_src: str, branding="DSL") -> str:
            SECTION_MARKER.format(marker=PREPROCESSOR_SECTION), compiler.gen_preprocessor_skeleton(),
            SECTION_MARKER.format(marker=CUSTOM_PARSER_SECTION), compiler.gen_custom_parser_example(),
            SECTION_MARKER.format(marker=PARSER_SECTION), compiler.result,
+           CONSISTENCY_CHECK.format(NAME=branding),
            SECTION_MARKER.format(marker=AST_SECTION), compiler.gen_transformer_skeleton(),
            SECTION_MARKER.format(marker=COMPILER_SECTION), compiler.gen_compiler_skeleton(),
            SECTION_MARKER.format(marker=END_SECTIONS_MARKER),
@@ -324,7 +343,7 @@ def grammar_provider(ebnf_src: str,
                      additional_code: str = '',
                      fail_when: ErrorCode = ERROR) -> ParserFactory:
     """
-    Compiles an EBNF-grammar and returns a grammar-parser provider
+    Compiles an EBNF grammar and returns a grammar-parser provider
     function for that grammar.
 
     Args:
@@ -341,7 +360,7 @@ def grammar_provider(ebnf_src: str,
         language defined by ``ebnf_src``.
     """
     grammar_src = compileDSL(
-        ebnf_src, get_ebnf_preprocessor(), get_ebnf_grammar(), get_ebnf_transformer(),
+        ebnf_src, get_ebnf_preprocessor(), get_ebnf_grammar(ebnf_src), get_ebnf_transformer(),
         get_ebnf_compiler(branding, ebnf_src), fail_when)
     log_name = get_config_value('compiled_EBNF_log')
     if log_name and is_logging():  append_log(log_name, grammar_src)
@@ -349,7 +368,10 @@ def grammar_provider(ebnf_src: str,
     parsing_stage = compile_python_object('\n'.join([imports, additional_code, grammar_src]),
                                           r'parsing')  # r'get_(?:\w+_)?grammar$'
     if callable(parsing_stage.factory):
-        parsing_stage.factory.python_src__ = grammar_src
+        if hasattr(parsing_stage.factory, 'keywords'):
+            parsing_stage.factory.keywords['python_src'] = grammar_src
+        else:
+            parsing_stage.factory.python_src__ = grammar_src
         return parsing_stage.factory
     raise ValueError('Could not compile grammar provider!')
 
@@ -361,7 +383,8 @@ def create_parser(ebnf_src: str, branding="DSL", additional_code: str = '') -> G
     """
     grammar_factory = grammar_provider(ebnf_src, branding, additional_code)
     grammar = grammar_factory()
-    src = getattr(grammar_factory, 'python_src__','')
+    src = getattr(grammar_factory, 'python_src__',
+                  grammar_factory.keywords['python_src'])
     # extract Grammar class from source code for more clarity
     i = src.find(f'class {branding}Grammar(Grammar):')
     assert i >= 0, src
@@ -517,10 +540,12 @@ def compile_on_disk(source_file: str,
     compiler_name = as_identifier(os.path.basename(rootname))
     if compiler_suite:
         sfactory, pfactory, tfactory, cfactory = load_compiler_suite(compiler_suite)
+        parser = pfactory()
         compiler1 = cfactory()
     else:
         sfactory = get_ebnf_preprocessor  # PreprocessorFactory
         pfactory = get_ebnf_grammar       # ParserFactory
+        parser = pfactory(source)         # EBNF-Parser will be selected to fit the flavor
         tfactory = get_ebnf_transformer   # TransformerFactory
         cfactory = get_ebnf_compiler      # CompilerFactory
         compiler1 = cfactory()            # CompilerFunc
@@ -530,7 +555,7 @@ def compile_on_disk(source_file: str,
         is_ebnf_compiler = True
         compiler1.set_grammar_name(compiler_name, source_file)
 
-    result, messages, _ = compile_source(source, sfactory(), pfactory(), tfactory(), compiler1)
+    result, messages, _ = compile_source(source, sfactory(), parser, tfactory(), compiler1)
 
     if has_errors(messages):
         return messages
@@ -583,6 +608,7 @@ def compile_on_disk(source_file: str,
             f.write(preprocessor)
             f.write(SECTION_MARKER.format(marker=PARSER_SECTION))
             f.write(cast(str, result))
+            f.write(CONSISTENCY_CHECK.format(NAME=compiler_name),)
             f.write(SECTION_MARKER.format(marker=AST_SECTION))
             f.write(ast)
             f.write(SECTION_MARKER.format(marker=COMPILER_SECTION))
@@ -733,7 +759,7 @@ def create_scripts(ebnf_filename: str,
     if os.path.isdir(ebnf_filename):
         for entry in os.listdir(ebnf_filename):
             if entry.lower().endswith('.ebnf') and os.path.isfile(entry):
-                restore_server_script(entry)
+                create_scripts(entry)
         return
 
     base, _ = os.path.splitext(ebnf_filename)
@@ -930,9 +956,9 @@ def batch_process(file_names: List[str], out_dir: str,
     pf_parms = len(str(parm_tuple.annotation).split(","))
     if pf_parms <= 2:
         deprecation_warning("'process_file'-function passed to DHParser.dsl.batch_process() "
-                            "appears to be outdated as it does not take a third paramter. "
-                            "It's signature ought to be (source: str, out_dir: str, "
-                            "cancel_query: DHParser.toolkit.CancelQuery).")
+                            "appears to be outdated as it does not take a tuple with a third "
+                            "parameter. It's signature ought to be (args: tuple(source: str, "
+                            "out_dir: str, cancel_query: DHParser.toolkit.CancelQuery)).")
         pf_parms = 2
     else:
         pf_parms = 3
@@ -949,7 +975,7 @@ def batch_process(file_names: List[str], out_dir: str,
             res_iter = pool.map(process_file, ((name, out_dir) for name in file_names),
                                 chunksize=chunksize)
         error_files = collect_results(res_iter, file_names, log_func, cancel_query or never_cancel)
-        if sys.version_info >= (3, 9):
+        if sys.version_info >= (3, 9, 0):
             pool.shutdown(wait=True, cancel_futures=True)
         else:
             pool.shutdown(wait=True)

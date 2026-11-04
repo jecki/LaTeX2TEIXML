@@ -1,0 +1,1062 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pipeline &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pipeline';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pipeline</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pipeline.py - Processing-pipelines for consecutive stages of tree/data-transformations</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2023  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+<span class="sd">"""</span>
+<span class="sd">Module ``pipeline`` implements support for processing-pipelines for</span>
+<span class="sd">connecting successive stages of tree transformations (called</span>
+<span class="sd">"junctions") to processing pipelines. Processing pipelines have</span>
+<span class="sd">one staring point, the source-document, but can have one or more</span>
+<span class="sd">end points. For example, if the source is a text-document, the</span>
+<span class="sd">end points can be an HTML document for the online-presentation</span>
+<span class="sd">and a LaTeX-document to produce a printed version.</span>
+
+<span class="sd">Each junction is a triple of the name of the source-stage,</span>
+<span class="sd">the transformation-function and the name of the destination-stage.</span>
+<span class="sd">Pipelines are defined by the set of junctions from which paths</span>
+<span class="sd">connecting the source-point to the end-points are derived</span>
+<span class="sd">algorithmically.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> \
+    <span class="n">Callable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.compile</span><span class="w"> </span><span class="kn">import</span> <span class="n">compile_source</span><span class="p">,</span> <span class="n">process_tree</span><span class="p">,</span> <span class="n">CompilerFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config_value</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">has_errors</span><span class="p">,</span> <span class="n">is_fatal</span><span class="p">,</span> <span class="n">FATAL</span><span class="p">,</span> <span class="n">CANCELED</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootNode</span><span class="p">,</span> <span class="n">Node</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grammar</span><span class="p">,</span> <span class="n">ParserFactory</span><span class="p">,</span> <span class="n">Parser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">PreprocessorFactory</span><span class="p">,</span> <span class="n">PreprocessorFunc</span><span class="p">,</span> <span class="n">Tokenizer</span><span class="p">,</span> \
+    <span class="n">gen_find_include_func</span><span class="p">,</span> <span class="n">preprocess_includes</span><span class="p">,</span> <span class="n">make_preprocessor</span><span class="p">,</span> <span class="n">chain_preprocessors</span><span class="p">,</span> \
+    <span class="n">DeriveFileNameFunc</span><span class="p">,</span> <span class="n">PreprocessorResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">,</span> <span class="n">deprecation_warning</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> \
+    <span class="n">get_annotations</span><span class="p">,</span> <span class="n">CancelQuery</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.trace</span><span class="w"> </span><span class="kn">import</span> <span class="n">resume_notices_on</span><span class="p">,</span> <span class="n">set_tracer</span><span class="p">,</span> <span class="n">trace_history</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformerFunc</span><span class="p">,</span> <span class="n">TransformerFactory</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="n">TransformationDict</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'Junction'</span><span class="p">,</span>
+           <span class="s1">'PipelineResult'</span><span class="p">,</span>
+           <span class="s1">'end_points'</span><span class="p">,</span>
+           <span class="s1">'connection'</span><span class="p">,</span>
+           <span class="s1">'as_paths'</span><span class="p">,</span>
+           <span class="s1">'PIPE_CHARS'</span><span class="p">,</span>
+           <span class="s1">'pp_paths'</span><span class="p">,</span>
+           <span class="s1">'PipeTree'</span><span class="p">,</span>
+           <span class="s1">'as_graph'</span><span class="p">,</span>
+           <span class="s1">'extract_data'</span><span class="p">,</span>
+           <span class="s1">'run_pipeline'</span><span class="p">,</span>
+           <span class="s1">'full_pipeline'</span><span class="p">,</span>
+           <span class="s1">'PseudoJunction'</span><span class="p">,</span>
+           <span class="s1">'create_preprocess_junction'</span><span class="p">,</span>
+           <span class="s1">'create_parser_junction'</span><span class="p">,</span>
+           <span class="s1">'create_compiler_junction'</span><span class="p">,</span>
+           <span class="s1">'create_evaluation_junction'</span><span class="p">,</span>
+           <span class="s1">'create_junction'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Junction">
+<a class="viewcode-back" href="../Reference.html#pipeline.Junction">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Junction</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A junction is a triple of the name of the source-stage,</span>
+<span class="sd">    a factory-function that returns the actual transformation</span>
+<span class="sd">    function and the name of the destination-stage."""</span>
+    <span class="n">src</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">factory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ParserFactory</span><span class="p">,</span> <span class="n">CompilerFactory</span><span class="p">,</span> <span class="n">TransformerFactory</span><span class="p">]</span>
+    <span class="n">dst</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="vm">__name__</span>  <span class="c1"># needed for cython compatibility</span></div>
+
+
+
+<span class="c1"># compilation and postprocessing result:</span>
+<span class="c1"># Dict: target-stage-name -&gt; (result, errors)</span>
+<span class="n">PipelineResult</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">RootNode</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">]]]</span>
+
+
+<div class="viewcode-block" id="end_points">
+<a class="viewcode-back" href="../Reference.html#pipeline.end_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">end_points</span><span class="p">(</span><span class="n">junctions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Junction</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Returns all "final" destination stages, i.e. destinations</span>
+<span class="sd">    that are not a source of another junction."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span> <span class="n">j</span><span class="o">.</span><span class="n">src</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span> <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="c1"># accept old-style tripples as well</span>
+        <span class="n">junctions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Junction</span><span class="p">(</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">]</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span> <span class="n">j</span><span class="o">.</span><span class="n">src</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span> <span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">j</span><span class="o">.</span><span class="n">dst</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span> <span class="k">if</span> <span class="n">j</span><span class="o">.</span><span class="n">dst</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="connection">
+<a class="viewcode-back" href="../Reference.html#pipeline.connection">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">connection</span><span class="p">(</span><span class="n">junctions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Junction</span><span class="p">],</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"CST"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Junction</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Returns the junctions that connect the target with its origin.</span>
+<span class="sd">    In case there is no such connection, a value error will be raised."""</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">junctions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">junctions</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">target</span> <span class="o">!=</span> <span class="n">origin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">j</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">src</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'No connection from </span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">!'</span><span class="p">)</span>
+        <span class="n">junctions</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="as_paths">
+<a class="viewcode-back" href="../Reference.html#pipeline.as_paths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">as_paths</span><span class="p">(</span><span class="n">junctions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""Returns a dictionary that maps each end point to the path from the start</span>
+<span class="sd">    (usually "CST") to that end point."""</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="o">.</span><span class="n">src</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">}</span>
+    <span class="n">dsts</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="o">.</span><span class="n">dst</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">}</span>
+    <span class="n">endpoints</span> <span class="o">=</span> <span class="n">dsts</span> <span class="o">-</span> <span class="n">srcs</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">srcs</span> <span class="o">-</span> <span class="n">dsts</span><span class="p">)</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="n">dst_src</span> <span class="o">=</span> <span class="p">{</span> <span class="n">j</span><span class="o">.</span><span class="n">dst</span><span class="p">:</span> <span class="n">j</span><span class="o">.</span><span class="n">src</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span> <span class="p">}</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">{</span> <span class="n">d</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">dst_src</span><span class="p">[</span><span class="n">d</span><span class="p">]]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">endpoints</span> <span class="p">}</span>
+    <span class="n">repeat</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">repeat</span><span class="p">:</span>
+        <span class="n">repeat</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">start</span><span class="p">:</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dst_src</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="n">repeat</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">paths</span></div>
+
+
+
+<span class="n">PIPE_CHARS</span> <span class="o">=</span> <span class="s1">' ┊┆|│├─└┃┣┗━'</span>  <span class="c1"># {' ', '│', '├', '└', '─'}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">pp_paths</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">]],</span>
+             <span class="n">vertical</span> <span class="o">=</span> <span class="s1">'│ '</span><span class="p">,</span> <span class="n">bifurcation</span> <span class="o">=</span> <span class="s1">'├─'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="p">(</span><span class="n">Set</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">)):</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">as_paths</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">paths</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">paths</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">PIPE_CHARS</span> <span class="ow">or</span> <span class="n">path</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PIPE_CHARS</span><span class="p">:</span>
+                    <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">bifurcation</span> <span class="o">+</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PIPE_CHARS</span> <span class="k">else</span> <span class="p">(</span><span class="n">vertical</span> <span class="o">+</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertical</span> <span class="o">+</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PipeTree">
+<a class="viewcode-back" href="../Reference.html#pipeline.PipeTree">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PipeTree</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">desc</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PipeTree</span><span class="p">]</span>
+    <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"PipeTree(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="si">}</span><span class="s2">)"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">"  "</span> <span class="o">+</span> <span class="n">cl</span> <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="as_graph">
+<a class="viewcode-back" href="../Reference.html#pipeline.as_graph">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">as_graph</span><span class="p">(</span><span class="n">junctions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Junction</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">PipeTree</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns the junctions as a directed graph."""</span>
+    <span class="c1"># TODO: unit-test sometimes fails!!!</span>
+    <span class="n">jdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">j</span><span class="o">.</span><span class="n">src</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">jdict</span><span class="p">:</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">jdict</span><span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">src</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="o">.</span><span class="n">src</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">}</span>
+    <span class="n">dsts</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="o">.</span><span class="n">dst</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">}</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">srcs</span> <span class="o">-</span> <span class="n">dsts</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'More than one origin stage within the set of junctions: '</span>
+                         <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'No origin stage found in the set of junctions! (The '</span>
+                         <span class="s1">'connected junctions should form a tree, but there '</span>
+                         <span class="s1">'seems to be a cycle somewhere...)'</span><span class="p">)</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">subtree</span><span class="p">(</span><span class="n">j</span><span class="p">:</span> <span class="n">Junction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipeTree</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">j</span><span class="o">.</span><span class="n">dst</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">jdict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PipeTree</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="p">[</span><span class="n">subtree</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">jdict</span><span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">dst</span><span class="p">]]</span>
+            <span class="n">desc</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+            <span class="n">desc</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">depth</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">PipeTree</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">depth</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">subtree</span><span class="p">(</span><span class="n">Junction</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">src</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="extract_data">
+<a class="viewcode-back" href="../Reference.html#pipeline.extract_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_data</span><span class="p">(</span><span class="n">tree_or_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">RootNode</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Retrieves the data from the given tree or just passes the data through</span>
+<span class="sd">    if the argument ``tree_or_data`` is not of type RootNode."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree_or_data</span><span class="p">,</span> <span class="n">RootNode</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">tree_or_data</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="n">tree_or_data</span></div>
+
+
+
+<div class="viewcode-block" id="run_pipeline">
+<a class="viewcode-back" href="../Reference.html#pipeline.run_pipeline">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_pipeline</span><span class="p">(</span><span class="n">junctions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">],</span>
+                 <span class="n">source_stages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RootNode</span><span class="p">],</span>
+                 <span class="n">target_stages</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="o">*</span><span class="p">,</span> <span class="n">cancel_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancelQuery</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipelineResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Runs all the intermediary compilation-steps that are necessary to produce</span>
+<span class="sd">    the "target-stages" from the given "source-stages". Here, each source-stage</span>
+<span class="sd">    consists of a name for that stage, say "AST", and a node-tree that</span>
+<span class="sd">    represents the data at this stage of the processing pipeline. In the</span>
+<span class="sd">    target-stage, the data can be a node-tree or data of any other kind.</span>
+
+<span class="sd">    The stages or connected through chains of junctions, where a junction is</span>
+<span class="sd">    essentially a function that transforms a tree from one particular stage</span>
+<span class="sd">    (identified by its name) to another stage, again identified by its name.</span>
+
+<span class="sd">    TODO: Parallelize processing of junctions? Requires copying a lot ot tree-data!?</span>
+<span class="sd">    """</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cmp_junctions</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_stage</span><span class="p">(</span><span class="n">given_stage</span><span class="p">,</span> <span class="n">junction</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">further_info</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">given_stage</span><span class="p">:</span>  <span class="k">return</span>  <span class="c1"># verification is considered as turned off</span>
+        <span class="k">assert</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">expected_stage</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+        <span class="n">stage_type</span> <span class="o">=</span> <span class="s1">'source stage'</span> <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">'target stage'</span>
+        <span class="k">if</span> <span class="n">given_stage</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="n">expected_stage</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">junction</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">):</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">class_or_factory</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">func</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">'Expected </span><span class="si">{</span><span class="n">stage_type</span><span class="si">}</span><span class="s1"> "</span><span class="si">{</span><span class="n">expected_stage</span><span class="si">}</span><span class="s1">" but found '</span>
+                <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">given_stage</span><span class="si">}</span><span class="s1">" when applying </span><span class="si">{</span><span class="n">junction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">-&gt;</span><span class="si">{</span><span class="n">junction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s1">)! '</span>
+                <span class="s1">'Possible causes: a) wrong stage name specified in junction  b) stage name not '</span>
+                <span class="sa">f</span><span class="s1">'updated by compilation-function  c) internal error of DHParser. </span><span class="si">{</span><span class="n">further_info</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+            <span class="n">stack</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_stack</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="n">stack</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">line</span> <span class="ow">and</span> <span class="n">call</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'run_grammar_tests'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'get_'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># Be kind and backwards-compatible with old code</span>
+                        <span class="n">deprecation_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Your transformation </span><span class="si">{</span><span class="n">junction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">-&gt;</span><span class="si">{</span><span class="n">junction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>
+                            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> failed to update RootNode.stage "</span>
+                            <span class="sa">f</span><span class="s1">'with the name of the target stage: "</span><span class="si">{</span><span class="n">junction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">"! '</span>
+                            <span class="sa">f</span><span class="s1">'Future versions of DHParser might fail right here.'</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">NAME</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">NAME</span> <span class="k">if</span> <span class="n">NAME</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'AST'</span><span class="p">,</span> <span class="s1">'CST'</span><span class="p">)</span> <span class="k">else</span> <span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_junction</span><span class="p">(</span><span class="n">j</span><span class="p">:</span> <span class="n">Junction</span><span class="p">):</span>
+        <span class="n">SRC</span> <span class="o">=</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">SRC</span> <span class="o">==</span> <span class="s1">'CST'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Junction</span><span class="p">(</span><span class="s1">'CST'</span><span class="p">,</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">normalize_name</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="n">SRC</span> <span class="o">==</span> <span class="s1">'AST'</span> <span class="ow">and</span> <span class="n">SRC</span> <span class="o">!=</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">Junction</span><span class="p">(</span><span class="s1">'AST'</span><span class="p">,</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">j</span>
+
+    <span class="n">t_to_j</span> <span class="o">=</span> <span class="p">{</span><span class="n">normalize_name</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span> <span class="n">normalize_junction</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">junctions</span><span class="p">}</span>
+    <span class="n">target_stages</span> <span class="o">=</span> <span class="p">{</span><span class="n">normalize_name</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target_stages</span><span class="p">}</span>
+    <span class="n">source_stages</span> <span class="o">=</span> <span class="p">{</span><span class="n">normalize_name</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="n">source_stages</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source_stages</span><span class="p">}</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">targets</span> <span class="o">=</span> <span class="n">target_stages</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">already_reached</span> <span class="o">=</span> <span class="n">targets</span> <span class="o">|</span> <span class="n">source_stages</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">targets</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">j_sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_to_j</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">targets</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">source_stages</span><span class="p">]</span>
+            <span class="n">j_sequence</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">cmp_to_key</span><span class="p">(</span><span class="n">cmp_junctions</span><span class="p">))</span>
+            <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j_sequence</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a valid target."</span><span class="p">)</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">already_reached</span><span class="p">}</span>
+        <span class="n">already_reached</span> <span class="o">|=</span> <span class="n">targets</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">step</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">target_stages</span> <span class="o">&lt;=</span> <span class="n">already_reached</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Target-stages: </span><span class="si">{</span><span class="n">target_stages</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">already_reached</span><span class="si">}</span><span class="s1"> '</span>
+                         <span class="sa">f</span><span class="s1">'cannot be reached with junctions: </span><span class="si">{</span><span class="n">junctions</span><span class="si">}</span><span class="s1">.'</span><span class="p">)</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">step</span><span class="p">]</span>
+    <span class="n">disposables</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target_stages</span> <span class="ow">and</span> <span class="n">sources</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="n">steps</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_stages</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">errata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Error</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">source_stages</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">errors_sorted</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source_stages</span><span class="p">}</span>
+    <span class="n">cancel</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">junction</span> <span class="ow">in</span> <span class="n">step</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">disposables</span> <span class="k">else</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target_stages</span><span class="p">:</span>
+                    <span class="n">sources</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">sources</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">disposables</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">errata</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">errata</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">RootNode</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Object in stage "</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">" is not a tree (RootNode) '</span>
+                                         <span class="sa">f</span><span class="s1">'but a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span><span class="si">}</span><span class="s1"> '</span>
+                                         <span class="sa">f</span><span class="s1">'and, therefore, cannot be processed to </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="n">verify_stage</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span> <span class="n">junction</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">transformation</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="mi">1</span><span class="p">]()</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span> <span class="s1">'cancel_query'</span><span class="p">):</span>
+                        <span class="n">transformation</span><span class="o">.</span><span class="n">cancel_query</span> <span class="o">=</span> <span class="n">cancel_query</span>
+                    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span> <span class="s1">'cancel_query__'</span><span class="p">):</span>
+                        <span class="n">transformation</span><span class="o">.</span><span class="n">cancel_query__</span> <span class="o">=</span> <span class="n">cancel_query</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>  <span class="c1"># TODO: pass cancel query, here</span>
+                    <span class="n">errata</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">errors_sorted</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">cancel_query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cancel_query</span><span class="p">():</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">new_error</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s2">"Pipeline-processing canceled!"</span><span class="p">,</span> <span class="n">CANCELED</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">is_fatal</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">error_flag</span><span class="p">):</span>
+                        <span class="n">cancel</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">stage</span> <span class="o">==</span> <span class="n">s</span><span class="p">:</span>  <span class="c1"># tree stage hasn't been set by the processing function</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="n">junction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">verify_stage</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span> <span class="n">junction</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="p">(</span><span class="n">extract_data</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">t</span><span class="p">]),</span> <span class="n">errata</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span></div>
+
+
+
+<div class="viewcode-block" id="full_pipeline">
+<a class="viewcode-back" href="../Reference.html#pipeline.full_pipeline">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">full_pipeline</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">preprocessor_factory</span><span class="p">:</span> <span class="n">PreprocessorFactory</span><span class="p">,</span>
+                  <span class="n">parser_factory</span><span class="p">:</span> <span class="n">ParserFactory</span><span class="p">,</span>
+                  <span class="n">junctions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Junction</span><span class="p">],</span>
+                  <span class="n">target_stages</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                  <span class="n">start_parser</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parser</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"root_parser__"</span><span class="p">,</span>
+                  <span class="o">*</span><span class="p">,</span> <span class="n">cancel_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancelQuery</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipelineResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Runs a processing pipeline starting from the source-code (in contrast</span>
+<span class="sd">    to "run_pipeline()" which starts from any tree-stage, typically, from</span>
+<span class="sd">    the concrete syntax-tree (CST).</span>
+
+<span class="sd">    "full_pipeline()" preprocesses and compiles the source-document,</span>
+<span class="sd">    first. And then it post-processes the source into the given target stages.</span>
+<span class="sd">    Mind that if there are fatal errors earlier in the pipeline, some or all</span>
+<span class="sd">    target stages might not be reached and thus not be included in the result.</span>
+<span class="sd">    """</span>
+    <span class="n">cst</span><span class="p">,</span> <span class="n">msgs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compile_source</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">preprocessor_factory</span><span class="p">(),</span> <span class="n">parser_factory</span><span class="p">(),</span>
+                                  <span class="n">start_parser</span><span class="o">=</span><span class="n">start_parser</span><span class="p">,</span> <span class="n">cancel_query</span><span class="o">=</span><span class="n">cancel_query</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_errors</span><span class="p">(</span><span class="n">msgs</span><span class="p">,</span> <span class="n">FATAL</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">ts</span><span class="p">:</span> <span class="p">(</span><span class="n">cst</span><span class="p">,</span> <span class="n">msgs</span><span class="p">)</span> <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">target_stages</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">junctions</span><span class="p">,</span> <span class="p">{</span><span class="n">cst</span><span class="o">.</span><span class="n">stage</span><span class="p">:</span> <span class="n">cst</span><span class="p">},</span> <span class="n">target_stages</span><span class="p">,</span>
+                        <span class="n">cancel_query</span><span class="o">=</span><span class="n">cancel_query</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Helper-functions for creating junctions</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<span class="c1"># In the following PARTIAL FUNCTIONS are used rather than local functions,</span>
+<span class="c1"># because the closure of local functions cannot be pickled!</span>
+
+<span class="c1"># Preprocessing-Stage #################################################</span>
+
+<span class="c1"># def _preprocess(source, factory) -&gt; Union[str, StringView]:</span>
+<span class="c1">#     return factory()(source)</span>
+
+<div class="viewcode-block" id="PseudoJunction">
+<a class="viewcode-back" href="../Reference.html#pipeline.PseudoJunction">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PseudoJunction</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">factory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PreprocessorFactory</span><span class="p">,</span> <span class="n">ParserFactory</span><span class="p">]</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="vm">__name__</span>  <span class="c1"># needed for cython compatibility</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_preprocessor_factory</span><span class="p">(</span><span class="n">prep_func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PreprocessorFunc</span><span class="p">,</span> <span class="n">Tokenizer</span><span class="p">],</span>
+                          <span class="n">include_regex</span><span class="p">,</span>
+                          <span class="n">comment_regex</span><span class="p">,</span>
+                          <span class="n">derive_file_name</span><span class="p">,</span>
+                          <span class="n">func_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PreprocessorFunc</span><span class="p">:</span>
+    <span class="c1"># below, the second parameter must always be the same as Grammar.COMMENT__!</span>
+    <span class="n">find_next_include</span> <span class="o">=</span> <span class="n">gen_find_include_func</span><span class="p">(</span><span class="n">include_regex</span><span class="p">,</span> <span class="n">comment_regex</span><span class="p">,</span> <span class="n">derive_file_name</span><span class="p">)</span>
+    <span class="n">include_prep</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">preprocess_includes</span><span class="p">,</span> <span class="n">find_next_include</span><span class="o">=</span><span class="n">find_next_include</span><span class="p">)</span>
+    <span class="n">anno</span> <span class="o">=</span> <span class="n">get_annotations</span><span class="p">(</span><span class="n">prep_func</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ret_type</span> <span class="o">=</span> <span class="n">anno</span><span class="p">[</span><span class="s1">'return'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ret_type</span> <span class="ow">is</span> <span class="n">PreprocessorResult</span> <span class="ow">or</span> <span class="n">ret_type</span> <span class="o">==</span> <span class="n">PreprocessorResult</span> <span class="ow">or</span> \
+                <span class="nb">str</span><span class="p">(</span><span class="n">ret_type</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'PreprocessorResult'</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">func_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">func_type</span> <span class="ow">is</span> <span class="n">PreprocessorFunc</span> \
+                    <span class="ow">or</span> <span class="n">func_type</span> <span class="o">==</span> <span class="n">PreprocessorFunc</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">func_type</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"PreprocessorFunc"</span><span class="p">,</span> \
+                <span class="sa">f</span><span class="s2">"func_type=</span><span class="si">{</span><span class="n">func_type</span><span class="si">}</span><span class="s2"> is incompatible with return type PreprocessorResult of "</span> \
+                <span class="sa">f</span><span class="s2">"parameter prep_func when calling DHParser.pipeline.create_preprocess_junction()"</span>
+            <span class="n">prep</span> <span class="o">=</span> <span class="n">prep_func</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">func_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">func_type</span> <span class="ow">is</span> <span class="n">Tokenizer</span> \
+                    <span class="ow">or</span> <span class="n">func_type</span> <span class="o">==</span> <span class="n">Tokenizer</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">func_type</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Tokenizer"</span><span class="p">,</span> \
+                <span class="sa">f</span><span class="s2">"func_type=</span><span class="si">{</span><span class="n">func_type</span><span class="si">}</span><span class="s2"> is incompatible with return type </span><span class="si">{</span><span class="n">anno</span><span class="p">[</span><span class="s1">'return'</span><span class="p">]</span><span class="si">}</span><span class="s2"> of "</span> \
+                <span class="sa">f</span><span class="s2">"parameter prep_func when calling DHParser.pipeline.create_preprocess_junction()"</span>
+            <span class="n">prep</span> <span class="o">=</span> <span class="n">make_preprocessor</span><span class="p">(</span><span class="n">prep_func</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">func_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
+            <span class="s2">"Please specify the kind of preprocessor by passing parameter func_type=Tokenizer "</span> \
+            <span class="s2">"or func_type=PreprocessorFunc to DHParser.pipeline.create_preprocess_junction()"</span>
+        <span class="n">prep</span> <span class="o">=</span> <span class="n">prep_func</span> <span class="k">if</span> <span class="n">func_type</span> <span class="ow">is</span> <span class="n">PreprocessorFunc</span> <span class="ow">or</span> <span class="n">func_type</span> <span class="o">==</span> <span class="n">PreprocessorFunc</span> \
+            <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">func_type</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'PreprocessorFunc'</span> <span class="k">else</span> <span class="n">make_preprocessor</span><span class="p">(</span><span class="n">prep_func</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chain_preprocessors</span><span class="p">(</span><span class="n">include_prep</span><span class="p">,</span> <span class="n">prep</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">same_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+
+<div class="viewcode-block" id="create_preprocess_junction">
+<a class="viewcode-back" href="../Reference.html#pipeline.create_preprocess_junction">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_preprocess_junction</span><span class="p">(</span><span class="n">prep_func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PreprocessorFunc</span><span class="p">,</span> <span class="n">Tokenizer</span><span class="p">],</span>
+                               <span class="n">include_regex</span><span class="p">,</span>
+                               <span class="n">comment_regex</span><span class="p">,</span>
+                               <span class="n">derive_file_name</span><span class="p">:</span> <span class="n">DeriveFileNameFunc</span><span class="o">=</span><span class="n">same_name</span><span class="p">,</span>
+                               <span class="n">func_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PseudoJunction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a factory for thread-safe preprocessing functions as well as a</span>
+<span class="sd">    thread-safe preprocessing function."""</span>
+    <span class="n">preprocessor_factory</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+        <span class="n">_preprocessor_factory</span><span class="p">,</span> <span class="n">prep_func</span><span class="o">=</span><span class="n">prep_func</span><span class="p">,</span>
+        <span class="n">include_regex</span><span class="o">=</span><span class="n">include_regex</span><span class="p">,</span> <span class="n">comment_regex</span><span class="o">=</span><span class="n">comment_regex</span><span class="p">,</span>
+        <span class="n">derive_file_name</span><span class="o">=</span><span class="n">derive_file_name</span><span class="p">,</span> <span class="n">func_type</span><span class="o">=</span><span class="n">func_type</span><span class="p">)</span>
+    <span class="n">thread_safe_factory</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">preprocessor_factory</span><span class="p">)</span>
+    <span class="c1"># preprocess = partial(_preprocess, factory=thread_safe_factory)</span>
+    <span class="k">return</span> <span class="n">PseudoJunction</span><span class="p">(</span><span class="n">thread_safe_factory</span><span class="p">)</span>  <span class="c1"># , preprocess)</span></div>
+
+
+
+<span class="c1"># Parsing-stage #######################################################</span>
+
+<span class="c1"># def _parse_func(parser_factory: Callable, document, start_parser = "root_parser__",</span>
+<span class="c1">#                 *, complete_match=True):</span>
+<span class="c1">#     return parser_factory()(document, start_parser, complete_match=complete_match)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parser_factory</span><span class="p">(</span><span class="n">raw_grammar</span><span class="p">,</span> <span class="n">python_src</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Grammar</span><span class="p">:</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">raw_grammar</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'resume_notices'</span><span class="p">):</span>
+        <span class="n">resume_notices_on</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">get_config_value</span><span class="p">(</span><span class="s1">'history_tracking'</span><span class="p">):</span>
+        <span class="n">set_tracer</span><span class="p">(</span><span class="n">grammar</span><span class="p">,</span> <span class="n">trace_history</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">grammar</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">python_src__</span><span class="p">:</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">python_src__</span> <span class="o">=</span> <span class="n">python_src</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">grammar</span>
+
+
+<div class="viewcode-block" id="create_parser_junction">
+<a class="viewcode-back" href="../Reference.html#pipeline.create_parser_junction">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_parser_junction</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PseudoJunction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a factory for thread-safe parser functions as well as a</span>
+<span class="sd">    thread-safe parser function."""</span>
+    <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">,</span> <span class="n">Grammar</span><span class="p">)</span>
+    <span class="n">raw_grammar</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">grammar_class</span><span class="p">)</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">_parser_factory</span><span class="p">,</span> <span class="n">raw_grammar</span><span class="o">=</span><span class="n">raw_grammar</span><span class="p">)</span>
+    <span class="c1"># process = partial(_parse_func, parser_factory=factory)</span>
+    <span class="k">return</span> <span class="n">PseudoJunction</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>  <span class="c1"># , process)</span></div>
+
+
+
+<span class="c1"># Tree-Processing-Stages ##############################################</span>
+
+<span class="c1"># 1. tree-processing with Compiler-class</span>
+
+<span class="c1"># def process_template(src_tree: Node, src_stage: str, dst_stage: str,</span>
+<span class="c1">#                      factory_function) -&gt; Any:</span>
+<span class="c1">#     """A generic templare for tree-transformation-functions."""</span>
+<span class="c1">#     if isinstance(src_tree, RootNode):</span>
+<span class="c1">#         assert src_tree.stage == src_stage</span>
+<span class="c1">#     result = factory_function()(src_tree)</span>
+<span class="c1">#     if isinstance(result, RootNode):</span>
+<span class="c1">#         assert result.stage in (src_stage, dst_stage)</span>
+<span class="c1">#         result.stage = dst_stage</span>
+<span class="c1">#     return result</span>
+
+<div class="viewcode-block" id="create_compiler_junction">
+<a class="viewcode-back" href="../Reference.html#pipeline.create_compiler_junction">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_compiler_junction</span><span class="p">(</span><span class="n">compile_class</span><span class="p">:</span> <span class="n">CompilerFactory</span><span class="p">,</span>
+                             <span class="n">src_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">dst_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Junction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a thread-safe transformation function and function-factory from</span>
+<span class="sd">    a :py:class:`compile.Compiler` or another callable class.</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">compile_class</span><span class="p">)</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">compile_class</span><span class="p">)</span>
+    <span class="c1"># process = partial(process_template, src_stage=src_stage, dst_stage=dst_stage,</span>
+    <span class="c1">#                   factory_function=factory)</span>
+    <span class="k">return</span> <span class="n">Junction</span><span class="p">(</span><span class="n">src_stage</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># 2. tree-processing with transformation-table</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_transformer</span><span class="p">(</span><span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformerFunc</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">transformer</span><span class="p">,</span> <span class="n">transformation_table</span><span class="o">=</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="n">src_stage</span><span class="o">=</span><span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="o">=</span><span class="n">dst_stage</span><span class="p">))</span>
+
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"DHParser.pipeline.create_transtable_junction() is deprecated, "</span>
+            <span class="s2">"because it does not work with lambdas as transformer functions! "</span>
+            <span class="s2">"Please, use a hardcoded factory function that refers to the transtable "</span>
+            <span class="s2">"directly instead."</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_transtable_junction</span><span class="p">(</span><span class="n">table</span><span class="p">:</span> <span class="n">TransformationDict</span><span class="p">,</span>
+                               <span class="n">src_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                               <span class="n">dst_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Junction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a thread-safe transformation function and function-factory from</span>
+<span class="sd">    a transformation-table :py:func:`transform.traverse`.</span>
+
+<span class="sd">    TODO: This does not work if table contains functions that cannot be pickled (i.e. lambda-functions)!</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+    <span class="n">make_transformer</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">_make_transformer</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">make_transformer</span><span class="p">,</span> <span class="n">uniqueID</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Junction</span><span class="p">(</span><span class="n">src_stage</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span>
+
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"DHParser.pipeline.create_transtable_transition() is deprecated, "</span>
+            <span class="s2">"because it does not work with lambdas as transformer functions! "</span>
+            <span class="s2">"Please, use a hardcoded factory function that refers to the transtable "</span>
+            <span class="s2">"directly instead."</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_transtable_transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span>   <span class="n">create_transtable_junction</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="c1"># 3. tree-processing with evaluation-table</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_evaluation</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">supply_path_arg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Node</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_with_path</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">evaluate_path</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="p">[</span><span class="n">node</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_without_path</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">evaluate_with_path</span> <span class="k">if</span> <span class="n">supply_path_arg</span> <span class="k">else</span> <span class="n">evaluate_without_path</span>
+
+
+<div class="viewcode-block" id="create_evaluation_junction">
+<a class="viewcode-back" href="../Reference.html#pipeline.create_evaluation_junction">[docs]</a>
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"DHParser.pipeline.create_evaluation_junction() is deprecated, "</span>
+            <span class="s2">"because it does not work with lambdas as transformer functions! "</span>
+            <span class="s2">"Please, use a hardcoded factory function that refers to the evaluation-table "</span>
+            <span class="s2">"directly instead."</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_evaluation_junction</span><span class="p">(</span><span class="n">actions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span>
+                               <span class="n">src_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                               <span class="n">dst_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                               <span class="n">supply_path_arg</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Junction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a thread-safe transformation function and function-factory from</span>
+<span class="sd">    an evaluation-table :py:meth:`nodetree.Node.evaluate`.</span>
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="vm">__class__</span>
+    <span class="n">make_evaluation</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+        <span class="n">_make_evaluation</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">,</span> <span class="n">supply_path_arg</span><span class="o">=</span><span class="n">supply_path_arg</span><span class="p">)</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">make_evaluation</span><span class="p">,</span> <span class="n">uniqueID</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="n">actions</span><span class="p">))</span>
+    <span class="c1"># process = partial(process_template, src_stage=src_stage, dst_stage=dst_stage,</span>
+    <span class="c1">#                   factory_function=factory)</span>
+    <span class="k">return</span> <span class="n">Junction</span><span class="p">(</span><span class="n">src_stage</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># generic tree-processing function</span>
+
+<div class="viewcode-block" id="create_junction">
+<a class="viewcode-back" href="../Reference.html#pipeline.create_junction">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">:</span> <span class="n">CompilerFactory</span><span class="p">,</span>
+                    <span class="n">src_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">dst_stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Junction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Generic stage-creation function for tree-transforming stages where a tree-transforming</span>
+<span class="sd">    stage is a stage that either reshapes a node-tree or transforms a nodetree into</span>
+<span class="sd">    something else, but not a stage where something else (e.g. a text) is turned into</span>
+<span class="sd">    a node-tree."""</span>
+    <span class="k">if</span> <span class="n">hint</span><span class="p">:</span>
+        <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">"Parameter 'hint' of functsion DHParser.pipeline.create_junction() "</span>
+                            <span class="s2">"is deprecated and should not be used, any more!"</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">tool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">create_compiler_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">"Parameter 'tool' DHParser.pipeline.create_junction() must be a "</span>
+                            <span class="s2">"CompilerFactory, i.e. a factory function or class that returns a "</span>
+                            <span class="s2">"transformation function or callable object. Dictionaries, and in"</span>
+                            <span class="s2">"particular transformation or evaluation tables are not supported, "</span>
+                            <span class="s2">"anymore. Please wrap your table into a factory function instead!"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> \
+                <span class="ow">or</span> <span class="n">hint</span> <span class="o">==</span> <span class="s2">"transtable"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">create_transtable_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">hint</span> <span class="o">==</span> <span class="s2">"evaluate_with_path"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">create_evaluation_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">hint</span> <span class="o">==</span> <span class="s2">"evaluate_without_path"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">create_evaluation_junction</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">src_stage</span><span class="p">,</span> <span class="n">dst_stage</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">'Cannot determine transformation-type automatically! '</span>
+                <span class="s1">'Please, add optional parameter "hint" to the function call with one of the '</span>
+                <span class="s1">'following values: "transtable", "evaluate_with_path", "evaluate_without_path"!'</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

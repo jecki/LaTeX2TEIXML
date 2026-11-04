@@ -1,0 +1,1500 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Document-Trees &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manuals/02_document-trees';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Content Mappings" href="03_content-mappings.html" />
+    <link rel="prev" title="EBNF-Grammars" href="01_EBNF-grammars.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/manuals/02_document-trees.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Document-Trees</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node-objects">Node-objects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization">Serialization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xml-reflow">XML-reflow</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elementtree-exchange">ElementTree-Exchange</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tree-traversal">Tree-Traversal</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#navigating-downtree">Navigating “downtree”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#navigating-uptree">Navigating “uptree”</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-messages">Error Messages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-handling">Attribute-Handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes-and-functions-reference"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-node">class Node</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-serialized-trees">Reading serialized trees</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#traversing-trees-via-paths">Traversing trees via paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Attribute-handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-rootnode">class RootNode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-contentmapping">class ContentMapping</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="document-trees">
+<h1>Document-Trees<a class="headerlink" href="#document-trees" title="Link to this heading">#</a></h1>
+<p>Module <a class="reference internal" href="../Reference.html#module-1" title="nodetree"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nodetree</span></code></a> encapsulates the functionality for creating
+and handling document trees and, in particular syntax-trees generated by
+a parser. This includes serialization and deserialization of node-trees,
+navigating and searching node-trees as well as annotating node-trees
+with attributes and error messages.</p>
+<section id="node-objects">
+<span id="id1"></span><h2>Node-objects<a class="headerlink" href="#node-objects" title="Link to this heading">#</a></h2>
+<p>Syntax trees are composed of Node-objects which are linked
+uni-directionally from parent to children. Nodes can contain either
+child-nodes, in which case they are informally called “branch-nodes”, or
+text-strings, in which case they informally called “leaf nodes”, but not
+both at the same time. (There is no mixed content as in XML!)</p>
+<p>Apart from their content, the most important property of a Node-object is its
+<code class="docutils literal notranslate"><span class="pre">name</span></code>. Nodes are initialized with their name and content as
+arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">number_1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'number'</span><span class="p">,</span> <span class="s2">"5"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">number_1</span><span class="o">.</span><span class="n">name</span>
+<span class="go">'number'</span>
+</pre></div>
+</div>
+<p>The Node-object <code class="docutils literal notranslate"><span class="pre">number_1</span></code> now has the tag-name “number” and the content “5”.
+Since the content is a string and not a tuple of child-nodes, the node
+constructed is a leaf-node.</p>
+<p>(By convention, if the tag-name of a node starts with a colon “:”, the node is
+considered “anonymous”. This distinction is helpful when a tree of nodes is
+generated in a parsing process to distinguish nodes that contain important
+pieces of data from nodes that merely contain delimiters or structural
+information.)</p>
+<p>Several nodes can be connected to a tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number_2</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'number'</span><span class="p">,</span> <span class="s2">"4"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">addition</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'add'</span><span class="p">,</span> <span class="p">(</span><span class="n">number_1</span><span class="p">,</span> <span class="n">number_2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Trees spanned by a node can conveniently be serialized as S-expressions
+(well-known from the computer languages “lisp” and “scheme”):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addition</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(add (number "5") (number "4"))</span>
+</pre></div>
+</div>
+<p>It is also possible to serialize nodes as XML-snippet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addition</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+<span class="go">&lt;add&gt;</span>
+<span class="go">  &lt;number&gt;5&lt;/number&gt;</span>
+<span class="go">  &lt;number&gt;4&lt;/number&gt;</span>
+<span class="go">&lt;/add&gt;</span>
+</pre></div>
+</div>
+<p>or as indented tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">addition</span><span class="o">.</span><span class="n">as_tree</span><span class="p">())</span>
+<span class="go">add</span>
+<span class="go">  number "5"</span>
+<span class="go">  number "4"</span>
+</pre></div>
+</div>
+<p>or as JSON-data (see further below). Trees can also be deserialized from any of
+these formats with the exception of the indented tree (see below).</p>
+<p>In order to test whether a Node is leaf-node one can check for the absence of
+children:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'word'</span><span class="p">,</span> <span class="s1">'Palace'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span>
+</pre></div>
+</div>
+<p>The data of a node can be queried by reading the result-property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">result</span>
+<span class="go">'Palace'</span>
+</pre></div>
+</div>
+<p>The <cite>result</cite> is always a string or a tuple of Nodes, even if the
+node-object has been initialized with a single node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'phrase'</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="o">.</span><span class="n">result</span>
+<span class="go">(Node('word', 'Palace'),)</span>
+</pre></div>
+</div>
+<p>The <cite>result</cite>-property can be assigned to, in order to change the data of a
+node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="s1">'word'</span><span class="p">,</span> <span class="s1">'Buckingham'</span><span class="p">),</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'blank'</span><span class="p">,</span> <span class="s1">' '</span><span class="p">),</span> <span class="n">node</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(phrase (word "Buckingham") (blank " ") (word "Palace"))</span>
+</pre></div>
+</div>
+<p>Content-equality of Nodes must be tested with the <cite>equals()</cite>-method. The
+equality operator <cite>==</cite> tests merely for the identity of the node-object,
+not for the equality of the content of two different node-objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'dollars'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'dollars'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">==</span> <span class="n">n2</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>An empty node is always a leaf-node, that is, if initialized with an empty
+tuple, the node’s result will actually be the empty string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">empty</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'void'</span><span class="p">,</span> <span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">empty</span><span class="o">.</span><span class="n">result</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">empty</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="s1">'void'</span><span class="p">,</span> <span class="s1">''</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Next to the <cite>result</cite>-property, a node’s content can be queried with
+either its <cite>children</cite>-property or its <cite>content</cite>-property. The former
+yields the tuple of child-nodes. The latter yields the string-content of
+the node, which in the case of a “branch-node” is the (recursively
+generated) concatenated string-content of all of its children:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">content</span>
+<span class="go">'Palace'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">children</span>
+<span class="go">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="o">.</span><span class="n">content</span>
+<span class="go">'Buckingham Palace'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="o">.</span><span class="n">children</span>
+<span class="go">(Node('word', 'Buckingham'), Node('blank', ' '), Node('word', 'Palace'))</span>
+</pre></div>
+</div>
+<p>Both the <cite>content</cite>-property and the <cite>children</cite>-property are
+read-only-properties. In order to change the data of a node, its
+<cite>result</cite>-property must be assigned to (as shown above).</p>
+<p>Just like HTML- oder XML-tags, nodes can be annotated with attributes.
+Unlike XML and HTML, however, the value of these attributes can be of any
+type, not only strings. The only requirement is that the value is serializable
+as string. Be aware, though of the possible loss of information when
+serializing nodes or converting nodes to ElementTree-elements, if there are
+attributes with non-string values!
+Attributes are stored in an ordered dictionary that maps string identifiers,
+i.e. the attribute name, to the content of the attribute. This dictionary
+can be accessed via the <cite>attr</cite>-property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">'price'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'very high'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+<span class="go">&lt;word price="very high"&gt;Palace&lt;/word&gt;</span>
+</pre></div>
+</div>
+<p>When serializing as S-expressions attributes are shown as a nested list marked
+with a “tick”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(word `(price "very high") "Palace")</span>
+</pre></div>
+</div>
+<p>Attributes can be queried via the <cite>has_attr()</cite> and <cite>get_attr()</cite>-methods.
+This is to be preferred over accessing the <cite>attr</cite>-property for querying,
+because the attribute dictionary is created lazily on the first access
+of the <cite>attr</cite>-property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">has_attr</span><span class="p">(</span><span class="s1">'price'</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s1">'price'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+<span class="go">'very high'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="s1">'price'</span><span class="p">,</span> <span class="s1">'unknown'</span><span class="p">)</span>
+<span class="go">'unknown'</span>
+</pre></div>
+</div>
+<p>If called with no parameters or an empty string as attribute name, <cite>has_attr()</cite>
+returns True, if at least one attribute is present:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="o">.</span><span class="n">has_attr</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Attributes can be deleted like dictionary entries:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">'price'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">has_attr</span><span class="p">(</span><span class="s1">'price'</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Node-objects contain a special “write once, read afterwards”-property named
+<cite>pos</cite> that is meant to capture the source code position of the content
+represented by the Node. Usually, the <cite>pos</cite> values are initialized with the
+corresponding source code location by the parser.</p>
+<p>The main purpose of keeping source-code locations in the node-objects is
+to equip the messages of errors that are detected in later processing
+stages with source code locations. In later processing stages the tree
+may already have been reshaped and its string-content may have been
+changed, say, by normalizing whitespace or dropping delimiters.</p>
+<p>Before the <cite>pos</cite>-field can be read, it must have been initialized with the
+<cite>with_pos</cite>-method, which recursively initializes the <cite>pos</cite>-field of the child
+nodes according to the offset of the string values from the main field:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span><span class="p">;</span> <span class="n">essentials</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">essentials</span><span class="o">.</span><span class="n">with_pos</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">essentials</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+<span class="go">&lt;phrase line="1" col="1"&gt;</span>
+<span class="go">  &lt;word line="1" col="1"&gt;Buckingham&lt;/word&gt;</span>
+<span class="go">  &lt;blank line="1" col="11"&gt; &lt;/blank&gt;</span>
+<span class="go">  &lt;word line="1" col="12"&gt;Palace&lt;/word&gt;</span>
+<span class="go">&lt;/phrase&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">essentials</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">essentials</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Palace'</span><span class="p">)</span>
+<span class="go">(11, 11)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">essentials</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">child</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">essentials</span><span class="o">.</span><span class="n">children</span>
+<span class="gp">... </span>                          <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'blank'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">essentials</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">essentials</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+<span class="go">&lt;phrase line="1" col="1"&gt;</span>
+<span class="go">  &lt;word line="1" col="1"&gt;Buckingham&lt;/word&gt;</span>
+<span class="go">  &lt;word line="1" col="12"&gt;Palace&lt;/word&gt;</span>
+<span class="go">&lt;/phrase&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">essentials</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">essentials</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Palace'</span><span class="p">)</span>
+<span class="go">(11, 10)</span>
+</pre></div>
+</div>
+</section>
+<section id="serialization">
+<span id="id2"></span><h2>Serialization<a class="headerlink" href="#serialization" title="Link to this heading">#</a></h2>
+<p>Syntax trees can be serialized as S-expressions, XML, JSON and indented text.
+As a special cases of S-expressions and JSON also <a class="reference external" href="https://okmij.org/ftp/Scheme/SXML.html">SXML</a> and <a class="reference external" href="https://github.com/syntax-tree/unist">unist</a>
+are supported. Module ‘nodetree’ also contains a few simple parsers
+(<a class="reference internal" href="../Reference.html#nodetree.parse_sxpr" title="nodetree.parse_sxpr"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_sxpr()</span></code></a>, <a class="reference internal" href="../Reference.html#nodetree.parse_sxml" title="nodetree.parse_sxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_sxml()</span></code></a>,
+<a class="reference internal" href="../Reference.html#nodetree.parse_xml" title="nodetree.parse_xml"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_xml()</span></code></a>, <a class="reference internal" href="../Reference.html#nodetree.parse_json" title="nodetree.parse_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_json()</span></code></a>)
+to convert XML-snippets, S-expressions or
+json objects into trees composed of Node-objects.</p>
+<p>In order to make it easier to parameterize serialization, the Node-class also
+defines a generic <a class="reference internal" href="../Reference.html#nodetree.Node.serialize" title="nodetree.Node.serialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">serialize()</span></code></a>-method next to the more
+specialized <a class="reference internal" href="../Reference.html#nodetree.Node.as_sxpr" title="nodetree.Node.as_sxpr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_sxpr()</span></code></a>-,
+<a class="reference internal" href="../Reference.html#nodetree.Node.as_json" title="nodetree.Node.as_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_json()</span></code></a>- and
+<a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>-methods:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'(sentence (word "This") (blank " ") (word "is") (blank " ") '</span>
+<span class="gp">... </span>     <span class="s1">'(phrase (word "Buckingham") (blank " ") (word "Palace")))'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span> <span class="o">=</span> <span class="n">parse_sxpr</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">'indented'</span><span class="p">))</span>
+<span class="go">sentence</span>
+<span class="go">  word "This"</span>
+<span class="go">  blank " "</span>
+<span class="go">  word "is"</span>
+<span class="go">  blank " "</span>
+<span class="go">  phrase</span>
+<span class="go">    word "Buckingham"</span>
+<span class="go">    blank " "</span>
+<span class="go">    word "Palace"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sxpr</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">'sxpr'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">round_trip</span> <span class="o">=</span> <span class="n">parse_sxpr</span><span class="p">(</span><span class="n">sxpr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">sentence</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">round_trip</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When serializing as XML, there will be no mixed-content and, likewise, no empty
+tags per default, because these do not exist in DHParser’s data model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+<span class="go">&lt;sentence&gt;</span>
+<span class="go">  &lt;word&gt;This&lt;/word&gt;</span>
+<span class="go">  &lt;blank&gt; &lt;/blank&gt;</span>
+<span class="go">  &lt;word&gt;is&lt;/word&gt;</span>
+<span class="go">  &lt;blank&gt; &lt;/blank&gt;</span>
+<span class="go">  &lt;phrase&gt;</span>
+<span class="go">    &lt;word&gt;Buckingham&lt;/word&gt;</span>
+<span class="go">    &lt;blank&gt; &lt;/blank&gt;</span>
+<span class="go">    &lt;word&gt;Palace&lt;/word&gt;</span>
+<span class="go">  &lt;/phrase&gt;</span>
+<span class="go">&lt;/sentence&gt;</span>
+</pre></div>
+</div>
+<p>However, mixed-content can be simulated with <cite>string_tags</cite>-parameter of the
+<a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>-method.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'sentence'</span><span class="p">},</span> <span class="n">string_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'word'</span><span class="p">,</span> <span class="s1">'blank'</span><span class="p">}))</span>
+<span class="go">&lt;sentence&gt;This is &lt;phrase&gt;Buckingham Palace&lt;/phrase&gt;&lt;/sentence&gt;</span>
+</pre></div>
+</div>
+<p>The <cite>inline_tags</cite>-parameter ensures that all listed tags as well as
+any tag containd in a listed tag will be printed on a single line.
+This is helpful when opening the XML-serialization in an internet-browser
+in order to avoid spurious blanks when a line-break occurs in the HTML/XML-source.</p>
+<p>Finally, empty tags that do not have a closing tag (e.g. &lt;br /&gt;) can be
+declared as such with the <cite>empty_tags</cite>-parameter.</p>
+<p>Note that using <cite>string_tags</cite> can lead to a loss of information. A loss of
+information is inevitable if, like in the example above, more than one tag is
+listed in the <cite>string_tags</cite>-set passed to the
+<a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>-method.</p>
+<p>When deserializing an XML-string yields, the text-parts within elements
+with mixed-content will be assigned to nodes of their own with the default
+name <cite>:Text</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="s1">'&lt;sentence&gt;This is &lt;phrase&gt;Buckingham Palace&lt;/phrase&gt;&lt;/sentence&gt;'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">'indented'</span><span class="p">))</span>
+<span class="go">sentence</span>
+<span class="go">  :Text "This is "</span>
+<span class="go">  phrase "Buckingham Palace"</span>
+</pre></div>
+</div>
+<p>The name these text-nodes can be configured with the <cite>string_tag</cite>-parameter
+of the <a class="reference internal" href="../Reference.html#nodetree.parse_xml" title="nodetree.parse_xml"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_xml()</span></code></a>-function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="s1">'&lt;sentence&gt;This is &lt;phrase&gt;Buckingham Palace&lt;/phrase&gt;&lt;/sentence&gt;'</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="n">string_tag</span><span class="o">=</span><span class="s1">'MIXED'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">'indented'</span><span class="p">))</span>
+<span class="go">sentence</span>
+<span class="go">  MIXED "This is "</span>
+<span class="go">  phrase "Buckingham Palace"</span>
+</pre></div>
+</div>
+<section id="xml-reflow">
+<span id="xml-formatting"></span><h3>XML-reflow<a class="headerlink" href="#xml-reflow" title="Link to this heading">#</a></h3>
+<p>A notorious problem when working with XML is the propper handling
+of whitespace. It ever so often happens that when an XML-document
+is rewrapped or reformatted that whitespace is either added or
+removed in places where this can change the meaning of the data.
+For example, when reformatting the snippet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+  <span class="n">King</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">Charles</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="n">was</span> <span class="n">crowned</span> <span class="n">by</span> <span class="n">the</span> <span class="n">Archbishop</span>
+  <span class="n">of</span> <span class="n">Cantabury</span>
+<span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>it may happen (depending on the tool used) that a whitespace gets
+lost:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+  <span class="n">King</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">Charles</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span><span class="n">was</span> <span class="n">crowned</span>
+  <span class="n">by</span> <span class="n">the</span> <span class="n">Archbishop</span> <span class="n">of</span> <span class="n">Cantabury</span>
+<span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Here, the whitespace between “Charles” and “was” has been
+erroneously deleted. Or that a whitespace is added, where
+it should not:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+  <span class="n">King</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">Charles</span>
+  <span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span> <span class="n">was</span> <span class="n">crowned</span>
+  <span class="n">by</span> <span class="n">the</span> <span class="n">Archbishop</span>
+  <span class="n">of</span> <span class="n">Cantabury</span>
+<span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This time round the data markup up by name encompasses also
+a line-break and a few blanks, an addition that can mess up
+algorithms that rely on precise data.</p>
+<p>Surely, there is the
+<a class="reference external" href="https://www.w3.org/TR/REC-xml/#sec-white-space">xml:space</a>-Attribute.
+But this is often forgotten by the people encoding data in XML
+and sometimes also by the programmers that develop XML-tools.
+Because of this, DHParser offers the <cite>inline_tags</cite>-parameter
+(which can be passed to the xml-serialization functions and also
+be set as an attribute of the :py:class`~nodetree.RootNode`-class).</p>
+<p>The main problem with the <cite>xml:space</cite>-attribute consists in the
+fact that it only either allows that all whitespace is preserved
+literally (xml:space=”preserve”) or that whitespace may be
+added or removed at liberty to format the XML-document
+(xml:space=”default”). These two states are not sufficiently
+finegrained to allow the reflow texts without distorting the
+text data.</p>
+<p>Non-distorting reflow requires whitespace inside (but not at the fringes)
+of particular text-containing elements, like for exmple <cite>&lt;p&gt;</cite>, is readily
+expandable to an arbitrarily long sequence of whitespace characters
+(blanks, tabs and lind-feeds)
+and likewise compressible to a single blank without causing harm to
+the data.</p>
+<p>As you may notice this is true for paragraphs of prose-text but not
+for poems. But this only means that not all text-data is reflowable and
+that reflow should only be applied to text-data where reflow makes sense.</p>
+<p>This constraint for data-preserving reflow assumes that whitespace can
+always be substituted by other (larger or smaller) whitespace, but must
+not be added or removed. If this rule is
+strictly obeyed then any form of the data (i.e. formatting to a particular
+column-number) can always be reconstructed and will in fact yield identical
+results for the same reflow-column and the same indentation (which is two
+blanks by default).</p>
+<p>DHParser’s reflow-algorithm can be triggered by assigning a column-number to the
+<cite>reflow_col</cite> of the <a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>-method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s1">'&lt;p&gt;King &lt;name&gt;Charles&lt;/name&gt; was crowned by the Archbishop of Cantabury&lt;/p&gt;'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reflow</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'p'</span><span class="p">},</span> <span class="n">reflow_col</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">reflow</span><span class="p">)</span>
+<span class="go">&lt;p&gt;King &lt;name&gt;Charles&lt;/name&gt; was</span>
+<span class="go">  crowned by the Archbishop of</span>
+<span class="go">  Cantabury&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p>No blanks are introduced for the sake of formatting after the
+opening <cite>&lt;p&gt;</cite>-tag or before the closing <cite>&lt;/p&gt;</cite>-tag. The same, although this is not
+visible in the example above, is also true for all tags contained inside the <cite>&lt;p&gt;</cite>-tag.
+(Contained tags inherit the inline-property!)</p>
+<p>It should also be noted that assigning a value to the reflow-parameter changes the
+meaning of the <cite>inline_tags</cite>-parameter in a subtle way - and likewise the meaning
+of the <cite>xml:space</cite>-attribute if that is used. Without reflow, the
+<cite>inline-tags</cite>-parameter marks tags, the content of which is strictly preserved
+when serializing. (Unless, the data itself contains a line-break it will be
+written entirely on a single line, thus the name “inline”.) However, if the
+reflow parameter receives a value different from 0, the content of the
+“inline-tags” and their descendants is not serialized on a single line any more
+but allowed to reflow according to the above rule.</p>
+<p>Also, the data can always be “normalized” by reformatting it to a particular
+column. A special case of this consists in reducing it to one and the same
+one-line-form, by replacing all line-feeds inside inline-tags by blanks and
+any sequence of blanks by a single blank.
+(Line-feeds can still be preserved if necessary by hard-codeing them with
+tags like <cite>&lt;br/&gt;</cite>) This can be achieved by calling the special
+function <a class="reference internal" href="../Reference.html#nodetree.reflow_as_oneliner" title="nodetree.reflow_as_oneliner"><code class="xref py py-func docutils literal notranslate"><span class="pre">reflow_as_oneliner()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">reflow_as_oneliner</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">reflow</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="n">tree</span><span class="o">.</span><span class="n">name</span><span class="p">}))</span>
+<span class="go">&lt;p&gt;King &lt;name&gt;Charles&lt;/name&gt; was</span>
+<span class="go">  crowned by the Archbishop of</span>
+<span class="go">  Cantabury&lt;/p&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reflow_as_oneliner</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="n">tree</span><span class="o">.</span><span class="n">name</span><span class="p">}))</span>
+<span class="go">&lt;p&gt;King &lt;name&gt;Charles&lt;/name&gt; was crowned by the Archbishop of Cantabury&lt;/p&gt;</span>
+</pre></div>
+</div>
+<p>Note that the call <cite>tree.as_xml(inline_tags={tree.name})</cite> that treats all tags
+from the root of the tree onward as inline-tags and does not apply reflow
+yields a “neutral” serialization in the sense that no formatting is applied anywhere.</p>
+<p>DHParser also provides a command line-tool to reflow xml-files, conveniently
+named “xml_reflow”. It can be called with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ xml_reflow --column 80 FILENAME.xml
+</pre></div>
+</div>
+<p>An alternative to reflowing the content of XML-files manually in this way,
+is to use a text-editor that can reflow (and properly indent) lines with
+excess length. An advantage ist that this works also with XML-files that
+contain areas where the data is not reflowable and must be literally preserved.</p>
+</section>
+</section>
+<section id="elementtree-exchange">
+<h2>ElementTree-Exchange<a class="headerlink" href="#elementtree-exchange" title="Link to this heading">#</a></h2>
+<p>Although DHParser offers rich support for tree-transformation, the wish
+may arise to use standard XML-tools for tree-transformation as an
+alternative or supplement to the tools DHParser offers. One way to do
+so, would be to serialize the tree of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>-objects, then use the XML-tools and,
+possibly, to deserialize the transformed XML again.</p>
+<p>A more efficient method, however, is to utilize any of the various
+Python-libraries for XML. In order to make this as easy as possible trees of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>-objects can be converted to <a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html">ElementTree</a>-objects
+either from the python standard library or from the <a class="reference external" href="https://lxml.de/">lxml</a>-library:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>  <span class="c1"># for lxml write: from lxml import etree as ET</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">et</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">as_etree</span><span class="p">(</span><span class="n">ET</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ET</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+<span class="go">&lt;sentence&gt;&lt;word&gt;This&lt;/word&gt;&lt;blank&gt; &lt;/blank&gt;&lt;word&gt;is&lt;/word&gt;&lt;blank&gt; &lt;/blank&gt;&lt;phrase&gt;&lt;word&gt;Buckingham&lt;/word&gt;&lt;blank&gt; &lt;/blank&gt;&lt;word&gt;Palace&lt;/word&gt;&lt;/phrase&gt;&lt;/sentence&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">from_etree</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">sentence</span><span class="p">))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>The first parameter of <a class="reference internal" href="../Reference.html#nodetree.Node.as_etree" title="nodetree.Node.as_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_etree()</span></code></a> is the
+ElementTree-library to be used. If omitted, the standard-library-ElementTree is
+used.</p>
+<p>Like the <a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>-method, the
+<a class="reference internal" href="../Reference.html#nodetree.Node.as_etree" title="nodetree.Node.as_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_etree()</span></code></a> and <a class="reference internal" href="../Reference.html#nodetree.Node.from_etree" title="nodetree.Node.from_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_etree()</span></code></a>
+can be parameterized in order to support mixed-content and empty-tags:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">et</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">as_etree</span><span class="p">(</span><span class="n">ET</span><span class="p">,</span> <span class="n">string_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'word'</span><span class="p">,</span> <span class="s1">'blank'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ET</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+<span class="go">&lt;sentence&gt;This is &lt;phrase&gt;Buckingham Palace&lt;/phrase&gt;&lt;/sentence&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="tree-traversal">
+<span id="paths"></span><h2>Tree-Traversal<a class="headerlink" href="#tree-traversal" title="Link to this heading">#</a></h2>
+<p>Transforming syntax trees is usually done by traversing the complete
+tree and applying specific transformation functions on each node.
+Modules “transform” and “compile” provide high-level interfaces and
+scaffolding classes for the traversal and transformation of
+syntax-trees.</p>
+<p>Module <cite>nodetree</cite> does not provide any functions for transforming trees,
+but it provides low-level functions for navigating trees. These functions
+cover three different purposes:</p>
+<ol class="arabic simple">
+<li><p>Downtree-navigation within the subtree spanned by a particular node.</p></li>
+<li><p>Uptree- and horizontal navigation to the neighborhood (“siblings”) ancestry
+of a given node.</p></li>
+<li><p>Navigation by looking at the string-representation of the tree.</p></li>
+</ol>
+<section id="navigating-downtree">
+<h3>Navigating “downtree”<a class="headerlink" href="#navigating-downtree" title="Link to this heading">#</a></h3>
+<p>There are a number of useful functions to help navigating a tree spanned by a
+node and finding particular nodes within in a tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">printw</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">'word'</span><span class="p">)))</span>
+<span class="go">[Node('word', 'This'), Node('word', 'is'), Node('word', 'Buckingham'),</span>
+<span class="go"> Node('word', 'Palace')]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">node</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span> <span class="o">==</span> <span class="s1">' '</span><span class="p">))</span>
+<span class="go">[Node('blank', ' '), Node('blank', ' '), Node('blank', ' ')]</span>
+</pre></div>
+</div>
+<p>The pick functions always picks the first node fulfilling the criterion:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span><span class="o">.</span><span class="n">pick</span><span class="p">(</span><span class="s1">'word'</span><span class="p">)</span>
+<span class="go">Node('word', 'This')</span>
+</pre></div>
+</div>
+<p>Or, reversing the direction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">last_match</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">pick</span><span class="p">(</span><span class="s1">'word'</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">last_match</span>
+<span class="go">Node('word', 'Palace')</span>
+</pre></div>
+</div>
+<p>While nodes contain references to their children, a node does not
+contain a references to its parent. The method
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">pick_pach()</span></code> (described below) can be used to pick
+the complete list of ancestors leading up to and including a particular
+node. As a last resort (because it is slow) the node’s parent can be
+found by the <cite>find_parent</cite>-function which must be executed on any
+ancestor of the node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">find_parent</span><span class="p">(</span><span class="n">last_match</span><span class="p">))</span>
+<span class="go">Node('phrase', (Node('word', 'Buckingham'), Node('blank', ' '),</span>
+<span class="go"> Node('word', 'Palace')))</span>
+</pre></div>
+</div>
+<p>Sometimes, one only wants to select or pick particular children of a
+node. Apart from accessing these via <cite>node.children</cite>, there is a
+tuple-like access to the immediate children via indices and slices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">Node('word', 'This')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">sentence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">Node('phrase', (Node('word', 'Buckingham'), Node('blank', ' '),</span>
+<span class="go"> Node('word', 'Palace')))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+<span class="go">(Node('word', 'This'), Node('blank', ' '), Node('word', 'is'))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">'blank'</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="s1">'word'</span><span class="p">)</span>
+<span class="go">(0, 2)</span>
+</pre></div>
+</div>
+<p>as well as a dictionary-like access, with the difference that a “key” may occur
+several times:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span><span class="p">[</span><span class="s1">'word'</span><span class="p">]</span>
+<span class="go">(Node('word', 'This'), Node('word', 'is'))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">sentence</span><span class="p">[</span><span class="s1">'phrase'</span><span class="p">])</span>
+<span class="go">Node('phrase', (Node('word', 'Buckingham'), Node('blank', ' '),</span>
+<span class="go"> Node('word', 'Palace')))</span>
+</pre></div>
+</div>
+<p>Be aware that always all matching values will be returned and that the return
+type can accordingly be either a tuple of Nodes or a single Node! An IndexError
+is raised in case the “key” does not exist or an index is out of range.</p>
+<p>It is also possible to delete children conveniently with Python’s
+<cite>del</cite>-operator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">s_copy</span><span class="p">[</span><span class="s1">'blank'</span><span class="p">];</span>  <span class="nb">print</span><span class="p">(</span><span class="n">s_copy</span><span class="p">)</span>
+<span class="go">ThisisBuckingham Palace</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">s_copy</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">];</span> <span class="nb">print</span><span class="p">(</span><span class="n">s_copy</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+<span class="go">(sentence (word "This") (word "is") (phrase (word "Palace")))</span>
+</pre></div>
+</div>
+<p>One can also use the <cite>Node.pick_child()</cite> or <cite>Node.select_children()</cite>-method in
+order to select children with an arbitrary condition:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">tuple</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">select_children</span><span class="p">(</span><span class="k">lambda</span> <span class="n">nd</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'s'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">))</span>
+<span class="go">(Node('word', 'This'), Node('word', 'is'))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">pick_child</span><span class="p">(</span><span class="k">lambda</span> <span class="n">nd</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'i'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>                           <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">Node('phrase', (Node('word', 'Buckingham'), Node('blank', ' '),</span>
+<span class="go"> Node('word', 'Palace')))</span>
+</pre></div>
+</div>
+<p>Often, one is neither interested in selecting form the children of a node, nor
+from the entire subtree, but from a certain “depth-range” of a tree-structure.
+Say, you would like to pick all word’s from the sentence that are not inside a
+phrase and assume at the same time that words may occur in nested structures:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nested</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">nested</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="k">lambda</span> <span class="n">nd</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">content</span> <span class="o">==</span> <span class="s1">'is'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nested</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'word'</span><span class="p">,</span> <span class="n">nested</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nested</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'italic'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nested</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+<span class="go">(Node('word', 'This'), Node('blank', ' '), Node('italic', (Node('word', 'is'))))</span>
+</pre></div>
+</div>
+<p>Now, in order to select all words on the level of the sentence, but excluding
+any sub-phrases, it would not be helpful to use methods based on the selection
+of children (i.e. immediate descendants), because the word nested in an
+‘italic’-Node would be missed. For this purpose the various selection()-methods
+of class node have a <cite>skip_subtree</cite>-parameter which can be used to block
+subtrees from the iterator based on a criteria (which can be a function, a tag
+name or set of tag names and the like):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">tuple</span><span class="p">(</span><span class="n">nested</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">'word'</span><span class="p">,</span> <span class="n">skip_subtree</span><span class="o">=</span><span class="s1">'phrase'</span><span class="p">))</span>
+<span class="go">(Node('word', 'This'), Node('word', 'is'))</span>
+</pre></div>
+</div>
+</section>
+<section id="navigating-uptree">
+<h3>Navigating “uptree”<a class="headerlink" href="#navigating-uptree" title="Link to this heading">#</a></h3>
+<p>Instead of keeping a link within each node to its parent, it is much more
+elegant to keep track of a node’s ancestry by using the lineage or “tree-path”
+which is a simple list of ancestors starting with the root-node and including
+the node itself as its last item. For most search methods such as select() or
+pick(), there exists a pendant that returns this path instead of just the node
+itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">last_path</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">pick_path</span><span class="p">(</span><span class="s1">'word'</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">last_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_match</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">last_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">sentence</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">last_path</span><span class="p">)</span>
+<span class="go">'sentence &lt;- phrase &lt;- word'</span>
+</pre></div>
+</div>
+<p>One can also think of a tree-path as a breadcrumb-trail or, rather,
+ant-trail that “points” to a particular part of text by marking the path
+from the root to the node, the content of which contains this text. This
+node does not need to be a leaf node, but can be any branch-node on the
+way from the root to the leaves of the tree. When analyzing or
+transforming a tree-structured text, it is often helpful to “zoom” in
+and out of a particular part of text (pointed to by a path) or to move
+forward and backward from a particular location (again represented by a
+path).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">next_path()</span></code> and <code class="docutils literal notranslate"><span class="pre">prev_path()</span></code>-functions allow to move one step
+forward or backward from a given path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pointer</span> <span class="o">=</span> <span class="n">prev_path</span><span class="p">(</span><span class="n">last_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">'sentence "This is Buckingham Palace" &lt;- phrase "Buckingham Palace" &lt;- blank " "'</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">prev_path()</span></code> and <code class="docutils literal notranslate"><span class="pre">next_path()</span></code> automatically zoom out by one step, if
+they move past the first or last child of the last but one node in the list:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pointer</span> <span class="o">=</span> <span class="n">prev_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">'sentence "This is Buckingham Palace" &lt;- phrase "Buckingham Palace" &lt;- word "Buckingham"'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">prev_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">),</span> <span class="n">with_content</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">'sentence "This is Buckingham Palace" &lt;- blank " "'</span>
+</pre></div>
+</div>
+<p>Thus:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">next_path</span><span class="p">(</span><span class="n">prev_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">))</span> <span class="o">==</span> <span class="n">pointer</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pointer</span> <span class="o">=</span> <span class="n">prev_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">next_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">),</span> <span class="n">with_content</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">'sentence "This is Buckingham Palace" &lt;- phrase "Buckingham Palace"'</span>
+</pre></div>
+</div>
+<p>The reason for this behavior is that <code class="docutils literal notranslate"><span class="pre">prev_path()</span></code> and <code class="docutils literal notranslate"><span class="pre">next_path()</span></code>
+try to move to the path which contains the string content preceding or
+succeeding that of the given path. Therefore, these functions move to
+the next sibling on the same branch, rather traversing the complete tree
+like the <code class="docutils literal notranslate"><span class="pre">select()</span></code> and <code class="docutils literal notranslate"><span class="pre">select_path()</span></code>- methods of the Node-class.
+However, when moving past the first or last sibling, it is not clear
+what the next node on the same level should be. To keep it easy, the
+function “zooms out” and returns the next sibling of the parent.</p>
+<p>It is, of course, possible to zoom back into a path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">zoom_into_path</span><span class="p">(</span><span class="n">next_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">),</span> <span class="n">FIRST_CHILD</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>               <span class="n">with_content</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">'sentence "This is Buckingham Palace" &lt;- phrase "Buckingham Palace" &lt;- word "Buckingham"'</span>
+</pre></div>
+</div>
+<p>Often it is preferable to move through the leaf-nodes and their paths right
+away. Functions like <code class="docutils literal notranslate"><span class="pre">next_leaf_path()</span></code> and <code class="docutils literal notranslate"><span class="pre">prev_leaf_path()</span></code> provide
+syntactic sugar for this case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pointer</span> <span class="o">=</span> <span class="n">next_leaf_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">'sentence "This is Buckingham Palace" &lt;- phrase "Buckingham Palace" &lt;- word "Buckingham"'</span>
+</pre></div>
+</div>
+<p>It is also possible to inspect just the string content surrounding a path,
+rather than its structural environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ensuing_str</span><span class="p">(</span><span class="n">pointer</span><span class="p">)</span>
+<span class="go">' Palace'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">foregoing_str</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">' '</span><span class="p">,</span> <span class="s2">"Blank expected!"</span>
+</pre></div>
+</div>
+<p>It is also possible to systematically iterate through the paths forward or
+backward - just like the <cite>node.select_path()</cite>-method, but starting from an
+arbitrary path, instead of the one end or the other end of the tree rooted in
+<cite>node</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">parse_sxpr</span><span class="p">(</span><span class="s1">'(A (B 1) (C (D (E 2) (F 3))) (G 4) (H (I 5) (J 6)) (K 7))'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pointer</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">pick_path</span><span class="p">(</span><span class="s1">'G'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">([</span><span class="n">pp_path</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">select_path</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">ANY_PATH</span><span class="p">,</span> <span class="n">include_root</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span>
+<span class="go">['A &lt;- G "4"', 'A &lt;- H "56"', 'A &lt;- H &lt;- I "5"', 'A &lt;- H &lt;- J "6"',</span>
+<span class="go"> 'A &lt;- K "7"', 'A "1234567"']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">([</span><span class="n">pp_path</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">select_path</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="n">pointer</span><span class="p">,</span> <span class="n">ANY_PATH</span><span class="p">,</span> <span class="n">include_root</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span>
+<span class="go">['A &lt;- G "4"', 'A &lt;- C "23"', 'A &lt;- C &lt;- D "23"', 'A &lt;- C &lt;- D &lt;- F "3"',</span>
+<span class="go"> 'A &lt;- C &lt;- D &lt;- E "2"', 'A &lt;- B "1"', 'A "1234567"']</span>
+</pre></div>
+</div>
+<p>Another important difference, besides the starting point, is that the
+<cite>select()</cite>-generators of the <cite>nodetree</cite>-module traverse the tree post-order
+(or “depth first”), while the respective methods of the Node-class traverse the
+tree pre-order. See the difference:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">pp_path</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>     <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">select_path</span><span class="p">(</span><span class="n">ANY_PATH</span><span class="p">,</span> <span class="n">include_root</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">'A &lt;- G "4"'</span><span class="p">):]</span>
+<span class="go">['A &lt;- G "4"', 'A &lt;- H "56"', 'A &lt;- H &lt;- I "5"', 'A &lt;- H &lt;- J "6"', 'A &lt;- K "7"']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">pp_path</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">with_content</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>     <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">select_path</span><span class="p">(</span><span class="n">ANY_PATH</span><span class="p">,</span> <span class="n">include_root</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">'A &lt;- G "4"'</span><span class="p">):])</span>
+<span class="go">['A &lt;- G "4"', 'A &lt;- C "23"', 'A &lt;- C &lt;- D "23"', 'A &lt;- C &lt;- D &lt;- F "3"',</span>
+<span class="go"> 'A &lt;- C &lt;- D &lt;- E "2"', 'A &lt;- B "1"']</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="error-messages">
+<h2>Error Messages<a class="headerlink" href="#error-messages" title="Link to this heading">#</a></h2>
+<p>Although errors are typically located at a particular point or range of the
+source code, DHParser treats them as global properties of the syntax tree
+(albeit with a location), rather than attaching them to particular nodes. This
+has two advantages:</p>
+<ol class="arabic simple">
+<li><p>When restructuring the tree and removing or adding nodes during the
+abstract-syntax-tree-transformation and possibly further
+tree-transformations, error messages do not accidentally get lost.</p></li>
+<li><p>It is not necessary to add another slot to the Node class for keeping an
+error list which most of the time would remain empty, anyway.</p></li>
+</ol>
+<p>In order to track errors and other global properties, Module <a class="reference internal" href="../Reference.html#module-1" title="nodetree"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nodetree</span></code></a>
+provides the <a class="reference internal" href="../Reference.html#nodetree.RootNode" title="nodetree.RootNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootNode</span></code></a>-class. The root-object of
+a syntax-tree produced by parsing is of type <a class="reference internal" href="../Reference.html#nodetree.RootNode" title="nodetree.RootNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootNode</span></code></a>.
+If a root node needs to be created manually, it
+is necessary to create a plain <a class="reference internal" href="../Reference.html#nodetree.Node" title="nodetree.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>-object and either
+pass it to <a class="reference internal" href="../Reference.html#nodetree.RootNode" title="nodetree.RootNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootNode</span></code></a> as parameter on instantiation or, later,
+to the <code class="xref py py-meth docutils literal notranslate"><span class="pre">swallow()</span></code>-method of the RootNode-object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">document</span> <span class="o">=</span> <span class="n">RootNode</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">sentence</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The second parameter is normally the source code. In this example we
+simply use the string representation of the syntax-tree originating in
+<cite>sentence</cite>. Before any errors can be added the source-position fields of
+the nodes of the tree must have be been initialized. Usually, this is
+done by the parser. Since the syntax-tree in this example does not stem
+from a parsing-process, we have to do it manually:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">with_pos</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s first add some artificial errors in form of illegal characters as
+they may happen during optical character recognition or a poor transcription
+of a printed text:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">'word'</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">word</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">content</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'*'</span> <span class="o">+</span> <span class="n">word</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="go">T*his i*s B*uckingham P*alace</span>
+</pre></div>
+</div>
+<p>Now, let’s mark all <code class="docutils literal notranslate"><span class="pre">word</span></code>-nodes that contain non-letter characters with an
+error-message:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">([</span><span class="n">document</span><span class="o">.</span><span class="n">new_error</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"word contains illegal characters"</span><span class="p">)</span>
+<span class="gp">... </span>     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">'word'</span><span class="p">)</span>
+<span class="gp">... </span>         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\w*'</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">])</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">errors_sorted</span><span class="p">:</span>  <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+<span class="go">1:1: Error (1000): word contains illegal characters</span>
+<span class="go">1:6: Error (1000): word contains illegal characters</span>
+<span class="go">1:9: Error (1000): word contains illegal characters</span>
+<span class="go">1:20: Error (1000): word contains illegal characters</span>
+</pre></div>
+</div>
+<p>The format of the string representation of Error-objects resembles that of
+compilers and is understood by many Text-Editors which mark the errors in the
+source code.</p>
+</section>
+<section id="attribute-handling">
+<h2>Attribute-Handling<a class="headerlink" href="#attribute-handling" title="Link to this heading">#</a></h2>
+<p>While the “Node.attr”-field can be used to store data of any kind, it
+will often just serve to store XML-attributes, the value of which is
+always a string. The <code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.nodetree</span></code>-module provides a
+mini-API to simplify typical use cases of XML-attributes.</p>
+<p>One important use case of attributes is to add or remove css-classes to the
+“class”-attribute. The “class”-attribute understood as containing a set of
+whitespace delimited strings. Module “nodetree” provides a few functions to
+simplify class-handling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'p'</span><span class="p">,</span> <span class="s1">'veni vidi vici'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'smallprint'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]</span>
+<span class="go">'smallprint'</span>
+</pre></div>
+</div>
+<p>Although the class-attribute is filled with a sequence of strings, it should
+behave like a set of strings. For example, one and the same class name should
+not appear twice in the class attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'smallprint justified'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">paragraph</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]</span>
+<span class="go">'smallprint justified'</span>
+</pre></div>
+</div>
+<p>Plus, the order of the class strings does not matter, when checking for
+elements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">has_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'justified smallprint'</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">remove_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'smallprint'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">has_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'smallprint'</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">has_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'justified smallprint'</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">has_class</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="s1">'justified'</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>The same logic of treating blank separated sequences of strings as sets
+can also be applied to other attributes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">car</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s1">'car'</span><span class="p">,</span> <span class="s1">'Porsche'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_token_to_attr</span><span class="p">(</span><span class="n">car</span><span class="p">,</span> <span class="s2">"Linda Peter"</span><span class="p">,</span> <span class="s1">'owner'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">car</span><span class="o">.</span><span class="n">attr</span><span class="p">[</span><span class="s1">'owner'</span><span class="p">]</span>
+<span class="go">'Linda Peter'</span>
+</pre></div>
+</div>
+<p>Or, more generally, to strings containing whitespace-separated substrings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_token</span><span class="p">(</span><span class="s1">'Linda Paula'</span><span class="p">,</span> <span class="s1">'Peter Paula'</span><span class="p">)</span>
+<span class="go">'Linda Paula Peter'</span>
+</pre></div>
+</div>
+</section>
+<section id="classes-and-functions-reference">
+<h2><em>Classes and Functions-Reference</em><a class="headerlink" href="#classes-and-functions-reference" title="Link to this heading">#</a></h2>
+<p>The full documentation of all classes and functions can be found in module
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.nodetree</span></code>. The following table of contents lists the most
+important of these:</p>
+<section id="class-node">
+<h3>class Node<a class="headerlink" href="#class-node" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node" title="nodetree.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>: the central building-block of a node-tree</p>
+<ul>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.result" title="nodetree.Node.result"><code class="xref py py-attr docutils literal notranslate"><span class="pre">result</span></code></a>:
+either the child nodes or the node’s string content</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.children" title="nodetree.Node.children"><code class="xref py py-attr docutils literal notranslate"><span class="pre">children</span></code></a>:
+the node’s immediate children or an empty tuple</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.content" title="nodetree.Node.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a>:
+the concatenated string content of all descendants</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code>:
+the node’s name</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.attr" title="nodetree.Node.attr"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attr</span></code></a>:
+the dictionary of the node’s attributes</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.pos" title="nodetree.Node.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pos</span></code></a>:
+the source-code position of this node, in case the node stems from
+a parsing process</p>
+<p><strong>Navigation</strong></p>
+</li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.select" title="nodetree.Node.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a>:
+Selects nodes from the tree of descendants.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.pick" title="nodetree.Node.pick"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pick()</span></code></a>:
+Picks a particular node from the tree of descendants.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.locate" title="nodetree.Node.locate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">locate()</span></code></a>:
+Finds the leaf-node covering a particular location of string
+content of the tree originating in this node.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.select_path" title="nodetree.Node.select_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select_path()</span></code></a>:
+Selects <a class="reference internal" href="#paths"><span class="std std-ref">paths</span></a> from the tree of descendants.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.pick_path" title="nodetree.Node.pick_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pick_path()</span></code></a>:
+Picks a particular path from the tree of descendants.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.locate_path" title="nodetree.Node.locate_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">locate_path()</span></code></a>:
+Finds the path of the leaf-node covering a particular location
+of string content of the tree originating in this node.</p>
+<p><strong>Serialization</strong></p>
+</li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.as_sxpr" title="nodetree.Node.as_sxpr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_sxpr()</span></code></a>:
+Serializes the tree originating in a node as S-expression.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.as_xml" title="nodetree.Node.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>:
+Serializes the tree as XML.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.as_json" title="nodetree.Node.as_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_json()</span></code></a>:
+Serializes the tree as JSON.</p>
+<p><strong>XML-exchange</strong></p>
+</li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.as_etree" title="nodetree.Node.as_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_etree()</span></code></a>:
+Converts the tree to an XML-<a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html">ElementTree</a> as defined by the
+respective module from the Python’s standard library.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.from_etree" title="nodetree.Node.from_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_etree()</span></code></a>:
+Converts an XML-<a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html">ElementTree</a> into a tree
+of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>-objects.</p>
+<p><strong>Evaluation</strong></p>
+</li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.Node.evaluate" title="nodetree.Node.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a>:
+“Evaluates” a tree by picking the function to be run on each
+node from a dictionary that maps tag-names to functions.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="reading-serialized-trees">
+<h3>Reading serialized trees<a class="headerlink" href="#reading-serialized-trees" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#nodetree.parse_sxpr" title="nodetree.parse_sxpr"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_sxpr()</span></code></a>:
+Converts any S-expression string to a tree of nodes.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.parse_xml" title="nodetree.parse_xml"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_xml()</span></code></a>:
+Converts any XML-document to a tree of nodes.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.parse_json" title="nodetree.parse_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_json()</span></code></a>:
+Converts a JSON-document that has
+previously been created with <code class="xref py py-meth docutils literal notranslate"><span class="pre">as_json()</span></code> from a
+tree of nodes back to a tree of nodes.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.deserialize" title="nodetree.deserialize"><code class="xref py py-func docutils literal notranslate"><span class="pre">deserialize()</span></code></a>:
+Tries to guess the data-type of a string and then calls any of the
+above deserialization-functions accordingly.</p></li>
+</ul>
+</section>
+<section id="traversing-trees-via-paths">
+<h3>Traversing trees via paths<a class="headerlink" href="#traversing-trees-via-paths" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#nodetree.prev_path" title="nodetree.prev_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">prev_path()</span></code></a>:
+Returns the <a class="reference internal" href="#paths"><span class="std std-ref">path</span></a> preceding a given path.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.next_path" title="nodetree.next_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">next_path()</span></code></a>:
+Returns the <a class="reference internal" href="#paths"><span class="std std-ref">path</span></a> following a given path.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.pp_path" title="nodetree.pp_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">pp_path()</span></code></a>:
+Pretty-prints the given <a class="reference internal" href="#paths"><span class="std std-ref">path</span></a></p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Attribute-handling<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#nodetree.has_token_on_attr" title="nodetree.has_token_on_attr"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_token_on_attr()</span></code></a>:
+Checks whether an attribute of a node
+contains one or more tokens, i.e. blank separated sequences of letters.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.add_token_to_attr" title="nodetree.add_token_to_attr"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_token_to_attr()</span></code></a>:
+Adds a token to a particular attribute of a node.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.remove_token_from_attr" title="nodetree.remove_token_from_attr"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_token_from_attr()</span></code></a>:
+Removes a token from a particular attribute of a node.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.has_class" title="nodetree.has_class"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_class()</span></code></a>, <a class="reference internal" href="../Reference.html#nodetree.add_class" title="nodetree.add_class"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_class()</span></code></a>, <a class="reference internal" href="../Reference.html#nodetree.remove_class" title="nodetree.remove_class"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_class()</span></code></a>:
+the same as above, only that these methods manipulate the tokens
+specifically of the class-attribute</p></li>
+</ul>
+</section>
+<section id="class-rootnode">
+<h3>class RootNode<a class="headerlink" href="#class-rootnode" title="Link to this heading">#</a></h3>
+<p>Any Node-object can be considered as the origin of a tree and none of
+the “navigation”-functions requires a tree of nodes to start with
+a RootNode-object. However, RootNode-objects provide support for certain
+“global” aspects of a tree like keeping track of the source code with line
+and column numbers and adding error messages. RootNode-objects can either
+be initialized with a code node that will then be replaced by the
+root-node or swallow a a tree originating in a common node later.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#nodetree.RootNode" title="nodetree.RootNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootNode</span></code></a>: additional functionality for a tree of nodes</p>
+<ul>
+<li><p><code class="xref py py-data docutils literal notranslate"><span class="pre">errors</span></code>:
+a list of errors</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.RootNode.errors_sorted" title="nodetree.RootNode.errors_sorted"><code class="xref py py-attr docutils literal notranslate"><span class="pre">errors_sorted</span></code></a>:
+the errors sorted by their position in the source code instead of the
+time of their having been added</p></li>
+<li><p><code class="xref py py-data docutils literal notranslate"><span class="pre">inline_tags</span></code>:
+a set of tags that will
+be printed on a single line with their content when serializing. (This
+helps to avoid undesired whitespace when exporting to HTML!)</p></li>
+<li><p><code class="xref py py-data docutils literal notranslate"><span class="pre">string_tags</span></code>:
+a set of tags that will be
+converted to simple strings that appear as mixed content inside their
+parent when serializing as XML</p></li>
+<li><p><code class="xref py py-data docutils literal notranslate"><span class="pre">empty_tags</span></code>:
+a set of tags that will be
+rendered as empty tags, e.g. <code class="docutils literal notranslate"><span class="pre">&lt;mytag</span> <span class="pre">/&gt;</span></code> when serializing as XML</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.RootNode.swallow" title="nodetree.RootNode.swallow"><code class="xref py py-meth docutils literal notranslate"><span class="pre">swallow()</span></code></a>:
+Can be called once in the  lifetime of the RootNode-object to assign
+this root-node to an existing tree of nodes.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.RootNode.new_error" title="nodetree.RootNode.new_error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">new_error()</span></code></a>:
+Creates and adds new a error.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#nodetree.RootNode.as_xml" title="nodetree.RootNode.as_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_xml()</span></code></a>:
+Serializes the tree as XML taking into account the XML-customization
+attributes of the RootNode-object.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="class-contentmapping">
+<h3>class ContentMapping<a class="headerlink" href="#class-contentmapping" title="Link to this heading">#</a></h3>
+<p>ContentMapping represents a path-mapping of the string-content of
+all or a specific selection of the leave-nodes of a tree. A
+content-mapping is an ordered mapping of the first text position of
+every (selected) leaf-node to the path of this node.</p>
+<p>The class provides methods for mapping string positions to paths and
+offsets (relative to the beginning of the leaf-node of the path)</p>
+<ul>
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping" title="standoff.ContentMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code></a>: Mapping the tree to its string-content</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping.get_path_and_offset" title="standoff.ContentMapping.get_path_and_offset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_path_and_offset()</span></code></a>:
+Maps positions in string-content of the ContentMapping to the
+leaf-path into which they fall</p></li>
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping.iterate_paths" title="standoff.ContentMapping.iterate_paths"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterate_paths()</span></code></a>:
+Yields all paths from
+position <code class="docutils literal notranslate"><span class="pre">start_pos</span></code> up to and including position <code class="docutils literal notranslate"><span class="pre">end_pos</span></code>.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping.insert_node" title="standoff.ContentMapping.insert_node"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_node()</span></code></a>:
+Inserts a node at a
+particular text-position.</p></li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#standoff.ContentMapping.markup" title="standoff.ContentMapping.markup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">markup()</span></code></a>:</dt><dd><p>Adds markup (i.e. an element) to a particular stretch of text.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01_EBNF-grammars.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">EBNF-Grammars</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="03_content-mappings.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Content Mappings</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node-objects">Node-objects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization">Serialization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xml-reflow">XML-reflow</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elementtree-exchange">ElementTree-Exchange</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tree-traversal">Tree-Traversal</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#navigating-downtree">Navigating “downtree”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#navigating-uptree">Navigating “uptree”</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-messages">Error Messages</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-handling">Attribute-Handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes-and-functions-reference"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-node">class Node</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-serialized-trees">Reading serialized trees</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#traversing-trees-via-paths">Traversing trees via paths</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Attribute-handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-rootnode">class RootNode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-contentmapping">class ContentMapping</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

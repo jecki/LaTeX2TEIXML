@@ -14,6 +14,9 @@ if platform.system().lower() == "linux":
 
 if sys.version_info >= (3, 14, 0):
     os.environ['CYTHON_USE_MODULE_STATE'] = '1'
+    print('WARNING: Speeding DHParser with cython does not work properly with '
+          'InterpreterPoolExecutors. Set CONFIG_PRESET["multicore_pool"] = "ProcessPool" '
+          'to stay on the safe side!')
 
 try:
     from Cython.Build import cythonize
@@ -30,8 +33,10 @@ cythonize_modules = [
     'DHParser/preprocess.py',
     'DHParser/error.py',
     'DHParser/nodetree.py',
+    'DHParser/standoff.py',
     'DHParser/log.py',
-    'DHParser/parse.py',
+    'DHParser/parse_base.py',
+    'DHParser/parse_combinators.py',
     'DHParser/trace.py',
     'DHParser/transform.py',
     'DHParser/compile.py',
@@ -41,7 +46,6 @@ cythonize_modules = [
 
 def build(setup_kwargs={}):
     if has_cython:
-
         # find path of DHParser-module
         scriptdir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
         i = scriptdir.find('DHParser')
@@ -56,6 +60,18 @@ def build(setup_kwargs={}):
         save_cwd = os.getcwd()
         os.chdir(dhparserdir)
 
+        # tell poetry how to cythonize modules
+        ext_modules = cythonize(
+            cythonize_modules,
+            nthreads=0,
+            annotate=False,
+            compiler_directives={'subinterpreters_compatible': 'own_gil'}
+        )
+        setup_kwargs.update({
+            'ext_modules': ext_modules,
+            'zip_safe': False,
+        })
+
         if os.path.isfile('pyproject.toml'):
             os.rename('pyproject.toml', 'pyproject.toml.termporarily_suspended')
 
@@ -68,7 +84,9 @@ def build(setup_kwargs={}):
         sys.argv.extend(['build_ext', '--inplace'])
         setup(
             name='DHParser',
-            ext_modules=cythonize(cythonize_modules, nthreads=0, annotate=False),
+            ext_modules=cythonize(cythonize_modules, nthreads=0, annotate=False,
+                                  compiler_directives={# 'module_state': True,
+                                                   'subinterpreters_compatible': 'own_gil'}),
             zip_safe=False,
         )
 

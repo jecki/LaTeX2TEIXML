@@ -59,7 +59,6 @@ import functools
 import os
 from typing import Iterable, Iterator, Union, Dict, List, Sequence, Callable
 
-from DHParser.stringview import StringView
 from DHParser.toolkit import linebreaks, line_col, is_filename, TypeAlias
 
 
@@ -80,6 +79,7 @@ __all__ = ('ErrorCode',
            'FATAL',
            'HIGHEST',
            'RESUME_NOTICE',
+           'NAME_SHADOWED_BY_DROP_CLASS_NOTICE',
            'REDECLARED_TOKEN_WARNING',
            'UNUSED_ERROR_HANDLING_WARNING',
            'LEFT_RECURSION_WARNING',
@@ -94,6 +94,8 @@ __all__ = ('ErrorCode',
            'UNUSED_MACRO_ARGUMENTS_WARNING',
            'REORDERING_OF_ALTERNATIVES_REQUIRED',
            'PARSER_STOPPED_BEFORE_END_WARNING',
+           'AMBIGUOUS_RANGE_EXPRESSION_WARNING',
+           'CLASS_NAME_SHADOWS_RULE_NAME_WARNING',
            'MANDATORY_CONTINUATION',
            'MANDATORY_CONTINUATION_AT_EOF',
            'MANDATORY_CONTINUATION_AT_EOF_NON_ROOT',
@@ -163,6 +165,7 @@ HIGHEST  = FATAL
 # notice codes
 
 RESUME_NOTICE                            = ErrorCode(50)
+NAME_SHADOWED_BY_DROP_CLASS_NOTICE       = ErrorCode(55)
 
 # warning codes
 
@@ -183,6 +186,8 @@ UNUSED_MACRO_ARGUMENTS_WARNING           = ErrorCode(690)
 
 REORDERING_OF_ALTERNATIVES_REQUIRED      = ErrorCode(710)
 PARSER_STOPPED_BEFORE_END_WARNING        = ErrorCode(720)
+AMBIGUOUS_RANGE_EXPRESSION_WARNING       = ErrorCode(730)
+CLASS_NAME_SHADOWS_RULE_NAME_WARNING     = ErrorCode(740)
 
 # error codes
 

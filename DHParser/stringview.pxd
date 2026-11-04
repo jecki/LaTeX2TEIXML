@@ -3,6 +3,7 @@
 #cython: c_string_type=unicode
 #cython: c_string_encoding=utf-8
 #cython: subinterpreters_compatible = own_gil
+#cython: module_state=True
 
 import cython
 
@@ -10,13 +11,17 @@ import cython
 # critical code paths of stringview.py.
 # see https://cython.readthedocs.io/en/latest/src/tutorial/pure.html
 
+# for compatibility with Python 3.14s InterpreterPoolExecutor, see:
+# https://github.com/cython/cython/issues/6445
+
+
 cdef int first_char(str text, int begin, int end, str chars) noexcept
 
 cdef int last_char(str text, int begin, int end, str chars) noexcept
 
 cdef int pack_index(int index, int length) noexcept
 
-cdef (int, int) fast_real_indices(begin, end, int length) noexcept
+# cdef (int, int) fast_real_indices(begin, end, int length) noexcept
 
 cdef class StringView:
     cdef public str _text

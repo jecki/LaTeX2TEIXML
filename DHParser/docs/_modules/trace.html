@@ -1,0 +1,785 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>trace &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/trace';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_96.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for trace</h1><div class="highlight"><pre>
+<span></span><span class="c1"># trace.py - tracing of the parsing process (for debugging) and</span>
+<span class="c1">#            interrupting long running parser processes.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2018  by Eckhart Arnold (arnold@badw.de)</span>
+<span class="c1">#                 Bavarian Academy of Sciences an Humanities (badw.de)</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     https://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c1"># implied.  See the License for the specific language governing</span>
+<span class="c1"># permissions and limitations under the License.</span>
+
+<span class="sd">"""</span>
+<span class="sd">Module ``trace`` provides trace-debugging functionality for the</span>
+<span class="sd">parser. The tracers are added or removed via monkey patching to</span>
+<span class="sd">all or some parsers of a grammar and trace the actions</span>
+<span class="sd">of these parsers, making use of the `call_stack__`, `history__`</span>
+<span class="sd">and `moving_forward__`, `most_recent_error__`-hooks in the</span>
+<span class="sd">Grammar-object.</span>
+
+<span class="sd">This functionality can be used for several purposes:</span>
+
+<span class="sd">1. "live" or "breakpoint"-debugging (not implemented)</span>
+
+<span class="sd">2. recording of parsing history and "post-mortem"-debugging,</span>
+<span class="sd">   implemented here and in module :py:mod:`log`</span>
+
+<span class="sd">3. Interrupting long-running parser processes by polling</span>
+<span class="sd">   a threading.Event or multiprocessing.Event once in a while</span>
+<span class="sd">"""</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cython</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">DHParser.externallibs.shadow_cython</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cython</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">RESUME_NOTICE</span><span class="p">,</span> <span class="n">RECURSION_DEPTH_LIMIT_HIT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">REGEXP_PTYPE</span><span class="p">,</span> <span class="n">TOKEN_PTYPE</span><span class="p">,</span> <span class="n">WHITESPACE_PTYPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.log</span><span class="w"> </span><span class="kn">import</span> <span class="n">HistoryRecord</span><span class="p">,</span> <span class="n">CallItem</span><span class="p">,</span> <span class="n">NONE_NODE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grammar</span><span class="p">,</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">ParserError</span><span class="p">,</span> <span class="n">ParseFunc</span><span class="p">,</span> <span class="n">ContextSensitive</span><span class="p">,</span> \
+    <span class="n">UnaryParser</span><span class="p">,</span> <span class="n">SmartRE</span><span class="p">,</span> <span class="n">cancel_proxy</span><span class="p">,</span> <span class="n">Forward</span><span class="p">,</span> <span class="n">ParsingResult</span><span class="p">,</span> <span class="n">SEED</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">line_col</span><span class="p">,</span> <span class="n">INFINITE</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'trace_history'</span><span class="p">,</span> <span class="s1">'set_tracer'</span><span class="p">,</span> <span class="s1">'resume_notices_on'</span><span class="p">,</span> <span class="s1">'resume_notices_off'</span><span class="p">)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># History-Recording for post-mortem debugging</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">symbol_name</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">grammar</span><span class="p">:</span> <span class="n">Grammar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">ContextSensitive</span><span class="p">)</span> <span class="k">else</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_name</span>
+    <span class="c1"># name = parser.name</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">':'</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">symbol</span> <span class="o">+</span> <span class="s1">'-&gt;'</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="c1"># name = grammar.associated_symbol__(parser).pname + '-&gt;' + name</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">result_changed</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">current_result</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">history</span><span class="p">:</span>
+        <span class="n">last_result</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">node</span> <span class="ow">is</span> <span class="n">NONE_NODE</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">last_result</span> <span class="o">!=</span> <span class="n">current_result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">call_item</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">REGEXP_PTYPE</span><span class="p">,</span> <span class="n">TOKEN_PTYPE</span><span class="p">,</span> <span class="s2">":Retrieve"</span><span class="p">,</span> <span class="s2">":Pop"</span><span class="p">,</span>
+                            <span class="s2">":SmartRE"</span><span class="p">,</span> <span class="s2">":SmartRE_Lookahead"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">' '</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">prefix</span><span class="si">}{</span><span class="n">parser</span><span class="o">.</span><span class="n">repr</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">location</span>  <span class="c1"># ' ' added to avoid ':' as first char!</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">pname</span> <span class="ow">or</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_name</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">SmartRE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">parser</span><span class="o">.</span><span class="n">is_lookahead</span><span class="p">():</span>
+            <span class="n">name</span> <span class="o">+=</span> <span class="s2">":SmartRE_Lookahead"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">location</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">history_record</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">grammar</span><span class="p">:</span> <span class="n">Grammar</span><span class="p">,</span>
+                   <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+                   <span class="n">location</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                   <span class="n">location_</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                   <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HistoryRecord</span><span class="p">:</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">document__</span>
+    <span class="n">hnd</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="n">location</span><span class="p">:</span><span class="n">location_</span><span class="p">])</span><span class="o">.</span><span class="n">with_pos</span><span class="p">(</span><span class="n">location</span><span class="p">)</span> <span class="k">if</span> <span class="n">node</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">lc</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document_lbreaks__</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">tree__</span><span class="o">.</span><span class="n">error_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_name</span> <span class="o">==</span> <span class="s2">":Forward"</span> <span class="ow">and</span> <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">:</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">parser</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">pname</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">str</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">':'</span> \
+            <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">SmartRE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">parser</span><span class="o">.</span><span class="n">is_lookahead</span><span class="p">()):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">parser</span><span class="si">}</span><span class="s2">"</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">pname</span><span class="p">))</span> <span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">:</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HistoryRecord</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">,</span> <span class="n">hnd</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="n">location_</span><span class="p">:],</span> <span class="n">lc</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">wrap_call_up</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">],</span> <span class="n">location</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">location_</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Creates a history record after the parser call has been completed.</span>
+<span class="sd">    """</span>
+    <span class="c1"># Don't track returning parsers except in case an error has occurred!</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grammar</span>
+    <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">node_name</span> <span class="o">!=</span> <span class="n">WHITESPACE_PTYPE</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">moving_forward__</span>
+             <span class="ow">or</span> <span class="p">((</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disposable</span> <span class="ow">or</span> <span class="n">force</span><span class="p">)</span>
+                 <span class="ow">and</span> <span class="p">(</span><span class="n">node</span> <span class="ow">and</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">node</span><span class="p">))</span>
+             <span class="ow">or</span> <span class="n">result_changed</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">))):</span>
+        <span class="c1"># record history</span>
+        <span class="c1"># TODO: Make dropping insignificant whitespace from history configurable</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">history_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">location_</span><span class="p">)</span>
+        <span class="n">cs_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">call_stack</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">node</span>
+                <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">line_col</span> <span class="o">!=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">line_col</span>
+                <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">call_stack</span> <span class="o">!=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">call_stack</span><span class="p">[:</span><span class="n">cs_len</span><span class="p">]</span>
+                <span class="ow">or</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">grammar</span><span class="o">.</span><span class="n">start_parser__</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">call_stack</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> \
+                    <span class="n">record</span><span class="o">.</span><span class="n">call_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">":Lookbehind"</span><span class="p">,</span> <span class="s2">":NegativeLookbehind"</span><span class="p">):</span>
+                <span class="n">record</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">reversed__</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document__</span><span class="p">)</span> <span class="o">-</span> <span class="n">location_</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">grammar</span><span class="o">.</span><span class="n">moving_forward__</span> \
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">':Lookahead'</span><span class="p">,</span> <span class="s2">":NegativeLookahead"</span><span class="p">)</span>
+                                <span class="ow">or</span> <span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">":SmartRE_Lookahead"</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">call_stack</span><span class="p">):</span>
+                <span class="k">pass</span>
+                <span class="c1"># grammar.history__.pop()</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+
+<span class="nd">@cython</span><span class="o">.</span><span class="n">locals</span><span class="p">(</span><span class="n">location_</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">cs_len</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">,</span>
+               <span class="n">i</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trace_history</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">],</span> <span class="n">cython</span><span class="o">.</span><span class="n">int</span><span class="p">]:</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grammar</span>  <span class="c1"># type: Grammar</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history_tracking__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">location</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">INFINITE</span><span class="p">:</span>  <span class="n">location</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">visited</span><span class="p">[</span><span class="o">-</span><span class="n">location</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">node</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>  <span class="c1"># &lt;===== call to the actual parser!</span>
+        <span class="k">except</span> <span class="n">ParserError</span> <span class="k">as</span> <span class="n">pe</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">pe</span>
+        <span class="k">return</span> <span class="n">node</span><span class="p">,</span> <span class="n">location</span>
+
+    <span class="k">if</span> <span class="n">location</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># a negative location signals a memo-hit. see parse.Parser.__call__() !!!</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">INFINITE</span><span class="p">:</span>  <span class="n">location</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="o">-</span><span class="n">location</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">call_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="s2">"RECALL: "</span><span class="p">))</span>
+        <span class="n">node</span><span class="p">,</span> <span class="n">location_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visited</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">history_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">location_</span><span class="p">,</span> <span class="s2">"RECALL: "</span><span class="p">)</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">node</span><span class="p">,</span> <span class="n">location_</span>
+
+
+    <span class="n">mre</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ParserError</span><span class="p">]</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">most_recent_error__</span>
+    <span class="k">if</span> <span class="n">mre</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">location</span> <span class="o">&gt;=</span> <span class="n">mre</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">pos</span><span class="p">:</span>
+        <span class="c1"># add resume notice (mind that skip notices are added by</span>
+        <span class="c1"># `parse.MandatoryElementsParser.mandatory_violation()`)</span>
+        <span class="k">if</span> <span class="n">mre</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">RECURSION_DEPTH_LIMIT_HIT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mre</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">location</span>
+
+        <span class="n">grammar</span><span class="o">.</span><span class="n">most_recent_error__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[</span><span class="n">mre</span><span class="o">.</span><span class="n">error</span><span class="p">]</span>  <span class="c1"># type: List[Error]</span>
+        <span class="n">text_</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">document__</span><span class="p">[</span><span class="n">mre</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">pos</span><span class="p">:]</span>
+        <span class="n">orig_lc</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document_lbreaks__</span><span class="p">,</span> <span class="n">mre</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+        <span class="n">orig_snippet</span><span class="o">=</span> <span class="n">text_</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text_</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="k">else</span> <span class="n">text_</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'...'</span>
+        <span class="c1"># orig_snippet = orig_rest if len(orig_rest) &lt;= 10 else orig_rest[:7] + '...'</span>
+        <span class="n">target_lc</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document_lbreaks__</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+        <span class="n">target_text_</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">document__</span><span class="p">[</span><span class="n">location</span><span class="p">:]</span>
+        <span class="n">target_snippet</span> <span class="o">=</span> <span class="n">target_text_</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_text_</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="k">else</span> <span class="n">target_text_</span><span class="p">[:</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'...'</span>
+        <span class="c1"># target = text if len(text) &lt;= 10 else text[:7] + '...'</span>
+
+        <span class="k">if</span> <span class="n">mre</span><span class="o">.</span><span class="n">first_throw</span><span class="p">:</span>
+            <span class="c1"># origin = callstack_as_str(mre.callstack_snapshot, depth=3)</span>
+            <span class="c1"># resumer = callstack_as_str(grammar.call_stack__, depth=3)</span>
+            <span class="n">origin</span> <span class="o">=</span> <span class="n">symbol_name</span><span class="p">(</span><span class="n">mre</span><span class="o">.</span><span class="n">parser</span><span class="p">,</span> <span class="n">grammar</span><span class="p">)</span>
+            <span class="n">resumer</span> <span class="o">=</span> <span class="n">symbol_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">)</span>
+            <span class="n">notice</span> <span class="o">=</span> <span class="n">Error</span><span class="p">(</span>  <span class="c1"># resume notice</span>
+                <span class="s1">'Resuming from </span><span class="si">{}</span><span class="s1"> at </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> with </span><span class="si">{}</span><span class="s1"> at </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">'</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="o">*</span><span class="n">orig_lc</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">orig_snippet</span><span class="p">),</span>
+                        <span class="n">resumer</span><span class="p">,</span> <span class="o">*</span><span class="n">target_lc</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">target_snippet</span><span class="p">)),</span>
+                <span class="n">location</span><span class="p">,</span> <span class="n">RESUME_NOTICE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">origin</span> <span class="o">=</span> <span class="n">symbol_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">)</span>
+            <span class="n">notice</span> <span class="o">=</span> <span class="n">Error</span><span class="p">(</span>  <span class="c1"># skip notice</span>
+                <span class="s1">'Skipping from </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> within </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">'</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">orig_lc</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">orig_snippet</span><span class="p">),</span> <span class="n">origin</span><span class="p">,</span>
+                        <span class="o">*</span><span class="n">target_lc</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">target_snippet</span><span class="p">)),</span>
+                <span class="n">location</span><span class="p">,</span> <span class="n">RESUME_NOTICE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grammar</span><span class="o">.</span><span class="n">resume_notices__</span><span class="p">:</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">tree__</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">mre</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">notice</span><span class="p">)</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">notice</span><span class="p">)</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">HistoryRecord</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">mre</span><span class="p">,</span> <span class="s1">'callstack_snapshot'</span><span class="p">,</span> <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">),</span> <span class="n">mre</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">text_</span><span class="p">,</span>
+            <span class="n">line_col</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document_lbreaks__</span><span class="p">,</span> <span class="n">mre</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">pos</span><span class="p">),</span> <span class="n">errors</span><span class="p">))</span>
+
+    <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">call_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
+    <span class="n">stack_counter</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">":Lookbehind"</span><span class="p">,</span> <span class="s2">":NegativeLookbehind"</span><span class="p">):</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">' '</span> <span class="o">+</span> <span class="n">cast</span><span class="p">(</span><span class="n">UnaryParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">repr</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
+        <span class="n">stack_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SmartRE</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_lookahead</span><span class="p">()</span> \
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">':SmartRE_Lookahead'</span><span class="p">):</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">' :SmartRE_Lookahead'</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
+        <span class="n">stack_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">grammar_suspend_memo_state</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">suspend_memoization__</span>
+    <span class="n">grammar</span><span class="o">.</span><span class="n">moving_forward__</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">grammar</span><span class="o">.</span><span class="n">cancel_query__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">node</span><span class="p">,</span> <span class="n">location_</span> <span class="o">=</span> <span class="n">cancel_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+<span class="c1">#####################################################################################</span>
+            <span class="n">node</span><span class="p">,</span> <span class="n">location_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>   <span class="c1"># &lt;===== call to the actual parser!</span>
+<span class="c1">#####################################################################################</span>
+
+    <span class="k">except</span> <span class="n">ParserError</span> <span class="k">as</span> <span class="n">pe</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pe</span><span class="o">.</span><span class="n">first_throw</span><span class="p">:</span>
+            <span class="n">pe</span><span class="o">.</span><span class="n">callstack_snapshot</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">most_recent_error__</span> <span class="o">=</span> <span class="n">pe</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">grammar</span><span class="o">.</span><span class="n">start_parser__</span> <span class="ow">and</span> <span class="n">grammar</span><span class="o">.</span><span class="n">most_recent_error__</span><span class="p">:</span>
+            <span class="n">fe</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">most_recent_error__</span>  <span class="c1"># type: ParserError</span>
+            <span class="n">lc</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document_lbreaks__</span><span class="p">,</span> <span class="n">fe</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+            <span class="c1"># TODO: get the call stack from when the error occurred, here</span>
+            <span class="n">nd</span> <span class="o">=</span> <span class="n">fe</span><span class="o">.</span><span class="n">node</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">HistoryRecord</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span>
+                              <span class="n">grammar</span><span class="o">.</span><span class="n">document__</span><span class="p">[</span><span class="n">fe</span><span class="o">.</span><span class="n">location</span> <span class="o">+</span> <span class="n">nd</span><span class="o">.</span><span class="n">strlen</span><span class="p">():],</span>
+                              <span class="n">lc</span><span class="p">,</span> <span class="p">[</span><span class="n">fe</span><span class="o">.</span><span class="n">error</span><span class="p">]))</span>
+        <span class="k">while</span> <span class="n">stack_counter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">stack_counter</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">raise</span> <span class="n">pe</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">ctrlC</span><span class="p">:</span>
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">line_col</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">document_lbreaks__</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">HistoryRecord</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">grammar</span><span class="o">.</span><span class="n">document__</span><span class="p">[</span><span class="n">location</span><span class="p">:],</span>
+                          <span class="n">lc</span><span class="p">,</span> <span class="p">[</span><span class="n">Error</span><span class="p">(</span><span class="s1">'KeyboardInterrupt (Ctrl-C)'</span><span class="p">,</span> <span class="n">location</span><span class="p">)]))</span>
+        <span class="k">raise</span> <span class="n">ctrlC</span>
+
+    <span class="n">wrap_call_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">location_</span><span class="p">)</span>
+
+    <span class="n">grammar</span><span class="o">.</span><span class="n">moving_forward__</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="n">stack_counter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">stack_counter</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">node</span><span class="p">,</span> <span class="n">location_</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TracingData</span><span class="p">:</span>
+    <span class="n">parser</span><span class="p">:</span> <span class="n">Forward</span>
+    <span class="n">grammar</span><span class="p">:</span> <span class="n">Grammar</span>
+    <span class="n">location</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">history_pointer</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">call_stack_pointer</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">call_stack_pointer0</span> <span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fw_memo</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Forward</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ParsingResult</span><span class="p">):</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grammar</span>
+    <span class="n">node</span><span class="p">,</span> <span class="n">location_</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">result</span>
+    <span class="k">if</span> <span class="n">location</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">visited</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SAPLING: "</span>
+    <span class="k">elif</span> <span class="n">result</span> <span class="ow">is</span> <span class="n">SEED</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SEED: "</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prefix</span>  <span class="o">=</span> <span class="sa">f</span><span class="s2">"GROW: "</span>
+    <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">call_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">prefix</span><span class="p">))</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="n">history_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">location_</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+    <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fw_init</span><span class="p">(</span><span class="n">fwp</span><span class="p">:</span> <span class="s1">'Forward'</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">TracingData</span><span class="p">:</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">fwp</span><span class="o">.</span><span class="n">_grammar</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span>
+    <span class="k">return</span> <span class="n">TracingData</span><span class="p">(</span><span class="n">fwp</span><span class="p">,</span>
+                       <span class="n">grammar</span><span class="p">,</span>
+                       <span class="n">location</span><span class="p">,</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">),</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">call_stack</span><span class="p">)</span> <span class="k">if</span> <span class="n">history</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fw_loop</span><span class="p">(</span><span class="nb">locals</span><span class="p">:</span> <span class="n">TracingData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="nb">locals</span><span class="o">.</span><span class="n">grammar</span>
+    <span class="k">if</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">:</span>  <span class="c1"># don't do anything in case tracer has not been set</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">call_stack</span><span class="p">[</span><span class="nb">locals</span><span class="o">.</span><span class="n">call_stack_pointer</span><span class="p">:])</span>
+        <span class="nb">locals</span><span class="o">.</span><span class="n">call_stack_pointer</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">)</span>
+        <span class="nb">locals</span><span class="o">.</span><span class="n">history_pointer</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"Does this ever happen?"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fw_done</span><span class="p">(</span><span class="nb">locals</span><span class="p">:</span> <span class="n">TracingData</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ParsingResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">node</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">grammar</span> <span class="o">=</span> <span class="nb">locals</span><span class="o">.</span><span class="n">grammar</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">history__</span><span class="p">[:</span><span class="nb">locals</span><span class="o">.</span><span class="n">history_pointer</span><span class="p">]</span>
+        <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">call_stack__</span><span class="p">[:</span><span class="nb">locals</span><span class="o">.</span><span class="n">call_stack_pointer0</span><span class="p">]</span>
+        <span class="n">wrap_call_up</span><span class="p">(</span><span class="nb">locals</span><span class="o">.</span><span class="n">parser</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="nb">locals</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Adding and removing tracers</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+
+<div class="viewcode-block" id="set_tracer">
+<a class="viewcode-back" href="../Reference.html#trace.set_tracer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_tracer</span><span class="p">(</span><span class="n">parsers</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Grammar</span><span class="p">,</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Parser</span><span class="p">]],</span> <span class="n">tracer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ParseFunc</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""Adds or removes a tracing function to (or from) a single parser, a set of</span>
+<span class="sd">    parsers or all parsers in a grammar.</span>
+
+<span class="sd">    :param parsers: the parsers or single parser or grammar-object containing</span>
+<span class="sd">        parsers where the ``tracer`` shall be added or removed.</span>
+<span class="sd">    :param tracer: a tracer function or ``None``. If ``None`` any existing</span>
+<span class="sd">        tracer will be removed. If not None, tracer must be a parsing function.</span>
+<span class="sd">        It is up to the tracer to call the original parsing function</span>
+<span class="sd">        (``self._parse()``).</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsers</span><span class="p">,</span> <span class="n">Grammar</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tracer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parsers</span><span class="o">.</span><span class="n">history_tracking__</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">parsers</span><span class="o">.</span><span class="n">resume_notices__</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">parsers</span> <span class="o">=</span> <span class="n">parsers</span><span class="o">.</span><span class="n">all_parsers__</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsers</span><span class="p">,</span> <span class="n">Parser</span><span class="p">):</span>
+        <span class="n">parsers</span> <span class="o">=</span> <span class="p">[</span><span class="n">parsers</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">parsers</span><span class="p">:</span>
+        <span class="n">pivot</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">parsers</span><span class="p">))</span>
+        <span class="c1"># assert all(pivot._grammar == parser._grammar for parser in parsers)</span>
+        <span class="k">if</span> <span class="n">tracer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pivot</span><span class="o">.</span><span class="n">_grammar</span><span class="o">.</span><span class="n">history_tracking__</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">pivot</span><span class="o">.</span><span class="n">_grammar</span><span class="o">.</span><span class="n">resume_notices__</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pivot</span><span class="o">.</span><span class="n">_grammar</span><span class="o">.</span><span class="n">history_tracking__</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">pivot</span><span class="o">.</span><span class="n">_grammar</span><span class="o">.</span><span class="n">resume_notices__</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">parser</span> <span class="ow">in</span> <span class="n">parsers</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">set_proxy</span><span class="p">(</span><span class="n">tracer</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">Forward</span><span class="p">):</span>
+                <span class="n">parser</span><span class="o">.</span><span class="n">set_fwtracer</span><span class="p">(</span><span class="n">fw_memo</span><span class="p">,</span> <span class="n">fw_init</span><span class="p">,</span> <span class="n">fw_loop</span><span class="p">,</span> <span class="n">fw_done</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="resume_notices_on">
+<a class="viewcode-back" href="../Reference.html#trace.resume_notices_on">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resume_notices_on</span><span class="p">(</span><span class="n">grammar</span><span class="p">:</span> <span class="n">Grammar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Turns resume-notices as well as history tracking on!"""</span>
+    <span class="c1"># grammar.history_tracking__ = True</span>
+    <span class="n">grammar</span><span class="o">.</span><span class="n">resume_notices__</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">set_tracer</span><span class="p">(</span><span class="n">grammar</span><span class="p">,</span> <span class="n">trace_history</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="resume_notices_off">
+<a class="viewcode-back" href="../Reference.html#trace.resume_notices_off">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resume_notices_off</span><span class="p">(</span><span class="n">grammar</span><span class="p">:</span> <span class="n">Grammar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Turns resume-notices as well as history tracking off!"""</span>
+    <span class="n">set_tracer</span><span class="p">(</span><span class="n">grammar</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

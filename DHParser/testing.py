@@ -50,7 +50,8 @@ from DHParser.error import Error, is_error, PARSER_LOOKAHEAD_MATCH_ONLY, \
     MANDATORY_CONTINUATION_AT_EOF_NON_ROOT, CAPTURE_STACK_NOT_EMPTY_NON_ROOT_ONLY, \
     AUTOCAPTURED_SYMBOL_NOT_CLEARED_NON_ROOT, PYTHON_ERROR_IN_TEST, RESUME_NOTICE
 from DHParser.log import is_logging, clear_logs, local_log_dir, log_parsing_history
-from DHParser.parse import Lookahead, artifact
+from DHParser.parse_error import artifact
+from DHParser.parse_combinators import Lookahead
 from DHParser.server import RX_CONTENT_LENGTH, RE_DATA_START, JSONRPC_HEADER_BYTES
 from DHParser.nodetree import Node, RootNode, deserialize, flatten_sxpr, ZOMBIE_TAG
 from DHParser.pipeline import extract_data, run_pipeline
@@ -273,9 +274,13 @@ def unit_from_config(config_str: str, filename: str, allowed_stages=UNIT_STAGES)
         err_head = 'N' if first_section_missing else 'Test NAME:STRING or n'
         err_str = err_head + 'ew section [TEST:PARSER] expected, ' \
                   + 'where TEST is "match", "fail" or "AST"; in file ' \
-                  + '"%s", line %i: "%s"' \
+                  + '"%s", line %i: "%s".' \
                   % (filename, cfg[:pos + 1].count('\n') + 1,
                      cfg[pos:cfg.find('\n', pos + 1)].strip('\n'))
+        i = cfg[:pos].rfind('\n')
+        if i >= 0 and pos - i < 4:
+            err_str += '  A possible cause can also be an insufficient ' \
+                       'indentation of less than 4 characters in a test case!'
         raise SyntaxError(err_str)
     return unit
 
@@ -536,6 +541,20 @@ def md_codeblock(code: str) -> str:
         return '\n\n\t' + '\n\t'.join(lines)
 
 
+def add_default_serializations(serializations: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """Reads all unknown serializations for CST, AST and '*' from the configuration"""
+    serializations = serializations.copy()
+    if 'CST' not in serializations:
+        serializations['CST'] = [get_config_value('CST_serialization')
+                                 or get_config_value('default_serialization')]
+    if 'AST' not in serializations:
+        serializations['AST'] = [get_config_value('AST_serialization')
+                                 or get_config_value('default_serialization')]
+    if '*' not in serializations:
+        serializations['*'] = [get_config_value('default_serialization')]
+    return serializations
+
+
 def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT', verbose=False,
                  junctions=set(), show=set(), serializations: Dict[str, List[str]] = dict(),
                  preprocessor_factory=nil_preprocessor_factory):
@@ -561,10 +580,11 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
         case, all source snippets must already have been preprocessed.
     """
     assert isinstance(report, str)
-    assert isinstance(junctions, Set) and all(isinstance(e[0], str) and isinstance(e[2], str)
-                                              and callable(e[1]) for e in junctions), \
+    assert isinstance(junctions, (Set, frozenset)) \
+            and all(isinstance(e[0], str) and isinstance(e[2], str)
+                    and callable(e[1]) for e in junctions), \
         f"Value {repr(junctions)} passed to parameter 'junctions' is not a set of compilation-junctions!"
-    assert isinstance(show, Set) and all(isinstance(element, str) for element in show), \
+    assert isinstance(show, (Set, frozenset)) and all(isinstance(element, str) for element in show), \
         f"Value {repr(show)} passed to parameter 'show' is not a set of strings!"
 
     output = []
@@ -698,12 +718,23 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
             log_parsing_history(parser, f"{test_type}_{parser_name}_{tname}.log")
 
     saved_config_values = dict()
+    try:
+        cfg = test_unit['config__']
+        for key, value in cfg.items():
+            if key[0:9] == 'DHParser.':  key = key[9:]
+            if key == "left_recursion":
+                print('Warning: Config-Variable "left_recursion" has no effect in test-cases. '
+                      'Please set it in a the ...Config.ini file. Other than the test-cases, '
+                      'the ...Config.ini file is processed before the grammar is recompiled.')
+            saved_config_values[key] = get_config_value(key)
+            set_config_value(key, eval(value))
+    except KeyError:
+        pass
+    serializations = add_default_serializations(serializations)
+
     for parser_name, tests in test_unit.items():
         if parser_name[-2:] == '__':
             assert parser_name == 'config__', f'Unknown metadata-type: "{parser_name}"'
-            for key, value in tests.items():
-                saved_config_values[key] = get_config_value(key)
-                set_config_value(key, eval(value))
             continue
 
         track_history = config_history_tracking
@@ -758,8 +789,13 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 _, prepped_text, back_mapping, errors = preprocessor(test_code, parser_name)
                 cst = parser(prepped_text, parser_name, back_mapping)  # , complete_match=True
             except AttributeError as upe:
+                tb = upe.__traceback__
+                while tb.tb_next is not None:  tb = tb.tb_next
+                tb_str = f' in File "{tb.tb_frame.f_code.co_filename}", ' \
+                         f'line {tb.tb_lineno}, in {tb.tb_frame.f_code.co_name}'
                 cst = RootNode()
-                cst = cst.new_error(Node(ZOMBIE_TAG, "").with_pos(0), str(upe))
+                cst = cst.new_error(Node(ZOMBIE_TAG, "").with_pos(0), str(upe) + tb_str,
+                                    PYTHON_ERROR_IN_TEST)
             except KeyboardInterrupt as ctrlC:
                 if is_logging() and track_history:
                     with local_log_dir('./LOGS'):
@@ -872,25 +908,29 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                 for stage in transformation_stages:
                     try:
                         data = extract_data(targets[stage][0])
-                        if isinstance(data, Node):
+                        if isinstance(data, Node):  # TODO: exclude also trees with simplifying serialization (e.g. XML)
+                            for nd in data.select_if(lambda n: n.has_attr(), include_root=True):
+                                nd.attr = {k: str(v) for k, v in nd.attr.items()}
                             compare = flat_string_test(tests, stage, data, test_name,
                                                        parser_name, test_code, errata)
                             if compare and not compare.equals(data):
-                                test_str = flatten_sxpr(data.as_sxpr())
-                                compare_str = flatten_sxpr(compare.as_sxpr())
-                                test_code_str = "\n\t".join(test_code.split("\n"))
-                                errata.append(f'{stage}-test {test_name} for parser {parser_name} failed:\n'
-                                              f'\tExpr.:     {test_code_str}\n'
-                                              f'\tExpected:  {compare_str}\n'
-                                              f'\tReceived:  {test_str}')
+                                if (srl := serializations.get(stage, serializations['*'])[0]) == 'sxpr' \
+                                        or compare.serialize(srl) != data.serialize(srl):
+                                    test_str = flatten_sxpr(data.as_sxpr())
+                                    compare_str = flatten_sxpr(compare.as_sxpr())
+                                    test_code_str = "\n\t".join(test_code.split("\n"))
+                                    errata.append(f'{stage}-test {test_name} for parser {parser_name} failed:\n'
+                                                  f'\tExpr.:     {test_code_str}\n'
+                                                  f'\tExpected:  {compare_str}\n'
+                                                  f'\tReceived:  {test_str}')
                         else:
-                            compare = get(tests, stage, test_name).strip('\n')
+                            compare = get(tests, stage, test_name).strip()
                             if compare:
                                 test_str = str(data)
                                 if stage in ('match', 'fail', 'AST', 'CST'):
                                     test_str = normalize_code(test_str, full_normalization=False)
                                 else:
-                                    test_str = test_str.strip('\n')
+                                    test_str = test_str.strip()
                                 if not compare == test_str:
                                     test_code_str = "\n\t".join(test_code.split("\n"))
                                     if compare.find('\n') >= 0 and compare.strip() == compare:
@@ -933,15 +973,15 @@ def grammar_unit(test_unit, parser_factory, transformer_factory, report='REPORT'
                         log_parsing_history(parser, "interrupted_fail_%s_%s.log" %
                                             (parser_name, clean_test_name))
                 raise ctrlC
-            except Exception as e:
-                errata.append('Fail-test "%s" for parser "%s" failed with:\n%s' %
-                              (test_name, parser_name, str(e)))
             except AttributeError as upe:
                 node = Node(ZOMBIE_TAG, "").with_pos(0)
                 cst = RootNode(node).new_error(node, str(upe))
                 errata.append('Unknown parser "{}" in fail test "{}"!'.format(
                     parser_name, test_name))
                 tests.setdefault('__err__', {})[test_name] = errata[-1]
+            except Exception as e:
+                errata.append('Fail-test "%s" for parser "%s" failed with:\n%s' %
+                              (test_name, parser_name, str(e)))
             if 'AST' in tests or report:
                 traverse(cst, {'*': remove_children({TEST_ARTIFACT})})
                 transform(cst)
@@ -1061,9 +1101,12 @@ def grammar_suite(directory, parser_factory, transformer_factory,
     if is_logging():
         clear_logs()
 
-    tests = [fn for fn in sorted(os.listdir('.'))
-             if any(fnmatch.fnmatch(fn, pattern) for pattern in fn_patterns)]
-
+    entries = [(e.stat().st_size, e.name) for e in os.scandir('.')
+               if e.is_file() and any(fnmatch.fnmatch(e.name, pattern)
+                                      for pattern in fn_patterns)]
+    entries.sort()
+    entries.reverse()  # pick the longest test first
+    tests = [entry[1] for entry in entries]
     assert tests, f"No pattern from {fn_patterns} matched any test in directory {os.getcwd()}"
 
     with instantiate_executor(get_config_value('test_parallelization') and len(tests) > 1,
@@ -1161,7 +1204,7 @@ def extract_symbols(ebnf_text_or_file: str) -> SymbolsDictType:
                for dfn in deflist]
     if not deflist:
         if ebnf_text_or_file.find('\n') < 0 and ebnf_text_or_file.endswith('.ebnf'):
-            deflist = ['#: ' + os.path.splitext(ebnf_text_or_file)[0]]
+            deflist = ['#: ' + os.path.splitext(os.path.basename(ebnf_text_or_file))[0]]
         else:
             deflist = ['#: ALL']
     symbols = OrderedDict()  # type: SymbolsDictType
@@ -1479,7 +1522,8 @@ async def stdio(limit=asyncio.streams._DEFAULT_LIMIT, loop=None):
 
 class MockStream:
     """Simulates a stream that can be written to from one side and read
-    from the other side like a pipe. Usage pattern::
+    from the other side like a pipe. Useful mainly for testing.
+    Usage pattern::
 
         pipe = MockStream()
         reader = StreamReaderProxy(pipe)

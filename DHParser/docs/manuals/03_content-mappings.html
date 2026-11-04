@@ -1,0 +1,1124 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Content Mappings &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manuals/03_content-mappings';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AST-Transformation" href="04_AST-transformation.html" />
+    <link rel="prev" title="Document-Trees" href="02_document-trees.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/manuals/03_content-mappings.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Content Mappings</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics">Basics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#restricted-mappings">Restricted Mappings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#markup-insertion">Markup insertion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes-and-functions-reference"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-contentmapping">class ContentMapping</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="content-mappings">
+<span id="id1"></span><h1>Content Mappings<a class="headerlink" href="#content-mappings" title="Link to this heading">#</a></h1>
+<p>DHParser also provides some functionality of standoff markup, like a
+“markup anywhere” function (<a class="reference internal" href="../Reference.html#standoff.ContentMapping.markup" title="standoff.ContentMapping.markup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">markup()</span></code></a>)
+that allows to add markup anywhere, irrespective of the existing
+markup and tree structure. (By appropriately deviding tags the algorithm
+ensures that tha tags remain in the nested tree-structure.) This
+functionality is concentrated in the module <a class="reference internal" href="../Reference.html#module-2" title="standoff"><code class="xref py py-mod docutils literal notranslate"><span class="pre">standoff</span></code></a>.
+Its basic component is the class <a class="reference internal" href="../Reference.html#standoff.ContentMapping" title="standoff.ContentMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code></a>
+which relates the tree-structure to the tree’s concatenated string content.</p>
+<section id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Link to this heading">#</a></h2>
+<p>For finding a passage in the text or identifying certain textual
+features like, for example, matching brackets, traversing the
+document-tree is not really an option, if only, because a passage may
+extend over several nodes, possibly even on different levels of the tree
+hierarchy. For such cases it is possible to generate a content mapping
+that maps text positions within the pure string-content to the paths of
+the leaf-nodes to which they belong. This mapping can be thought of as a
+“string-view” on the tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.standoff</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sentence</span> <span class="o">=</span> <span class="n">parse_sxpr</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s1">'(sentence (word "This") (blank " ") (word "is") (blank " ")'</span>
+<span class="gp">... </span>    <span class="s1">' (phrase (word "Buckingham") (blank " ") (word "Palace")))'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ctx_mapping</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ctx_mapping</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="go">This is Buckingham Palace</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ctx_mapping</span><span class="p">)</span>
+<span class="go">0 -&gt; sentence, word "This"</span>
+<span class="go">4 -&gt; sentence, blank " "</span>
+<span class="go">5 -&gt; sentence, word "is"</span>
+<span class="go">7 -&gt; sentence, blank " "</span>
+<span class="go">8 -&gt; sentence, phrase, word "Buckingham"</span>
+<span class="go">18 -&gt; sentence, phrase, blank " "</span>
+<span class="go">19 -&gt; sentence, phrase, word "Palace"</span>
+</pre></div>
+</div>
+<p>Note that the path in the first line of the output is different from the path
+in the third line, although the sequence of node-names that appears in the
+pretty-printed version shown here is the same, i.e. “sentence, word”, because
+the paths really consist of different Nodes.</p>
+<p>Now let’s find all letters that are followed by a whitespace character:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">locations</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\w '</span><span class="p">,</span> <span class="n">ctx_mapping</span><span class="o">.</span><span class="n">content</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx_mapping</span><span class="o">.</span><span class="n">get_path_and_offset</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">locations</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Other than the node’s content property, the content mappings content
+field is not generated on the fly every time it is retrieved, but
+only when instantiating or rebuilding the mapping. Performance-wise
+it is advisable to always use the content mapping’s content field.</p>
+</div>
+<p>The target returned by <a class="reference internal" href="../Reference.html#standoff.ContentMapping.get_path_and_offset" title="standoff.ContentMapping.get_path_and_offset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_path_and_offset()</span></code></a>
+is a tuple of the target path and the relative position of the location that
+falls within this path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">pp_path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">relative_pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">relative_pos</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+<span class="go">[('sentence &lt;- word', 3), ('sentence &lt;- word', 1), ('sentence &lt;- phrase &lt;- word', 9)]</span>
+</pre></div>
+</div>
+<p>Now, the structured text can be manipulated at the precise locations where
+string search yielded a match. Let’s turn our text into a little riddle by
+replacing the letters of the leaf-nodes before the match locations with three
+dots:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s1">'...'</span> <span class="o">+</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">pos</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+<span class="go">'...s ...s ...m Palace'</span>
+</pre></div>
+</div>
+<p>The positions resemble the text positions of the text represented by the
+tree at the very moment when the path mapping is generated, not the
+source positions captured by the <cite>pos</cite>-property of the node-objects!
+This also means that the mapping becomes outdated, when the tree is
+being restructured. Unless you use the methods provided by
+<a class="reference internal" href="../Reference.html#standoff.ContentMapping" title="standoff.ContentMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code></a> itself in order to make changes to
+the tree, you need to either call
+<a class="reference internal" href="../Reference.html#standoff.ContentMapping.rebuild_mapping" title="standoff.ContentMapping.rebuild_mapping"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rebuild_mapping()</span></code></a> to update the
+content mapping at the affected places or instantiate an entirely new
+content mapping.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Content mappings are somwhat similar to and provide some of the
+functionality of <em>standoff markup</em>-techniques. Unlike most
+standoff-markup-tools, however, they remain connected to the
+tree structure. Changes made with methods of
+<a class="reference internal" href="../Reference.html#standoff.ContentMapping" title="standoff.ContentMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code></a> will directly be reflected
+in the tree structure (unless the instance-variable auto_cleanup
+is set to “False”). Changes made directly to the tree structure
+will require a manual update of the content mapping with
+<a class="reference internal" href="../Reference.html#standoff.ContentMapping.rebuild_mapping" title="standoff.ContentMapping.rebuild_mapping"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rebuild_mapping()</span></code></a>.</p>
+</div>
+</section>
+<section id="restricted-mappings">
+<h2>Restricted Mappings<a class="headerlink" href="#restricted-mappings" title="Link to this heading">#</a></h2>
+<p>A very powerful feature of context mappings is that they allow to
+restrict the string view onto the document tree to selected parts of the
+tree, which makes it possible to exclude these parts from the search,
+e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xml</span> <span class="o">=</span> <span class="s1">'''&lt;doc&gt;&lt;p&gt;In München&lt;footnote&gt;&lt;em&gt;München&lt;/em&gt; is the German</span>
+<span class="gp">... </span><span class="s1">name of the city of Munich&lt;/footnote&gt; is a Hofbräuhaus&lt;/p&gt;&lt;/doc&gt;'''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, assume you would like to find all occurrences of “München” in the main
+text but not in the footnotes, then you can issue a context mapping that
+ignores all footnotes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="n">LEAF_PATH</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">{</span><span class="s1">'footnote'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="s1">'München'</span><span class="p">,</span> <span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+<span class="go">[&lt;re.Match object; span=(3, 10), match='München'&gt;]</span>
+</pre></div>
+</div>
+<p>In order to restrict the content mapping to certain parts of the tree, the
+ContentMapping-class takes a same pair of path selectors similar to the
+“criteria” and “skip_subtree” parameters of <code class="xref py py-meth docutils literal notranslate"><span class="pre">Node.select_path()</span></code>
+and <code class="xref py py-meth docutils literal notranslate"><span class="pre">Node.pick()</span></code>. However, there is a subtle but important difference:
+If the select parameter matches paths that do not end in a leaf-node, all
+path-extensions from this path that end in a leaf node will be selected.
+(See also <code class="xref py py-func docutils literal notranslate"><span class="pre">leaf_paths()</span></code>.)</p>
+<p>In contrast to the restricted content mapping, the search in the
+string-content of the entire tree yields:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.toolkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">printw</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="s1">'München'</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">content</span><span class="p">)))</span>
+<span class="go">[&lt;re.Match object; span=(3, 10), match='München'&gt;, &lt;re.Match object; span=(10,</span>
+<span class="go"> 17), match='München'&gt;]</span>
+</pre></div>
+</div>
+<p>Although, the string locations in a context mappings that has been
+restricted to certain parts of the tree have shifted with respect to the
+string locations in the full document tree, there is no need to worry
+that the mapped locations within the tree have changed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree_pos</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Hofbräuhaus'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree_pos</span><span class="p">)</span>
+<span class="go">64</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tm</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Hofbräuhaus'</span><span class="p">)</span>  <span class="c1"># should be the same as above</span>
+<span class="go">64</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cm_pos</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Hofbräuhaus'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cm_pos</span><span class="p">)</span>
+<span class="go">16</span>
+</pre></div>
+</div>
+<p>The string-position is not the same, because the mapping <code class="docutils literal notranslate"><span class="pre">cm</span></code> omits the
+footnote-text. Yet, the path and offset within the tree remain the same.
+(Remember that the <code class="docutils literal notranslate"><span class="pre">:Text</span></code>-nodes are “anonymous” nodes that the XML-parser
+inserts for the character data of XML-elements with <a class="reference external" href="https://www.w3.org/TR/xml/#sec-mixed-content">mixed content</a>.):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cm_path</span><span class="p">,</span> <span class="n">cm_offset</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_path_and_offset</span><span class="p">(</span><span class="n">cm_pos</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pp_path</span><span class="p">(</span><span class="n">cm_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">', '</span><span class="p">),</span> <span class="s1">'-&gt;'</span><span class="p">,</span> <span class="n">cm_offset</span><span class="p">)</span>
+<span class="go">doc, p, :Text -&gt; 6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tm_path</span><span class="p">,</span> <span class="n">tm_offset</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">get_path_and_offset</span><span class="p">(</span><span class="n">tree_pos</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pp_path</span><span class="p">(</span><span class="n">tm_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">', '</span><span class="p">),</span> <span class="s1">'-&gt;'</span><span class="p">,</span> <span class="n">tm_offset</span><span class="p">)</span>
+<span class="go">doc, p, :Text -&gt; 6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">tm_path</span> <span class="o">==</span> <span class="n">cm_path</span>  <span class="c1"># paths are really the same sequence of nodes</span>
+</pre></div>
+</div>
+<p>This can easily be confirmed by looking at the complete mappings in
+direct comparison. First the unrestricted mapping:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tm</span><span class="p">)</span>
+<span class="go">0 -&gt; doc, p, :Text "In München"</span>
+<span class="go">10 -&gt; doc, p, footnote, em "München"</span>
+<span class="go">17 -&gt; doc, p, footnote, :Text " is the German" "name of the city of Munich"</span>
+<span class="go">58 -&gt; doc, p, :Text " is a Hofbräuhaus"</span>
+</pre></div>
+</div>
+<p>Now, the mapping that omits the footnotes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="go">0 -&gt; doc, p, :Text "In München"</span>
+<span class="go">10 -&gt; doc, p, :Text " is a Hofbräuhaus"</span>
+</pre></div>
+</div>
+<p>Note, that the numbers at the beginning of each line represent the
+string position which is different for the same path, but this has no
+bearing on the offsets which count from the content-mapping-specific
+position of each path in the content mapping.</p>
+<p>Conversely, we could also have restricted the content mapping only to
+the footnote(s):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="s1">'footnote'</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">NO_PATH</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fm</span><span class="p">)</span>
+<span class="go">0 -&gt; doc, p, footnote, em "München"</span>
+<span class="go">7 -&gt; doc, p, footnote, :Text " is the German" "name of the city of Munich"</span>
+</pre></div>
+</div>
+<p>Here, the parameter <code class="docutils literal notranslate"><span class="pre">ignore=NO_PATH</span></code> has to be understood as “from the
+selected paths do not ignore any paths”. In case the select-parameter matches
+for nodes that are not leave-nodes, ContentMapping will map all leave nodes
+that are reachable from there. In this case these are all leaf-nodes “above”
+a “footnote” node.</p>
+<p>Now, let’s look for the string “München” in the footnotes only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'München'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">get_path_and_offset</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">'doc &lt;- p &lt;- footnote &lt;- em "München"'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>We can now manipulate the tree through the path and offset. Let’s insert
+the word “Stadt” in front of “München”. We do so by changing the result
+of the leaf node of the path to the term at the given offset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">result</span><span class="p">[:</span><span class="n">offset</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"Stadt "</span> <span class="o">+</span> \
+<span class="gp">... </span>                  <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">offset</span><span class="p">:]</span>
+</pre></div>
+</div>
+<p>In this particular case, because the offset is zero, we could also have
+written <code class="docutils literal notranslate"><span class="pre">&quot;Stadt</span> <span class="pre">&quot;</span> <span class="pre">+</span> <span class="pre">path[-1].result</span></code>, but the formula above also
+works for the general case where cannot be sure that the offset will
+always be 0.</p>
+<p>We expect that the change is reflected in the tree at the right position, i.e.
+inside the footnote:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'doc'</span><span class="p">}))</span>
+<span class="go">&lt;doc&gt;&lt;p&gt;In München&lt;footnote&gt;&lt;em&gt;Stadt München&lt;/em&gt; is the German</span>
+<span class="go">name of the city of Munich&lt;/footnote&gt; is a Hofbräuhaus&lt;/p&gt;&lt;/doc&gt;</span>
+</pre></div>
+</div>
+<p>As mentioned earlier, the content mapping should be considered tainted if the
+underlying tree has been changed by any other means than the methods of the
+ContentMapping-object itself. In order to rebuild the affected path of the
+content mapping <code class="xref py py-meth docutils literal notranslate"><span class="pre">ContentMapping.rebuild_mapping()</span></code> must be called for
+the affected sections of the content mapping which are defined by the first
+and last path index of the content mapping where a change has taken place:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fm</span><span class="o">.</span><span class="n">rebuild_mapping</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fm</span><span class="p">)</span>
+<span class="go">0 -&gt; doc, p, footnote, em "Stadt München"</span>
+<span class="go">13 -&gt; doc, p, footnote, :Text " is the German" "name of the city of Munich"</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">#</a></h2>
+<p>A limitation shared with other techniques of standoff-markup
+consists in the fact that content mappings remain
+completely agnostic with respect to any textual meaning of the nodes.
+For example assume that the node-name “pb” signifies a page break, which
+implies that there is a gap between the two parts separated by the page
+break. However, because this is considered part of the meaning
+of “pb” it may not be required by the encoding guide-lines for the
+document that a gap, say, a blank character or a linefeed is also
+redundantly encoded in the string content of the document.
+(It may even be forbidden to do so!) But then a search on the
+string content may miss phrases separated by a page break:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s1">'&lt;doc&gt;xyz New&lt;pb/&gt;York xyz&lt;/doc&gt;'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="go">xyz NewYork xyz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">'New\s+York'</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+<p>Currently, the only remedy is to either allow redundant encoding
+of textual meanings within the string-content or adding specific
+nodes that carry the redundant textual meanings within their
+string-content and removing them again, after searches etc. have
+been finished. In the example above one can implement the
+first suggestion either by adding “n” before or after
+the &lt;pb/&gt;-node, or, more elegantly, by turning the empty &lt;pb/&gt; node
+into a node with content: &lt;pb&gt;n&lt;/pb&gt;. The same trick can be applied
+for practically any kind empty node.</p>
+</section>
+<section id="markup-insertion">
+<h2>Markup insertion<a class="headerlink" href="#markup-insertion" title="Link to this heading">#</a></h2>
+<p>Class <code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code> provides powerful markup-methods
+that allows you to add markup at any position you like simply by
+passing the start- and end-position in the string-representation of
+the document-tree and “automagically” taking care of such perils
+as cross-cutting tag-boundaries or overlapping hierarchies.</p>
+<p>This solves a common challenge when processing tree structured text-data
+which consists in adding new nodes that cover certain ranges of the
+string content that may already have been covered by other elements. The
+problem is the same as adding further markup to an existing XML or
+HTML-document. In trivial cases like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">trivial_xml</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s2">"&lt;trivial&gt;Please mark up Stadt München "</span>
+<span class="gp">... </span>    <span class="s2">"in Bavaria in this sentence.&lt;/trivial&gt;"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>we would hardly need any help by a library to markup a string “Stadt München”.
+But both to find certain sub-strings and to mark them up can easily become
+complicated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hard_xml</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s2">"&lt;hard&gt;Please mark up Stadt</span><span class="se">\n</span><span class="s2">&lt;lb/&gt;"</span>
+<span class="gp">... </span>    <span class="s2">"&lt;location&gt;&lt;em&gt;München&lt;/em&gt; in Bavaria&lt;/location&gt; in this "</span>
+<span class="gp">... </span>    <span class="s2">"sentence.&lt;/hard&gt;"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s start with the simple case to see how searching and marking
+strings works with DHParser:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mapping</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">trivial_xml</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Stadt\s+München"</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s2">"foreign"</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">'lang'</span><span class="p">:</span> <span class="s1">'de'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printw</span><span class="p">(</span><span class="n">trivial_xml</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'trivial'</span><span class="p">}))</span>
+<span class="go">&lt;trivial&gt;Please mark up &lt;foreign lang="de"&gt;Stadt München&lt;/foreign&gt;</span>
+<span class="go"> in Bavaria in this sentence.&lt;/trivial&gt;</span>
+</pre></div>
+</div>
+<p>In order to search for the text-string, a regular expression is used
+rather than a simple search for “Stadt München”, because we cannot
+assume that it appears in exactly the same form in the text. For
+example, it could be broken up by a line break, e.g. “Stadt\nMünchen”.</p>
+<p>Now, let’s try the more complicated case. Because we will try
+different configurations, we use copied of the tree “hard_xml”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hard_xml_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">hard_xml</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapping</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">hard_xml_copy</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Stadt\s+München"</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s2">"foreign"</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">'lang'</span><span class="p">:</span> <span class="s1">'de'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xml_str</span> <span class="o">=</span> <span class="n">hard_xml_copy</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">empty_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'lb'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xml_str</span><span class="p">)</span>
+<span class="go">&lt;hard&gt;</span>
+<span class="go">  Please mark up</span>
+<span class="go">  &lt;foreign lang="de"&gt;</span>
+<span class="go">    Stadt</span>
+<span class="go">    &lt;lb/&gt;</span>
+<span class="go">  &lt;/foreign&gt;</span>
+<span class="go">  &lt;location&gt;</span>
+<span class="go">    &lt;foreign lang="de"&gt;</span>
+<span class="go">      &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">    &lt;/foreign&gt;</span>
+<span class="go">    in Bavaria</span>
+<span class="go">  &lt;/location&gt;</span>
+<span class="go">  in this sentence.</span>
+<span class="go">&lt;/hard&gt;</span>
+</pre></div>
+</div>
+<p>As can be seen the &lt;foreign&gt;-tag is split into two parts, because the markup
+runs across the border of another tag, in this case &lt;location&gt;. Note, that the
+&lt;lb/&gt;-tag lies inside the &lt;foreign&gt;-tag. But that makes sense, because it would
+also have been inside the &lt;foreign&gt;-tag, had there been no &lt;location&gt;-tag and
+no need to split. (Per default, the algorithm behaves somewhat “greedy”, which,
+however can be configured with a parameter with the same name passed to the
+constructor of class ContentMapping.)</p>
+<p>But what if you don’t want the &lt;foreign&gt;-tag to be split up in two or
+more parts, as the case may be. Well, in this case, you need to allow
+those tags, the borders of which the new markup runs across, to be split
+by that markup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hard_xml_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">hard_xml</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">divisibility_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'foreign'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'location'</span><span class="p">,</span> <span class="s1">':Text'</span><span class="p">},</span>
+<span class="gp">... </span>                    <span class="s1">'*'</span><span class="p">:</span> <span class="p">{</span><span class="s1">':Text'</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapping</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">hard_xml_copy</span><span class="p">,</span> <span class="n">divisibility</span><span class="o">=</span><span class="n">divisibility_map</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Stadt\s+München"</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s2">"foreign"</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">'lang'</span><span class="p">:</span> <span class="s1">'de'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xml_str</span> <span class="o">=</span> <span class="n">hard_xml_copy</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">empty_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'lb'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xml_str</span><span class="p">)</span>
+<span class="go">&lt;hard&gt;</span>
+<span class="go">  Please mark up</span>
+<span class="go">  &lt;foreign lang="de"&gt;</span>
+<span class="go">    Stadt</span>
+<span class="go">    &lt;lb/&gt;</span>
+<span class="go">    &lt;location&gt;</span>
+<span class="go">      &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">    &lt;/location&gt;</span>
+<span class="go">  &lt;/foreign&gt;</span>
+<span class="go">  &lt;location&gt;</span>
+<span class="go">    in Bavaria</span>
+<span class="go">  &lt;/location&gt;</span>
+<span class="go">  in this sentence.</span>
+<span class="go">&lt;/hard&gt;</span>
+</pre></div>
+</div>
+<p>See the difference? This time the &lt;foreign&gt;-element remains intact,
+while the &lt;location&gt;-element has been split. This behavior can be
+configures by the divisibility-map that is passed to the parameter
+<code class="docutils literal notranslate"><span class="pre">divisibility</span></code> of the ContentMapping-constructor. It maps elements
+(or, rather, their names) to sets of elements that can be cut by them.
+The asterisk <code class="docutils literal notranslate"><span class="pre">*</span></code> is a wildcard and contains those elements that can be
+cut by any other element. An element that does not appear in the
+value-set anywhere in the mapping cannot be cut by any other element. It
+is also possible to pass a simple set of element-names instead of a
+dictionary to the divisibility-parameter. In this case any element with
+a name in this set can be cut by any other element. Any element the name
+of which is not a member of the set cannot be cut when markup is added.</p>
+<p>In cases where markup overlaps element-borders, it is unavoidable to
+decide which element will be divided and which not. It is a general
+limitation of tree structures that they do not allow overlapping
+hierarchies. In this particular example, it would most probably be more
+reasonable to keep the &lt;location&gt;-element intact, because locations
+should probably be recognizable as units, while this does not really
+seem to matter for a foreign language annotation.</p>
+<p>The case may arise, though, where you cannot avoid splitting elements
+that form units. At this point you probably should consider using an
+entirely different data-structure, say, a graph. But if this is not an
+option, <code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.nodetree</span></code> allows you to mark split elements as
+belonging to the same “chain” of elements. In order to do so you can
+pass a <code class="docutils literal notranslate"><span class="pre">chain_attr_name</span></code> to the constructor of class ContentMapping.
+This is an (arbitrary) name for an attribute which will contain a unique
+short string that all elements (of the same name) belonging to one and
+the same chain share with each other, but not with any other elements.
+Let’s try this on the previous example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reset_chain_ID</span><span class="p">()</span>  <span class="c1"># just to ensure deterministic ID values for doctest, here</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hard_xml_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">hard_xml</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Stadt\s+München"</span><span class="p">,</span> <span class="n">hard_xml_copy</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">divisibility_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'foreign'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'location'</span><span class="p">,</span> <span class="s1">':Text'</span><span class="p">},</span>
+<span class="gp">... </span>                    <span class="s1">'*'</span><span class="p">:</span> <span class="p">{</span><span class="s1">':Text'</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapping</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">hard_xml_copy</span><span class="p">,</span> <span class="n">divisibility</span><span class="o">=</span><span class="n">divisibility_map</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">chain_attr_name</span><span class="o">=</span><span class="s2">"chain"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s2">"foreign"</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="p">{</span><span class="s1">'lang'</span><span class="p">:</span> <span class="s1">'de'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xml_str</span> <span class="o">=</span> <span class="n">hard_xml_copy</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">empty_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'lb'</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xml_str</span><span class="p">)</span>
+<span class="go">&lt;hard&gt;</span>
+<span class="go">  Please mark up</span>
+<span class="go">  &lt;foreign lang="de"&gt;</span>
+<span class="go">    Stadt</span>
+<span class="go">    &lt;lb/&gt;</span>
+<span class="go">    &lt;location chain="VZT"&gt;</span>
+<span class="go">      &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">    &lt;/location&gt;</span>
+<span class="go">  &lt;/foreign&gt;</span>
+<span class="go">  &lt;location chain="VZT"&gt;</span>
+<span class="go">    in Bavaria</span>
+<span class="go">  &lt;/location&gt;</span>
+<span class="go">  in this sentence.</span>
+<span class="go">&lt;/hard&gt;</span>
+</pre></div>
+</div>
+<p>Markup plays well together with restricted content mappings as the
+following example may show:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xml</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"&lt;doc&gt;Please mark up Stadt</span><span class="se">\n</span><span class="s2">&lt;lb/&gt;"</span>
+<span class="gp">... </span>       <span class="s2">"&lt;em&gt;München&lt;/em&gt;&lt;footnote&gt;'Stadt &lt;em&gt;München&lt;/em&gt;'"</span>
+<span class="gp">... </span>       <span class="s2">" is German for 'City of Munich'&lt;/footnote&gt; in Bavaria"</span>
+<span class="gp">... </span>       <span class="s2">" in this sentence.&lt;/doc&gt;"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s assume we’d like to markup locations and text-passages in foreign
+languages, but only in the main text and not within footnotes and the
+like. For that purpose, we build a context mapping that is restricted to
+non-footnote-text:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="n">LEAF_PATH</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="s1">'footnote'</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">chain_attr_name</span><span class="o">=</span><span class="s1">'chain'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="go">Please mark up Stadt</span>
+<span class="go">München in Bavaria in this sentence.</span>
+</pre></div>
+</div>
+<p>Now, let’s assume for the sake of the example that we have list of
+location names to be marked up that contains the phrase “München in
+Bavaria”. So, we search for this phrase and add the required location
+markup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"München\s+in\s+Bavaria"</span><span class="p">,</span> <span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="go">&lt;re.Match object; span=(21, 39), match='München in Bavaria'&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s1">'location'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">empty_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'lb'</span><span class="p">}))</span>
+<span class="go">&lt;doc&gt;</span>
+<span class="go">  Please mark up Stadt</span>
+<span class="go">  &lt;lb/&gt;</span>
+<span class="go">  &lt;location&gt;</span>
+<span class="go">    &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">    &lt;footnote&gt;</span>
+<span class="go">      'Stadt</span>
+<span class="go">      &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">      ' is German for 'City of Munich'</span>
+<span class="go">    &lt;/footnote&gt;</span>
+<span class="go">    in Bavaria</span>
+<span class="go">  &lt;/location&gt;</span>
+<span class="go">  in this sentence.</span>
+<span class="go">&lt;/doc&gt;</span>
+</pre></div>
+</div>
+<p>The &lt;location&gt;-element covers the entire span, including the footnote. This
+is to be expected as changes are always carried out on the full tree. Only,
+the mapping is restricted to certain parts of the document. Often, this
+is indeed the desired behavior. Depending on the use case, however,
+another behavior (e.g. splitting the &lt;location&gt;-element into one part before
+the &lt;footnote&gt;-element and one part after that element) might be preferable (see
+further below).</p>
+<p>Because, the &lt;location&gt;-element did not need to be split, it does not need
+and therefore does not have a “chain”-attribute.</p>
+<p>Next, let’s add the &lt;foreign&gt;-element. (We substitute the value of its
+chain-attribute, so that the doctest does not break, when another random
+key is picked!):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Stadt\s+München'</span><span class="p">,</span> <span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s1">'foreign'</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">"de"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">empty_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'lb'</span><span class="p">}))</span>
+<span class="go">&lt;doc&gt;</span>
+<span class="go">  Please mark up</span>
+<span class="go">  &lt;foreign lang="de" chain="RZC"&gt;</span>
+<span class="go">    Stadt</span>
+<span class="go">    &lt;lb/&gt;</span>
+<span class="go">  &lt;/foreign&gt;</span>
+<span class="go">  &lt;location&gt;</span>
+<span class="go">    &lt;foreign lang="de" chain="RZC"&gt;</span>
+<span class="go">      &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">    &lt;/foreign&gt;</span>
+<span class="go">    &lt;footnote&gt;</span>
+<span class="go">      'Stadt</span>
+<span class="go">      &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">      ' is German for 'City of Munich'</span>
+<span class="go">    &lt;/footnote&gt;</span>
+<span class="go">    in Bavaria</span>
+<span class="go">  &lt;/location&gt;</span>
+<span class="go">  in this sentence.</span>
+<span class="go">&lt;/doc&gt;</span>
+</pre></div>
+</div>
+<p>Here again, one might ask, why the &lt;foreign&gt;-tag contains the &lt;lb&gt;-tag,
+but the choice makes sense, because if put together again, it should
+cover the complete stretch including the line-break.</p>
+<p>As said earlier, different use cases and different choices are imaginable.
+What if, you prefer to exclude any footnotes from markup that you
+add to the main text? For this purpose, you can use the exclude_regions
+parameter which takes a list of tuples (start, end) as value which
+represent half-open intervalls of character positions start &lt;= n &lt; end
+within the string content. Because of this, if you need to exclude particular
+tags, you first need to determine the start and end of each of theses tags.
+While this deviates from the practice of defining (sub-)regions of the
+tree-structured document by path-select functions, it has the advantage
+that one can easily exclude regions that are not delineated by markup,
+but merely but textual characteristics like, for examples, bracketed text.
+Let’s see how this can be done, with out original XML-snippet:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="s1">'footnote'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"München\s+in\s+Bavaria"</span><span class="p">,</span> <span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exclude</span> <span class="o">=</span> <span class="n">content_regions</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s1">'footnote'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="s1">'location'</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">empty_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'lb'</span><span class="p">}))</span>
+<span class="go">&lt;doc&gt;</span>
+<span class="go">  Please mark up Stadt</span>
+<span class="go">  &lt;lb/&gt;</span>
+<span class="go">  &lt;em&gt;</span>
+<span class="go">    &lt;location&gt;München&lt;/location&gt;</span>
+<span class="go">  &lt;/em&gt;</span>
+<span class="go">  &lt;footnote&gt;</span>
+<span class="go">    'Stadt</span>
+<span class="go">    &lt;em&gt;München&lt;/em&gt;</span>
+<span class="go">    ' is German for 'City of Munich'</span>
+<span class="go">  &lt;/footnote&gt;</span>
+<span class="go">  &lt;location&gt; in Bavaria&lt;/location&gt;</span>
+<span class="go">  in this sentence.</span>
+<span class="go">&lt;/doc&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If one prefers to define include-regions instead of exclude-regions for markup,
+the exclude-regions that must be passt to the <a class="reference internal" href="../Reference.html#standoff.ContentMapping.markup" title="standoff.ContentMapping.markup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">markup()</span></code></a>
+method can easily be derived from the input-regions by substracting the input regions
+from the region covering the full string content (or any superset of it in case you’d
+like to avoid a potentially costly <a class="reference internal" href="../Reference.html#nodetree.Node.strlen" title="nodetree.Node.strlen"><code class="xref py py-meth docutils literal notranslate"><span class="pre">strlen()</span></code></a> call) with
+the function <a class="reference internal" href="../Reference.html#standoff.range_difference" title="standoff.range_difference"><code class="xref py py-func docutils literal notranslate"><span class="pre">range_difference()</span></code></a>. The list of exclude regions passed
+to <a class="reference internal" href="../Reference.html#standoff.ContentMapping.markup" title="standoff.ContentMapping.markup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">markup()</span></code></a> must be sorted and overlapping regions
+be merged beforehand. Any list of ranges can be sorted and merged
+with <a class="reference internal" href="../Reference.html#standoff.sort_and_merge" title="standoff.sort_and_merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">sort_and_merge()</span></code></a>. Likewise, the range-algebraic functions in
+module <a class="reference internal" href="../Reference.html#module-2" title="standoff"><code class="xref py py-mod docutils literal notranslate"><span class="pre">standoff</span></code></a> expect sorted and merged input but are - under this condition -
+guaranteed to yield sorted and merged results.</p>
+</div>
+<p>In case empty nodes shall be excluded from the markup, it suffices to pass a zero-length
+range at the first character after the empty node (wihtin the content). Say, we have an
+xml document <code class="docutils literal notranslate"><span class="pre">&lt;doc&gt;Die</span> <span class="pre">Stadt&lt;lb/&gt;München</span> <span class="pre">liegt</span> <span class="pre">in</span> <span class="pre">Bayern&lt;/doc&gt;</span></code>. Here, the letter after
+the empty tag &lt;lb/&gt; is the “M” of the word “München”. In the string
+content of this document “Die StadtMünchen liegt in Bayern”, the “M” of München is the ninth
+letter. In order to avoid it being included in a newly markedup region the range (9, 9)
+must be added to the exclude region. The simplest way of obtaining all the regions where
+a particular type of tag is located is, again, the function <a class="reference internal" href="../Reference.html#standoff.content_regions" title="standoff.content_regions"><code class="xref py py-func docutils literal notranslate"><span class="pre">content_regions()</span></code></a>,
+e.g. exlude = content_regions(tree, “lb”). Here is the full example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xml</span> <span class="o">=</span> <span class="s2">"&lt;doc&gt;Die Stadt&lt;lb/&gt;München liegt in Bayern&lt;/doc&gt;"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exclude</span> <span class="o">=</span> <span class="n">content_regions</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s1">'lb'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+<span class="go">[(9, 9)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="s2">"X"</span><span class="p">,</span> <span class="n">exclude_regions</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>  <span class="c1"># assignment just to mute output, here</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'doc'</span><span class="p">}))</span>
+<span class="go">&lt;doc&gt;&lt;X&gt;Die Stadt&lt;/X&gt;&lt;lb/&gt;&lt;X&gt;München&lt;/X&gt; liegt in Bayern&lt;/doc&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="classes-and-functions-reference">
+<h2><em>Classes and Functions-Reference</em><a class="headerlink" href="#classes-and-functions-reference" title="Link to this heading">#</a></h2>
+<p>The full documentation of all classes and functions can be found in module
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.standoff</span></code>. The following table of contents lists the most
+important of these:</p>
+<section id="class-contentmapping">
+<h3>class ContentMapping<a class="headerlink" href="#class-contentmapping" title="Link to this heading">#</a></h3>
+<p>ContentMapping represents a path-mapping of the string-content of
+all or a specific selection of the leave-nodes of a tree. A
+content-mapping is an ordered mapping of the first text position of
+every (selected) leaf-node to the path of this node.</p>
+<p>The class provides methods for mapping string positions to paths and
+offsets (relative to the beginning of the leaf-node of the path)</p>
+<ul>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#standoff.content_regions" title="standoff.content_regions"><code class="xref py py-func docutils literal notranslate"><span class="pre">content_regions()</span></code></a>: Returns a list of string-regions,</dt><dd><p>i.e. half-open intervalls. for given path-selectors.</p>
+</dd>
+</dl>
+</li>
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping" title="standoff.ContentMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code></a>: Mapping the tree to its string-content</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping.get_path_and_offset" title="standoff.ContentMapping.get_path_and_offset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_path_and_offset()</span></code></a>:
+Maps positions in string-content of the ContentMapping to the
+leaf-path into which they fall</p></li>
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping.iterate_paths" title="standoff.ContentMapping.iterate_paths"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterate_paths()</span></code></a>:
+Yields all paths from
+position <code class="docutils literal notranslate"><span class="pre">start_pos</span></code> up to and including position <code class="docutils literal notranslate"><span class="pre">end_pos</span></code>.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#standoff.ContentMapping.insert_node" title="standoff.ContentMapping.insert_node"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_node()</span></code></a>:
+Inserts a node at a
+particular text-position.</p></li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#standoff.ContentMapping.markup" title="standoff.ContentMapping.markup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">markup()</span></code></a>:</dt><dd><p>Adds markup (i.e. an element) to a particular stretch of text.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="02_document-trees.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Document-Trees</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="04_AST-transformation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">AST-Transformation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics">Basics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#restricted-mappings">Restricted Mappings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#markup-insertion">Markup insertion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes-and-functions-reference"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-contentmapping">class ContentMapping</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

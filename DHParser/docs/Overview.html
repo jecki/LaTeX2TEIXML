@@ -1,0 +1,1890 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Overview of DHParser &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'Overview';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="A Step by Step Guide" href="StepByStepGuide.html" />
+    <link rel="prev" title="Welcome to DHParser’s documentation!" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/DHParser_Logo_128.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="_static/DHParser_Logo_128.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="Manuals.html">Manuals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="manuals/01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manuals/05_postprocessing.html">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="manuals/06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/Overview.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Overview of DHParser</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-parser-generation">Automatic Parser-Generation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-a-parser-from-a-grammar">Generating a parser from a grammar</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-parsers-within-a-python-script">Creating parsers within a Python-script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#full-scale-dsls">Full scale DSLs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clutter-free-grammars">Clutter-free grammars</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declarative-ast-building">Declarative AST-building</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-internal-mini-dsl-for-ast-transformation">An internal mini-DSL for AST-transformation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-as-you-like-it-xml-json-s-expressions">Serialization as you like it: XML, JSON, S-expressions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xml-support">XML-support</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-driven-grammar-development">Test-driven grammar development</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-testing-framework">Unit-testing framework</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debugger-included">Debugger included</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fail-tolerant-parsing">Fail-tolerant parsing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#macros">Macros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-pipelines">Processing-Pipelines</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-auto-generated-parser-script">The auto-generated parser-script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#streamlining-the-abstract-syntax-tree-ast">Streamlining the abstract-syntax-tree (AST)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiling-the-ast-to-data">Compiling the AST to data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-the-parser-script">Splitting the Parser-script</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#language-server-support">Language Server Support</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#and-more">And more…</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parser-gui">Parser-GUI</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-optimization">Performance optimization</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="overview-of-dhparser">
+<h1>Overview of DHParser<a class="headerlink" href="#overview-of-dhparser" title="Link to this heading">#</a></h1>
+<p>DHParser is a parser-generator and domain-specific-language (DSL)
+construction kit that is designed to make the process of designing,
+implementing and revising a DSL as simple as possible. It can be used in
+an adhoc-fashion for small projects and the grammar can either be
+specified in Python (similar to the approach of <a class="reference external" href="https://pypi.org/project/pyparsing/">pyparsing</a>) or, alternatively, in a
+slightly amended version of the <a class="reference external" href="https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form">Extended-Backus-Naur-Form (EBNF)</a>
+directly within the Python-code. But DHParser can just as well be used
+for large projects where you set up a directory tree with the grammar,
+parser, test-runner each residing in a separate file und the test and
+example code in dedicated sub-directories.</p>
+<p>DHParser uses <a class="reference external" href="https://bford.info/packrat/">packrat parsing</a> with full
+left-recursion support which allows to build parsers for about any
+context-free grammar. Thus, when writing a grammar you do not need to
+worry about potential restrictions of the parser. DHParser provides a
+post-mortem debugger to analyze the parsing process and it offers
+facilities for unit-testing grammars as well as some (experimental)
+support for fail-tolerant parsing so that the parser does not stop at
+the first syntax error it encounters. Finally, it provides the necessary
+boilerplate code for language servers that adhere to the
+editor-independent the <a class="reference external" href="https://microsoft.github.io/language-server-protocol/">language server-protocol</a>. This makes
+adding editor support for you own DSL easy - no matter which editor is
+your (or your user’s) favorite one.</p>
+<section id="automatic-parser-generation">
+<h2>Automatic Parser-Generation<a class="headerlink" href="#automatic-parser-generation" title="Link to this heading">#</a></h2>
+<section id="generating-a-parser-from-a-grammar">
+<h3>Generating a parser from a grammar<a class="headerlink" href="#generating-a-parser-from-a-grammar" title="Link to this heading">#</a></h3>
+<p>Generating a parser does not requires more than writing your grammar in
+EBNF and compiling it with the “dhparser”-command into a readily usable
+Python-script!</p>
+<p>Let’s try this with a parser for the Javascript-Object-Notation (JSON).
+To generate a json-Parser, just store the following EBNF-code which
+closely resembles the grammar on the <a class="reference external" href="https://www.json.org/">JSON-Website</a> in a file named “json.ebnf”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@literalws  = right
+@drop       = whitespace, strings
+@hide       = /_\w+/
+
+json        = ~ _element _EOF
+_element    = object | array | string | number | _bool | null
+object      = "{" member { "," §member } §"}"
+member      = string §":" _element
+array       = "[" [ _element { "," _element } ] §"]"
+string      = `"` §_CHARACTERS `"` ~
+number      = INT [ FRAC ] [ EXP ] ~
+_bool       = true | false
+true        = `true` ~
+false       = `false` ~
+null        = "null"
+
+_CHARACTERS = { PLAIN | ESCAPE }
+PLAIN       = /[^"\\]+/
+ESCAPE      = /\\[\/bnrt\\]/ | UNICODE
+UNICODE     = "\u" HEX HEX
+HEX         = /[0-9a-fA-F][0-9a-fA-F]/
+
+INT         = [`-`] ( /[1-9][0-9]+/ | /[0-9]/ )
+FRAC        = `.` /[0-9]+/
+EXP         = (`E`|`e`) [`+`|`-`] /[0-9]+/
+
+_EOF        =  !/./
+</pre></div>
+</div>
+<p>(The three lines starting with an <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>-sign at the beginning of the
+grammar-string are not standard EBNF-code,  but DHParser-directives (see
+<a class="reference internal" href="Reference.html#module-0" title="ebnf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ebnf</span></code></a>) which help to streamline the syntax-tree that the parser
+produces.)</p>
+<p>Then, run the “dhparser”-script to generate a parser:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dhparser json.ebnf
+</pre></div>
+</div>
+<p>This generates a script <code class="docutils literal notranslate"><span class="pre">jsonParser.py</span></code> that can be called with any
+text-file or string to produce a syntax-tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ echo '{ "one": 1, "two": 2 }' &gt;test.json
+$ python jsonParser.py --xml test.json
+&lt;json&gt;
+  &lt;object&gt;
+    &lt;member&gt;
+      &lt;string&gt;
+        &lt;Text__&gt;"&lt;/Text__&gt;
+        &lt;PLAIN&gt;one&lt;/PLAIN&gt;
+        &lt;Text__&gt;"&lt;/Text__&gt;
+      &lt;/string&gt;
+      &lt;number&gt;
+        &lt;INT&gt;1&lt;/INT&gt;
+      &lt;/number&gt;
+    &lt;/member&gt;
+    &lt;member&gt;
+      &lt;string&gt;
+        &lt;Text__&gt;"&lt;/Text__&gt;
+        &lt;PLAIN&gt;two&lt;/PLAIN&gt;
+        &lt;Text__&gt;"&lt;/Text__&gt;
+      &lt;/string&gt;
+      &lt;number&gt;
+        &lt;INT&gt;2&lt;/INT&gt;
+      &lt;/number&gt;
+    &lt;/member&gt;
+  &lt;/object&gt;
+&lt;/json&gt;
+</pre></div>
+</div>
+<p>Mind that the generated script does not yield the json data in form of a
+nested tree of python dictionaries and arrays but only the syntax tree
+of the JSON-document. To derive the actual JSON-data from the
+syntax-tree of a JSON-document a few more processing steps are necessary
+(see further below).</p>
+<p>The generated JSON-parser can, of course, also be imported and called
+form a python-srcipt. The function in the generated parser module that
+the this work is named <code class="docutils literal notranslate"><span class="pre">compile_src</span></code> (see
+also <a class="reference internal" href="#json-compiler"><span class="std std-ref">Compiling the AST to data</span></a> below.). It called with the source string
+and returns a tuple of the result (possibly None) and a list of
+error-objects (<a class="reference internal" href="Reference.html#error.Error" title="error.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">Error</span></code></a>) which is empty if no
+error occurred:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">JSONParser</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="s1">'{"JSON": ["A", "JSON", "Text"]}'</span>
+<span class="n">result</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">JSONParser</span><span class="o">.</span><span class="n">compile_src</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>  <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-parsers-within-a-python-script">
+<h3>Creating parsers within a Python-script<a class="headerlink" href="#creating-parsers-within-a-python-script" title="Link to this heading">#</a></h3>
+<p>In case you just need a parser for some very simple DSL, you can
+directly add a string with the EBNF-grammar of that DSL to you python
+code and compile if into an executable parser much like you’d compile a
+regular expression. Let’s do this for a <a class="reference external" href="https://www.json.org/">JSON</a>-parser:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.dsl</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_parser</span>
+
+<span class="n">json_grammar</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
+<span class="s2">    @literalws  = right</span>
+<span class="s2">    @drop       = whitespace, strings</span>
+<span class="s2">    @hide       = /_\w+/</span>
+
+<span class="s2">    json        = ~ _element _EOF</span>
+<span class="s2">    _element    = object | array | string | number | _bool | null</span>
+<span class="s2">    object      = "{" member { "," §member } §"}"</span>
+<span class="s2">    member      = string §":" _element</span>
+<span class="s2">    array       = "[" [ _element { "," _element } ] §"]"</span>
+<span class="s2">    string      = `"` §_CHARACTERS `"` ~</span>
+<span class="s2">    number      = INT [ FRAC ] [ EXP ] ~</span>
+<span class="s2">    _bool       = true | false</span>
+<span class="s2">    true        = `true` ~</span>
+<span class="s2">    false       = `false` ~</span>
+<span class="s2">    null        = "null"</span>
+
+<span class="s2">    _CHARACTERS = { PLAIN | ESCAPE }</span>
+<span class="s2">    PLAIN       = /[^"\\]+/</span>
+<span class="s2">    ESCAPE      = /\\[\/bnrt\\]/ | UNICODE</span>
+<span class="s2">    UNICODE     = "\u" HEX HEX</span>
+<span class="s2">    HEX         = /[0-9a-fA-F][0-9a-fA-F]/</span>
+
+<span class="s2">    INT         = [`-`] ( /[1-9][0-9]+/ | /[0-9]/ )</span>
+<span class="s2">    FRAC        = `.` /[0-9]+/</span>
+<span class="s2">    EXP         = (`E`|`e`) [`+`|`-`] /[0-9]+/</span>
+
+<span class="s2">    _EOF        =  !/./</span>
+<span class="s2">    """</span>
+
+<span class="n">json_parser</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">(</span><span class="n">json_grammar</span><span class="p">,</span> <span class="s1">'JSON'</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json_text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># just a test</span>
+        <span class="n">json_text</span> <span class="o">=</span> <span class="s1">'{ "one": 1, "two": 2 }'</span>
+    <span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">json_parser</span><span class="p">(</span><span class="n">json_text</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">'XML'</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Instead of specifying the grammar with EBNF and then generating a parser
+form the grammar, parsers can also be directly written with Python-code.
+This is best be done inside a derivative class of
+<a class="reference internal" href="Reference.html#parse.Grammar" title="parse.Grammar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grammar</span></code></a>. Doing so avoids namespace pollution and
+invokes a bit of Grammar-class magic that assigns the field names to the
+Parser-objects. (Otherwise the <a class="reference internal" href="Reference.html#parse.Parser.name" title="parse.Parser.name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">name()</span></code></a>-method
+would have to be called, explicitly.):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grammar</span><span class="p">,</span> <span class="n">Forward</span><span class="p">,</span> <span class="n">Whitespace</span><span class="p">,</span> <span class="n">Drop</span><span class="p">,</span> <span class="n">NegativeLookahead</span><span class="p">,</span> \
+    <span class="n">ZeroOrMore</span><span class="p">,</span> <span class="n">RegExp</span><span class="p">,</span> <span class="n">Option</span><span class="p">,</span> <span class="n">TKN</span><span class="p">,</span> <span class="n">DTKN</span><span class="p">,</span> <span class="n">Text</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">JSON_Grammar</span><span class="p">(</span><span class="n">Grammar</span><span class="p">):</span>
+    <span class="n">disposable__</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'_\w+'</span><span class="p">)</span>  <span class="c1"># keep syntax-tree free from matching names</span>
+    <span class="n">_element</span> <span class="o">=</span> <span class="n">Forward</span><span class="p">()</span>
+    <span class="n">_dwsp</span> <span class="o">=</span> <span class="n">Drop</span><span class="p">(</span><span class="n">Whitespace</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\s*'</span><span class="p">))</span>
+    <span class="n">_EOF</span> <span class="o">=</span> <span class="n">NegativeLookahead</span><span class="p">(</span><span class="n">RegExp</span><span class="p">(</span><span class="s1">'.'</span><span class="p">))</span>
+    <span class="n">EXP</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="s2">"E"</span><span class="p">)</span> <span class="o">|</span> <span class="n">Text</span><span class="p">(</span><span class="s2">"e"</span><span class="p">)</span> <span class="o">+</span> <span class="n">Option</span><span class="p">(</span><span class="n">Text</span><span class="p">(</span><span class="s2">"+"</span><span class="p">)</span> <span class="o">|</span> <span class="n">Text</span><span class="p">(</span><span class="s2">"-"</span><span class="p">))</span> <span class="o">+</span> <span class="n">RegExp</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[0-9]+'</span><span class="p">)</span>
+    <span class="n">DOT</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+    <span class="n">FRAC</span> <span class="o">=</span> <span class="n">DOT</span> <span class="o">+</span> <span class="n">RegExp</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[0-9]+'</span><span class="p">)</span>
+    <span class="n">NEG</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span>
+    <span class="n">INT</span> <span class="o">=</span> <span class="n">Option</span><span class="p">(</span><span class="n">NEG</span><span class="p">)</span> <span class="o">+</span> <span class="n">RegExp</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[1-9][0-9]+'</span><span class="p">)</span> <span class="o">|</span> <span class="n">RegExp</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[0-9]'</span><span class="p">)</span>
+    <span class="n">HEX</span> <span class="o">=</span> <span class="n">RegExp</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[0-9a-fA-F][0-9a-fA-F]'</span><span class="p">)</span>
+    <span class="n">UNICODE</span> <span class="o">=</span> <span class="n">DTKN</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">u"</span><span class="p">)</span> <span class="o">+</span> <span class="n">HEX</span> <span class="o">+</span> <span class="n">HEX</span>
+    <span class="n">ESCAPE</span> <span class="o">=</span> <span class="n">RegExp</span><span class="p">(</span><span class="s1">'</span><span class="se">\\\\</span><span class="s1">[/bnrt</span><span class="se">\\\\</span><span class="s1">]'</span><span class="p">)</span> <span class="o">|</span> <span class="n">UNICODE</span>
+    <span class="n">PLAIN</span> <span class="o">=</span> <span class="n">RegExp</span><span class="p">(</span><span class="s1">'[^"</span><span class="se">\\\\</span><span class="s1">]+'</span><span class="p">)</span>
+    <span class="n">_CHARACTERS</span> <span class="o">=</span> <span class="n">ZeroOrMore</span><span class="p">(</span><span class="n">PLAIN</span> <span class="o">|</span> <span class="n">ESCAPE</span><span class="p">)</span>
+    <span class="n">null</span> <span class="o">=</span> <span class="n">TKN</span><span class="p">(</span><span class="s2">"null"</span><span class="p">)</span>
+    <span class="n">false</span> <span class="o">=</span> <span class="n">TKN</span><span class="p">(</span><span class="s2">"false"</span><span class="p">)</span>
+    <span class="n">true</span> <span class="o">=</span> <span class="n">TKN</span><span class="p">(</span><span class="s2">"true"</span><span class="p">)</span>
+    <span class="n">_bool</span> <span class="o">=</span> <span class="n">true</span> <span class="o">|</span> <span class="n">false</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="n">INT</span> <span class="o">+</span> <span class="n">Option</span><span class="p">(</span><span class="n">FRAC</span><span class="p">)</span> <span class="o">+</span> <span class="n">Option</span><span class="p">(</span><span class="n">EXP</span><span class="p">)</span> <span class="o">+</span> <span class="n">_dwsp</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="s1">'"'</span><span class="p">)</span> <span class="o">+</span> <span class="n">_CHARACTERS</span> <span class="o">+</span> <span class="n">Text</span><span class="p">(</span><span class="s1">'"'</span><span class="p">)</span> <span class="o">+</span> <span class="n">_dwsp</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">DTKN</span><span class="p">(</span><span class="s2">"["</span><span class="p">)</span> <span class="o">+</span> <span class="n">Option</span><span class="p">(</span><span class="n">_element</span> <span class="o">+</span> <span class="n">ZeroOrMore</span><span class="p">(</span><span class="n">DTKN</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span> <span class="o">+</span> <span class="n">_element</span><span class="p">))</span> <span class="o">+</span> <span class="n">DTKN</span><span class="p">(</span><span class="s2">"]"</span><span class="p">)</span>
+    <span class="n">member</span> <span class="o">=</span> <span class="n">string</span> <span class="o">+</span> <span class="n">DTKN</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span> <span class="o">+</span> <span class="n">_element</span>
+    <span class="n">json_object</span> <span class="o">=</span> <span class="n">DTKN</span><span class="p">(</span><span class="s2">"{"</span><span class="p">)</span> <span class="o">+</span> <span class="n">member</span> <span class="o">+</span>  <span class="n">ZeroOrMore</span><span class="p">(</span><span class="n">DTKN</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span> <span class="o">+</span> <span class="n">member</span><span class="p">)</span> <span class="o">+</span> <span class="n">DTKN</span><span class="p">(</span><span class="s2">"}"</span><span class="p">)</span>
+    <span class="n">_element</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">json_object</span> <span class="o">|</span> <span class="n">array</span> <span class="o">|</span> <span class="n">string</span> <span class="o">|</span> <span class="n">number</span> <span class="o">|</span> <span class="n">_bool</span> <span class="o">|</span> <span class="n">null</span><span class="p">)</span>
+    <span class="n">json</span> <span class="o">=</span> <span class="n">_dwsp</span> <span class="o">+</span> <span class="n">_element</span> <span class="o">+</span> <span class="n">_EOF</span>
+    <span class="n">root__</span> <span class="o">=</span> <span class="n">json</span>  <span class="c1"># required, must point to the root-parser of the grammar!</span>
+
+<span class="n">json_parser</span> <span class="o">=</span> <span class="n">JSON_Grammar</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json_text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># just a test</span>
+        <span class="n">json_text</span> <span class="o">=</span> <span class="s1">'{ "one": 1, "two": 2 }'</span>
+    <span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">json_parser</span><span class="p">(</span><span class="n">json_text</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">'indented'</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note, that a <code class="docutils literal notranslate"><span class="pre">root__</span></code>-field must be added to the class definition that
+points to the root-parser of the Grammar! (The <code class="docutils literal notranslate"><span class="pre">disposable__</span></code>-field is
+optional and defines a pattern for names of parsers which are considered
+mere “helper”-parsers that do not capture any essential unit of data by
+themselves and therefore do not need to appear as node-names in the
+syntax-tree.)</p>
+<p>Usually, the best alternative is to specify the grammar in EBNF, compile
+it and then copy and paste the compiled grammar into your script. This
+is easier and neater than specifying the parser with Python-code. And it
+saves the added startup time that results from compiling the grammar
+within the Python-script.</p>
+</section>
+<section id="full-scale-dsls">
+<span id="id1"></span><h3>Full scale DSLs<a class="headerlink" href="#full-scale-dsls" title="Link to this heading">#</a></h3>
+<p>Larger and more complex DSL-projects can easily be set up by calling the
+“dhparser”-script with a name of a project-directory that will then be created
+and filled with templates for the project-files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dhparser JSON
+$ cd JSON
+$ dir
+example.dsl  JSON.ebnf    JSONServer.py  README.md  tests_grammar  tst_JSON_grammar.py
+</pre></div>
+</div>
+<p>The first step is to replace the “.ebnf”-file that contains a simple
+demo-grammar with your own grammar. For the sake of the example we’ll
+write our json-Grammar into this file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#  EBNF-Directives
+
+@literalws  = right  # eat insignificant whitespace to the right of literals
+@whitespace = /\s*/  # regular expression for insignificant whitespace
+@comment    = /(?:\/\/.*)|(?:\/\*(?:.|\n)*?\*\/)/  # C++ style comments
+@drop       = whitespace, strings  # silently drop bare strings and whitespace
+@hide       = /_\w+/  # regular expression to identify disposable symbols
+
+#:  compound elements
+
+json        = ~ _element _EOF
+_element    = object | array | string | number | _bool | null
+object      = "{" member { "," §member } §"}"
+member      = string §":" _element
+array       = "[" [ _element { "," _element } ] §"]"
+
+#:  simple elements
+
+string      = `"` §_CHARACTERS `"` ~
+number      = INT [ FRAC ] [ EXP ] ~
+_bool       = true | false
+true        = `true` ~
+false       = `false` ~
+null        = "null"
+
+#:  atomic expressions types
+
+# string components
+_CHARACTERS = { PLAIN | ESCAPE | UNICODE }
+PLAIN       = /[^"\\]+/
+ESCAPE      = /\\[\/bnrt\\"]/
+UNICODE     = "\u" HEX HEX
+HEX         = /[0-9a-fA-F][0-9a-fA-F]/
+
+# number components
+INT         = [`-`] ( /[1-9][0-9]+/ | /[0-9]/ )
+FRAC        = `.` /[0-9]+/
+EXP         = (`E`|`e`) [`+`|`-`] /[0-9]+/
+
+_EOF        =  !/./
+</pre></div>
+</div>
+<p>The division of the grammar into several sections is purely
+conventional. If a comment-line starts with <code class="docutils literal notranslate"><span class="pre">#:</span></code> this is a hint to the
+test script to generate a separate unit-test-template with the
+section-name that follows in the same line.</p>
+<p>The “tst_XXX_grammar.py”-script is the most important tool in any DSL-project.
+The script generates or updates the “XXXParser.py”-program if the grammar has
+changed and runs the unit tests in the “tests_grammar” subdirectory. After
+filling in the above grammar in the “json.ebnf”-file, a parser can be generated
+by running the test script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python tst_JSON_grammar.py
+</pre></div>
+</div>
+<p>If there were no errors, a new “jsonParser.py”-file appears in the
+directory (as well as a “jsonServer.py” and a “jsonApp.py”-script which
+will be explained later). Before we can try it, we need some test-data.
+Then we can run the script just like before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ rm example.dsl
+$ echo '{ "one": 1, "two": 2 }' &gt;example.json
+$ python JSONParser.py --xml example.json
+&lt;json&gt;
+  &lt;object&gt;
+  ...
+</pre></div>
+</div>
+</section>
+</section>
+<section id="clutter-free-grammars">
+<h2>Clutter-free grammars<a class="headerlink" href="#clutter-free-grammars" title="Link to this heading">#</a></h2>
+<p>DHParser tries to minimize unnecessary clutter in grammar definitions.
+To reach this goal DHParser follows a few, mostly intuitive, conventions:</p>
+<ol class="arabic">
+<li><p>The symbols on the left hand side of any definition (or “rule” or
+“production”) are considered significant by default.</p>
+<p>Nodes generated by a parser associated to a symbol will carry the
+symbol’s name and are considered structurally relevant, i.e. they
+will be eliminated silently. All other nodes are considered as
+structurally irrelevant and may silently be removed from the
+syntax-tree to simplify its structure while preserving its content.</p>
+</li>
+<li><p>Symbols can, however, be marked as “disposable”, too.</p>
+<p>Thus, you’ll never see an “_element”-node in a JSON-syntax-tree
+produced by the above grammar, but only object-, array-, string-,
+number-, true-, false- or null-nodes. (See
+<a class="reference internal" href="manuals/01_EBNF-grammars.html#simplifying-syntax-trees"><span class="std std-ref">Simplifying Syntax-Trees while Parsing</span></a>.)</p>
+</li>
+<li><p>Insignificant whitespace is denoted with a the single character: <code class="docutils literal notranslate"><span class="pre">~</span></code>.</p></li>
+<li><p>Comments defined by the <code class="docutils literal notranslate"><span class="pre">&#64;comment</span></code>-directive at the top of the
+grammar are allowed in any place where insignificant <code class="docutils literal notranslate"><span class="pre">~</span></code>-whitespace
+is allowed.</p>
+<p>Thus, you never need to worry about where to provide for comments in
+you grammar. Allowing comments wherever insignificant whitespace is
+allowed is as easy as it is intuitive. (See
+<code class="xref py py-func docutils literal notranslate"><span class="pre">comments_and_whitespace()</span></code>.)</p>
+</li>
+<li><p>To keep the grammar clean, delimiters like “,” or “[”, “]” can catch
+adjacent whitespace (and comments), automatically.</p>
+<p>Since delimiters are typically surrounded by insignificant
+whitespace, DHParser can be advised via the <code class="docutils literal notranslate"><span class="pre">&#64;literalws</span></code>-directive
+to catch insignificant whitespace to the right or left hand side of
+string literals, keeping the grammar clear of too many whitespace
+markers.</p>
+<p>In case you would like to grab a string without “eating” its adjacent
+whitespace, you can still use the “back-ticked” notation for string
+literals <code class="docutils literal notranslate"><span class="pre">`back-ticked</span> <span class="pre">string`</span></code>.</p>
+</li>
+<li><p>DHParser can be advised (via the <code class="docutils literal notranslate"><span class="pre">&#64;drop</span></code>-directive) to drop
+string-tokens completely from the syntax-tree and, likewise,
+insignificant whitespace or disposable symbols. This greatly reduces
+the verbosity of the concrete syntax tree.</p>
+<p>In case you would still to keep a particular string-token in the
+tree, you can still do so by assigning it to a non-disposable symbol,
+e.g. <code class="docutils literal notranslate"><span class="pre">opening_bracket</span> <span class="pre">=</span> <span class="pre">&quot;(&quot;</span></code> and using this symbol instead of the
+string literal in other expressions.</p>
+</li>
+<li><p>Macros (marked with <code class="docutils literal notranslate"><span class="pre">$</span></code>) can be used to avoid code-repetition
+within a grammar; the <code class="docutils literal notranslate"><span class="pre">&#64;include</span></code>-directive allows to share code
+between code between different grammars</p></li>
+<li><p>Ah, and yes, of course, you do not need to end every single
+definition in the grammar with a semicolon “;” as demanded by that
+ISO-norm for EBNF :-)</p></li>
+</ol>
+</section>
+<section id="declarative-ast-building">
+<span id="ast-building"></span><h2>Declarative AST-building<a class="headerlink" href="#declarative-ast-building" title="Link to this heading">#</a></h2>
+<p>DHParser does does not hide any stages of the tree generation process.
+Thus, you get full access to the (somewhat simplified if you choose)
+concrete syntax tree (CST) as well as to the (even more simplified and
+streamlined) abstract syntax tree (AST).</p>
+<section id="an-internal-mini-dsl-for-ast-transformation">
+<h3>An internal mini-DSL for AST-transformation<a class="headerlink" href="#an-internal-mini-dsl-for-ast-transformation" title="Link to this heading">#</a></h3>
+<p>Abstract syntax tree generation is controlled in declarative style by simple
+lists of transformations applied to each node depending on its type. Remember
+our JSON-example from above? In the simplified concrete syntax tree
+string-objects still contained the quotation mark delimiting the string. Since
+these are not needed in the data you’d like to retrieve from a JSON-file, let’s
+drop them from the abstract syntax-tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">JSON_AST_transformation_table</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"string"</span><span class="p">:</span> <span class="p">[</span><span class="n">remove_brackets</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The “JSON_AST_transformation_table”-dictionary can be found in the generated
+“JSONParser.py”-script. Simply add the rule “remove_bracket” from the
+<a class="reference internal" href="Reference.html#module-3" title="transform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transform</span></code></a>-module to the list of rules for those nodes where you wish
+to remove any delimiters at the beginning or end:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python JSONParser.py --xml example.json
+&lt;json&gt;
+  &lt;object&gt;
+    &lt;member&gt;
+      &lt;string&gt;
+        &lt;PLAIN&gt;one&lt;/PLAIN&gt;
+      &lt;/string&gt;
+...
+</pre></div>
+</div>
+<p>Alternatively, you could also have used the rule <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;:</span>
+<span class="pre">[remove_children(':Text')]</span></code> in case you are sure that nodes with the tag-name
+“:Text” can only occur in a string at the beginning and at the end as nodes
+containing the quotation mark-delimiters of a string do according to our
+specification of the JSON-grammar.</p>
+<p>To give an impression of how AST-transformation-tables may look like,
+here is an excerpt from (a former version of) DHParser’s own
+transformation table to derive a lean AST from the concrete syntax-tree
+of an EBNF grammar:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EBNF_AST_transformation_table</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># AST Transformations for EBNF-grammar</span>
+    <span class="s2">"syntax"</span><span class="p">:</span>     <span class="p">[],</span>
+    <span class="s2">"directive"</span><span class="p">:</span>  <span class="p">[</span><span class="n">flatten</span><span class="p">,</span> <span class="n">remove_tokens</span><span class="p">(</span><span class="s1">'@'</span><span class="p">,</span> <span class="s1">'='</span><span class="p">,</span> <span class="s1">','</span><span class="p">)],</span>
+    <span class="s2">"definition"</span><span class="p">:</span> <span class="p">[</span><span class="n">flatten</span><span class="p">,</span> <span class="n">remove_tokens</span><span class="p">(</span><span class="s1">'='</span><span class="p">)]</span>
+    <span class="s2">"expression"</span><span class="p">:</span> <span class="p">[</span><span class="n">replace_by_single_child</span><span class="p">,</span> <span class="n">flatten</span><span class="p">,</span>
+                   <span class="n">remove_tokens</span><span class="p">(</span><span class="s1">'|'</span><span class="p">)]</span>
+    <span class="s2">"sequence"</span><span class="p">:</span>   <span class="p">[</span><span class="n">replace_by_single_child</span><span class="p">,</span> <span class="n">flatten</span><span class="p">],</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="Reference.html#module-3" title="transform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transform</span></code></a>-module contains a number of useful transformation-rules
+that can be combined almost arbitrarily in order to reshape the concrete
+syntax-tree and carve out the abstract syntax tree. However, if the grammar is
+well-designed and if the concrete syntax tree has already been simplified with
+the help of DHParser’s <code class="docutils literal notranslate"><span class="pre">&#64;hide</span></code>-, <code class="docutils literal notranslate"><span class="pre">&#64;reduction</span></code>- and
+<code class="docutils literal notranslate"><span class="pre">&#64;drop</span></code>-directives, only few transformations should remain necessary to
+produce the desired abstract syntax-tree.</p>
+<p>In specific application cases it is often desirable to model the
+abstract syntax-tree as a tree of objects of different classes. However,
+since DHParser is a generic Parser-generator, DHParser’s syntax-trees
+are composed of a single <a class="reference internal" href="Reference.html#nodetree.Node" title="nodetree.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>-type. Nodes contain
+either text-data (“leaf-nodes”) or have one or more other nodes as
+children (“branch nodes”), but - other than, say, XML - not both at the
+same time. The “kind” or “type” of a node is indicated by its “name”. It
+should be easy, though, to transform this tree of nodes into an
+application-specific tree of objects of different classes. (See
+<a class="reference internal" href="#json-compiler"><span class="std std-ref">Compiling the AST to data</span></a> below for a simple example of how to do this.)</p>
+</section>
+<section id="serialization-as-you-like-it-xml-json-s-expressions">
+<h3>Serialization as you like it: XML, JSON, S-expressions<a class="headerlink" href="#serialization-as-you-like-it-xml-json-s-expressions" title="Link to this heading">#</a></h3>
+<p>DHParser makes it easy to visualize the various stages of tree-transformation
+(CST, AST, …) by offering manifold serialization methods that output
+syntax-trees in either a nicely formatted or compact form.</p>
+<ol class="arabic">
+<li><p>S-expressions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">doc_examples.JSON</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONParser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">JSONParser</span><span class="o">.</span><span class="n">parse_JSON</span><span class="p">(</span><span class="s1">'{ "one": 1, "two": 2 }'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">JSONParser</span><span class="o">.</span><span class="n">transform_JSON</span><span class="p">(</span><span class="n">syntax_tree</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(json</span>
+<span class="go">  (object</span>
+<span class="go">    (member</span>
+<span class="go">      (string</span>
+<span class="go">        (PLAIN "one"))</span>
+<span class="go">      (number</span>
+<span class="go">        (INT "1")))</span>
+<span class="go">    (member</span>
+<span class="go">      (string</span>
+<span class="go">        (PLAIN "two"))</span>
+<span class="go">      (number</span>
+<span class="go">        (INT "2")))))</span>
+</pre></div>
+</div>
+</li>
+<li><p>XML:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+<span class="go">&lt;json&gt;</span>
+<span class="go">  &lt;object&gt;</span>
+<span class="go">    &lt;member&gt;</span>
+<span class="go">      &lt;string&gt;</span>
+<span class="go">        &lt;PLAIN&gt;one&lt;/PLAIN&gt;</span>
+<span class="go">      &lt;/string&gt;</span>
+<span class="go">      &lt;number&gt;</span>
+<span class="go">        &lt;INT&gt;1&lt;/INT&gt;</span>
+<span class="go">      &lt;/number&gt;</span>
+<span class="go">    &lt;/member&gt;</span>
+<span class="go">    &lt;member&gt;</span>
+<span class="go">      &lt;string&gt;</span>
+<span class="go">        &lt;PLAIN&gt;two&lt;/PLAIN&gt;</span>
+<span class="go">      &lt;/string&gt;</span>
+<span class="go">      &lt;number&gt;</span>
+<span class="go">        &lt;INT&gt;2&lt;/INT&gt;</span>
+<span class="go">      &lt;/number&gt;</span>
+<span class="go">    &lt;/member&gt;</span>
+<span class="go">  &lt;/object&gt;</span>
+<span class="go">&lt;/json&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>JSON:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">as_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+<span class="go">["json",[["object",[["member",[["string",[["PLAIN","one",3]],2],["number",[["INT","1",9]],9]],2],["member",[["string",[["PLAIN","two",13]],12],["number",[["INT","2",19]],19]],10]],0]],0]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Indented text-tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">as_tree</span><span class="p">())</span>
+<span class="go">json</span>
+<span class="go">  object</span>
+<span class="go">    member</span>
+<span class="go">      string</span>
+<span class="go">        PLAIN "one"</span>
+<span class="go">      number</span>
+<span class="go">        INT "1"</span>
+<span class="go">    member</span>
+<span class="go">      string</span>
+<span class="go">        PLAIN "two"</span>
+<span class="go">      number</span>
+<span class="go">        INT "2"</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference external" href="https://github.com/syntax-tree/unist">unist</a> and <a class="reference external" href="https://github.com/syntax-tree/xast">xast</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">as_ndst</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+<span class="go">{"type":"json","children":[{"type":"object","children":[{"type":"member","children":[{"type":"string","children":[{"type":"PLAIN","value":"one","position":{"start":{"line":1,"column":4,"offset":3},"end":{"line":1,"column":7,"offset":6}}}],"position":{"start":{"line":1,"column":3,"offset":2},"end":{"line":1,"column":7,"offset":6}}},{"type":"number","children":[{"type":"INT","value":"1","position":{"start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":11,"offset":10}}}],"position":{"start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":11,"offset":10}}}],"position":{"start":{"line":1,"column":3,"offset":2},"end":{"line":1,"column":11,"offset":10}}},{"type":"member","children":[{"type":"string","children":[{"type":"PLAIN","value":"two","position":{"start":{"line":1,"column":14,"offset":13},"end":{"line":1,"column":17,"offset":16}}}],"position":{"start":{"line":1,"column":13,"offset":12},"end":{"line":1,"column":17,"offset":16}}},{"type":"number","children":[{"type":"INT","value":"2","position":{"start":{"line":1,"column":20,"offset":19},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":20,"offset":19},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":11,"offset":10},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":21,"offset":20}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">syntax_tree</span><span class="o">.</span><span class="n">as_xast</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+<span class="go">{"type":"root","name":"json","children":[{"type":"element","name":"object","children":[{"type":"element","name":"member","children":[{"type":"element","name":"string","children":[{"type":"element","name":"PLAIN","children":[{"type":"text","value":"one"}],"position":{"start":{"line":1,"column":4,"offset":3},"end":{"line":1,"column":7,"offset":6}}}],"position":{"start":{"line":1,"column":3,"offset":2},"end":{"line":1,"column":7,"offset":6}}},{"type":"element","name":"number","children":[{"type":"element","name":"INT","children":[{"type":"text","value":"1"}],"position":{"start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":11,"offset":10}}}],"position":{"start":{"line":1,"column":10,"offset":9},"end":{"line":1,"column":11,"offset":10}}}],"position":{"start":{"line":1,"column":3,"offset":2},"end":{"line":1,"column":11,"offset":10}}},{"type":"element","name":"member","children":[{"type":"element","name":"string","children":[{"type":"element","name":"PLAIN","children":[{"type":"text","value":"two"}],"position":{"start":{"line":1,"column":14,"offset":13},"end":{"line":1,"column":17,"offset":16}}}],"position":{"start":{"line":1,"column":13,"offset":12},"end":{"line":1,"column":17,"offset":16}}},{"type":"element","name":"number","children":[{"type":"element","name":"INT","children":[{"type":"text","value":"2"}],"position":{"start":{"line":1,"column":20,"offset":19},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":20,"offset":19},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":11,"offset":10},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":21,"offset":20}}}],"position":{"start":{"line":1,"column":1,"offset":0},"end":{"line":1,"column":21,"offset":20}}}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The first three serialization-formats can be de-serialized into a tree
+of nodes with the functions: <a class="reference internal" href="Reference.html#nodetree.parse_sxpr" title="nodetree.parse_sxpr"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_sxpr()</span></code></a>,
+<a class="reference internal" href="Reference.html#nodetree.parse_xml" title="nodetree.parse_xml"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_xml()</span></code></a>, <a class="reference internal" href="Reference.html#nodetree.parse_json" title="nodetree.parse_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_json()</span></code></a>. The
+<a class="reference internal" href="Reference.html#nodetree.parse_xml" title="nodetree.parse_xml"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_xml()</span></code></a> is not restricted to de-serialization but
+can parse any XML into a tree of nodes.</p>
+</section>
+<section id="xml-support">
+<h3>XML-support<a class="headerlink" href="#xml-support" title="Link to this heading">#</a></h3>
+<p>Since DHParser has been build with Digital-Humanities-applications in mind, it
+offers two further methods to connect to X-technologies. The methods
+<a class="reference internal" href="Reference.html#nodetree.Node.as_etree" title="nodetree.Node.as_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_etree()</span></code></a> and <a class="reference internal" href="Reference.html#nodetree.Node.from_etree" title="nodetree.Node.from_etree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_etree()</span></code></a>
+allow direct transfer to and from the xml-ElementTrees of either the Python
+standard-library or the lxml-package. This can become useful if you need full
+support for XPath, XQuery and XSLT, which DHParser does not provide on its own.</p>
+<p>On the other hand DHParser’s node-trees (the equivalent of
+XML-DOM-trees), provide their own set of navigation-functions which,
+depending on the use case, can be way more comfortable to use than the
+common X-technologies. Most of these functions are provided as methods
+of <a class="reference internal" href="Reference.html#nodetree.Node" title="nodetree.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> such as <a class="reference internal" href="Reference.html#nodetree.Node.select" title="nodetree.Node.select"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select()</span></code></a>
+and <a class="reference internal" href="Reference.html#nodetree.Node.select_path" title="nodetree.Node.select_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">select_path()</span></code></a>. For a comprehensive
+description see the section on <a class="reference internal" href="manuals/02_document-trees.html#paths"><span class="std std-ref">tree-traversal</span></a> in the
+reference manual of <a class="reference internal" href="Reference.html#module-1" title="nodetree"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nodetree</span></code></a>.</p>
+<p>An particularly useful tool when processing text in tree-structures are
+content mappings as provided by <code class="xref py py-class docutils literal notranslate"><span class="pre">ContentMapping</span></code>.
+Content mappings allow to map positions in the
+flat-string-representation of the document encoded in a DOM-tree to
+paths and locations within the tree. Thus, it becomes possible to search
+for strings in the document with regular expressions or simple
+string-search:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_xml</span><span class="p">,</span> <span class="n">ContentMapping</span><span class="p">,</span> <span class="n">pp_path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">parse_xml</span><span class="p">(</span><span class="s1">'&lt;doc&gt;This is &lt;em&gt;New&lt;/em&gt; York, not "old" York&lt;/doc&gt;'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cm</span> <span class="o">=</span> <span class="n">ContentMapping</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ny_pos</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'New York'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_path_and_offset</span><span class="p">(</span><span class="n">ny_pos</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="go">'doc &lt;- em'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>This is supplemented by a powerful markup-function
+(<code class="xref py py-meth docutils literal notranslate"><span class="pre">markup()</span></code>) to which the string
+position of the text to be marked up can be passed. No worries about
+tags lying in between:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parent</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span><span class="n">ny_pos</span><span class="p">,</span> <span class="n">ny_pos</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="s1">'New York'</span><span class="p">),</span> <span class="s1">'location'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">as_xml</span><span class="p">(</span><span class="n">inline_tags</span><span class="o">=</span><span class="s1">'doc'</span><span class="p">))</span>
+<span class="go">&lt;doc&gt;This is &lt;location&gt;&lt;em&gt;New&lt;/em&gt; York&lt;/location&gt;, not "old" York&lt;/doc&gt;</span>
+</pre></div>
+</div>
+<p>This works even if the markup overlaps existing tag-borders. Overlapping
+hierarchies are handled automatically by splitting overlapping elements.
+Check it out!</p>
+</section>
+</section>
+<section id="test-driven-grammar-development">
+<h2>Test-driven grammar development<a class="headerlink" href="#test-driven-grammar-development" title="Link to this heading">#</a></h2>
+<section id="unit-testing-framework">
+<h3>Unit-testing framework<a class="headerlink" href="#unit-testing-framework" title="Link to this heading">#</a></h3>
+<p>Just like regular expressions, it is quite difficult to get EBNF-grammars right
+on the first try, especially, if you are new to the technology. DHParser offers
+a unit-testing environment and a debugger for EBNF-grammars. This greatly helps
+when learning to work with parser-technology and while you might not need the
+debugger often, any more, by the time you are more experienced with writing
+grammars, the unit-testing facilities become almost indispensable when
+refactoring the grammar of evolving DSLs.</p>
+<p>The unit-testing-framework has been designed to be easy to handle: Tests
+for any symbol of the grammar are written into <code class="docutils literal notranslate"><span class="pre">.ini</span></code>-Files in the
+<code class="docutils literal notranslate"><span class="pre">tests_grammar</span></code> sub-directory of the DSL-project. Test-cases look like
+this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">number</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s2">"-3.2E-32"</span>
+<span class="n">M2</span><span class="p">:</span> <span class="s2">"42"</span>
+</pre></div>
+</div>
+<p>Here, we test, whether the parser “number” (from our JSON-grammar) really
+matches the given strings as we would expect. “M1” and “M2” are arbitrary names
+for the individual test-cases. Since parsers should not only match strings that
+conform to the grammar of that parser, but must also fail to match strings that
+don’t, it is possible to specify “fail-tests” as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">fail</span><span class="p">:</span><span class="n">number</span><span class="p">]</span>
+<span class="n">F1</span><span class="p">:</span> <span class="s2">"π"</span>   <span class="c1"># the symbol for pi is not a valid number value in JSON</span>
+</pre></div>
+</div>
+<p>Running the <code class="docutils literal notranslate"><span class="pre">tst_JSON_grammar.py</span></code>-script on a particular test-file in
+the test-subdirectory yields the results of the tests in this file, only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python tst_JSON_grammar.py tests_grammar/02_simple_elements.ini
+GRAMMAR TEST UNIT: 02_test_simple_elements
+  Match-Tests for parser "number"
+    match-test "M1" ... OK
+    match-test "M2" ... OK
+  Fail-Tests for parser "number"
+    fail-test  "F1" ... OK
+
+SUCCESS! All tests passed :-)
+</pre></div>
+</div>
+<p>In addition to this summary-report, the test-script stores detailed
+reports of all tests for each test-file in form of Markdown-documents in
+the “test_grammar/REPORTS” directory. These reports contain the
+generated ASTs from all match-tests and the error messages for all
+fail-tests. If we look at the AST of the first match-test “M1” we might
+find to our surprise that it is not what we expect, but much more
+verbose:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">number</span> <span class="p">(</span><span class="n">INT</span> <span class="p">(</span><span class="n">NEG</span> <span class="s2">"-"</span><span class="p">)</span> <span class="p">(:</span><span class="n">RegExp</span> <span class="s2">"3"</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">FRAC</span> <span class="p">(</span><span class="n">DOT</span> <span class="s2">"."</span><span class="p">)</span> <span class="p">(:</span><span class="n">RegExp</span> <span class="s2">"2"</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">EXP</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"E"</span><span class="p">)</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"-"</span><span class="p">)</span> <span class="p">(:</span><span class="n">RegExp</span> <span class="s2">"32"</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>None, of these details are really needed in an abstract syntax-tree. Luckily,
+ASTs can also be tested for, which allows to develop AST-generation in a test
+driven manner. We simply need to add an AST-Test to the grammar with the same
+name as the match-test that yields the AST we’d like to test:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ast</span><span class="p">:</span><span class="n">number</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="p">(</span><span class="n">number</span> <span class="s2">"-3.2E-32"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running the test-suite will, of course, yield a failure for the AST-Test
+until we fix the issue, which in this case could be done by adding
+<code class="docutils literal notranslate"><span class="pre">&quot;number&quot;:</span> <span class="pre">[collapse]</span></code> to our AST-transformations. Since it is
+sometimes helpful to inspect the CST as well, a match test’s name can be
+marked with an asterisk, e.g. <code class="docutils literal notranslate"><span class="pre">M1*:</span>&#160; <span class="pre">&quot;-3.2E-32&quot;</span></code> to include the CST
+for this test in the report, too.</p>
+</section>
+<section id="debugger-included">
+<h3>Debugger included<a class="headerlink" href="#debugger-included" title="Link to this heading">#</a></h3>
+<p>If a parser fails to match, it is sometimes hard to tell which mistake
+in the grammar definition has been responsible for that failure. This is
+where DHParser’s post-mortem-debugger comes in. It delivers a detailed
+account of the parsing process up to the failure. These accounts will be
+written in HTML-format into the <code class="docutils literal notranslate"><span class="pre">test_grammar/LOGS</span></code>-subdirectory
+whenever a test fails and can be viewed with a browser.</p>
+<p>To see what this looks like, let’s introduce a little mistake into our grammar,
+let’s assume that we had forgotten that the exponent of a decimal number can
+also be introduced by a capital letter “E”: <code class="docutils literal notranslate"><span class="pre">EXP</span> <span class="pre">=</span> <span class="pre">`e`</span> <span class="pre">[`+`|`-`]</span> <span class="pre">/[0-9]+/</span></code>.</p>
+<img alt="a screenshot of DHParser's post-mortem-debugger" src="_images/debugger_snippet.png" />
+<p>While error messages help to locate errors in the source text, the
+grammar-debugger helps to find the cause of an error that is not due to a
+faulty source text but due to an error within the grammar-specification.</p>
+</section>
+</section>
+<section id="fail-tolerant-parsing">
+<h2>Fail-tolerant parsing<a class="headerlink" href="#fail-tolerant-parsing" title="Link to this heading">#</a></h2>
+<p>Fail-tolerance is the ability of a parser to resume parsing after an
+error has been encountered. A parser that is fail-tolerant does not stop
+parsing at the first error but can report several if not all errors in a
+source-code file in one single run. Thus, the user is not forced to fix
+an earlier error before she or he is even being informed about the next
+error. Fail-tolerance is a particularly desirable property when using a
+modern editor or integrated development environment (IDE) that annotate
+errors while typing the source code.</p>
+<p>DHParser offers support for fail-tolerant parsing that goes beyond what
+can be achieved within EBNF alone. A prerequisite for
+fail-tolerant-parsing is to annotate the grammar with <code class="docutils literal notranslate"><span class="pre">§</span></code>-markers
+(“mandatory-marker”) at places where one can be sure that the parser
+annotated with the marker must match if it is called at all. This is
+usually the case for parsers in a series after the point where it is
+uniquely determined.</p>
+<p>For example, once the opening bracket of a bracketed expression has been
+matched by a parser it is clear that eventually the closing bracket must
+be matched, too, or it is an error. Thus, in our JSON-grammar we could
+write:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>array       = "[" [ _element { "," _element } ] §"]"
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">§</span></code> advises the following parser(s) in the series to raise an error
+on the spot instead of merely returning a non-match if they fail.</p>
+<p>The §-marker can be supplemented with a <code class="docutils literal notranslate"><span class="pre">&#64;</span> <span class="pre">..._resume</span></code>-directive that
+tells the calling parsers where to continue after the array parser has
+failed. So, the parser resuming the parsing process is not the
+array-parser that has failed, but the first of the parsers in the
+call-stack of the array-parser that catches up at the location indicated
+by the <code class="docutils literal notranslate"><span class="pre">&#64;</span> <span class="pre">..._resume</span></code>-directive. The location itself is determined by
+either a regular expression or another parser. If a parser is given, it
+must match all characters between the error location and the intended
+point of re-entry. In the case of a regular expression, the point for
+reentry is the location <em>after</em> the next match of the regular
+expression:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@array_resume = /\]/
+array       = "[" [ _element { "," _element } ] §"]"
+</pre></div>
+</div>
+<p>Here, the whole array up to and including the closing bracket <code class="docutils literal notranslate"><span class="pre">]</span></code> will be
+skipped and the calling parser will continue just as if the array had matched.</p>
+<p>Let’s see the difference this makes by running both versions of the grammar
+over a simple test case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">json</span><span class="p">]</span>
+<span class="n">M1</span><span class="p">:</span> <span class="s1">'''{ "number":  1,</span>
+<span class="s1">         "array": [1,2 3,4],</span>
+<span class="s1">         "string": "two" }'''</span>
+</pre></div>
+</div>
+<p>First, without re-entrance and without <code class="docutils literal notranslate"><span class="pre">§</span></code>-marker the error message is
+not very informative and no structure has been detected correctly. At
+least the location of the error has been determined with good precision
+by the “farthest failure”-principle.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>### Error:
+
+2:15: Error (1040): Parser "array-&gt;`,`" did not match: »3,4],
+"string": "two ...«
+    Most advanced fail:    2, 15:  json-&gt;_element-&gt;object-&gt;member-&gt;_element-&gt;array-&gt; `,`;  FAIL;  "3,4],\n"string": "two" }"
+    Last match:       2, 13:  json-&gt;_element-&gt;object-&gt;member-&gt;_element-&gt;array-&gt;_element-&gt;number;  MATCH;  "2 ";
+
+### AST
+
+    (ZOMBIE__ (ZOMBIE__ `() '{ "number": 1,' "") (ZOMBIE__ '"array": [1,2 3,4],' '"string": "two" }'))
+</pre></div>
+</div>
+<p>Secondly, still without re-entrance but with the <code class="docutils literal notranslate"><span class="pre">§</span></code>-marker. The
+error-message is more precise, though the followup-error “Parser stopped
+before end” may be confusing. The AST-tree (not shown here) contains
+more structure, but is still littered with <code class="docutils literal notranslate"><span class="pre">ZOMBIE__</span></code>-nodes of
+unidentified parts of the input:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>### Error:
+
+2:12: Error (1040): Parser "json" stopped before end, at:  3,4],
+"str ...  Terminating parser.
+2:15: Error (1010): `]` ~ expected by parser 'array', »3,4],\n "str...« found!
+</pre></div>
+</div>
+<p>Finally, with both <code class="docutils literal notranslate"><span class="pre">§</span></code>-marker and resume-directive as denoted in the
+EBNF snippet above, we receive a sound error message and, even more
+surprising, an almost complete AST:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>### Error:
+
+2:15: Error (1010): `]` ~ expected by parser 'array', »3,4],\n "str...« found!
+
+### AST
+
+    (json
+      (object
+        (member
+          (string
+            (PLAIN "number"))
+          (number "1"))
+        (member
+          (string
+            (PLAIN "array"))
+          (array
+            (number "1")
+            (number "2")
+            (ZOMBIE__ `(2:15: Error (1010): `]` ~ expected by parser 'array', »3,4],\n "str...« found!) ",2 3,4]")))
+        (member
+          (string
+            (PLAIN "string"))
+          (string
+            (PLAIN "two")))))
+</pre></div>
+</div>
+<p>It should be noted that it can be quite an art to find the proper
+resume-clauses, because different kinds of errors require different
+resume-clause. Assume for example, the coder of the JSON-file had
+forgotten the closing square bracket. It is virtually impossible to
+anticipate and take care of all possible mistakes with a resume clause.
+But one can build these clauses “empirically” based on the most common
+or most typical mistakes.</p>
+</section>
+<section id="macros">
+<span id="id2"></span><h2>Macros<a class="headerlink" href="#macros" title="Link to this heading">#</a></h2>
+<p>DHParser amends the EBNF-formalism with substitution-based macros which
+allow to reduce code repetition. For example, when trying to encode
+the grammar for outlined text like Markdown, where
+different levels of headings are marked with different numbers of
+leading #-signs, as in the following example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">outline_example</span> <span class="o">=</span> <span class="s2">"""</span>
+<span class="gp">... </span><span class="s2"># Main Heading</span>
+<span class="gp">... </span><span class="s2">## First chapter</span>
+<span class="gp">... </span><span class="s2">Some Text in the first chapter.</span>
+<span class="gp">... </span><span class="s2">## Second chapter</span>
+<span class="gp">... </span><span class="s2">More text.</span>
+<span class="gp">... </span><span class="s2">"""</span>
+</pre></div>
+</div>
+<p>one would typically write EBNF-code like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>main  = [WS] `#` !`#` ~ heading [blocks] { [WS] section } [WS] EOF
+section  = `##` !`#` ~ heading [blocks] { [WS] subsection }
+subsection  = `###` !`#` ~ heading [blocks] { [WS] subsubsection }
+subsubsection  = `####` !`#` ~ heading [blocks]
+...
+</pre></div>
+</div>
+<p>Rather than repeating the same construct for each outline level time and
+again, this can be rewritten with macros as in the following complete
+grammar:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">outlined_text_grammar</span> <span class="o">=</span> <span class="s2">"""@ whitespace  = /[ </span><span class="se">\\</span><span class="s2">t]*/</span>
+<span class="gp">... </span><span class="s2">@ reduction = merge</span>
+<span class="gp">... </span><span class="s2">@ hide      = WS, EOF, LINE, S, $outline</span>
+<span class="gp">... </span><span class="s2">@ drop      = WS, EOF, backticked, whitespace</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">$outline($level_sign, $sub_level) =</span>
+<span class="gp">... </span><span class="s2">    [WS] $level_sign !`#` ~ heading [blocks] { [WS] $sub_level }</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">main = $outline(`#`, section) [WS] EOF</span>
+<span class="gp">... </span><span class="s2">section = $outline(`##`, subsection)</span>
+<span class="gp">... </span><span class="s2">subsection = $outline(`###`, subsubsection)</span>
+<span class="gp">... </span><span class="s2">subsubsection = $outline(`####`, NEVER_MATCH)</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">heading = LINE</span>
+<span class="gp">... </span><span class="s2">blocks = [WS] block { PARSEP block }</span>
+<span class="gp">... </span><span class="s2">block  = !is_heading line { lf !is_heading line }</span>
+<span class="gp">... </span><span class="s2">  line = LINE</span>
+<span class="gp">... </span><span class="s2">  lf   = S</span>
+<span class="gp">... </span><span class="s2">is_heading = /##?#?#?#?#?(?!#)/</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">LINE      = /[ </span><span class="se">\\</span><span class="s2">t]*[^</span><span class="se">\\</span><span class="s2">n]+/   # a line of text</span>
+<span class="gp">... </span><span class="s2">WS        = /(?:[ </span><span class="se">\\</span><span class="s2">t]*</span><span class="se">\\</span><span class="s2">n)+/  # empty lines</span>
+<span class="gp">... </span><span class="s2">S         = !PARSEP /</span><span class="se">\\</span><span class="s2">s+/     # whitespace and single(!) linefeeds</span>
+<span class="gp">... </span><span class="s2">PARSEP    = /[ </span><span class="se">\\</span><span class="s2">t]*</span><span class="se">\\</span><span class="s2">n[ </span><span class="se">\\</span><span class="s2">t]*</span><span class="se">\\</span><span class="s2">n</span><span class="se">\\</span><span class="s2">s*/  # one or more empty lines</span>
+<span class="gp">... </span><span class="s2">EOF       =  !/./              # end of file</span>
+<span class="gp">... </span><span class="s2">NEVER_MATCH = /..(?&lt;=^)/       # a regular expression that never matches"""</span>
+</pre></div>
+</div>
+<p>Note that DHParser’s macro-system does not allow to define symbols
+inside macros. Therefore, each outline level must still be defined
+explicitly. However, it suffices to write the grammar for parsing an
+outline-heading only once.</p>
+<p>Furthermore, though not related to macros in particular, this grammar
+demonstrates how to encode such intuitive structures of common
+markup-languages like Markdown or LaTeX as sections which are
+automatically closed by the beginning of the next section (no fuss with
+ending-tags!) and paragraphs that are simply separated by empty lines
+(neither start nor ending-tags necessary).</p>
+<p>Now let’s try this on our example above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.dsl</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_parser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outline_text</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">(</span><span class="n">outlined_text_grammar</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">outline_text</span><span class="p">(</span><span class="n">outline_example</span><span class="p">)</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(main</span>
+<span class="go">  (heading "Main Heading")</span>
+<span class="go">  (section</span>
+<span class="go">    (heading "First chapter")</span>
+<span class="go">    (blocks</span>
+<span class="go">      (block</span>
+<span class="go">        (line "Some Text in the first chapter."))))</span>
+<span class="go">  (section</span>
+<span class="go">    (heading "Second chapter")</span>
+<span class="go">    (blocks</span>
+<span class="go">      (block</span>
+<span class="go">        (line "More text.")))))</span>
+</pre></div>
+</div>
+</section>
+<section id="processing-pipelines">
+<h2>Processing-Pipelines<a class="headerlink" href="#processing-pipelines" title="Link to this heading">#</a></h2>
+<section id="the-auto-generated-parser-script">
+<h3>The auto-generated parser-script<a class="headerlink" href="#the-auto-generated-parser-script" title="Link to this heading">#</a></h3>
+<p>As explained earlier (see <a class="reference internal" href="#full-scale-dsls"><span class="std std-ref">Full scale DSLs</span></a>), full scale
+DSL-projects contain a test-script the name of which starts with
+<code class="docutils literal notranslate"><span class="pre">tst_...</span></code> that generates and, if the grammar has been changed, updates
+a parser-script the name of which ends with <code class="docutils literal notranslate"><span class="pre">...Parser.py</span></code>. This
+parser-script can be used to “compile” documents written in the DSL
+described by the EBNF-Grammar in the project directory. A freshly
+generated parser-script merely yields a concrete-syntax-tree when run on
+a source file. In almost all cases, you’ll want to adjust the
+<code class="docutils literal notranslate"><span class="pre">...Parser.py</span></code> script, so that it really yields the data contained in
+the compiled document. This, however, requires further processing steps
+than just parsing. The <code class="docutils literal notranslate"><span class="pre">...Parser.py</span></code>-script contains four different
+sections, namely, the <strong>Preprocessor</strong>-, <strong>Parser</strong>-, <strong>AST</strong>- and
+<strong>Compiler</strong>-sections. Once this script has been generated, only the
+Parser-section will be updated automatically when running the
+<code class="docutils literal notranslate"><span class="pre">tst_...</span></code>-scripts. The Parser-section should therefore be left
+untouched, because any change might be overwritten without warning. For
+the same reason the comments delimiting the different sections should be
+left intact. All other sections can and - with the exceptions of the
+Preprocessor-section - usually must be edited by hand in order to allow
+the <code class="docutils literal notranslate"><span class="pre">..Parser.py</span></code>-script to return the parsed data in the desired
+form.</p>
+<p>Because for most typical DSL-projects, pre-processors are not needed, the
+Preprocessor-section will be not be discussed, here. The other two
+sections, AST (for Abstract Syntax Tree) and Compiler, contain skeletons
+for (different kinds of) tree-transformations that can be edited at will
+or even completely be substituted by custom code. All sections
+(including “Preprocessor”) comprise a callable class or an
+“instantiation function” returning a transformation function that should
+be edited as well as a <code class="docutils literal notranslate"><span class="pre">get_...</span></code>-function that returns a
+thread-specific instance of this class or function and a function that
+passes a call through to this thread-specific instance. Only the
+transformation-function proper needs to be touched. The other two
+functions are merely scaffolding to ensure thread-safety so that you do
+not have to worry about it, when filling in the transformation-function
+proper.</p>
+<p>In the case of our json-parser, the skeleton for the “compiler” that is called
+after the AST-transformation has finished. looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># COMPILER SECTION - Can be edited. Changes will be preserved.</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">jsonCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Compiler for the abstract-syntax-tree of a json source file.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">jsonCompiler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="c1"># initialize your variables here, not in the constructor!</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="o">...</span>
+
+    <span class="c1"># def on__EOF(self, node):</span>
+    <span class="c1">#     return node</span>
+
+
+<span class="n">get_compiler</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">jsonCompiler</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compile_json</span><span class="p">(</span><span class="n">ast</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">get_compiler</span><span class="p">()(</span><span class="n">ast</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, the <code class="docutils literal notranslate"><span class="pre">get_compiler()</span></code>- and <code class="docutils literal notranslate"><span class="pre">compile_json()</span></code>-functions do not
+need to be touched, while the <code class="docutils literal notranslate"><span class="pre">jsonCompiler</span></code>-class should be edited at
+will or be replaced by a function that returns a transformation
+functions, i.e. a function that takes a syntax tree as input and returns
+an arbitrary kind of output. In this example, it is reasonable to expect
+a nested Python-data-structure as output that contains the data of the
+json-file. We’ll see in section <a class="reference internal" href="#json-compiler"><span class="std std-ref">Compiling the AST to data</span></a>, below, how this
+could be done.</p>
+</section>
+<section id="streamlining-the-abstract-syntax-tree-ast">
+<h3>Streamlining the abstract-syntax-tree (AST)<a class="headerlink" href="#streamlining-the-abstract-syntax-tree-ast" title="Link to this heading">#</a></h3>
+<p>Let’s first look at the AST-transformation-skeleton:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#######################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># PARSER SECTION - Don't edit! CHANGES WILL BE OVERWRITTEN!</span>
+<span class="c1">#</span>
+<span class="c1">#######################################################################</span>
+
+<span class="n">json_AST_transformation_table</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># AST Transformations for the json-grammar</span>
+    <span class="s2">"json"</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="o">...</span>
+    <span class="s2">"_EOF"</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">jsonTransformer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TransformationFunc</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Creates a transformation function that does not share state with other</span>
+<span class="sd">    threads or processes."""</span>
+    <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">traverse</span><span class="p">,</span> <span class="n">transformation_table</span><span class="o">=</span><span class="n">json_AST_transformation_table</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+<span class="n">get_transformer</span> <span class="o">=</span> <span class="n">ThreadLocalSingletonFactory</span><span class="p">(</span><span class="n">jsonTransformer</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_json</span><span class="p">(</span><span class="n">cst</span><span class="p">):</span>
+    <span class="n">get_transformer</span><span class="p">()(</span><span class="n">cst</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This may look slightly more complicated, because - as explained earlier
+in <a class="reference internal" href="#ast-building"><span class="std std-ref">Declarative AST-building</span></a> - per default the AST-transformations are
+defined declaratively by a transformation-table. Of course, you are free
+to replace the table-definition and the
+<code class="docutils literal notranslate"><span class="pre">jsonTransformer</span></code>-instantiation function all together by a class like
+in the compilation section. (See the <a class="reference external" href="https://gitlab.lrz.de/badw-it/DHParser/-/tree/master/examples/XML">XML-example</a> in
+the examples-subdirectory of the DHParser-repository, where this has
+been done to realize a more complicated AST-transformation.) However,
+filling in the table, allows to define the
+abstract-syntax-tree-transformation to be described by sequences of
+simple rules that are applied to each node. Most of the time this
+suffices to distill an abstract-syntax-tree from a concrete syntax-tree.
+Therefore, we rewrite the table as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">json_AST_transformation_table</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'string'</span><span class="p">:</span> <span class="p">[</span><span class="n">remove_brackets</span><span class="p">,</span> <span class="n">reduce_single_child</span><span class="p">],</span>
+    <span class="s1">'number'</span><span class="p">:</span> <span class="p">[</span><span class="n">collapse</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Just like shown above (<a class="reference internal" href="#ast-building"><span class="std std-ref">Declarative AST-building</span></a>) we use the
+<a class="reference internal" href="Reference.html#transform.remove_brackets" title="transform.remove_brackets"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform.remove_brackets()</span></code></a>-transformation to get rid of the
+quotation marks surrounding string elements and, other than above, we
+also ad the <a class="reference internal" href="Reference.html#transform.reduce_single_child" title="transform.reduce_single_child"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform.reduce_single_child()</span></code></a> which eliminates a
+single dangling leaf-node. (The complement to
+<a class="reference internal" href="Reference.html#transform.reduce_single_child" title="transform.reduce_single_child"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform.reduce_single_child()</span></code></a> is the function
+<a class="reference internal" href="Reference.html#transform.replace_by_single_child" title="transform.replace_by_single_child"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform.replace_by_single_child()</span></code></a> which removes the parent
+node of a singe dangling leaf-node.) For the <code class="docutils literal notranslate"><span class="pre">number</span></code>-primitive we use
+the <code class="docutils literal notranslate"><span class="pre">collapse</span></code>-transformation which replaces any substructure of
+child-nodes by its concatenated string-content.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">collapse</span></code>-transformation is a bit like a bulldozer. You loose all information about the
+substructure of the element to which it is applied.</p>
+<p>In this case it is not possible, any more, to
+determine whether a number is an integer or a floating point number by looking for the
+FRAC- or EXP-nodes in the syntax-tree of the number element in the subsequent compilation
+stage.</p>
+</div>
+<p>A great way to check if an AST-transformation works as expected is by
+adding an asterisk “*” to the name of match-test. Usually, the test
+runner only outputs the abstract-syntax-tree of match-tests in the
+test-report. However, if marked with an asterisk, the concrete syntax
+tree will be printed, too. So, adding this marker to a test within an
+“.ini”-file in the “tests_grammar”-subdirectory, say:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">match</span><span class="p">:</span><span class="n">number</span><span class="p">]</span>
+<span class="n">M1</span><span class="o">*</span><span class="p">:</span> <span class="s2">"-2.0E-10"</span>
+</pre></div>
+</div>
+<p>yields the following in results in the respective markdown-file in
+“tests_grammar/REPORT”-subdirectory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Test</span> <span class="n">of</span> <span class="n">parser</span><span class="p">:</span> <span class="s2">"number"</span>
+<span class="o">========================</span>
+
+
+<span class="n">Match</span><span class="o">-</span><span class="n">test</span> <span class="s2">"M1*"</span>
+<span class="o">-----------------</span>
+
+<span class="c1">### Test-code:</span>
+
+    <span class="o">-</span><span class="mf">2.0E-10</span>
+
+<span class="c1">### CST</span>
+
+    <span class="p">(</span><span class="n">number</span> <span class="p">(</span><span class="n">INT</span> <span class="p">(</span><span class="n">NEG</span> <span class="s2">"-"</span><span class="p">)</span> <span class="p">(:</span><span class="n">RegExp</span> <span class="s2">"2"</span><span class="p">))</span> <span class="p">(</span><span class="n">FRAC</span> <span class="p">(</span><span class="n">DOT</span> <span class="s2">"."</span><span class="p">)</span> <span class="p">(:</span><span class="n">RegExp</span> <span class="s2">"0"</span><span class="p">))</span> <span class="p">(</span><span class="n">EXP</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"E"</span><span class="p">)</span> <span class="p">(:</span><span class="n">Text</span> <span class="s2">"-"</span><span class="p">)</span> <span class="p">(:</span><span class="n">RegExp</span> <span class="s2">"10"</span><span class="p">)))</span>
+
+<span class="c1">### AST</span>
+
+    <span class="p">(</span><span class="n">number</span> <span class="s2">"-2.0E-10"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The transformation rules specified above already greatly simplify the
+AST. For example, compiling our simple test data set <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">&quot;one&quot;:</span> <span class="pre">1,</span>
+<span class="pre">&quot;two&quot;:</span> <span class="pre">2</span> <span class="pre">}</span></code> now yields:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">json</span> <span class="p">(</span><span class="nb">object</span> <span class="p">(</span><span class="n">member</span> <span class="p">(</span><span class="n">string</span> <span class="s2">"one"</span><span class="p">)</span> <span class="p">(</span><span class="n">number</span> <span class="s2">"1"</span><span class="p">))</span> <span class="p">(</span><span class="n">member</span> <span class="p">(</span><span class="n">string</span> <span class="s2">"two"</span><span class="p">)</span> <span class="p">(</span><span class="n">number</span> <span class="s2">"2"</span><span class="p">))))</span>
+</pre></div>
+</div>
+</section>
+<section id="compiling-the-ast-to-data">
+<span id="json-compiler"></span><h3>Compiling the AST to data<a class="headerlink" href="#compiling-the-ast-to-data" title="Link to this heading">#</a></h3>
+<p>However, this is still not quite what we would expect from a
+JSON-parser. What we’d like to have would be a JSON-parser (or
+“compiler” for that matter) that returns a nested Python-data-structure
+that contains the data stored in a JSON-file - and not merely the
+concrete or abstract syntax-tree of that file. For this purpose, we need
+to fill in the Compiler-class-skeleton in the compiler-sections of the
+generated Parser script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">JSONType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">jsonCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Compiler for the abstract-syntax-tree of a json-source file.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">jsonCompiler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_None_check</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># set to False if any compilation-method is allowed to return None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="c1"># initialize your variables here, not in the constructor!</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONType</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JSONType</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span> <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">)}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JSONType</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">JSONType</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="n">num_str</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">if</span> <span class="n">num_str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">num_str</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'E'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_str</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_false</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_null</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_PLAIN</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_ESCAPE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">content</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">'/'</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+            <span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">:</span> <span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'"'</span><span class="p">:</span> <span class="s1">'"'</span><span class="p">,</span>
+            <span class="s1">'b'</span><span class="p">:</span> <span class="s1">'</span><span class="se">\b</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'f'</span><span class="p">:</span> <span class="s1">'</span><span class="se">\f</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'n'</span><span class="p">:</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'r'</span><span class="p">:</span> <span class="s1">'</span><span class="se">\r</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'t'</span><span class="p">:</span> <span class="s1">'</span><span class="se">\t</span><span class="s1">'</span>
+        <span class="p">}[</span><span class="n">code</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_UNICODE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">new_error</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Illegal unicode character: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">'?'</span>
+</pre></div>
+</div>
+<p>The code should be self-explanatory: For each node-type (or tag name) that can
+occur in the abstract-syntax-tree the associated visitor-method converts the
+sub-tree to a Python data-structure which is returned to the calling method.</p>
+<p>After having added this compiler code to the Parser-script, calling it
+with our trivial test-data set yields the expected Python-dictionary:
+<code class="docutils literal notranslate"><span class="pre">{'one':</span> <span class="pre">1,</span> <span class="pre">'two':</span> <span class="pre">2}</span></code> instead of the syntax-tree.</p>
+<p>Now, since our JSON-Parser is able to produce Python-objects from
+JSON-files, we will probably prefer to call it from Python in order to
+receive the data rather than running it on the command line. Instead of
+calling it, the generated parser-script can simply be imported as a
+module. The generated script contains a <code class="docutils literal notranslate"><span class="pre">compile_src()</span></code>-function which
+allows to compile a DSL-string from within a python program by running
+all four stages (preprocessing, parsing, AST-transformation and
+compiling) in sequence on the source string.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jsonParser</span>
+
+<span class="n">json_string</span> <span class="o">=</span> <span class="s1">'{"one": 1, "two":2}'</span>
+<span class="n">json_data</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">jsonParser</span><span class="o">.</span><span class="n">compile_src</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">json_data</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'one'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'two'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>It is as simple as that!</p>
+</section>
+<section id="splitting-the-parser-script">
+<h3>Splitting the Parser-script<a class="headerlink" href="#splitting-the-parser-script" title="Link to this heading">#</a></h3>
+<p>For most real-world DSLs the compilation stage will be more complex than in our
+JSON-example. Also, there might be more than one transformation or compilation
+stage after the AST-transformation. Adding all this to the autogenerated
+parser-script would leave us with a rather large and unwieldy script. In order
+to avoid this, it is advisable to split the parser-script after the
+AST-transformation into a parser-script and a compiler-script while leaving its
+name (ending with “Parser.py”) for the first part, i.e. the parser-script.
+DHParser is then still able to update the code in the parser-script in case the
+grammar hast changed. The second part should be given a different name, say
+“…Compiler.py”.</p>
+<p>A simple import statement at the beginning of the compiler script suffices to
+connect both parts. In our example of the JSON-parser one would just add the
+following line at the beginning of the “jsonCompiler.py” script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jsonParser</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_preprocessor</span><span class="p">,</span> <span class="n">get_grammar</span><span class="p">,</span> <span class="n">get_transformer</span>
+</pre></div>
+</div>
+<p>and everything works just the same, only that from now on the
+compiler-script takes the role of the parser script from the perspective
+of any client using the JSON-parser. This means that from now on, in
+order to use the parser/compiler either from the command line or from
+Python code, the second part, i.e. the compiler-script must be called or
+imported. Thus, if we split our JSON-parser in this fashion, we’d call
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">jsonCompiler.py</span> <span class="pre">test.json</span></code> from the command line, and we would
+add <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">jsonCompiler</span></code> or <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">jsonCompiler</span> <span class="pre">import</span> <span class="pre">compile_src</span></code>
+at the beginning of a client script.</p>
+<p>In case you make use of the auto-generated Server-script (see below),
+you should also adjust any import-statements that refer to the
+parser-script, so that they refer to the compile-script instead.</p>
+</section>
+</section>
+<section id="language-server-support">
+<h2>Language Server Support<a class="headerlink" href="#language-server-support" title="Link to this heading">#</a></h2>
+<p>DHParser supports running parsers as local servers and includes
+boilerplate code for building editor support for your domain specific
+language via the <a class="reference external" href="https://microsoft.github.io/language-server-protocol/">language server protocol</a>. After creating a new
+project and running the test-runner script in the project directory, you
+will also find a “…Server.py”-script next to the “…Parser.py” in the
+project directory. The server-script can be used in a similar way as the
+parser-script. However, the server script will pass on any parsing
+requests to a server running in the background. The server will
+automatically be started when calling the script for the first time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python jsonServer.py test.json
+Starting server on 127.0.0.1:8890
+[{"one":1,"two":2},[]]
+</pre></div>
+</div>
+<p>Other than the plain parser-script, the result the server returns is
+always a list of the result proper and any errors or warnings that
+haven been generated on the way.</p>
+<p>Running the parser in server-mode as several advantages:</p>
+<ol class="arabic">
+<li><p>Once the server is running, there are no startup times any more. Not
+the least because of the compilation of the (potentially very many)
+regular expressions within a parser, the startup times can otherwise
+be considerable for complex grammars.</p></li>
+<li><p>In particular, just-in-time compilers like <a class="reference external" href="https://www.pypy.org/">pypy</a> that typically
+trade startup time for run-time speed, can profit in particular from
+the server mode.</p></li>
+<li><p>Several parsing/compilation can be run in parallel and will automatically
+use different processor cores. However, when calling the parser-script in</p>
+<p>batch-mode by adding more than one filename to the command line or calling
+it with the name of a directory containing source files, it will also try
+to exploit multiple processor cores.</p>
+</li>
+<li><p>Last not least, the server script can be extended to provide a
+language server for an integrated development environment or
+program-editor. In this case the script would usually be started
+from within the editor and with the “–stream”-option which will
+allow connect to the server via streams rather than a tcp port and
+address.</p></li>
+</ol>
+<p>In order to stop a running server, the server-script should be called with
+the “–stopserver”-option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python jsonServer.py --stopserver
+Server on 127.0.0.1:8890 stopped
+</pre></div>
+</div>
+<p>The language server protocol support that DHParser offers differs in several
+respects from the popular <a class="reference external" href="https://github.com/openlawlibrary/pygls">pygls</a>-module:</p>
+<ul class="simple">
+<li><p>DHParser uses the more lightweight <a class="reference external" href="https://peps.python.org/pep-0589/">TypedDict</a> -dictionaries instead
+of <a class="reference external" href="https://pydantic-docs.helpmanual.io/">pydantic</a>-modules. The TypedDict-definitions in the
+DHParser.lsp-module are auto-generated from the
+<a class="reference external" href="https://microsoft.github.io/language-server-protocol/specifications/specification-current/">language server protocol specification</a> with <a class="reference external" href="https://github.com/jecki/ts2python">ts2python</a>,
+a package that has itself been build with DHParser.</p></li>
+<li><p>The DHParser.server-module also provides some boilerplate code to support
+parallel execution via multiprocessing.</p></li>
+</ul>
+<p>But, of course <a class="reference external" href="https://github.com/openlawlibrary/pygls">pygls</a> can also be used together with DHParser, if you prefer
+<a class="reference external" href="https://github.com/openlawlibrary/pygls">pygls</a> or already have some experience with this module.</p>
+</section>
+<section id="and-more">
+<h2>And more…<a class="headerlink" href="#and-more" title="Link to this heading">#</a></h2>
+<section id="parser-gui">
+<h3>Parser-GUI<a class="headerlink" href="#parser-gui" title="Link to this heading">#</a></h3>
+<p>Along with the “…Server.py”-script the test runner also creates and
+“…App.py” script (DHParser versions &gt;= 1.4.0, only!). The latter is a
+simple GUI-frontend for the “…Parser.py”-script. In case you do not
+need the Server- or App-script, you can safely either of them. Both of
+theses scripts can always be created anew by calling the test-runner
+script “tst_…_grammar.py” with the “–scripts”-option.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>When bundling the App-script with <a class="reference external" href="https://pyinstaller.org/en/stable/">pyinstaller</a> or a
+similar technology, multiprocessing can fail to work under some
+conditions. In this case it is advisable to turn of the
+configuration switch for multiprocessing in the main-section of
+the App-script by uncommenting the respective lines before
+bundling the App.</p>
+</div>
+</section>
+<section id="performance-optimization">
+<h3>Performance optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading">#</a></h3>
+<p>The most important design goals of DHParser have been reliability,
+flexibility and testability. There are some performance optimizations,
+most notably the early tree reduction during the parsing stage that is
+controlled with the <code class="docutils literal notranslate"><span class="pre">&#64;drop</span></code>  and  <code class="docutils literal notranslate"><span class="pre">&#64;hide</span></code>-directives (see
+<a class="reference internal" href="manuals/01_EBNF-grammars.html#simplifying-syntax-trees"><span class="std std-ref">Simplifying Syntax-Trees while Parsing</span></a>) and type-hint modules (.pxd) for
+compiling DHParser with <a class="reference external" href="https://cython.org/">Cython</a>. However, given that the whole project
+has been realized with Python, rather than a compiled language like
+<a class="reference external" href="https://nim-lang.org/">nim</a>, top-performance has not been the most import design goal.</p>
+<p>This said, you can expect DHParser to have roundabout the same
+performance as other python parsers that are equally powerful, i.e.
+DHParser is slower but more powerful than LALR-parsers and about as fast
+as the about equally powerful Earley-parsers.</p>
+<p>If you feel that DHParser’s performance is too slow, you can increase
+the spped roughly a factor of 2 by compiling it with <a class="reference external" href="https://cython.org/">Cython</a>. In order to do so
+you need to have a c-compiler installed on your system (gcc, clang on
+Linux or MacOs and msvc on Windows will all do.  Since Version 1.3
+DHParser requires at least Cython Version 3 alpha 11, which cannot be
+installed from the <a class="reference external" href="https://pypi.org/">Python Package Index</a> but must
+be built from the <a class="reference external" href="https://github.com/cython/cython">sources on github</a>. On some Linux-distributions you
+might find it in the community-repositories. (Under Arch-Linux it can be
+installed with <code class="docutils literal notranslate"><span class="pre">yay</span> <span class="pre">-S</span> <span class="pre">cython3</span></code>.)</p>
+<p>Compiling DHParser is simple. You just need to call the
+<code class="docutils literal notranslate"><span class="pre">dhparser_cythonize.py</span></code>-script in the <code class="docutils literal notranslate"><span class="pre">scripts</span></code>-subdirectory of
+DHParsers-installation-directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python DHParser/scripts/dhparser_cythonize.py
+</pre></div>
+</div>
+<p>DHParser can also be run with any recent version of <a class="reference external" href="https://www.pypy.org/">pypy3</a>. However,
+my own experience so far has been that while running DHParser with pypy
+with one and the same dataset over and over again produces a most
+impressive speedup, in real-world applications of DHParser,
+pypy is a even quite a bit slower than the
+python-interpreter. (Compiling one fascicle of the medieval latin
+dictionary in batch mode with multiprocessing takes about three times
+as long with pypy3!) So, presently, I’d recommend
+staying with <a class="reference external" href="https://cython.org/">Cython</a> when trying to speed-up DHParser.</p>
+<p>DHParser uses a variant of a recursive descent parser, a so-called
+“pack-rat-parser”, which means that it employs memoizing to cache
+results. It has been proven that this kind of parser runs in linear
+time, although I am not sure if this result is still valid with the “seed
+and grow”-algorithm that has been implemented to support left-recursive
+grammars. Other than that, you can rest assured that there will be no
+nasty runtime surprises as they can happen with regular-expression
+engines or un-cached recursive-descent-parsers.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to DHParser’s documentation!</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="StepByStepGuide.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">A Step by Step Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-parser-generation">Automatic Parser-Generation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-a-parser-from-a-grammar">Generating a parser from a grammar</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-parsers-within-a-python-script">Creating parsers within a Python-script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#full-scale-dsls">Full scale DSLs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clutter-free-grammars">Clutter-free grammars</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declarative-ast-building">Declarative AST-building</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-internal-mini-dsl-for-ast-transformation">An internal mini-DSL for AST-transformation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-as-you-like-it-xml-json-s-expressions">Serialization as you like it: XML, JSON, S-expressions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xml-support">XML-support</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-driven-grammar-development">Test-driven grammar development</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-testing-framework">Unit-testing framework</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#debugger-included">Debugger included</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fail-tolerant-parsing">Fail-tolerant parsing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#macros">Macros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-pipelines">Processing-Pipelines</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-auto-generated-parser-script">The auto-generated parser-script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#streamlining-the-abstract-syntax-tree-ast">Streamlining the abstract-syntax-tree (AST)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiling-the-ast-to-data">Compiling the AST to data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-the-parser-script">Splitting the Parser-script</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#language-server-support">Language Server Support</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#and-more">And more…</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parser-gui">Parser-GUI</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-optimization">Performance optimization</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

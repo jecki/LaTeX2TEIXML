@@ -44,7 +44,8 @@ from DHParser.configuration import get_config_value
 from DHParser.preprocess import PreprocessorFunc, gen_neutral_srcmap_func
 from DHParser.nodetree import Node, RootNode, EMPTY_PTYPE, Path
 from DHParser.transform import TransformerFunc
-from DHParser.parse import ParserCallable, Parser
+from DHParser.parse_base import Parser
+from DHParser.parse_grammar import ParserCallable
 from DHParser.error import is_error, is_fatal, Error, FATAL, CANCELED, \
     TREE_PROCESSING_CRASH, COMPILER_CRASH, AST_TRANSFORM_CRASH, has_errors
 from DHParser.log import log_parsing_history, log_ST, is_logging
@@ -171,6 +172,7 @@ class Compiler:
         self._debug_already_compiled = set()              # type: Set[Node]
         self.finalizers = []  # type: List[Tuple[Callable, Tuple]]
         self.method_dict = {}  # type: Dict[str, CompileMethod]
+        self.attributes_visited: Set[int] = set()
 
     def visitor_name(self, node_name: str) -> str:
         """
@@ -276,15 +278,14 @@ class Compiler:
             self.cancel_query = None
 
     def visit_attributes(self, node):
-        if node.has_attr():
-            self.path.append(node)
+        if node.has_attr() and (nid := id(node)) not in self.attributes_visited:
+            self.attributes_visited.add(nid)
             for attribute, value in tuple(node.attr.items()):
                 try:
                     attribute_visitor = self.__getattribute__(self.attr_visitor_name(attribute))
                     attribute_visitor(node, value)
                 except AttributeError:
                     pass
-            self.path.pop()
 
     def fallback_compiler(self, node: Node) -> Any:
         """This is a generic compiler function that will be called on
@@ -381,9 +382,9 @@ class Compiler:
                    else find_compilation_method(node)
         self.path.append(node)
         result = compiler(node)
-        self.path.pop()   # do not put this into a try ... finally: clause, as error reporting still requires the path
         if self.has_attribute_visitors:
             self.visit_attributes(node)
+        self.path.pop()   # do not put this into a try ... finally: clause, as error reporting still requires the path
         if result is None and self.forbid_returning_None:
             raise CompilerError(
                 ('Method on_%s returned `None` instead of a valid compilation '
@@ -527,7 +528,7 @@ def compile_source(source: str,
         # AST-transformation
 
         if is_error(syntax_tree.error_flag):
-            # catch Python exception, because if an error has occurred
+            # catch Python-exception, because if an error has occurred
             # earlier, the syntax tree might not look like expected,
             # which could (fatally) break AST transformations.
             try:

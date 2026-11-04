@@ -23,6 +23,11 @@ from __future__ import annotations
 import sys
 assert sys.version_info >= (3, 7, 0), "DHParser requires at least Python-Version 3.7!"
 
+from . import (compile, configuration, dsl, ebnf, error, log,
+               parse_base, parse_combinators, parse_error, parse_grammar,
+               pipeline, preprocess, stringview, nodetree, toolkit,
+               trace, transform, versionnumber)
+
 from .compile import *
 from .configuration import *
 from .dsl import *
@@ -30,36 +35,44 @@ from .ebnf import *
 from .error import *
 from .log import *
 # from .lsp import *
-from .parse import *
+from .parse_error import *
+from .parse_base import *
+from .parse_grammar import *
+from .parse_combinators import *
 from .pipeline import *
 from .preprocess import *
 # from .server import *
 from .stringview import *
 from .nodetree import *
+from .standoff import *
 # from .testing import *
 from .toolkit import *
 from .trace import *
 from .transform import *
 from .versionnumber import *
 
-__all__ = set().union(compile.__all__,
-                      configuration.__all__,
-                      dsl.__all__,
-                      ebnf.__all__,
-                      error.__all__,
-                      log.__all__,
-                      # lsp.__all__,
-                      parse.__all__,
-                      pipeline.__all__,
-                      preprocess.__all__,
-                      # server.__all__,
-                      stringview.__all__,
-                      nodetree.__all__,
-                      # testing.__all__,
-                      toolkit.__all__,
-                      trace.__all__,
-                      transform.__all__,
-                      versionnumber.__all__)
+__all__ = (*compile.__all__,
+           *configuration.__all__,
+           *dsl.__all__,
+           *ebnf.__all__,
+           *error.__all__,
+           *log.__all__,
+           # *lsp.__all__,
+           *parse_error.__all__,
+           *parse_base.__all__,
+           *parse_grammar.__all__,
+           *parse_combinators.__all__,
+           *pipeline.__all__,
+           *preprocess.__all__,
+           # *server.__all__,
+           *standoff.__all__,
+           *stringview.__all__,
+           *nodetree.__all__,
+           # *testing.__all__,
+           *toolkit.__all__,
+           *trace.__all__,
+           *transform.__all__,
+           *versionnumber.__all__)
 
 name = "DHParser"
 __title__ = "DHParser"
@@ -69,6 +82,5 @@ __uri__ = __url__
 __author__ = "Eckhart Arnold"
 __email__ = "eckhart.arnold@posteo.de"
 __license__ = "https://www.apache.org/licenses/LICENSE-2.0"
-__copyright__ = "Copyright (c) 2016-2021 Eckhart Arnold"
-# __all__ = ['toolkit', 'stringview', 'error', 'nodetree', 'preprocess', 'parse',
-# 'transform', 'ebnf', 'dsl', 'testing', 'versionnumber', 'configuration']
+__copyright__ = "Copyright (c) 2016-2026 Eckhart Arnold"
+

@@ -1,0 +1,1376 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Post-Processing &#8212; DHParser 1.9.9 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=ea41cc44"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manuals/05_postprocessing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/DHParser_Logo_32.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Testing" href="06_testing.html" />
+    <link rel="prev" title="AST-Transformation" href="04_AST-transformation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.9.9" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-light" alt="DHParser 1.9.9 documentation - Home"/>
+    <img src="../_static/DHParser_Logo_128.png" class="logo__image only-dark pst-js-only" alt="DHParser 1.9.9 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Overview of DHParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../StepByStepGuide.html">A Step by Step Guide</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../Manuals.html">Manuals</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_EBNF-grammars.html">EBNF-Grammars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_document-trees.html">Document-Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_content-mappings.html">Content Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_AST-transformation.html">AST-Transformation</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Post-Processing</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="06_testing.html">Testing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://gitlab.lrz.de/badw-it/DHParser" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-gitlab"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/manuals/05_postprocessing.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Post-Processing</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Post-Processing</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-compiler">Class Compiler</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transforming">Transforming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiling-to-other-structures">Compiling to other structures</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-and-finalizing">Initializing and Finalizing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes-and-functions-reference"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-compile">class Compile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types-and-functions">Types and Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-pipelines">Processing Pipelines</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-standard-pipeline">The standard-pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-extended-pipeline">The extended pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Types and Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="post-processing">
+<span id="compiling"></span><h1>Post-Processing<a class="headerlink" href="#post-processing" title="Link to this heading">#</a></h1>
+<p>Module <a class="reference internal" href="../Reference.html#module-4" title="compile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">compile</span></code></a> provides the scaffolding for further
+tree-processing stages after the AST-transformation as well as for the
+compilation of syntax or document-trees to different kinds of data.</p>
+<p>The most simple case is the one where there is only one further
+processing-stage after AST-Transformation and this last stage is called
+“compilation” no matter whether its outcome is another and now final
+tree-structure representing the processed source document or a different
+kind of data structure. For this purpose module <a class="reference internal" href="../Reference.html#module-4" title="compile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">compile</span></code></a>
+provides the class <a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a> as scaffolding.</p>
+<p>Just as with the transformation-table for the AST-transformation, using
+the Compile-class is a suggestion, not a must. You are free to
+implementation your very own transformation function(s) from scratch or
+- as long as only tree to tree-transformations are concerned - the
+table-based transformation provided by <a class="reference internal" href="../Reference.html#module-3" title="transform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transform</span></code></a> that is
+recommended for the CST-to-AST-transformation-step.</p>
+<p>Also, you are free to add as many transformation steps in-between the
+AST and the end-result as you like. It is even not untypical for digital
+humanities projects to have bifurcations in the processing pipeline,
+where one bifurcations leads to say, the pdf-generation for a printable
+document and another bifurcation yields an HTML-output to be viewed
+online.</p>
+<section id="class-compiler">
+<h2>Class Compiler<a class="headerlink" href="#class-compiler" title="Link to this heading">#</a></h2>
+<p>Class <a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a> provides the scaffolding for
+tree-transformations based on the visitor-pattern. Typically, you’d
+derive a custom-compilation class from the “Compiler”-class and add
+“on_NAME”-methods (or “node-handlers”) for transforming nodes with a
+particular name. These methods are called the “compilation-methods”. It
+is also possible, though less common, to add
+“attr_ATTRIBUTENAME”-methods that will be called on all those nodes that
+have an attribute of that name. The Compiler-class itself is callable
+and the compilation-process is initiated by calling an instance of this
+class (or a class derived from “Compile”) with the (AST-)tree as
+argument.</p>
+<p>For nodes for which no “on_NAME”-method has been defined, class compile simply
+calls the compilation-methods for all children (if any) and updates the node’s
+result-tuple with the return values of the children’s compilation-call that are
+not None. This <a class="reference internal" href="../Reference.html#compile.Compiler.fallback_compiler" title="compile.Compiler.fallback_compiler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fallback_compiler()</span></code></a>-method silently
+assumes that the compilation methods do return a (transformed) node. Since the
+fallback-method fails in any case where the result of a child’s compilation is
+not a Node, the fallback-method must be overridden for compilers that yield
+other data-structures than node-trees. Or it must be made sure otherwise that
+the “fallback_compiler”-method will never be called, for example by providing
+“on_NAME”-methods for all possible node-names. This technique has been used in
+the JSON-compiler-example in the “Overview”-section of this manual (see
+<a class="reference internal" href="../Overview.html#json-compiler"><span class="std std-ref">Compiling the AST to data</span></a>).</p>
+<p>Using class <a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a> for merely transforming data or using
+it for deriving different kinds data-structures or even, as with a classical
+compiler, a runnable piece of code, are different use cases that require
+slightly different design patterns. We will look at each of these use cases
+separately in the following.</p>
+<section id="transforming">
+<h3>Transforming<a class="headerlink" href="#transforming" title="Link to this heading">#</a></h3>
+<p>Let’s first see how class <a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a> can be used to
+transform node-trees. As an example we use a rudimentary XML-parser that
+only parses tags and text but no empty elements, attributes, comments,
+processing instructions, declarations and the like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mini_xml_grammar</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
+<span class="gp">... </span><span class="s2">    @ whitespace = /\s*/</span>
+<span class="gp">... </span><span class="s2">    @ hide       = EOF</span>
+<span class="gp">... </span><span class="s2">    @ drop       = EOF, whitespace, strings</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">    document = ~ element ~ §EOF</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">    element  = STag §content ETag</span>
+<span class="gp">... </span><span class="s2">    STag     = '&lt;' TagName §'&gt;'</span>
+<span class="gp">... </span><span class="s2">    ETag     = '&lt;/' TagName §'&gt;'</span>
+<span class="gp">... </span><span class="s2">    TagName  = /\w+/</span>
+<span class="gp">... </span><span class="s2">    content  = [CharData] { element [CharData] }</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">    CharData = /(?:(?!\]\]&gt;)[^&lt;&amp;])+/</span>
+<span class="gp">... </span><span class="s2">    EOF      =  !/./</span>
+<span class="gp">... </span><span class="s2">"""</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.dsl</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_parser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xml_parser</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">(</span><span class="n">mini_xml_grammar</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, without any further processing, a pure XML-parser does not yield
+the tree-data encoded in an XML-source, but the syntax tree of that
+XML-encoded text:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xml_source</span> <span class="o">=</span> <span class="s2">"&lt;line&gt;Herz, mein Herz ist traurig&lt;/line&gt;"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">xml_parser</span><span class="p">(</span><span class="n">xml_source</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+<span class="go">&lt;document&gt;</span>
+<span class="go">  &lt;element&gt;</span>
+<span class="go">    &lt;STag&gt;</span>
+<span class="go">      &lt;TagName&gt;line&lt;/TagName&gt;</span>
+<span class="go">    &lt;/STag&gt;</span>
+<span class="go">    &lt;content&gt;</span>
+<span class="go">      &lt;CharData&gt;Herz, mein Herz ist traurig&lt;/CharData&gt;</span>
+<span class="go">    &lt;/content&gt;</span>
+<span class="go">    &lt;ETag&gt;</span>
+<span class="go">      &lt;TagName&gt;line&lt;/TagName&gt;</span>
+<span class="go">    &lt;/ETag&gt;</span>
+<span class="go">  &lt;/element&gt;</span>
+<span class="go">&lt;/document&gt;</span>
+</pre></div>
+</div>
+<p>Where we would like to get to, is the data-tree that when serialized looks
+more or less like the original XML:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">line</span><span class="o">&gt;</span><span class="n">Herz</span><span class="p">,</span> <span class="n">mein</span> <span class="n">Herz</span> <span class="n">ist</span> <span class="n">traurig</span><span class="o">&lt;/</span><span class="n">line</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In order to extract the tree-data that has been encoded in the
+XML-source, we need a compiler that can compile XML-syntax-trees to
+XML-data-trees. (We can skip the AST-transformation-step, because with
+the &#64;drop-directive in the grammar, the concrete syntax tree has already
+sufficiently been streamlined for further processing). In order to do
+so, we need to write compilation-methods at least for the node-types
+“document”, “element” and “content”. We do not really need
+compilation-methods for “STag” and “ETag”, because these will be
+dropped, anyway. Similarly, “CharData” does not need to be compiled,
+because it is a leaf-node the content of which shall not be changed,
+anyway. And the elimination of “CharData”-nodes happens on the level
+below “CharData”. (Of course, this is just one way of writing a
+syntax-tree to data-tree converter, other approaches with different
+decisions on which compilation-methods are implemented are also
+imaginable.)</p>
+<p>The compilation-methods typically follow one or the other of the
+following two patterns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tree-transformation-pattern</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">on_NAME</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">node</span>
+
+<span class="c1"># Generalized-compilation-pattern</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">on_NAME</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">node</span>   <span class="c1"># could also be anything other than a node-object</span>
+</pre></div>
+</div>
+<p>“NAME” does here stand as placeholder for any concrete node-name.</p>
+<p>The first pattern works only for compilers that yield tree-structures, because,
+as said, <a class="reference internal" href="../Reference.html#compile.Compiler.fallback_compiler" title="compile.Compiler.fallback_compiler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fallback_compiler()</span></code></a> assumes that the
+returned result of any compilation function is a node.
+<a class="reference internal" href="../Reference.html#compile.Compiler.compile" title="compile.Compiler.compile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compile()</span></code></a> does not make this assumption. Therefore,
+the second pattern can be employed in either use-case. In any case, calling
+compilation-methods of child-nodes should always be channeled through one of the
+two methods “fallback_compiler()” or “compile()”, because these methods make
+sure the “self.path”- variable (which keeps the “path” of nodes from the
+root-node to the current node) will be updated and that any
+“attr_NAME()”-methods are called.</p>
+<p>The “fallback_compiler”-method furthermore ensures that changes in the
+composition of ancestor-nodes a) do not mess up the tree traversal and b) do
+not overwrite node-objects returned by the node-handlers. The algorithm of
+“fallback_compiler” runs through the tuple of children in the state at
+the time the call is issued. If during this pass the tuple of children is
+exchanged by a modified tuple of children, for example because a child is
+dropped from the tree, this will not affect the tuple of children that
+“fallback_compiler” iterates over. So all children’s handlers will be
+called even if a child is dropped and the result of its handler will
+subsequently be ignored. By the same token, handlers of children added
+during the pass will not be called. Once, the pass is finished, the children
+still present in the tuple (and only those!) will be replaced by the result
+of their handler. This may sound complicated, but it is - as I believe -
+more or less the behavior that you would intuitively expect.</p>
+<p>However that may be, in order to keep the compiler-structure clean and
+comprehensible, it is generally advisable manipulate only the
+child-composition of the node or its descendants in a handler but not
+that of its parent or farther ancestor(s). Still, as rules are there to
+be broken, it can sometimes become necessary to ignore this advice. The
+algorithm that “fallback_compiler” employ for tree-traversal allow you
+to ignore it safely. It is still dangerous and, therefore, expressly not
+recommended to manipulate the sibling-composition!</p>
+<p>It is not necessary to call the handlers of the child-nodes right at
+the beginning of the handler as these patterns suggest, or to call
+them at all. Rather, the compilation-method decides if and when and, possibly,
+also for which children the compilation-methods will be called. Other,
+than the traversal implemented in <a class="reference internal" href="../Reference.html#module-3" title="transform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transform</span></code></a>, which is always
+depth-first, the order of the traversal can be determined freely and may
+even vary for different sub-trees.</p>
+<p>With this in mind the following code that compiles the XML-syntax-tree
+into the XML-data-tree should be easy to understand:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">RootNode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.compile</span><span class="w"> </span><span class="kn">import</span> <span class="n">Compiler</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">XMLTransformer</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="c1"># don't keep pure whitespace nodes in mixed content</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">preserve_whitespace</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="c1"># compile all descendants</span>
+<span class="gp">... </span>        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1"># then reduce document node to its single element</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+<span class="gp">... </span>        <span class="n">node</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">result</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">node</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'CharData'</span><span class="p">:</span>
+<span class="gp">... </span>                 <span class="c1"># eliminate solitary CharData-nodes</span>
+<span class="gp">... </span>                <span class="n">node</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">result</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="c1"># remove CharData nodes that contain only whitespace</span>
+<span class="gp">... </span>            <span class="n">node</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">child</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span>
+<span class="gp">... </span>                                <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'CharData'</span> \
+<span class="gp">... </span>                                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_whitespace</span> \
+<span class="gp">... </span>                                <span class="ow">or</span> <span class="n">child</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">node</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_compiler</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">tag_name</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">'STag'</span><span class="p">][</span><span class="s1">'TagName'</span><span class="p">]</span><span class="o">.</span><span class="n">content</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s1">'ETag'</span><span class="p">][</span><span class="s1">'TagName'</span><span class="p">]</span><span class="o">.</span><span class="n">content</span> <span class="o">!=</span> <span class="n">tag_name</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">new_error</span><span class="p">(</span>
+<span class="gp">... </span>                <span class="n">node</span><span class="p">[</span><span class="s1">'ETag'</span><span class="p">],</span> <span class="s2">"Mismatch of opening and closing tag!"</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1"># set element-name to tag-name</span>
+<span class="gp">... </span>        <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">tag_name</span>
+<span class="gp">... </span>        <span class="c1"># drop opening and closing tag and reduce content-node</span>
+<span class="gp">... </span>        <span class="n">node</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">'content'</span><span class="p">]</span><span class="o">.</span><span class="n">result</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">node</span>
+</pre></div>
+</div>
+<p>As can be seen, it is not necessary to fill in a compilation method for
+each and every node-type that can appear in the syntax-tree. When the
+Compiler-object is used for tree-transformation, it suffices to fill in
+compilation-methods only where necessary.</p>
+<p>Most of the magic is contained in the “on_element”-method, which renames
+the “element”-nodes with the tag-name found in its starting- and
+ending-tag-children and then drops these children entirely. (Because
+they will be dropped anyway, it is not necessary to define a
+compilation-method for the STag and ETag-nodes!) Finally, the remaining
+“content”-child is reduced to the renamed element-node.</p>
+<p>Like all tree-transformations in DHParser, Compilation-methods are free
+to change the tree in-place. If you want to retain the structure of the
+tree before compilation, the only way to do so is to make a deep copy of
+the node-tree, before calling the Compiler-object. Still,
+compilation-methods must always return the result of the compilation! In
+cases where the return value of a compilation-method is a Node-object,
+it is not necessary (i.e. nowhere silently assumed) that the returned
+node-object is the same as the node-object that has been passed as a
+parameter. It can be a newly constructed Node-object, as well.</p>
+<p>Observe the use of a reset()-method: This method is called by the
+<code class="docutils literal notranslate"><span class="pre">__call__</span></code>-method of <a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a> before the
+compilation starts and should be used to reset any object-variables
+which may still contain values from the last compilation-run to their
+default values.</p>
+<p>Let’s see, how our XMLTransformer-object produces the actual data tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">syntaxtree_to_datatree</span> <span class="o">=</span> <span class="n">XMLTransformer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">syntaxtree_to_datatree</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">as_xml</span><span class="p">())</span>
+<span class="go">&lt;line&gt;Herz, mein Herz ist traurig&lt;/line&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="compiling-to-other-structures">
+<h3>Compiling to other structures<a class="headerlink" href="#compiling-to-other-structures" title="Link to this heading">#</a></h3>
+<p>To demonstrate the compilation of tree-data to types of data, we use
+a simplified JSON-grammar as starting point:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_grammar</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'''</span>
+<span class="gp">... </span><span class="s1">@literalws  = right  # eat insignificant whitespace to the right of literals</span>
+<span class="gp">... </span><span class="s1">@whitespace = /\s*/  # regular expression for insignificant whitespace</span>
+<span class="gp">... </span><span class="s1">@drop       = whitespace, strings  # silently drop bare strings and whitespace</span>
+<span class="gp">... </span><span class="s1">@hide       = /_\w+/  # regular expression to identify disposable symbols</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s1">json        = ~ _element _EOF</span>
+<span class="gp">... </span><span class="s1">_element    = object | array | string | other_literal</span>
+<span class="gp">... </span><span class="s1">object      = "{" member { "," §member } §"}"</span>
+<span class="gp">... </span><span class="s1">member      = string §":" _element</span>
+<span class="gp">... </span><span class="s1">array       = "[" [ _element { "," _element } ] §"]"</span>
+<span class="gp">... </span><span class="s1">string      = `"` §/[^"]+/ `"` ~</span>
+<span class="gp">... </span><span class="s1">other_literal = /[\w\d.+-]+/~</span>
+<span class="gp">... </span><span class="s1">_EOF        =  !/./ '''</span>
+</pre></div>
+</div>
+<p>Let’s now test this grammar, with a small piece of JSON:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_parser</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">(</span><span class="n">json_grammar</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">st</span> <span class="o">=</span> <span class="n">json_parser</span><span class="p">(</span><span class="s1">'{"pi": 3.1415}'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(json</span>
+<span class="go">  (object</span>
+<span class="go">    (member</span>
+<span class="go">      (string</span>
+<span class="go">        (:Text '"')</span>
+<span class="go">        (:RegExp "pi")</span>
+<span class="go">        (:Text '"'))</span>
+<span class="go">      (other_literal "3.1415"))))</span>
+</pre></div>
+</div>
+<p>Despite the early-on simplifications that have been configured by the
+“&#64;hide”- and the “&#64;drop”-directives, the concrete-syntax-tree, is still a
+bit verbose. So we, furthermore define an abstract-syntax-tree-transformation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">traverse</span><span class="p">,</span> <span class="n">remove_tokens</span><span class="p">,</span> <span class="n">reduce_single_child</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">json_AST_trans</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"string"</span><span class="p">:</span> <span class="p">[</span><span class="n">remove_tokens</span><span class="p">(</span><span class="s1">'"'</span><span class="p">),</span> <span class="n">reduce_single_child</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">st</span> <span class="o">=</span> <span class="n">traverse</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">json_AST_trans</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(json (object (member (string "pi") (other_literal "3.1415"))))</span>
+</pre></div>
+</div>
+<p>Now, let’s write a compiler that compiles the abstract-syntax-tree of
+a JSON-file into a Python data-structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">JSONType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">simplifiedJSONCompiler</span><span class="p">(</span><span class="n">Compiler</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">(</span><span class="n">simplifiedJSONCompiler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">forbid_returning_None</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># None will be returned when compiling "null"</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">RootNode</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s1">'json'</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">result</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONType</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JSONType</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">)}</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JSONType</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">JSONType</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">on_other_literal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">content</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">content</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">content</span> <span class="o">==</span> <span class="s2">"null"</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">None</span>
+<span class="gp">... </span>        <span class="k">elif</span> <span class="n">content</span> <span class="o">==</span> <span class="s2">"true"</span><span class="p">:</span>  <span class="k">return</span> <span class="kc">True</span>
+<span class="gp">... </span>        <span class="k">elif</span> <span class="n">content</span> <span class="o">==</span> <span class="s2">"false"</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>                    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The essential characteristics of this pattern (i.e. compilation of a node-tree
+to a data-structure that is not a node-tree, any more) are:</p>
+<ol class="arabic simple">
+<li><p>For each possible, or rather, reachable node-type an “on_NAME”-method
+has been defined. So the fallback that silently assumes that the
+compilation-result is going to be yet another node-tree will never be
+invoked.</p></li>
+<li><p>Compilation-methods are themselves responsible for compiling the
+child-nodes of “their” node, if needed. They always do so by calling
+the “compile”-method of the superclass on the child-nodes.</p></li>
+<li><p>Every compilation-method returns the complete (compiled) data-structure that
+the tree originating in its node represents.</p></li>
+<li><p>By the same token each compilation method that calls “Compiler.compile” on
+any of its child-nodes is responsible for integrating the results of these
+calls into its own return value.</p></li>
+<li><p>Compilation-methods can and must make assumptions about the structure
+of the subtree that has been passed as the node-argument. (For
+example, “member”-nodes of the JSON-AST always have exactly two
+children.) These assumptions must be warranted by the grammar in
+combination with the AST-transformation. Their validity can be
+checked with “assert”-statements. As of now, DHParser does not offer
+any support for structural tree-validation. (If really needed,
+though, the tree could be serialized as XML and validated with common
+XML-tools against a DTD, Relax-NG-schema or XML-schema.)</p></li>
+</ol>
+<p>Now, let’s see our JSON-compiler in action:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">json_compiler</span> <span class="o">=</span> <span class="n">simplifiedJSONCompiler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">json_compiler</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">{'pi': 3.1415}</span>
+</pre></div>
+</div>
+<p>A slightly more complex example will follow further below.</p>
+</section>
+<section id="initializing-and-finalizing">
+<h3>Initializing and Finalizing<a class="headerlink" href="#initializing-and-finalizing" title="Link to this heading">#</a></h3>
+<p>Class compiler provides several hooks to initialize or
+prepare the compilation-process before it is started and to finalize
+it after it has been finished. For initialization, there are two
+methods that can be overloaded:</p>
+<ol class="arabic">
+<li><p>the <a class="reference internal" href="../Reference.html#compile.Compiler.reset" title="compile.Compiler.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a>-method which is called both by the
+constructor (i.e. “__init__”-method) of the class and at the very beginning
+of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">__call__()</span></code>-method. It’s purpose is to
+initialize or reset all variables that need to be reset anew every time
+the compiler is invoked by running the Compile-object.</p>
+<p>The reset method should contain all initializations that can be done
+independently of the concrete node-tree that is going to be compiled.</p>
+</li>
+<li><p>the <a class="reference internal" href="../Reference.html#compile.Compiler.prepare" title="compile.Compiler.prepare"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare()</span></code></a>-method which will be called
+just before the first compile-method, i.e. the compile-method of the
+root-node is called. The prepare-method will receive the root-node of
+the tree to be compiled as argument and can therefore perform any kind
+of initializations that require knowledge about the concrete data that
+is going to be compiled.</p></li>
+</ol>
+<p>For finalization, there are again two “hooks”, although of different kind:</p>
+<ol class="arabic">
+<li><p>the <a class="reference internal" href="../Reference.html#compile.Compiler.finalize" title="compile.Compiler.finalize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">finalize()</span></code></a>-method, which will be
+called after the compilation has been finished and which receives the
+result of the compilations (whatever that may be) as parameter and
+returns the (possibly) altered result. The purpose of the finalize
+method is to perform wrap-up-tasks that require access to the
+complete compilation-result, before they can be performed. This is
+the preferred place for coding finalizations.</p></li>
+<li><p>a list of finalizers (“Compiler.finalizers”). This feature is EXPERIMENTAL
+and may be removed in the future! The list is a list of
+pairs (function, parameter-tuple), which will be executed in order
+after the compilation has been finished, but before the
+Compiler.finalize-method is called.</p>
+<p>While it would of course be possible to concentrate all wrap-up task
+in the finalizer-method, the mechanism of the finalizer-list can be
+convenient, because it allows to define a wrap-up tasks as local
+functions of compilation-methods and defer their execution to the end
+of the overall compilation-process. Or, in other words,
+finalizer-tasks can be defined within the context to which they are
+logically connected. A typical use case are structural changes to the
+data-tree which could hamper the compilation if not deferred till the
+very end.</p>
+<p>A disadvantage of finalizers in contrast to the finalization-method,
+however, is that it becomes harder to keep unexpected side effects of
+finalizers on other finalizers in check if the various finalizers are
+contextually separated from each other.</p>
+</li>
+</ol>
+</section>
+</section>
+<section id="classes-and-functions-reference">
+<h2><em>Classes and Functions-Reference</em><a class="headerlink" href="#classes-and-functions-reference" title="Link to this heading">#</a></h2>
+<p>The full documentation of all classes and functions can be found in module
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.compile</span></code>. The following table of contents lists the most
+important of these:</p>
+<section id="class-compile">
+<h3>class Compile<a class="headerlink" href="#class-compile" title="Link to this heading">#</a></h3>
+<ul>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.Compiler" title="compile.Compiler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compiler</span></code></a>: A callable base class for compilers. Derive</dt><dd><p>from this class and fill in <code class="docutils literal notranslate"><span class="pre">on_NAME(self,</span> <span class="pre">node)</span></code> and <code class="docutils literal notranslate"><span class="pre">attr_NAME(self,</span>
+<span class="pre">node,</span> <span class="pre">value)</span></code> methods to build a compiler.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code>: During compilation the current path to</dt><dd><p>the node that is about to be compiled.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="xref py py-attr docutils literal notranslate"><span class="pre">finalizers</span></code>: A list of pairs of callables and</dt><dd><p>arguments, that will be called at the end of the compilation of the
+entire tree.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.Compiler.prepare" title="compile.Compiler.prepare"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare()</span></code></a>: An overridable method that will be</dt><dd><p>called with the root-note just before the compilation of the tree
+starts.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.Compiler.finalize" title="compile.Compiler.finalize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">finalize()</span></code></a>: A overridable method that will be</dt><dd><p>called with the result and that may return a possibly modified result
+after the compilation has finished.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.Compiler.wildcard" title="compile.Compiler.wildcard"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wildcard()</span></code></a>: An overridable compilation-method</dt><dd><p>that will be called when no specific compilation method, i.e.
+<code class="docutils literal notranslate"><span class="pre">on_NAME(node)</span></code> has been defined. It defaults to redirecting to
+<a class="reference internal" href="../Reference.html#compile.Compiler.fallback_compiler" title="compile.Compiler.fallback_compiler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fallback_compiler()</span></code></a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.Compiler.fallback_compiler" title="compile.Compiler.fallback_compiler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fallback_compiler()</span></code></a>: A method that will be</dt><dd><p>be called on nodes for the type or name, for that matter, of which
+no <code class="docutils literal notranslate"><span class="pre">on_NME(node)</span></code>-method has been defined. This method should ony
+be called for purely tree-transforming Compiler-objects.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="types-and-functions">
+<h3>Types and Functions<a class="headerlink" href="#types-and-functions" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt><code class="xref py py-data docutils literal notranslate"><span class="pre">CompilationResult</span></code>: A named tuple-type</dt><dd><p>that stores the result of a compilation: (result: Any, messages:
+list[<code class="xref py py-class docutils literal notranslate"><span class="pre">Error`</span></code>], AST:
+Optional[<a class="reference internal" href="../Reference.html#nodetree.RootNode" title="nodetree.RootNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootNode</span></code></a>])</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.compile_source" title="compile.compile_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">compile.compile_source()</span></code></a>: A functions that calls</dt><dd><p>preprocessor, parser, transformer and compiler in sequence on a
+source text. In other words, it runs the “standard-pipeline” on
+the source text.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="../Reference.html#compile.process_tree" title="compile.process_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">compile.process_tree()</span></code></a>: Calls a compiler on a given tree</dt><dd><p>only if the tree does not already had any fatal errors in a
+previous processing stage. This function is syntactic sugar to
+allow allow writing sequences of transformation or compilation
+stages as a sequence of <code class="docutils literal notranslate"><span class="pre">process_tree()</span></code>-calls without the
+need to chain them with if clauses.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+<section id="processing-pipelines">
+<span id="id1"></span><h1>Processing Pipelines<a class="headerlink" href="#processing-pipelines" title="Link to this heading">#</a></h1>
+<p>Processing pipelines (<a class="reference internal" href="../Reference.html#module-5" title="pipeline"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pipeline</span></code></a>) are a software design
+pattern to organize the
+passing of data through several stages of refinement before a
+final output is reached. The “standard”-pipeline looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="n">stage</span>        <span class="n">text</span> <span class="o">---&gt;</span> <span class="n">CST</span> <span class="o">--------&gt;</span> <span class="n">AST</span> <span class="o">---&gt;</span> <span class="n">output</span> <span class="n">data</span>
+                        <span class="o">|</span>           <span class="o">|</span>          <span class="o">|</span>
+                        <span class="o">|</span>           <span class="o">|</span>          <span class="o">|</span>
+<span class="n">transition</span>           <span class="n">parsing</span>  <span class="n">transforming</span>  <span class="n">compiling</span>
+<span class="p">(</span><span class="n">stage</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, processing pipelines can become much longer, depending
+into how many steps it is suitable to organize the data-refinement.
+And, they can be bifurcated, if different outputs are derived
+from the same input, say an HTML- and a PDF-version of the
+input-document.</p>
+<section id="the-standard-pipeline">
+<h2>The standard-pipeline<a class="headerlink" href="#the-standard-pipeline" title="Link to this heading">#</a></h2>
+<p>When compiling a document in a domain specific notation or language,
+DHParser assumes the same standard-pipeline of four steps:</p>
+<ol class="arabic simple">
+<li><p><em>preprocessing</em>, which is a str -&gt; str transformation. More
+precisely, it takes a text document as input and yields a text
+document as well as a source-mapping-table as output. The output
+document of the preprocessor is usually a modified version of the
+input document.</p></li>
+<li><p><em>parsing</em>, which is a str -&gt; node-tree transformation. More
+precisely, it yields the (potentially already somewhat simplified)
+concrete syntax-tree of the input-text. A list of parsing-errors may
+have been attached to the root-node of that syntax-tree.</p></li>
+<li><p><em>AST-transformation</em>, which is a node-tree -&gt; node-tree
+transformation that converts the concrete syntax-tree (in-place) into
+the abstract-syntax-tree. Again, errors may have been added to the
+error-list of the root-node.</p></li>
+<li><p><em>compiling</em>: which is a node-tree -&gt; anything transformation. More
+precisely, it takes the abstract-syntax-tree as input and yields the
+compiled data as output. What format the compiled data is, depends
+entirely on the compiler. It can be a another node-tree, but also
+anything else. The abstract-syntax-tree may be changed or even
+destroyed during the compilation. In any case, errors that occur
+during compilation will again be reported to the root-node of the
+tree and can later be collected by accessing <code class="docutils literal notranslate"><span class="pre">root.errors</span></code></p></li>
+</ol>
+<p>The xxxParser.py-script that is autogenerated by DHParser when compiling an
+EBNF-grammar provides transformation-functions for each of these steps and
+generators that yield a thread-local-version of each of these
+transformation-functions or callable transformation-classes.</p>
+<p>Module <code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.compile</span></code> provides the helper function
+<code class="xref py py-func docutils literal notranslate"><span class="pre">DHParser.compile.compile_source()</span></code> that calls these four stages
+in sequence and collects the result, i.e. the output of the last stage,
+the error messages, if any, and, optionally, the AST-tree. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.compile</span><span class="w"> </span><span class="kn">import</span> <span class="n">compile_source</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">json_str</span> <span class="o">=</span> <span class="s1">'{"test": ["This", "is", 1, "JSON", "test"]}'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">json_objs</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">ast</span> <span class="o">=</span> <span class="n">compile_source</span><span class="p">(</span><span class="n">json_str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span>                             <span class="n">json_parser</span><span class="p">,</span>
+<span class="gp">... </span>                             <span class="k">lambda</span> <span class="n">tree</span><span class="p">:</span> <span class="n">traverse</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">json_AST_trans</span><span class="p">),</span>
+<span class="gp">... </span>                             <span class="n">simplifiedJSONCompiler</span><span class="p">(),</span>
+<span class="gp">... </span>                             <span class="n">preserve_AST</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">json_objs</span>
+<span class="go">{'test': ['This', 'is', 1.0, 'JSON', 'test']}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">errors</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">as_sxpr</span><span class="p">())</span>
+<span class="go">(json</span>
+<span class="go">  (object</span>
+<span class="go">    (member</span>
+<span class="go">      (string "test")</span>
+<span class="go">      (array</span>
+<span class="go">        (string "This")</span>
+<span class="go">        (string "is")</span>
+<span class="go">        (other_literal "1")</span>
+<span class="go">        (string "JSON")</span>
+<span class="go">        (string "test")))))</span>
+</pre></div>
+</div>
+<p>Subsequent stages of the processing pipeline will only be called if no
+fatal errors have occurred in any of the earlier stages. This means that
+when designing the AST-transformation, the compiler and, if the extended
+pipeline (see below) is used, any further processing stages, it should
+be provided for the case that the input is faulty stemming from earlier
+stages can to some degree (determined by your assignment or seriousness
+to different possible errors) be faulty.</p>
+<p>Function <code class="xref py py-func docutils literal notranslate"><span class="pre">DHParser.compile.process_tree()</span></code> is a convenient helper
+function that calls a given processing stage only, if the tree handed
+over from the last stage does not contain any fatal errors. Thus, a
+sequence of processing stages can be written as a sequence of calls of
+<code class="xref py py-func docutils literal notranslate"><span class="pre">DHParser.compile.process_tree()</span></code> without the need of any if
+clauses to check the results for fatal errors after each call.</p>
+</section>
+<section id="the-extended-pipeline">
+<h2>The extended pipeline<a class="headerlink" href="#the-extended-pipeline" title="Link to this heading">#</a></h2>
+<p>There are many contexts where the four above-mentioned stages are not
+sufficient. In the digital humanities, for example, it is typical that
+the data is passed through many different tree-processing stages, before
+it is transformed into a form that is not a tree, any more. And it is
+not at all uncommon that this processing pipeline is bifurcated as the
+following schema, taken from the <a class="reference external" href="https://mlw.badw.de">Medieval Latin dictionary</a> of the <a class="reference external" href="https://www.badw.de">Bavarian Academy of Sciences and
+Humanities</a>, shows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">----------------</span>
+<span class="o">|</span> <span class="n">source</span> <span class="p">(</span><span class="n">DSL</span><span class="p">)</span> <span class="o">|</span>
+<span class="o">----------------</span>
+       <span class="o">|</span>
+       <span class="o">|---</span> <span class="n">Parsing</span>
+       <span class="o">|</span>
+    <span class="o">-------</span>
+    <span class="o">|</span> <span class="n">CST</span> <span class="o">|</span>
+    <span class="o">-------</span>
+       <span class="o">|</span>
+       <span class="o">|---</span> <span class="n">AST</span><span class="o">-</span><span class="n">Transformation</span>
+       <span class="o">|</span>
+    <span class="o">-------</span>
+    <span class="o">|</span> <span class="n">AST</span> <span class="o">|</span>
+    <span class="o">-------</span>
+       <span class="o">|</span>
+       <span class="o">|---</span> <span class="n">data</span><span class="o">-</span><span class="n">consolidation</span>
+       <span class="o">|</span>
+  <span class="o">------------</span>
+  <span class="o">|</span> <span class="n">data</span><span class="o">-</span><span class="n">XML</span> <span class="o">|</span>
+  <span class="o">------------</span>
+       <span class="o">|</span>
+       <span class="o">|---</span> <span class="n">output</span><span class="o">-</span><span class="n">transformation</span>
+       <span class="o">|</span>
+ <span class="o">--------------</span> <span class="nb">print</span><span class="o">-</span><span class="n">transform</span><span class="o">.</span> <span class="o">-------------</span> <span class="n">TeX</span><span class="o">-</span><span class="n">compilation</span> <span class="o">-----------</span>
+ <span class="o">|</span> <span class="n">output</span><span class="o">-</span><span class="n">XML</span> <span class="o">|-----------------&gt;|</span> <span class="nb">print</span><span class="o">-</span><span class="n">XML</span> <span class="o">|----------------&gt;|</span> <span class="n">ConTeXt</span> <span class="o">|</span>
+ <span class="o">--------------</span>                  <span class="o">-------------</span>                 <span class="o">-----------</span>
+       <span class="o">|</span>
+       <span class="o">|---</span> <span class="n">HTML</span><span class="o">-</span><span class="n">Transformation</span>
+       <span class="o">|</span>
+    <span class="o">--------</span>
+    <span class="o">|</span> <span class="n">HTML</span> <span class="o">|</span>
+    <span class="o">--------</span>
+</pre></div>
+</div>
+<p>In this particular example, there is no preprocessing stage. The first
+three remaining stages are covered by the “standard pipeline” (i.e.
+parsing, AST-transformation, compilation). The following stages,
+starting from data-XML, form the extended pipeline.</p>
+<p id="junctions">In order to support extended processing pipeline
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">DHParser.compile</span></code> uses the very simple concept of junctions,
+where a junctions is the connection of an earlier stage (origin) in the
+the pipeline to a following stage (target) via a transformation or
+compilation function. Pipelines are created by providing junctions from
+for each intermediate stage from the starting stage (usually the last
+stage of the standard pipeline) to one or more ending stages.
+Bifurcations a created simply by providing to different junctions
+starting from the same origin stage. (It is not allowed to have more
+than one junction for one and the same target stages.)</p>
+<p>The stages are identified by the names which may be chosen arbitrarily as long
+as each name is used for one and the same stage, only. Technically, a junction
+is a triple of the name of the origin stage, a factory function that returns a
+transformation-callable and the name of the target stage. A (potentially
+bifurcated) pipeline is then simply a set of junctions that covers all routes
+from the starting stage(s) of the pipeline to its ending stage(s).</p>
+<p>We will illustrate this by extending our example of simplified
+json-compiler to a processing pipeline. So far the standard pipeline of
+our json-compiler (although we did not bother to call it thus) yields
+the json-data in form of Python-objects. Now let’s assume, we’d like to
+add two further processing stages, one which yields the json-data as a
+human-readable pretty-printed json-string, the other which yields it as
+a compact byte-array, ready for transmission over some kind of connection.
+This is how our extension of the standard-pipeline looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="o">|</span>
+  <span class="o">-------------</span>  <span class="n">pretty</span><span class="o">-</span><span class="nb">print</span>  <span class="o">-----------------------</span>
+  <span class="o">|</span> <span class="n">json</span><span class="o">-</span><span class="n">data</span> <span class="o">|---------------&gt;|</span> <span class="n">human</span> <span class="n">readable</span> <span class="n">json</span> <span class="o">|</span>
+  <span class="o">-------------</span>                <span class="o">-----------------------</span>
+        <span class="o">|</span>
+        <span class="o">|---</span> <span class="n">compact</span><span class="o">-</span><span class="nb">print</span>
+        <span class="o">|</span>
+ <span class="o">-----------------</span>
+ <span class="o">|</span> <span class="n">one</span><span class="o">-</span><span class="n">line</span> <span class="n">json</span> <span class="o">|</span>
+ <span class="o">-----------------</span>
+        <span class="o">|</span>
+        <span class="o">|---</span> <span class="nb">bytearray</span><span class="o">-</span><span class="n">convert</span>
+        <span class="o">|</span>
+<span class="o">--------------------</span>
+<span class="o">|</span> <span class="n">transmission</span> <span class="n">obj</span> <span class="o">|</span>
+<span class="o">--------------------</span>
+</pre></div>
+</div>
+<p>Let’s define the necessary junctions “pretty-print”, “compact-print” and
+“bytearray-convert”. Each junction is a 3-tuple of 1) the name of input
+stage, 2) a compilation functions that either transforms the input-tree
+produces some other kind of output and 3) the name of the output stage.</p>
+<p>A restriction of junctions in DHParser consists in the fact that the input data
+for the compilation functions must always be the root-node of a tree. This
+restriction is due to the fact that the standard case for
+transformation-pipelines in the Digital Humanities is that of chains of
+tree-transformations. However, in some cases, as in this example, the data
+already has a different form than a tree at earlier stages of the pipeline. In
+order to cover those cases, DHParser uses the trick to attach the data to the
+root-node of the last tree stage and then passing the root-node with the
+attached data to the next junction. The RootNode thus serves as a pod for
+passing the non-tree data further on through the data. This trick has the
+benefit that the methods for error reporting that the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DHParser.nodetree.RootNode</span></code>-class provides can also be used for the
+non-tree-stages of the pipeline. In our example already the first stage of the
+extended data is not a node-tree, any more. So we need to attach it to the
+root-node of the last tree-stage, which in this case is the AST:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json_objs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s1">'json'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_stages</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'json'</span><span class="p">:</span> <span class="n">ast</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>It may appear odd that the stage of the ast-tree is named “json”. However,
+once the <code class="docutils literal notranslate"><span class="pre">data</span></code>-field is set in the root-node, the <code class="docutils literal notranslate"><span class="pre">stage</span></code>-field
+indicates the stage of the data and not the tree, any more.</p>
+<p>It is not obligatory to set the <cite>stage</cite>-field to any value. It can also
+be left empty. But to do so helps when debugging
+processing pipelines and also allows <a class="reference internal" href="../Reference.html#pipeline.run_pipeline" title="pipeline.run_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_pipeline()</span></code></a>
+to check for errors in the setup of a pipeline. The following
+examples reflect this practice.</p>
+<p>Now let’s define the “pretty-print”-compilation function and the
+respective junction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.nodetree</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootNode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">pretty_print</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">RootNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">input</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s1">'pretty-json'</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">input</span><span class="o">.</span><span class="n">new_error</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="s2">"JSON-Error: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">"'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pretty_print_junction</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'json'</span><span class="p">,</span> <span class="k">lambda</span> <span class="p">:</span> <span class="n">pretty_print</span><span class="p">,</span> <span class="s1">'pretty-json'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Any errors can simply be attached to the RootNode-object that is passed to the
+compilation-function!</p>
+<p>Since “pretty_print” yields a final state, it does not need to return a
+tree, but it may yield any data-type. This is different for the
+intermediary junction “compact-print”. Here, the transformed data must
+be attached to the RootNode, again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">compact_print</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">RootNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RootNode</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">input</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">input</span><span class="o">.</span><span class="n">new_error</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="s2">"JSON-Error: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="nb">input</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s1">'compact-json'</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="nb">input</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compact_print_junction</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'json'</span><span class="p">,</span> <span class="k">lambda</span> <span class="p">:</span> <span class="n">compact_print</span><span class="p">,</span> <span class="s1">'compact-json'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The “byte-array”-convert-junction that takes the output from the last step, the
+compact-json, as input can be defined as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">bytearray_convert</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="n">RootNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">input</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s1">'byte-stream'</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="nb">input</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bytearray_convert_junction</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'compact-json'</span><span class="p">,</span> <span class="k">lambda</span> <span class="p">:</span> <span class="n">bytearray_convert</span><span class="p">,</span> <span class="s1">'byte-stream'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, all junctions must be passed to the
+<a class="reference internal" href="../Reference.html#pipeline.run_pipeline" title="pipeline.run_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_pipeline()</span></code></a>-function which automatically constructs
+the bifurcated pipeline from the given junctions and passes the
+input-data through all bifurcations of the pipeline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">DHParser.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_stages</span><span class="o">=</span><span class="p">{</span><span class="s2">"pretty-json"</span><span class="p">,</span> <span class="s2">"byte-stream"</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span><span class="n">pretty_print_junction</span><span class="p">,</span> <span class="n">compact_print_junction</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="n">bytearray_convert_junction</span><span class="p">},</span>
+<span class="gp">... </span>                        <span class="n">source_stages</span><span class="p">,</span> <span class="n">target_stages</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note, that <code class="docutils literal notranslate"><span class="pre">source_stages</span></code> is a mapping the of source-stage-names to the
+source-stage’s data, while <code class="docutils literal notranslate"><span class="pre">target-stages</span></code> is merely a set of names of all
+final stages.</p>
+<p>The results are a mapping of all target AND intermediary stages to 2-tuples of
+the output-data of the respective stage (or None, if any fatal error has
+occurred) and a potentially empty error list:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">target_stages</span><span class="p">)):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="n">target</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">byte-stream b'{"test": ["This", "is", 1.0, "JSON", "test"]}'</span>
+<span class="go">pretty-json {</span>
+<span class="go">  "test": [</span>
+<span class="go">    "This",</span>
+<span class="go">    "is",</span>
+<span class="go">    1.0,</span>
+<span class="go">    "JSON",</span>
+<span class="go">    "test"</span>
+<span class="go">  ]</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<p>A nice feature of extended pipelines is their integration with the
+testing-framework (see <a class="reference internal" href="../Reference.html#module-10" title="testing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">testing</span></code></a>): All stages of an extended pipeline
+can be unit-tested with DHParser’s unit-testing framework for grammars as long
+as the results of these stages can be serialized with <code class="docutils literal notranslate"><span class="pre">str()</span></code>.</p>
+</section>
+<section id="id2">
+<h2><em>Classes and Functions-Reference</em><a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h3>Types and Functions<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../Reference.html#pipeline.Junction" title="pipeline.Junction"><code class="xref py py-data docutils literal notranslate"><span class="pre">Junction</span></code></a>: A type-alias for a tuple:
+(name of relative source stage, factory for a compiler,
+name of the relative destination stage). “relative” here means from
+the point of view of the compilation function returned by the factory.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#pipeline.PseudoJunction" title="pipeline.PseudoJunction"><code class="xref py py-data docutils literal notranslate"><span class="pre">PseudoJunction</span></code></a>: A surrogate for <a class="reference internal" href="../Reference.html#pipeline.Junction" title="pipeline.Junction"><code class="xref py py-data docutils literal notranslate"><span class="pre">Junction</span></code></a>:
+for the preprocessing-stage in particular where the root-node-object as
+a handle to passe the data through the pipeline does not yet exist.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#pipeline.create_preprocess_junction" title="pipeline.create_preprocess_junction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_preprocess_junction()</span></code></a>:
+Creates a pseudo junction for the preprocessing stage.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#pipeline.create_junction" title="pipeline.create_junction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_junction()</span></code></a>:
+Creates a junction-tuple to describe
+a particular transition in the processing pipeline.</p></li>
+<li><p><a class="reference internal" href="../Reference.html#pipeline.run_pipeline" title="pipeline.run_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_pipeline()</span></code></a>:
+Runs an extended pipeline of
+compilation or transformation functions (or, more precisely,
+callables) that is defined by a set of junctions and returns the
+results for selected target stages.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">full_pipeline()</span></code>:
+Like <a class="reference internal" href="../Reference.html#compile.compile_source" title="compile.compile_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">compile_source()</span></code></a>, but also runs any
+post-processing stages beyond the compilation. Or, like
+<a class="reference internal" href="../Reference.html#pipeline.run_pipeline" title="pipeline.run_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_pipeline()</span></code></a>, but also runs the
+pre-processing- and parsing-stages before running the
+pipeline.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="04_AST-transformation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">AST-Transformation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="06_testing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Testing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Post-Processing</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-compiler">Class Compiler</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transforming">Transforming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiling-to-other-structures">Compiling to other structures</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-and-finalizing">Initializing and Finalizing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes-and-functions-reference"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-compile">class Compile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types-and-functions">Types and Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-pipelines">Processing Pipelines</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-standard-pipeline">The standard-pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-extended-pipeline">The extended pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><em>Classes and Functions-Reference</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Types and Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eckhart Arnold
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026, Eckhart Arnold, Licensed under Apache License, Version 2.0.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
