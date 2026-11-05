@@ -39,7 +39,7 @@ from DHParser.error import ErrorCode, Error, canonical_error_strings, has_errors
     WARNING, ERROR, FATAL, add_source_locations
 from DHParser.log import start_logging, suspend_logging, resume_logging
 from DHParser.nodetree import Node, WHITESPACE_PTYPE, TOKEN_PTYPE, RootNode, Path, flatten_sxpr, \
-    add_class, ZOMBIE_TAG
+    add_class, ZOMBIE_TAG, LEAF_NODE
 from DHParser.parse import Grammar, PreprocessorToken, Whitespace, Drop, AnyChar, Parser, \
     Lookbehind, Lookahead, Alternative, Pop, Text, Synonym, Counted, Interleave, ERR, \
     Option, NegativeLookbehind, OneOrMore, RegExp, Retrieve, Series, Capture, TreeReduction, \
@@ -99,7 +99,6 @@ def precompile_early(args: Tuple[str, str, CancelQuery]) -> str:
         return f'IOError while including file "{source_name}"'
     source_hash = md5(source).encode()
     ast_name = source_name + '.pickledAST'
-    err_msgs = []
     import pickle
     try:
         with open(ast_name, 'rb') as f:
@@ -645,13 +644,21 @@ def show(context: List[Node]):
     print(context[-1].as_xml())
 
 
-# def show_parent(path):
-#     if len(path) > 1:
-#         print(path[0].as_sxpr())
-
-
-def hr(context: List[Node]):
-    print("---")
+def init_pos(context: List[Node]):
+    node = context[-1]
+    if node._pos < 0:
+        if len(context) > 1:
+            parent = context[-2]
+            i = parent.index(node)
+            if i > 0:
+                pred = parent[i-1]
+                pivot = pred.pick(LEAF_NODE, reverse=True, include_root=True)
+                assert pivot is not None
+                node.with_pos(pivot.pos + pivot.strlen())
+            else:
+                node.with_pos(parent.pos)
+        else:
+            node.with_pos(0)
 
 
 LaTeX_AST_transformation_table = {
@@ -659,8 +666,7 @@ LaTeX_AST_transformation_table = {
     "<": [flatten, remove_children_if(is_expendable)],
     "latexdoc": [], # TODO: position values of snippets need to be updated!!!
     "document": [],
-    "snippet": [BLOCK_CHILDREN, replace_by_children],
-
+    "snippet": [BLOCK_CHILDREN, init_pos, apply_if(replace_by_children, lambda p: p[0].name == 'latexdoc')],
     # chapter-nesting-errors may escape the attention of the parser when includes are used.
     # Therefore, chapter-nesting is here enforced, again.
     "Chapters": [apply_if(add_error(f'Chapters must be child of document!', WARNING),

@@ -860,7 +860,7 @@ CONFIG_PRESET['left_recursion'] = "full"
 # (batch-processing), the files will be processed in parallel via the
 # Python multiprocessing module
 # Default value: True
-CONFIG_PRESET['batch_processing_parallelization'] = True
+CONFIG_PRESET['batch_processing_parallelization'] = False
 
 # Maximum chunk size when using multiple processes for batch processing
 # see: file:///usr/share/doc/python/html/library/concurrent.futures.html#concurrent.futures.Executor.map

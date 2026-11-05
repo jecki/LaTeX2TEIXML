@@ -469,6 +469,7 @@ def traverse(tree: Node,
             except Exception as ae:
                 if isinstance(path[0], RootNode) and path[0].docname:
                     raise AssertionError(
+                        f'{[nd._pos for nd in path]}\n'
                         f'An exepction occured when transforming {pp_path(path, (1, 20))}\n'
                         f'in document "{path[0].docname}"\nwith {str(call)}:\n'
                         f'{ae.__class__.__name__}: {ae}')
